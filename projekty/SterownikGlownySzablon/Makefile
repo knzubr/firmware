@@ -68,7 +68,8 @@ $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \
 $(SOURCE_DIR)/croutine.c \
-$(PORT_MEM)/heap_1.c
+$(PORT_MEM)/heap_avr.c \
+$(PORT_DIR)/port.c
 
 #regtest.c \
 
