@@ -1,0 +1,17 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+
+[CMake]
+BuildDirs=/home/adam/Eletronika/freertos/projekty/SterownikGlowny/build
+CMakeDir=/usr/share/cmake-2.8/Modules
+Current CMake Binary=file:///usr/bin/cmake
+CurrentBuildDir=file:///home/adam/Eletronika/freertos/projekty/SterownikGlowny/build
+CurrentBuildType=debug
+CurrentInstallDir=
+ProjectRootRelative=./
+
+[MakeBuilder]
+Number Of Jobs=1
+
+[Project]
+VersionControlSupport=kdevsubversion
