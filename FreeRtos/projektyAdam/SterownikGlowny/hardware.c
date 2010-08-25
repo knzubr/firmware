@@ -1,4 +1,6 @@
 #include "hardware.h"
+#include "hardwareConfig.h"
+#include "spi.h"
 #include <avr/io.h>
 
 void hardwareInit(void)
@@ -55,4 +57,137 @@ void hardwareInit(void)
    6 - 
    7 - 
    */
+}
+
+void disableAllSpiDevices(void)
+{ 
+#if disableSpiPORTA_OR != 0
+  PORTA |= disableSpiPORTA_OR;
+#endif
+#if disableSpiPORTA_AND != 0xFF
+  PORTA &= disableSpiPORTA_AND;
+#endif
+
+#if disableSpiPORTB_OR != 0
+  PORTB |= disableSpiPORTB_OR;
+#endif
+#if disableSpiPORTB_AND != 0xFF
+  PORTB &= disableSpiPORTB_AND;
+#endif
+
+#if disableSpiPORTC_OR != 0
+  PORTC |= disableSpiPORTC_OR;
+#endif
+#if disableSpiPORTC_AND != 0xFF
+  PORTC &= disableSpiPORTC_AND;
+#endif
+
+#if disableSpiPORTD_OR != 0
+  PORTD |= disableSpiPORTD_OR;
+#endif
+#if disableSpiPORTD_AND != 0xFF
+  PORTD &= disableSpiPORTD_AND;
+#endif
+
+#if disableSpiPORTE_OR != 0
+  PORTE |= disableSpiPORTE_OR;
+#endif
+#if disableSpiPORTE_AND != 0xFF
+  PORTE &= disableSpiPORTE_AND;
+#endif
+
+#if disableSpiPORTF_OR != 0
+  PORTF |= disableSpiPORTF_OR;
+#endif
+#if disableSpiPORTF_AND != 0xFF
+  PORTF &= disableSpiPORTF_AND;
+#endif
+
+#if disableSpiPORTG_OR != 0
+  PORTG |= disableSpiPORTG_OR;
+#endif
+#if disableSpiPORTG_AND != 0xFF
+  PORTG &= disableSpiPORTG_AND;
+#endif
+}
+
+void enableSpiEnc28j60(void)
+{
+#if ENC_SPI_CS_EN_MASK_OR != 0
+  ENC_SPI_CS_PORT |= ENC_SPI_CS_EN_MASK_OR;
+#endif
+#if ENC_SPI_CS_EN_MASK_AND != 0xFF
+  ENC_SPI_CS_PORT &= ENC_SPI_CS_EN_MASK_AND;
+#endif
+}
+
+void disableSpiEnc28j60(void)
+{
+#if ENC_SPI_CS_EN_MASK_OR != 0
+  ENC_SPI_CS_PORT &= (~ENC_SPI_CS_EN_MASK_OR);
+#endif
+#if ENC_SPI_CS_EN_MASK_AND != 0xFF
+  ENC_SPI_CS_PORT |= (~ENC_SPI_CS_EN_MASK_AND);
+#endif
+}
+
+void enableSpiSd(void)
+{
+#if SD_SPI_CS_EN_MASK_OR != 0
+  SD_SPI_CS_PORT |= SD_SPI_CS_EN_MASK_OR;
+#endif
+#if SD_SPI_CS_EN_MASK_AND != 0xFF
+  SD_SPI_CS_PORT &= SD_SPI_CS_EN_MASK_AND;
+#endif   
+}
+
+void disableSpiSd(void)
+{
+#if SD_SPI_CS_EN_MASK_OR != 0
+  SD_SPI_CS_PORT &= (~SD_SPI_CS_EN_MASK_OR);
+#endif
+#if SD_SPI_CS_EN_MASK_AND != 0xFF
+  SD_SPI_CS_PORT |= (~SD_SPI_CS_EN_MASK_AND);
+#endif  
+}
+
+void enableSpiMPC23S17(void)
+{
+#if MCP23S17_SPI_CS_EN_MASK_OR != 0
+  MCP23S17_SPI_CS_PORT |= MCP23S17_SPI_CS_EN_MASK_OR;
+#endif
+#if MCP23S17_SPI_CS_EN_MASK_AND != 0xFF
+  MPC23S17_SPI_CS_PORT &= MPC23S17_SPI_CS_EN_MASK_AND;
+#endif
+}
+
+void disableSpiMPC23S17(void)
+{
+#if MCP23S17_SPI_CS_EN_MASK_OR != 0
+  MCP23S17_SPI_CS_PORT &= (~MCP23S17_SPI_CS_EN_MASK_OR);
+#endif
+#if MCP23S17_SPI_CS_EN_MASK_AND != 0xFF
+  MPC23S17_SPI_CS_PORT |= (~MPC23S17_SPI_CS_EN_MASK_AND);
+#endif
+
+}
+
+void enableSpiMPC3008(void)
+{
+  
+}
+
+void disableSpiMPC3008(void)
+{
+  
+}
+
+void enableSpiDs1305(void)
+{
+  
+}
+
+void disableSpiDs1305(void)
+{
+  
 }

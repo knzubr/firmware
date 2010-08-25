@@ -131,14 +131,14 @@ portSHORT main( void )
 #endif
 
   hardwareInit();
-  spiInit();
+  spiInit(disableAllSpiDevices);
   xSerialPortInitMinimal();
   
   VtyInit();
   cmdState_t *CLIState = cmdStateCreate(64, VtyPutChar);
 
   xTaskCreate(vTaskVTY, NULL /*"VTY"*/, STACK_SIZE_VTY, (void *)(CLIState), 1, &xHandleVTY);
-  xTaskCreate(encTask,  NULL /*"ENC"*/, STACK_SIZE_ENC, (void *)(CLIState), 1, &xHandleEnc);
+//  xTaskCreate(encTask,  NULL /*"ENC"*/, STACK_SIZE_ENC, (void *)(CLIState), 1, &xHandleEnc);
   
 //  xTaskCreate(vTaskMag, "Rs485", STACK_SIZE_VTY, NULL, tskIDLE_PRIORITY, &xHandleRs485);
   vTaskStartScheduler();

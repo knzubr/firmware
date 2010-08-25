@@ -17,15 +17,21 @@
 #include "ds1305.h"
 #include "spi.h"
 
-//
-#define waitspi() while(!(SPSR&(1<<SPIF)))
+void Ds1305_init(uint8_t (*spiSendFunc)(uint8_t), void (*spiEnableDS1305Func)(void), void (*spiDisableDS1305Func)(void))
+{
+  DS1305_global.spiSend          = spiSendFunc;
+  DS1305_global.spiEnableDS1305  = spiEnableDS1305Func;
+  DS1305_global.spiDisableDS1305 = spiDisableDS1305Func;
+}
 
 void readTimeBCD(timeBCD_t *time)
 {
-  enableExternalSpiDevice(DS1305_CS);
-
-
-  disableAllDevices();
+  spiTake();
+  DS1305_global.spiEnableDS1305();
+  
+  
+  DS1305_global.spiDisableDS1305();  
+  spiGive();
 }
 
 #if USE_DECODED_TIME_STRUCT
@@ -42,10 +48,12 @@ void readTime (time_t *time)
 
 void setTimeBCD(timeBCD_t *time)
 {
-  enableExternalSpiDevice(DS1305_CS);
-
-
-  disableAllDevices();
+  spiTake();
+  DS1305_global.spiEnableDS1305();
+  
+  
+  DS1305_global.spiDisableDS1305();  
+  spiGive();
 }
 
 #if USE_DECODED_TIME_STRUCT
@@ -61,16 +69,21 @@ void setTime(time_t *time)
 
 int8_t writeMem      (uint8_t addr, uint8_t length, uint8_t *data)
 {
-  enableExternalSpiDevice(DS1305_CS);
-
-  disableAllDevices();
+  spiTake();
+  DS1305_global.spiEnableDS1305();
+  
+  
+  DS1305_global.spiDisableDS1305();  
+  spiGive();
   return -2;
 }
 int8_t readMem       (uint8_t addr, uint8_t length, uint8_t *data)
 {
-  enableExternalSpiDevice(DS1305_CS);
-
-
-  disableAllDevices();
+  spiTake();
+  DS1305_global.spiEnableDS1305();
+  
+  
+  DS1305_global.spiDisableDS1305();  
+  spiGive();
   return -2;
 }
