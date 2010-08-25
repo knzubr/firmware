@@ -56,6 +56,8 @@ serial.c \
 hardware.c \
 protRs485.c \
 vty.c \
+$(LIB_DIR)/spi.c \
+$(LIB_DIR)/mpc23s17.c \
 $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/xmodem.c \
@@ -70,9 +72,7 @@ $(PORT_DIR)/port.c
 #enc_task.c \
 #$(LIB_DIR)/enc28j60.c \
 #$(LIB_DIR)/ip_arp_udp_tcp.c \
-#$(LIB_DIR)/mpc23s17.c \
-#$(LIB_DIR)/mpc23s17.c \
-#$(LIB_DIR)/spi.c \
+
 #spiStd.c \
 
 

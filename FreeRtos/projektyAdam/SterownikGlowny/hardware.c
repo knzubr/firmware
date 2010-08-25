@@ -1,6 +1,6 @@
 #include "hardware.h"
 #include "hardwareConfig.h"
-//#include "spiStd.h" //TODO replace
+#include "spi.h"
 #include <avr/io.h>
 
 void hardwareInit(void)
@@ -62,9 +62,11 @@ void hardwareInit(void)
 void disableAllSpiDevices(void)
 { 
 #if disableSpiPORTA_OR != 0
+#error Port A is memory bus
   PORTA |= disableSpiPORTA_OR;
 #endif
 #if disableSpiPORTA_AND != 0xFF
+#error Port A is memory bus
   PORTA &= disableSpiPORTA_AND;
 #endif
 
@@ -76,9 +78,11 @@ void disableAllSpiDevices(void)
 #endif
 
 #if disableSpiPORTC_OR != 0
+#error Port C is memory bus
   PORTC |= disableSpiPORTC_OR;
 #endif
 #if disableSpiPORTC_AND != 0xFF
+#error Port C is memory bus
   PORTC &= disableSpiPORTC_AND;
 #endif
 
