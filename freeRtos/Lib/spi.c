@@ -6,7 +6,6 @@
 #include "task.h"
 #include "hardware.h"
 #include "spi.h"
-#include "main.h"
 #include "semphr.h"
 
 
@@ -17,8 +16,8 @@ void spiInit(void (*disableAllSpiDevicesFun)(void))
   vSemaphoreCreateBinary(xSemaphoreSpiSS); 
   xSpiRx          = xQueueCreate(1, 1);
 
-  //SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPIE);
-  SPCR = (1<<SPE)|(1<<MSTR);
+  SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPIE);
+  //SPCR = (1<<SPE)|(1<<MSTR);
   SPSR |= (1<<SPI2X);
   portEXIT_CRITICAL();
   
@@ -56,15 +55,13 @@ uint8_t spiSend(uint8_t data)
 
 uint8_t spiSendSpinBlock(uint8_t data)
 {
-  uint8_t result;
-  //TODO wyłączyć przerwanie SPI_STC_vect
   SPDR = data;
+  SPCR &= ~(1<<SPIE);                //Disable SPI interrupt
   while(!(SPSR&(1<<SPIF)));
-  //TODO zakomentować następną linię
-  xQueueReceive(xSpiRx, &result, 10); 
-  result = SPDR;
-  //TODO włączyć przerwanie SPI_STC_vect
-  return result;
+  data = SPSR;                       //Clearing interrupt flag
+  data = SPDR;                       //Resfing DPI buffer register
+  SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
+  return data;                     
 }
 
 ISR(SPI_STC_vect)

@@ -3,11 +3,12 @@
 #ifndef SPI_H
 #define SPI_H
 
-#include "main.h"
+#include "FreeRTOS.h"
 #include "semphr.h"
 #include "queue.h"
 #include "task.h"
-#include "hardware.h"
+//#include "hardware.h"
+//#include "hardwareConfig.h"
 
 
 xSemaphoreHandle  xSemaphoreSpiSS;    /// Flaga blokująca jednoczesny dostęp do magistrali wielu urządzeniom

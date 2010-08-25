@@ -7,7 +7,7 @@
 #define CMDLINE_HISTORY_NEXT  2
 
 //Configuration
-#define CMDLINE_MAX_COMMANDS    15
+#define CMDLINE_MAX_COMMANDS    20
 #define CMDLINE_MAX_CMD_LENGTH  10
 #define CMDLINE_BUFFERSIZE      80
 #define CMDLINE_HISTORYSIZE     1
