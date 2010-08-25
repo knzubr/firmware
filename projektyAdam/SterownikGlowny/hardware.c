@@ -1,6 +1,6 @@
 #include "hardware.h"
 #include "hardwareConfig.h"
-#include "spi.h"
+//#include "spiStd.h" //TODO replace
 #include <avr/io.h>
 
 void hardwareInit(void)

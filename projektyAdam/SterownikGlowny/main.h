@@ -18,14 +18,14 @@
 #include "vty.h"
 #include "protRs485.h"
 #include "ramdysk.h"
-#include "enc_task.h"
-#include "spi.h"
-#include "ds1305.h"
+//#include "enc_task.h"
+//#include "spiStd.h"
 
 #include "xitoa.h"
 #include "ff.h"
 #include "diskio.h"
 #include "rtc.h"
+//#include "mpc23s17.h"
 
 #define mainCHECK_TASK_PRIORITY 1
 #define mainCHECK_PERIOD 1

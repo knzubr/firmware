@@ -56,13 +56,10 @@ serial.c \
 hardware.c \
 protRs485.c \
 vty.c \
-$(LIB_DIR)/spi.c \
 $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/xmodem.c \
 $(LIB_DIR)/vt100.c \
-$(LIB_DIR)/ds1305.c \
-$(LIB_DIR)/mpc23s17.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \
@@ -70,11 +67,14 @@ $(SOURCE_DIR)/croutine.c \
 $(PORT_MEM)/heap_avr.c \
 $(PORT_DIR)/port.c
 
-#mmc.c \
-#rtc.c
-#$(LIB_DIR)/ip_arp_udp_tcp.c \
 #enc_task.c \
 #$(LIB_DIR)/enc28j60.c \
+#$(LIB_DIR)/ip_arp_udp_tcp.c \
+#$(LIB_DIR)/mpc23s17.c \
+#$(LIB_DIR)/mpc23s17.c \
+#$(LIB_DIR)/spi.c \
+#spiStd.c \
+
 
 #regtest.c \
 
@@ -95,7 +95,7 @@ $(PORT_DIR)/port.c
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = xitoa.S
+ASRC = 
 
 
 # List any extra directories to look for include files here.
@@ -122,6 +122,7 @@ $(WARNINGS) \
 -Wa,-adhlns=$(<:.c=.lst) \
 $(patsubst %,-I%,$(EXTRAINCDIRS))
 
+CFLAGS += -DF_CPU=14745600UL 
 
 # Set a "language standard" compiler flag.
 #   Unremark just one line below to set the language standard to use.
@@ -184,16 +185,15 @@ LDFLAGS += -lm
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = jtag1
 
-
-AVRDUDE_PORT = /dev/jtag	   # programmer connected to serial device
-#AVRDUDE_PORT = lpt1	# programmer connected to parallel port
-
+# Programming support using avrdude.
+AVRDUDE             = avrdude
+AVRDUDE_PROGRAMMER  = jtag1
+AVRDUDE_PORT        = /dev/jtag
+AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,
@@ -209,19 +209,6 @@ AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 # to submit bug reports.
 #AVRDUDE_FLAGS += -v -v
 
-
-
-
-# ---------------------------------------------------------------------------
-
-# Define directories, if needed.
-DIRAVR = c:/winavr
-DIRAVRBIN = $(DIRAVR)/bin
-DIRAVRUTILS = $(DIRAVR)/utils/bin
-DIRINC = .
-DIRLIB = $(DIRAVR)/avr/lib
-
-
 # Define programs and commands.
 SHELL = sh
 
@@ -232,16 +219,11 @@ OBJDUMP = avr-objdump
 SIZE = avr-size
 
 
-# Programming support using avrdude.
-AVRDUDE = avrdude
-
-
 REMOVE = rm -f
 COPY = cp
 
 HEXSIZE = $(SIZE) --target=$(FORMAT) $(TARGET).hex
 ELFSIZE = $(SIZE) -A $(TARGET).elf
-
 
 
 # Define Messages
@@ -263,8 +245,6 @@ MSG_ASSEMBLING = Assembling:
 MSG_CLEANING = Cleaning project:
 
 
-
-
 # Define all object files.
 OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) 
 
@@ -275,7 +255,6 @@ LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 # Add target processor to flags.
 ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS)
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
-
 
 
 # Default target.
@@ -350,6 +329,7 @@ program: $(TARGET).hex $(TARGET).eep
 	@echo $(MSG_FLASH) $@
 	$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
 
+# Create final output files (.hex, .eep) from ELF output file.
 %.eep: %.elf
 	@echo
 	@echo $(MSG_EEPROM) $@
@@ -396,7 +376,6 @@ program: $(TARGET).hex $(TARGET).eep
 	@echo
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
-
 
 # Target: clean project.
 clean: begin clean_list finished end
