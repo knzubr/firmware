@@ -15,7 +15,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "enc28j60.h"
-#include "spi.h"
+#include "spiStd.h"
 
 static uint8_t Enc28j60Bank;
 static uint16_t gNextPacketPtr;

@@ -20,7 +20,7 @@
 #define ENC28J60_H
 #include <inttypes.h>
 #include "main.h"
-#include "spi.h"
+#include "spiStd.h"
 
 // ENC28J60 Control Registers
 // Control register definitions are a combination of address,

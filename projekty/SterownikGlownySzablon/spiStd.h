@@ -1,5 +1,5 @@
-#ifndef SPI_H
-#define SPI_H
+#ifndef SPI_STD_H
+#define SPI_STD_H
 
 #include "main.h"
 #include "semphr.h"

@@ -17,8 +17,8 @@ void spiInit(void (*disableAllSpiDevicesFun)(void))
   vSemaphoreCreateBinary(xSemaphoreSpiSS); 
   xSpiRx          = xQueueCreate(1, 1);
 
-  SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPIE);
-  //SPCR = (1<<SPE)|(1<<MSTR);
+  //SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPIE);
+  SPCR = (1<<SPE)|(1<<MSTR);
   SPSR |= (1<<SPI2X);
   portEXIT_CRITICAL();
   
@@ -62,7 +62,7 @@ uint8_t spiSendSpinBlock(uint8_t data)
   while(!(SPSR&(1<<SPIF)));
   //TODO zakomentować następną linię
   xQueueReceive(xSpiRx, &result, 10); 
-  //TODO result = SPDR;
+  result = SPDR;
   //TODO włączyć przerwanie SPI_STC_vect
   return result;
 }
