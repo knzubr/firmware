@@ -19,7 +19,7 @@
 #include "protRs485.h"
 #include "ramdysk.h"
 #include "enc_task.h"
-#include "spi.h"
+#include "spiStd.h"
 
 #include "xitoa.h"
 #include "ff.h"
