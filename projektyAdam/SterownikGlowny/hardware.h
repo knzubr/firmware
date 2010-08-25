@@ -12,5 +12,21 @@
  */
 void hardwareInit(void);
 
+void disableAllSpiDevices(void);
+
+void enableSpiEnc28j60(void);
+void disableSpiEnc28j60(void);
+
+void enableSpiSd(void);
+void disableSpiSd(void);
+
+void enableSpiMPC23S17(void);
+void disableSpiMPC23S17(void);
+
+void enableSpiMPC3008(void);
+void disableSpiMPC3008(void);
+
+void enableSpiDs1305(void);
+void disableSpiDs1305(void);
 
 #endif

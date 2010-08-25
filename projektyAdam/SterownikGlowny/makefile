@@ -56,23 +56,25 @@ serial.c \
 hardware.c \
 protRs485.c \
 vty.c \
-enc_task.c \
-spi.c \
+$(LIB_DIR)/spi.c \
 $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/xmodem.c \
 $(LIB_DIR)/vt100.c \
-$(LIB_DIR)/enc28j60.c \
 $(LIB_DIR)/ds1305.c \
-$(LIB_DIR)/ip_arp_udp_tcp.c \
+$(LIB_DIR)/mpc23s17.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \
 $(SOURCE_DIR)/croutine.c \
 $(PORT_MEM)/heap_avr.c \
-$(PORT_DIR)/port.c \
-mmc.c \
-rtc.c
+$(PORT_DIR)/port.c
+
+#mmc.c \
+#rtc.c
+#$(LIB_DIR)/ip_arp_udp_tcp.c \
+#enc_task.c \
+#$(LIB_DIR)/enc28j60.c \
 
 #regtest.c \
 

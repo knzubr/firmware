@@ -27,6 +27,13 @@
 
 // functions
 
+struct DS1305_config
+{
+  uint8_t (*spiSend)(uint8_t data);   /// wskaźnik do funkcji, która wysyła i odbiera dane przez magistralę SPI
+  void    (*spiEnableDS1305)(void);   /// wskaźnik do funkcji, która podłącza urządzenie do magistrali SPI
+  void    (*spiDisableDS1305)(void);  /// wskaźnik do funkcji, która odłącza urządzenie od magistrali SPI
+};
+
 struct timeBCD
 {
   uint8_t seconds;                    /// Sekundy:        Odczyt(0x00), Zapis(0x80)
@@ -103,6 +110,14 @@ typedef struct timeBCD     timeBCD_t;
 typedef struct timeDecoded timeDecoded_t;
 typedef union  time        time_t;
 #endif /* USE_DECODED_TIME_STRUCT */
+
+//------------------ GLOBAL WARIABLE ---------------------------------
+struct DS1305_config DS1305_global;
+
+
+//------------------ Functions       ---------------------------------
+
+void Ds1305_init(uint8_t (*spiSendFunc)(uint8_t), void (*spiEnableDS1305Func)(void), void (*spiDisableDS1305Func)(void));
 
 void readTimeBCD     (timeBCD_t     *time);
 
