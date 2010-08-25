@@ -3,6 +3,7 @@
 #include "ramdysk.h"
 #include "protRs485.h"
 #include "protocol1.h"
+#include "mpc23s17.h"
 
 static void helpFunction           (cmdState_t *state);
 static void statusFunction         (cmdState_t *state);
@@ -21,6 +22,8 @@ static void wypiszPlikiFunction    (cmdState_t *state);
 static void edytujRamPlikFunction  (cmdState_t *state);
 static void czytajRamPlikFunction  (cmdState_t *state);
 
+static void ustawPortExtAFunction  (cmdState_t *state);
+
 #ifdef testZewPamiec
 static void testPamZewFunction     (cmdState_t *state);
 #endif
@@ -37,7 +40,7 @@ void VtyInit(void)
 {
   cmdlineInit();
   
-  cmdlineAddCommand("help",    helpFunction);
+//  cmdlineAddCommand("help",    helpFunction);
   cmdlineAddCommand("status",  statusFunction);
   cmdlineAddCommand("podnies", podniesFunction);
   cmdlineAddCommand("opusc",   opuscFunction);
@@ -56,6 +59,7 @@ void VtyInit(void)
   cmdlineAddCommand("dir",     wypiszPlikiFunction);
   cmdlineAddCommand("erp",     edytujRamPlikFunction);
   cmdlineAddCommand("crp",     czytajRamPlikFunction);
+//  cmdlineAddCommand("upa",     ustawPortExtAFunction);
 }
 
 #define odczyt(ZNAK, TIMEOUT) xQueueReceive(xVtyRec, (ZNAK), (TIMEOUT))
@@ -177,6 +181,12 @@ static void podniesFunction(cmdState_t *state)
   
   uartRs485SendByte((uint8_t)(crc>>8));
   uartRs485SendByte((uint8_t)(crc & 0xFF));
+}
+
+static void ustawPortExtAFunction(cmdState_t *state)
+{
+  uint8_t wartosc = cmdlineGetArgInt(1, state);
+  //MPC23s17SetPortA(wartosc, 0);
 }
 
 static void pingFunction(cmdState_t *state)

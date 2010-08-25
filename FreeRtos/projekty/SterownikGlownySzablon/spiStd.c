@@ -5,7 +5,7 @@
 #include "queue.h"
 #include "task.h"
 #include "hardware.h"
-#include "spi.h"
+#include "spiStd.h"
 #include "main.h"
 #include "semphr.h"
 

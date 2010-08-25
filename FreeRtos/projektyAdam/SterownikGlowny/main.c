@@ -47,6 +47,8 @@
 #include "enc_task.h"
 #include "protRs485.h"
 #include "serial.h"
+#include "mpc23s17.h"
+#include "spi.h"
 
 struct sterRolet sterownikiRolet[MAKS_L_STER_ROLET];
 
@@ -131,7 +133,10 @@ portSHORT main( void )
 #endif
 
   hardwareInit();
+  
   spiInit(disableAllSpiDevices);
+  //MPC23S17_init(spiSend, enableSpiMPC23S17, disableSpiMPC23S17);
+  
   xSerialPortInitMinimal();
   
   VtyInit();
