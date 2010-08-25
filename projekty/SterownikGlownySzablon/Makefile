@@ -57,7 +57,7 @@ hardware.c \
 protRs485.c \
 vty.c \
 enc_task.c \
-spi.c \
+spiStd.c \
 $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/xmodem.c \
