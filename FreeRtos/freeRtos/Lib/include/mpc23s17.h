@@ -15,11 +15,18 @@
 #ifndef MPC32S17_H
 #define MPC32S17_H
 
-#define MPC32S17_CS 2
-
 #include <inttypes.h>
 #include "main.h"
 #include "spi.h"
+
+#define B0_IODIRA 0x00
+#define B0_IODIRB 0x01
+
+#define B0_GPIOA  0x12
+#define B0_GPIOB  0x13
+#define B0_OLATA  0x14
+#define B0_OLATB  0x15
+
 
 
 struct MPC_config

@@ -189,6 +189,7 @@ static void podniesFunction(cmdState_t *state)
 static void ustawPortExtAFunction(cmdState_t *state)
 {
   uint8_t wyjscie = cmdlineGetArgInt(1, state);
+  MPC23s17SetDirA(0x00, 0);
   MPC23s17SetPortA(wyjscie, 0);
 }
 
@@ -203,7 +204,7 @@ static void pingFunction(cmdState_t *state)
 
   wynik = czyscBufOdb485(NULL);
   if (wynik != 0)
-    fprintf(&state->myStdInOut, "!!! W budorze Rs485 pozostalo %d bajtow\r\n", wynik);
+    fprintf(&state->myStdInOut, "!!! W buforze Rs485 pozostalo %d bajtow\r\n", wynik);
     
   sendPing(nrSterownika, l_znakow, uartRs485SendByte);
 //  czyscBufOdb485(state);  
