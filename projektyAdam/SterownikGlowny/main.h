@@ -26,6 +26,7 @@
 #include "diskio.h"
 #include "rtc.h"
 #include "mpc23s17.h"
+#include "mcp3008.h"
 #include "ds1305.h"
 
 #define mainCHECK_TASK_PRIORITY 1

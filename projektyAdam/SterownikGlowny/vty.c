@@ -4,6 +4,7 @@
 #include "protRs485.h"
 #include "protocol1.h"
 #include "mpc23s17.h"
+#include "mcp3008.h"
 #include "ds1305.h"
 
 static void helpFunction           (cmdState_t *state);
@@ -27,6 +28,7 @@ static void ustawPortExtAFunction  (cmdState_t *state);
 
 static void pokazCzasFunction      (cmdState_t *state);
 static void ustawCzasFunction      (cmdState_t *state);
+static void czytajAC_Function      (cmdState_t *state);
 
 #ifdef testZewPamiec
 static void testPamZewFunction     (cmdState_t *state);
@@ -68,6 +70,7 @@ void VtyInit(void)
   cmdlineAddCommand("upa",     ustawPortExtAFunction);
   cmdlineAddCommand("czas",    pokazCzasFunction);
   cmdlineAddCommand("uczas",   ustawCzasFunction);
+  cmdlineAddCommand("ac",      czytajAC_Function);
 }
 
 #define odczyt(ZNAK, TIMEOUT) xQueueReceive(xVtyRec, (ZNAK), (TIMEOUT))
@@ -95,7 +98,7 @@ static void pokazCzasFunction(cmdState_t *state)
 static void ustawCzasFunction(cmdState_t *state)
 {
   uint8_t godzina =  cmdlineGetArgInt(1, state);
-  uint8_t minuta =   cmdlineGetArgInt(2, state);
+  uint8_t minuta  =  cmdlineGetArgInt(2, state);
   uint8_t sekunda =  cmdlineGetArgInt(3, state);
   
   ds1305start();
@@ -128,6 +131,13 @@ static void ustawCzasFunction(cmdState_t *state)
 //  if (result != 0)
 //    fprintf(&state->myStdInOut, "Nieudana proba odczytu: %d\r\n", result);
 //  fprintf(&state->myStdInOut, "tab[0] %d, tab[4] %d, tab[7] %d\r\n", tab[0], tab[4], tab[7]);  
+}
+
+static void czytajAC_Function(cmdState_t *state)
+{
+  uint8_t nrWejscia = cmdlineGetArgInt(1, state);
+  uint16_t wynik = MCP3008_getSampleSingle(nrWejscia);
+  fprintf(&state->myStdInOut, "Wartosc probki na wejsciu %d: %d\r\n", nrWejscia, wynik);  
 }
 
 static void helpFunction(cmdState_t *state)
