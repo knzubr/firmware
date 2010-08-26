@@ -1,7 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +13,7 @@
 #include "task.h"
 #include "serial.h"
 #include "hardware.h"
+#include "hardwareConfig.h"
 #include "cmdline.h"
 #include "vty.h"
 #include "protRs485.h"
@@ -25,7 +25,8 @@
 #include "ff.h"
 #include "diskio.h"
 #include "rtc.h"
-//#include "mpc23s17.h"
+#include "mpc23s17.h"
+#include "ds1305.h"
 
 #define mainCHECK_TASK_PRIORITY 1
 #define mainCHECK_PERIOD 1
@@ -49,5 +50,7 @@ struct sterRolet
   uint8_t stan;
   uint8_t roleta[2];
 };
+
+volatile timeDecoded_t czasRtc;
 
 #endif

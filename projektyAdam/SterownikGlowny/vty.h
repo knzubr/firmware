@@ -4,6 +4,7 @@
 #include "main.h"
 #include <stdio.h>
 #include <util/crc16.h>
+#include "ds1305.h"
 
 // Znaki kontrolne w protokole Xmodem
 #define SOH                     0x01
@@ -28,10 +29,12 @@
 
 void VtyInit(void);
 
-extern xQueueHandle         xVtyRec;
-extern xQueueHandle         xVtyTx;
+extern xQueueHandle           xVtyRec;
+extern xQueueHandle           xVtyTx;
 
-extern xQueueHandle         xRs485Rec;
-extern xQueueHandle         xRs485Tx;
+extern xQueueHandle           xRs485Rec;
+extern xQueueHandle           xRs485Tx;
+
+extern volatile timeDecoded_t czasRtc;
 
 #endif

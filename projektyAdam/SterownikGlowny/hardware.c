@@ -7,16 +7,16 @@ void hardwareInit(void)
 {
   //DDRA = 0x00;  //External Memory
   DDRB = 0xF7;
-  PORTB = 0xF1;
+  PORTB = 0xD1;
   /*
    0 - Sl_RST
    1 - SCK
    2 - MOSI
    3 - MISO
    4 - External SPI ASR 4
-   5 - External SPI ASR 5
-   6 - External SPI ASR 6
-   7 - External SPI ASR 7
+   5 - External SPI ASR 5 (DS1305)     0 - off; 1 - on 
+   6 - External SPI ASR 6 (MCP3008)    0 - on;  1 - off
+   7 - External SPI ASR 7 (MPC23S17)   0 - on;  1 - off
   */
   
   //DDRC = 0x00;  //External Memory
@@ -186,12 +186,29 @@ void disableSpiMPC3008(void)
   
 }
 
+//#define DS_SPCR_OR_MASK            (1<<SPR1)
+#define DS_SPCR_OR_MASK ((1<<CPHA)|(1<<SPR0))
+//#define DS_SPCR_OR_MASK (1<<CPHA)
 void enableSpiDs1305(void)
 {
-  
+  SPCR |= DS_SPCR_OR_MASK;
+//spiSetCPHA();
+#if DS1305_SPI_CS_EN_MASK_OR != 0
+  DS1305_SPI_CS_PORT |= DS1305_SPI_CS_EN_MASK_OR;
+#endif
+#if DS1305_SPI_CS_EN_MASK_AND != 0xFF
+  DS1305_SPI_CS_PORT &= DS1305_SPI_CS_EN_MASK_AND;
+#endif
 }
 
 void disableSpiDs1305(void)
 {
-  
+  SPCR &= ~DS_SPCR_OR_MASK;
+//  spiClearCPHA();
+#if DS1305_SPI_CS_EN_MASK_OR != 0
+  DS1305_SPI_CS_PORT &= (~DS1305_SPI_CS_EN_MASK_OR);
+#endif
+#if DS1305_SPI_CS_EN_MASK_AND != 0xFF
+  DS1305_SPI_CS_PORT |= (~DS1305_SPI_CS_EN_MASK_AND);
+#endif  
 }

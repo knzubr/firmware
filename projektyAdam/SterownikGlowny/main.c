@@ -135,6 +135,7 @@ portSHORT main( void )
   
   spiInit(disableAllSpiDevices);
   MPC23S17_init(spiSend, enableSpiMPC23S17, disableSpiMPC23S17);
+  Ds1305_init(spiSend, enableSpiDs1305, disableSpiDs1305); 
   
   xSerialPortInitMinimal();
   

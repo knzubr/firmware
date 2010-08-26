@@ -19,19 +19,10 @@ xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Bl
  */
 void    spiInit( void (*disableAllSpiDevicesFun)(void));
 
-/**
- * Ustawia tryb pracy magistrali SPI
- * Różne urządzenia mogą pracować z różną szybkością
- * @param mode  - tryb pracy SPI
- */
-void    setSpiMode(uint8_t mode);
-
-/**
- * Ustawia szybkość magistrali SPI
- * Różne urządzenia mogą pracować z różną szybkością
- * @param speed  - tryb pracy SPI
- */
-void    setSpiSpeed(uint8_t speed);
+void spiSetCPHA(void);
+void spiClearCPHA(void);
+void spiSetCPOL(void);
+void spiClearCPOL(void);
 
 /**
  * Wyślij do magistrali SPI. Sotosowana jest blokada wirująca. 
