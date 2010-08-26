@@ -58,6 +58,7 @@ protRs485.c \
 vty.c \
 $(LIB_DIR)/spi.c \
 $(LIB_DIR)/mpc23s17.c \
+$(LIB_DIR)/mcp3008.c \
 $(LIB_DIR)/ds1305.c \
 $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \

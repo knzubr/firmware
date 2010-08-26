@@ -173,17 +173,29 @@ void disableSpiMPC23S17(void)
 #if MCP23S17_SPI_CS_EN_MASK_AND != 0xFF
   MPC23S17_SPI_CS_PORT |= (~MPC23S17_SPI_CS_EN_MASK_AND);
 #endif
-
 }
 
-void enableSpiMPC3008(void)
+#define MCP3008_SPCR_OR_MASK ((1<<SPR1)|(1<<SPR0))
+void enableSpiMCP3008(void)
 {
-  
+  SPCR |= MCP3008_SPCR_OR_MASK;
+#if MCP3008_SPI_CS_EN_MASK_OR != 0
+  MCP3008_SPI_CS_PORT |= MCP3008_SPI_CS_EN_MASK_OR;
+#endif
+#if MCP3008_SPI_CS_EN_MASK_AND != 0xFF
+  MCP3008_SPI_CS_PORT &= MCP3008_SPI_CS_EN_MASK_AND;
+#endif  
 }
 
-void disableSpiMPC3008(void)
+void disableSpiMCP3008(void)
 {
-  
+  SPCR &= ~MCP3008_SPCR_OR_MASK;
+  #if MCP3008_SPI_CS_EN_MASK_OR != 0
+  MCP3008_SPI_CS_PORT &= (~MCP3008_SPI_CS_EN_MASK_OR);
+#endif
+#if MCP3008_SPI_CS_EN_MASK_AND != 0xFF
+  MCP3008_SPI_CS_PORT |= (~MCP3008_SPI_CS_EN_MASK_AND);
+#endif
 }
 
 //#define DS_SPCR_OR_MASK            (1<<SPR1)
