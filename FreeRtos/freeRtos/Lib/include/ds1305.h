@@ -18,11 +18,9 @@
 #ifndef DS1305_H
 #define DS1305_H
 
-#define DS1305_CS 2
-
 #include <inttypes.h>
-#include "main.h"
 #include "spi.h"
+#include "hardwareConfig.h"
 
 
 // functions
@@ -132,8 +130,26 @@ void setTimeDecoded  (timeDecoded_t *time);
 void setTime         (time_t        *time);
 #endif /* USE_DECODED_TIME_STRUCT */
 
-int8_t writeMem      (uint8_t addr, uint8_t length, uint8_t *data);
-int8_t readMem       (uint8_t addr, uint8_t length, uint8_t *data);
+/**
+ * Uruchamia kwarc, wyłącza blokadę przed zapisem do pamięci
+ */
+void ds1305start(void);
+
+/**
+ * Zapisuje do pamięci nieulotnej układu RTC.
+ * @param addr   - adres pierwszej komórki do zapisu (0-95)
+ * @param length - liczba bajtów do zapisu
+ * @param *data  - wskaźnik do tablicy z bajtami do zapisu
+ */
+uint8_t ds1305writeMem     (uint8_t addr, uint8_t length, uint8_t *data);
+
+/**
+ * Odczytuje z pamięci nieulotnej układu RTC.
+ * @param addr   - adres pierwszej komórki do odczytu (0-95)
+ * @param length - liczba bajtów do odczytu
+ * @param *data  - wskaźnik do tablicy, w której zostaną zapisane odczytane bajty 
+ */
+uint8_t ds1305readMem      (uint8_t addr, uint8_t length, uint8_t *data);
 
 #endif
 //@}

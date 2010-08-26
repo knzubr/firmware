@@ -24,14 +24,24 @@ void spiInit(void (*disableAllSpiDevicesFun)(void))
   //mode 0,0
 }
 
-void    setSpiMode(uint8_t mode)
+void spiSetCPHA(void)
 {
-  
+  SPCR |= (1<<CPHA);
 }
 
-void    setSpiSpeed(uint8_t speed)
+void spiClearCPHA(void)
 {
-  
+  SPCR &= ~(1<<CPHA);
+}
+
+void spiSetCPOL(void)
+{
+  SPCR |= (1<<CPOL);
+}
+
+void spiClearCPOL(void)
+{
+  SPCR &= ~(1<<CPOL);
 }
 
 void spiTake(void)

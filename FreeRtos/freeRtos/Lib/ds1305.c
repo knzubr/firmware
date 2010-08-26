@@ -29,9 +29,20 @@ void readTimeBCD(timeBCD_t *time)
   spiTake();
   DS1305_global.spiEnableDS1305();
   
+  uint8_t *ptr = (uint8_t *)(time);
+  uint8_t i;
   
+//  spiSetCPHA();
+  DS1305_global.spiSend(0x00);
+//  spiSetCPHA();
+  for (i=0; i<sizeof(timeBCD_t); i++)
+  {
+    *ptr = DS1305_global.spiSend(i);
+    ptr++;
+  }  
   DS1305_global.spiDisableDS1305();  
   spiGive();
+//  spiClearCPHA();
 }
 
 #if USE_DECODED_TIME_STRUCT
@@ -51,8 +62,18 @@ void setTimeBCD(timeBCD_t *time)
   spiTake();
   DS1305_global.spiEnableDS1305();
   
+//  spiSetCPHA();
+  uint8_t *ptr = (uint8_t *)(time);
+  uint8_t i;
+  DS1305_global.spiSend(0x80);
+  for (i=0; i<sizeof(timeBCD_t); i++)
+  {
+    DS1305_global.spiSend(*ptr);
+    ptr++;
+  }  
   
   DS1305_global.spiDisableDS1305();  
+//  spiClearCPHA();
   spiGive();
 }
 
@@ -67,23 +88,67 @@ void setTime(time_t *time)
 }
 #endif /* USE_DECODED_TIME_STRUCT */
 
-int8_t writeMem      (uint8_t addr, uint8_t length, uint8_t *data)
-{
+void ds1305start(void)
+{  
   spiTake();
+//  spiSetCPHA();
   DS1305_global.spiEnableDS1305();
-  
+
+  DS1305_global.spiSend(0x8F);
+  DS1305_global.spiSend(0x00);
   
   DS1305_global.spiDisableDS1305();  
+//  spiClearCPHA();
   spiGive();
-  return -2;
+  return 0;
 }
-int8_t readMem       (uint8_t addr, uint8_t length, uint8_t *data)
+
+
+uint8_t ds1305writeMem      (uint8_t addr, uint8_t length, uint8_t *data)
 {
+  if (addr > 95)
+    return 1;
+  if (addr + length > 95)
+    return 2;
+
+  addr += 0xA0;
+  
   spiTake();
   DS1305_global.spiEnableDS1305();
-  
+
+  DS1305_global.spiSend(addr);
+  while (length > 0)
+  {
+    DS1305_global.spiSend(*data);
+    data++;
+    length--;
+  }
   
   DS1305_global.spiDisableDS1305();  
   spiGive();
-  return -2;
+  return 0;
+}
+uint8_t ds1305readMem       (uint8_t addr, uint8_t length, uint8_t *data)
+{
+  if (addr >95)
+    return 1;
+  if (addr + length > 95)
+    return 2;
+  
+  addr += 0x20;
+  
+  spiTake();
+  DS1305_global.spiEnableDS1305();
+
+  DS1305_global.spiSend(addr);
+  while (length > 0)
+  {
+    *data = DS1305_global.spiSend(0);
+    data++;
+    length--;
+  }
+  
+  DS1305_global.spiDisableDS1305();  
+  spiGive();
+  return 0;
 }

@@ -4,6 +4,7 @@
 #include "protRs485.h"
 #include "protocol1.h"
 #include "mpc23s17.h"
+#include "ds1305.h"
 
 static void helpFunction           (cmdState_t *state);
 static void statusFunction         (cmdState_t *state);
@@ -24,6 +25,8 @@ static void czytajRamPlikFunction  (cmdState_t *state);
 
 static void ustawPortExtAFunction  (cmdState_t *state);
 
+static void pokazCzasFunction      (cmdState_t *state);
+static void ustawCzasFunction      (cmdState_t *state);
 
 #ifdef testZewPamiec
 static void testPamZewFunction     (cmdState_t *state);
@@ -63,6 +66,8 @@ void VtyInit(void)
   cmdlineAddCommand("podnies", podniesFunction);
   cmdlineAddCommand("opusc",   opuscFunction);
   cmdlineAddCommand("upa",     ustawPortExtAFunction);
+  cmdlineAddCommand("czas",    pokazCzasFunction);
+  cmdlineAddCommand("uczas",   ustawCzasFunction);
 }
 
 #define odczyt(ZNAK, TIMEOUT) xQueueReceive(xVtyRec, (ZNAK), (TIMEOUT))
@@ -74,6 +79,55 @@ static void statusFunction(cmdState_t *state)
     fprintf(&state->myStdInOut, "Ostatni blad: %d (%d, %d)\r\n", cmdErrno, err1, err2);
   uint8_t miejsce = ramDyskLiczbaWolnychKlastrow();
   fprintf(&state->myStdInOut, "Miejsce w ram dysku %d/%d\r\n", miejsce,  L_KLASTROW);
+}
+
+static void pokazCzasFunction(cmdState_t *state)
+{
+  readTimeDecoded(&czasRtc);
+  uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
+  uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
+  uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
+  
+  
+  fprintf(&state->myStdInOut, "Aktualny czas %d:%d:%d\r\n", godzina, minuta, sekunda);
+}
+
+static void ustawCzasFunction(cmdState_t *state)
+{
+  uint8_t godzina =  cmdlineGetArgInt(1, state);
+  uint8_t minuta =   cmdlineGetArgInt(2, state);
+  uint8_t sekunda =  cmdlineGetArgInt(3, state);
+  
+  ds1305start();
+
+  uint8_t cDzies = godzina/10;
+  uint8_t cJedn = godzina - cDzies*10;
+  czasRtc.hours.syst24.cDzies = cDzies;
+  czasRtc.hours.syst24.cJedn  = cJedn;
+  
+  cDzies = minuta/10;
+  cJedn = minuta - cDzies * 10;
+  czasRtc.minutes.cDzies = cDzies;
+  czasRtc.minutes.cJedn  = cJedn;
+  
+  cDzies = sekunda/10;
+  cJedn  = sekunda - cDzies * 10;
+  czasRtc.seconds.cDzies = cDzies;
+  czasRtc.seconds.cJedn  = cJedn;
+  
+  setTimeDecoded(&czasRtc);
+  
+  
+//  uint8_t tab[8]= {1, 2, 3, 4, 5, 6, 7, 8};
+  
+//  uint8_t result;
+//  result = ds1305writeMem(20, 8, tab);
+//  if (result != 0)
+//    fprintf(&state->myStdInOut, "Nieudana proba zapisu: %d\r\n", result);
+//  result = ds1305readMem (20, 8, tab);
+//  if (result != 0)
+//    fprintf(&state->myStdInOut, "Nieudana proba odczytu: %d\r\n", result);
+//  fprintf(&state->myStdInOut, "tab[0] %d, tab[4] %d, tab[7] %d\r\n", tab[0], tab[4], tab[7]);  
 }
 
 static void helpFunction(cmdState_t *state)
