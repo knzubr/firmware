@@ -45,6 +45,7 @@
 #include "main.h"
 #include "task.h"
 //#include "enc_task.h"
+#include "sensors_task.h"
 #include "protRs485.h"
 #include "serial.h"
 #include "mpc23s17.h"
@@ -121,7 +122,8 @@ void vTaskMag(void *pvParameters)
 
 xTaskHandle xHandleVTY;
 xTaskHandle xHandleRs485;
-xTaskHandle xHandleEnc;
+//xTaskHandle xHandleEnc;
+xTaskHandle xHandleSensors;
 
 portSHORT main( void )
 {
@@ -143,10 +145,12 @@ portSHORT main( void )
   VtyInit();
   cmdState_t *CLIState = cmdStateCreate(64, VtyPutChar);
 
-  xTaskCreate(vTaskVTY, NULL /*"VTY"*/, STACK_SIZE_VTY, (void *)(CLIState), 1, &xHandleVTY);
-//  xTaskCreate(encTask,  NULL /*"ENC"*/, STACK_SIZE_ENC, (void *)(CLIState), 1, &xHandleEnc);
-  
-//  xTaskCreate(vTaskMag, "Rs485", STACK_SIZE_VTY, NULL, tskIDLE_PRIORITY, &xHandleRs485);
+  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIState), 1, &xHandleVTY);
+  xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,               1, &xHandleSensors);
+
+//xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     (void *)(CLIState), 1, &xHandleEnc);
+//xTaskCreate(vTaskMag, "Rs485", STACK_SIZE_VTY, NULL, tskIDLE_PRIORITY, &xHandleRs485);
+
   vTaskStartScheduler();
   return 0;
 }

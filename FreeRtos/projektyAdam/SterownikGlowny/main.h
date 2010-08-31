@@ -28,6 +28,7 @@
 #include "mpc23s17.h"
 #include "mcp3008.h"
 #include "ds1305.h"
+#include "sensors_task.h"
 
 #define mainCHECK_TASK_PRIORITY 1
 #define mainCHECK_PERIOD 1
@@ -38,6 +39,7 @@
 #define STACK_SIZE_VTY          1000
 
 #define STACK_SIZE_ENC           500
+#define STACK_SIZE_SENSORS       500
 
 
 #define MAKS_L_STER_ROLET       5

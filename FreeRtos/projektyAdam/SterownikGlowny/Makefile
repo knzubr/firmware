@@ -55,6 +55,7 @@ main.c \
 serial.c \
 hardware.c \
 protRs485.c \
+sensors_task.c \
 vty.c \
 $(LIB_DIR)/spi.c \
 $(LIB_DIR)/ramdysk.c \
