@@ -1,0 +1,5 @@
+PROJECT(serwerDostepowy)
+
+ADD_EXECUTABLE(serwerDostepowy main.c hardware.c protRs485.c serial.c vty.c sensors_task.c enc_task.c diskio.c rtc.c)
+add_library(headers            main.h hardwareConfig.h hardware.h protRs485.h serial.h vty.h sensors_task.h enc_task.h diskio.h rtc.h ../protocol1.h ffconf.h )
+add_library(rtosLibs           ../../freeRtos/Lib/spi.c ../../freeRtos/Lib/include/spi.h ../../freeRtos/Lib/mpc23s17.c ../../freeRtos/Lib/mcp3008.c ../../freeRtos/Lib/include/mcp3008.h ../../freeRtos/Lib/include/mpc23s17.h ../../freeRtos/Lib/ds1305.c ../../freeRtos/Lib/include/ds1305.h ../../freeRtos/Lib/enc28j60.c ../../freeRtos/Lib/include/enc28j60.h ../../freeRtos/Lib/ip_arp_udp_tcp.c ../../freeRtos/Lib/include/ip_arp_udp_tcp.h ../../freeRtos/Lib/xmodem.c ../../freeRtos/Lib/include/xmodem.h ../../freeRtos/Lib/vt100.c ../../freeRtos/Lib/include/vt100.h ../../freeRtos/Lib/cmdline.c ../../freeRtos/Lib/include/cmdline.h ../../freeRtos/Lib/ramdysk.c ../../freeRtos/Lib/include/ramdysk.h ../../freeRtos/Lib/ff.c)
