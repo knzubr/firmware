@@ -1,0 +1,85 @@
+   1               		.file	"sensors_task.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  12               		.text
+  13               	.Ltext0:
+ 211               	.global	sensorsTask
+ 213               	sensorsTask:
+ 214               		.stabd	46,0,0
+   0:sensors_task.c **** /*********************************************
+   1:sensors_task.c ****  * vim:sw=8:ts=8:si:et
+   2:sensors_task.c ****  * To use the above modeline in vim you must have "set modeline" in your .vimrc
+   3:sensors_task.c ****  * Author: Guido Socher
+   4:sensors_task.c ****  * Copyright: GPL V2
+   5:sensors_task.c ****  * See http://www.gnu.org/licenses/gpl.html
+   6:sensors_task.c ****  *
+   7:sensors_task.c ****  * Ethernet remote device and sensor
+   8:sensors_task.c ****  * UDP and HTTP interface
+   9:sensors_task.c ****         url looks like this http://baseurl/password/command
+  10:sensors_task.c ****         or http://baseurl/password/
+  11:sensors_task.c ****  *
+  12:sensors_task.c ****  * Chip type           : Atmega88 or Atmega168 or Atmega328 with ENC28J60
+  13:sensors_task.c ****  * Note: there is a version number in the text. Search for tuxgraphics
+  14:sensors_task.c ****  *********************************************/
+  15:sensors_task.c **** #include <avr/io.h>
+  16:sensors_task.c **** #include <stdlib.h>
+  17:sensors_task.c **** #include <string.h>
+  18:sensors_task.c **** #include <stdio.h>
+  19:sensors_task.c **** #include <avr/pgmspace.h>
+  20:sensors_task.c **** #include "sensors_task.h"
+  21:sensors_task.c **** #include "main.h"
+  22:sensors_task.c **** 
+  23:sensors_task.c **** 
+  24:sensors_task.c **** void sensorsTask(void* pvParameters)
+  25:sensors_task.c **** {
+ 216               	.LM0:
+ 217               	.LFBB1:
+ 218               	/* prologue: function */
+ 219               	/* frame size = 0 */
+ 220               	.L2:
+  26:sensors_task.c ****   pvParameters = NULL;
+  27:sensors_task.c ****   for( ; ; )
+  28:sensors_task.c ****   {
+  29:sensors_task.c ****     vTaskDelay(10);
+ 222               	.LM1:
+ 223 0000 8AE0      		ldi r24,lo8(10)
+ 224 0002 90E0      		ldi r25,hi8(10)
+ 225 0004 0E94 0000 		call vTaskDelay
+ 226 0008 00C0      		rjmp .L2
+ 228               	.Lscope1:
+ 230               		.stabd	78,0,0
+ 231               		.comm xSemaphoreSpiSS,2,1
+ 232               		.comm xSpiRx,2,1
+ 233               		.comm DS1305_global,6,1
+ 234               		.comm czasRtc,7,1
+ 235               		.comm klastry,128,1
+ 236               		.comm MPC_global,6,1
+ 237               		.comm MCP3008_global,6,1
+ 246               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 sensors_task.c
+     /tmp/ccRLTc0e.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/ccRLTc0e.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/ccRLTc0e.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/ccRLTc0e.s:5      *ABS*:0000000000000034 __CCP__
+     /tmp/ccRLTc0e.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccRLTc0e.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccRLTc0e.s:213    .text:0000000000000000 sensorsTask
+                            *COM*:0000000000000002 xSemaphoreSpiSS
+                            *COM*:0000000000000002 xSpiRx
+                            *COM*:0000000000000006 DS1305_global
+                            *COM*:0000000000000007 czasRtc
+                            *COM*:0000000000000080 klastry
+                            *COM*:0000000000000006 MPC_global
+                            *COM*:0000000000000006 MCP3008_global
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+vTaskDelay
