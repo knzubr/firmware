@@ -14,9 +14,9 @@
 #define MYUDPPORT 1200
 
 #define BUFFER_SIZE 550
-uint8_t *buf;
 
-
+uint8_t *buf;  //TODO naprawić malloc
+//uint8_t buf2[500];
 
 uint8_t verify_password(char *str);
 
@@ -37,6 +37,7 @@ uint16_t print_webpage(uint8_t *buf,uint8_t on_off);
 void encTask(void *pvParameters);
 
 //! initialize enc28j60
-void enc_init(void);
+void enc28j60chipInit(void);
 
+extern struct Enc28j60_config Enc28j60_global;
 #endif

@@ -15,109 +15,94 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "enc28j60.h"
-#include "spiStd.h"
+#include "spi.h"
+#include <stdio.h>
+#include "hardwareConfig.h"
 
 static uint8_t Enc28j60Bank;
 static uint16_t gNextPacketPtr;
-#define ENC28J60_CONTROL_CS_PORT   PORTE
-#define ENC28J60_CONTROL_CS_DDR    DDRE
-#define ENC28J60_CONTROL_CS        3
 
-#define ENC28J60_CONTROL_PORT   PORTB
-#define ENC28J60_CONTROL_DDR    DDRB
-#define ENC28J60_CONTROL_SO     PORTB3
-#define ENC28J60_CONTROL_SI     PORTB2
-#define ENC28J60_CONTROL_SCK    PORTB1
-
-//
-#define waitspi() while(!(SPSR&(1<<SPIF)))
+void Enc28j60Mem_init(uint8_t (*spiSendFunc)(uint8_t), uint8_t (*spiSendFuncNb)(uint8_t), void (*spiEnableEnc28j60Func)(void), void (*spiDisableEnc28j60Func)(void), uint16_t buffersize)
+{
+  Enc28j60_global.spiSend            = spiSendFunc;
+  Enc28j60_global.spiSendNB          = spiSendFuncNb;
+  Enc28j60_global.spiEnableEnc28j60  = spiEnableEnc28j60Func;
+  Enc28j60_global.spiDisableEnc28j60 = spiDisableEnc28j60Func;
+  
+  Enc28j60_global.buf                = ENC28J60BUF_ADDR;
+  Enc28j60_global.bufferSize         = ENC28J60BUF_SIZE;
+  memset(Enc28j60_global.buf, 0, Enc28j60_global.bufferSize);
+}
 
 uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
 {
-//  uint8_t result;
-  enableEnc();
+  uint8_t result;
+  spiTake();
+  Enc28j60_global.spiEnableEnc28j60();
   
-/*  
   // issue read command
+  Enc28j60_global.spiSend(op | (address & ADDR_MASK));
 
-  spiSend (op | (address & ADDR_MASK)); //SPDR = op | (address & ADDR_MASK);  waitspi();
   // read data
-  result = spiSend(0x00);               //SPDR = 0x00; waitspi();
+  result = Enc28j60_global.spiSend(0x00);
+
   // do dummy read if needed (for mac and mii, see datasheet page 29)
   if(address & 0x80)
   {
-    result = spiSend(0x00);             // SPDR = 0x00; waitspi();
+    result = Enc28j60_global.spiSend(0x00);
   }
-  // release CS
-*/
-  // issue read command
-  SPDR = op | (address & ADDR_MASK);
-  waitspi();
-  // read data
-  SPDR = 0x00;
-  waitspi();
-//  result = SPDR;
-  // do dummy read if needed (for mac and mii, see datasheet page 29)
-  if(address & 0x80)
-  {
-    SPDR = 0x00;
-    waitspi();
-//    result = SPDR;
-  }
-  // release CS
 
-  disableAllDevices();
-  //return result;                        // 
-  return(SPDR);
+  Enc28j60_global.spiDisableEnc28j60();
+  spiGive();
+  return result; 
 }
 
 void enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data)
 {
-  enableEnc();
+  spiTake();
+  Enc28j60_global.spiEnableEnc28j60();
   // issue write command
   //spiSend(op | (address & ADDR_MASK));
-  SPDR = op | (address & ADDR_MASK);  waitspi();
-  // write data
-  //spiSend(data);
-  SPDR = data;  waitspi();
-  disableAllDevices();
+  Enc28j60_global.spiSend(op | (address & ADDR_MASK));
+  Enc28j60_global.spiSend(data);
+  Enc28j60_global.spiDisableEnc28j60();
+  spiGive();
 }
 
 void enc28j60ReadBuffer(uint16_t len, uint8_t* data)
 {
-  enableEnc();
+  spiTake();
+  Enc28j60_global.spiEnableEnc28j60();
   uint8_t tmp;
   // issue read command
   //spiSend(ENC28J60_READ_BUF_MEM);
-  SPDR = ENC28J60_READ_BUF_MEM;  waitspi();
+  Enc28j60_global.spiSend(ENC28J60_READ_BUF_MEM);
   while(len)
   {
     len--;
-    //tmp = spiSend(0x00);                // read data 
-    SPDR = 0x00; waitspi();
-    //*data = tmp;
-    *data = SPDR;
+    *data = Enc28j60_global.spiSend(0x00);
     data++;
   }
   *data='\0';
-  disableAllDevices();
+  Enc28j60_global.spiDisableEnc28j60();
+  spiGive();
 }
 
 void enc28j60WriteBuffer(uint16_t len, uint8_t* data)
 {
-  enableEnc();
+  spiTake();
+  Enc28j60_global.spiEnableEnc28j60();
   // issue write command
   //spiSend(ENC28J60_WRITE_BUF_MEM);      // 
-  SPDR = ENC28J60_WRITE_BUF_MEM;  waitspi();
+  Enc28j60_global.spiSend(ENC28J60_WRITE_BUF_MEM);
   while(len)
   {
     len--;
-    // write data
-    //spiSend(*data);                     // 
-    SPDR = *data; waitspi();
+    Enc28j60_global.spiSend(*data);       // write data
     data++;
   }
-  disableAllDevices();
+  Enc28j60_global.spiDisableEnc28j60();  
+  spiGive();
 }
 
 void enc28j60SetBank(uint8_t address)
@@ -190,7 +175,6 @@ void enc28j60clkout(uint8_t clk)
 
 void enc28j60Init(uint8_t* macaddr)
 {
-  //disableAllDevices(); // ss=0
   // perform system reset
   
   //TODO reset PE2

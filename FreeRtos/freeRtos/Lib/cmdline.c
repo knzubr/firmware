@@ -45,17 +45,25 @@ char PROGMEM CmdlinePrompt[]      = "DomOs>";
 char PROGMEM CmdlineNotice[]      = "cmdline: ";
 char PROGMEM CmdlineCmdNotFound[] = "# nk";
 
-cmdState_t *cmdStateCreate(uint8_t bufferSize, int (*output_func)(char c, FILE *stream))
+void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream))
 {
-  cmdState_t *newCmdState    = malloc(sizeof(cmdState_t));
-  newCmdState->CmdlineBuffer = malloc(bufferSize);
-  newCmdState->bufferSize    = bufferSize;
-  cmdStateClear(newCmdState);
+  memset(state, 0, sizeof(cmdState_t));
+  memset(buffPtr, 0, bufferTotalSize);
+    
+  state->CmdlineBuffer = buffPtr;
+  state->bufferMaxSize    = (uint8_t)(bufferTotalSize / CMD_STATE_HISTORY);
 
-  fdev_setup_stream(&newCmdState->myStdInOut, output_func, NULL, _FDEV_SETUP_WRITE);
-  fdev_set_udata(&newCmdState->myStdInOut, newCmdState);
+  uint8_t i;
+  char *tmpPtr = buffPtr;
+  for (i=0; i < CMD_STATE_HISTORY; i++)
+  {
+    state->CmdlineHistory[i] = tmpPtr;
+    tmpPtr += state->bufferMaxSize;
+  }
   
-  return newCmdState;
+  //cmdStateClear(newCmdState);
+  fdev_setup_stream(&state->myStdInOut, output_func, NULL, _FDEV_SETUP_WRITE);
+  fdev_set_udata(&state->myStdInOut, state);
 }
 
 void cmdStateClear(cmdState_t *state)
@@ -97,7 +105,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
   if(state->CmdlineInputVT100State == 2)
   {
     // we have already received ESC and [
-    // now process the vt100 code
+    // now process the vt100 codeCmdlineExcBuffer
     switch(c)
     {
     case VT100_ARROWUP:
@@ -164,10 +172,10 @@ void cmdlineInputFunc(char c, cmdState_t *state)
 
   // Regular handling
   //Protection against buffer Overflow
-  if (state->CmdlineBufferLength >= state->bufferSize)
+  if (state->CmdlineBufferLength >= state->bufferMaxSize)
   {
     state->CmdlineBufferLength--;
-    for (i=1; i < state->bufferSize; i++)
+    for (i=1; i < state->bufferMaxSize; i++)
     {
       state->CmdlineBuffer[i-1] = state->CmdlineBuffer[i];
     }
@@ -175,7 +183,6 @@ void cmdlineInputFunc(char c, cmdState_t *state)
   
   if( (c >= 0x20) && (c < 0x7F) )
   {
-    //TODO zrobić ograniczenie zabezpieczające przed przepełnieniem bufora
     // character is printable
     // is this a simple append
     if(state->CmdlineBufferEditPos == state->CmdlineBufferLength)
@@ -198,7 +205,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
       // insert character
       state->CmdlineBuffer[state->CmdlineBufferEditPos++] = c;
       // repaint
-      cmdlineRepaint(state);
+      cmdlineRepaint(state, state->CmdlineBuffer);
       // reposition cursor
       for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
         fputc(ASCII_BS         , &state->myStdInOut);
@@ -246,7 +253,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
         for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
           state->CmdlineBuffer[i] = state->CmdlineBuffer[i+1];
         // repaint
-        cmdlineRepaint(state);
+        cmdlineRepaint(state, state->CmdlineBuffer);
         // add space to clear leftover characters
         fputc(' '              , &state->myStdInOut);
         // reposition cursor
@@ -270,9 +277,8 @@ void cmdlineInputFunc(char c, cmdState_t *state)
   }
 }
 
-void cmdlineRepaint(cmdState_t *state)
+void cmdlineRepaint(cmdState_t *state, char *buf)
 {
-  char* ptr;
   uint8_t i;
 
   // carriage return
@@ -281,9 +287,8 @@ void cmdlineRepaint(cmdState_t *state)
   cmdlinePrintPrompt(state);
   // print the new command line buffer
   i = state->CmdlineBufferLength;
-  ptr = state->CmdlineBuffer;
   while(i--) 
-    fputc(*ptr++         , &state->myStdInOut);
+    fputc(*buf++         , &state->myStdInOut);
 }
 
 void cmdlineDoHistory(char action, cmdState_t *state)
@@ -293,18 +298,64 @@ void cmdlineDoHistory(char action, cmdState_t *state)
   case CMDLINE_HISTORY_SAVE:
     // copy CmdlineBuffer to history if not null string
     if( strlen(state->CmdlineBuffer) )
-      strcpy(state->CmdlineHistory[0], state->CmdlineBuffer);
+    {
+      state->historyRdIdx = state->historyWrIdx;
+      state->historyWrIdx++;
+      if (state->historyWrIdx == CMD_STATE_HISTORY)
+      {
+        state->historyWrIdx = 0;
+      }
+      
+      state->CmdlineBuffer = state->CmdlineHistory[state->historyWrIdx];
+      memset(state->CmdlineBuffer, 0, state->bufferMaxSize);
+      state->CmdlineBufferLength  = 0;
+      state->CmdlineBufferEditPos = 0;
+    }
+    else
+    {
+      memset(state->CmdlineBuffer, 0, state->bufferMaxSize);
+      state->CmdlineBufferLength  = 0;
+      state->CmdlineBufferEditPos = 0;
+    }
     break;
   case CMDLINE_HISTORY_PREV:
-    // copy history to current buffer
-    strcpy(state->CmdlineBuffer, state->CmdlineHistory[0]);
+    if (state->historyRdIdx == state->historyWrIdx)
+      break;
+
+    if (state->CmdlineHistory[state->historyRdIdx][0] == 0)
+      break;
+    
+    state->CmdlineBuffer = state->CmdlineHistory[state->historyRdIdx];
+
     // set the buffer position to the end of the line
     state->CmdlineBufferLength = strlen(state->CmdlineBuffer);
     state->CmdlineBufferEditPos = state->CmdlineBufferLength;
+
     // "re-paint" line
-    cmdlineRepaint(state);
+    cmdlineRepaint(state, state->CmdlineBuffer);
+
+    // copy history to current buffer
+    if (state->historyRdIdx == 0)
+      state->historyRdIdx = CMD_STATE_HISTORY;
+    state->historyRdIdx --;
+    
     break;
-  case CMDLINE_HISTORY_NEXT:
+  case CMDLINE_HISTORY_NEXT:      
+    state->historyRdIdx++;
+    if (state->historyRdIdx == CMD_STATE_HISTORY)
+      state->historyRdIdx = 0;
+    
+    if (state->CmdlineHistory[state->historyRdIdx][0] != 0)
+    {
+      state->CmdlineBuffer = state->CmdlineHistory[state->historyRdIdx];
+
+      // set the buffer position to the end of the line
+      state->CmdlineBufferLength = strlen(state->CmdlineBuffer);
+      state->CmdlineBufferEditPos = state->CmdlineBufferLength;
+
+      // "re-paint" line
+      cmdlineRepaint(state, state->CmdlineBuffer);
+    }
     break;
   }
 }
@@ -314,12 +365,14 @@ void cmdlineProcessInputString(cmdState_t *state)
   uint8_t cmdIndex;
   uint8_t i=0;
 
+  state->CmdlineExcBuffer = state->CmdlineBuffer;
+
   // save command in history
   cmdlineDoHistory(CMDLINE_HISTORY_SAVE, state);
 
   // find the end of the command (excluding arguments)
   // find first whitespace character in CmdlineBuffer
-  while( !((state->CmdlineBuffer[i] == ' ') || (state->CmdlineBuffer[i] == 0)) ) i++;
+  while( !((state->CmdlineExcBuffer[i] == ' ') || (state->CmdlineExcBuffer[i] == 0)) ) i++;
 
   if(!i)
   {
@@ -333,7 +386,7 @@ void cmdlineProcessInputString(cmdState_t *state)
   // search command list for match with entered command
   for(cmdIndex=0; cmdIndex< CLCommands.CmdlineNumCommands; cmdIndex++)
   {
-    if( !strncmp(CLCommands.CmdlineCommandList[cmdIndex], state->CmdlineBuffer, i) )
+    if( !strncmp(CLCommands.CmdlineCommandList[cmdIndex], state->CmdlineExcBuffer, i) )
     {
       // user-entered command matched a command in the list (database)
       // run the corresponding function
@@ -411,18 +464,18 @@ char* cmdlineGetArgStr(uint8_t argnum, cmdState_t *state)
   uint8_t arg;
   
   // find the first non-whitespace character
-  while( (state->CmdlineBuffer[idx] != 0) && (state->CmdlineBuffer[idx] == ' ')) idx++;
+  while( (state->CmdlineExcBuffer[idx] != 0) && (state->CmdlineExcBuffer[idx] == ' ')) idx++;
   
   // we are at the first argument
   for(arg=0; arg<argnum; arg++)
   {
     // find the next whitespace character
-    while( (state->CmdlineBuffer[idx] != 0) && (state->CmdlineBuffer[idx] != ' ')) idx++;
+    while( (state->CmdlineExcBuffer[idx] != 0) && (state->CmdlineExcBuffer[idx] != ' ')) idx++;
     // find the first non-whitespace character
-    while( (state->CmdlineBuffer[idx] != 0) && (state->CmdlineBuffer[idx] == ' ')) idx++;
+    while( (state->CmdlineExcBuffer[idx] != 0) && (state->CmdlineExcBuffer[idx] == ' ')) idx++;
   }
   // we are at the requested argument or the end of the buffer
-  return &state->CmdlineBuffer[idx];
+  return &state->CmdlineExcBuffer[idx];
 }
 
 // return argument [argnum] interpreted as a decimal integer
