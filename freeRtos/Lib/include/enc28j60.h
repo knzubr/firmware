@@ -19,8 +19,12 @@
 #ifndef ENC28J60_H
 #define ENC28J60_H
 #include <inttypes.h>
+#include <stdio.h>
+#include <string.h>
 #include "main.h"
-#include "spiStd.h"
+#include "spi.h"
+#include "hardwareConfig.h"
+
 
 // ENC28J60 Control Registers
 // Control register definitions are a combination of address,
@@ -260,8 +264,21 @@
 //#define MAX_FRAMELEN     600
 
 
+struct Enc28j60_config
+{
+  uint8_t  (*spiSend)(uint8_t data);       /// wskaźnik do funkcji, która wysyła i odbiera dane przez magistralę SPI w sposób blokujący
+  uint8_t  (*spiSendNB)(uint8_t data);     /// wskaźnik do funkcji, która wysyła i odbiera dane przez magistralę SPI bez blokowania
+  void     (*spiEnableEnc28j60)(void);     /// wskaźnik do funkcji, która podłącza urządzenie do magistrali SPI
+  void     (*spiDisableEnc28j60)(void);    /// wskaźnik do funkcji, która odłącza urządzenie od magistrali SPI
+  
+  uint16_t bufferSize;                     /// roxmisr tablicy pamięci z buforem
+  uint8_t  *buf;                           /// tablica pamięci do buforowania danych
+};
+struct Enc28j60_config Enc28j60_global;
 //TODO Adam: add in code doc
 // functions
+
+void     Enc28j60Mem_init(uint8_t (*spiSendFunc)(uint8_t), uint8_t (*spiSendFuncNb)(uint8_t), void (*spiEnableEnc28j60Func)(void), void (*spiDisableEnc28j60Func)(void), uint16_t buffersize);
 
 uint16_t enc28j60PhyReadH(uint8_t address);
 uint8_t  enc28j60ReadOp(uint8_t op, uint8_t address);

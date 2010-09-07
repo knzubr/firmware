@@ -25,6 +25,7 @@
 //#include "avr_compat.h"
 #include "net.h"
 #include "main.h"
+#include "hardware.h"
 
 // the password string (only the first 5 char checked), (only a-z,0-9,_ characters):
 char password[]="secret"; // must not be longer than 9 char
@@ -122,9 +123,8 @@ uint16_t print_webpage ( uint8_t *buf1,uint8_t on_off )
     return ( plen );
 }
 
-void enc_init ( void )
+void enc28j60chipInit ( void )
 {
-    buf = malloc(BUFFER_SIZE);
     vTaskDelay          (5);
     enc28j60Init        (mymac);
 //  enc28j60clkout      (2);     // change clkout from 6.25MHz to 12.5MHz
@@ -132,7 +132,6 @@ void enc_init ( void )
     enc28j60PhyWrite    (PHLCON, 0x476);
     vTaskDelay          (2);
     init_ip_arp_udp_tcp (mymac, myip, MYWWWPORT);
-
 }
 
 
@@ -148,11 +147,17 @@ void encTask ( void *pvParameters )
     char str[30];
     char cmdval;
 
-    enc_init();
+    buf = Enc28j60_global.buf;
+    enc28j60chipInit();
 
+//     for ( ; ; )
+//     {
+//       vTaskDelay(10);
+//     }
+    
     for ( ; ; )
     {
-        vTaskDelay ( 0 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwolniony po odebrzeniu przerwania od ENC
+        vTaskDelay ( 100 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwolniony po odebrzeniu przerwania od ENC
 
         // get the next new packet:
         plen = enc28j60PacketReceive ( BUFFER_SIZE, buf );

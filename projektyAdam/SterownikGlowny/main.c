@@ -44,11 +44,13 @@
 
 #include "main.h"
 #include "task.h"
-//#include "enc_task.h"
+#include "enc_task.h"
 #include "sensors_task.h"
 #include "protRs485.h"
 #include "serial.h"
 #include "mpc23s17.h"
+#include "mcp3008.h"
+#include "enc28j60.h"
 
 struct sterRolet sterownikiRolet[MAKS_L_STER_ROLET];
 
@@ -121,13 +123,22 @@ void vTaskMag(void *pvParameters)
 }
 
 xTaskHandle xHandleVTY;
-xTaskHandle xHandleRs485;
-//xTaskHandle xHandleEnc;
+//xTaskHandle xHandleRs485;
+xTaskHandle xHandleEnc;
 xTaskHandle xHandleSensors;
+
+void initExternalMem(void)
+{
+  MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
+//  MCUCR |= (_BV(SRE) | _BV(SRW10));          //Włączenie pamięci zewnętrznej
+//  XMCRA |= (_BV(SRW11) | _BV(SRW01)| _BV(SRW00));
+}
+
+cmdState_t CLIState;
 
 portSHORT main( void )
 {
-  MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
+//   
   ramDyskInit();              //Inicjalizacja Ram dysku
 #ifdef ENABLE_RESET_COUNTER
   prvIncrementResetCount();
@@ -139,16 +150,20 @@ portSHORT main( void )
   MPC23S17_init(spiSend, enableSpiMPC23S17, disableSpiMPC23S17);
   MCP3008_init(spiSend, enableSpiMCP3008, disableSpiMCP3008);
   Ds1305_init(spiSend, enableSpiDs1305, disableSpiDs1305); 
-  
+
+
   xSerialPortInitMinimal();
   
   VtyInit();
-  cmdState_t *CLIState = cmdStateCreate(64, VtyPutChar);
 
-  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIState), 1, &xHandleVTY);
-  xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,               1, &xHandleSensors);
+  cmdStateConfigure(&CLIState, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, VtyPutChar);
+  Enc28j60Mem_init(spiSendSpinBlock, spiSend, enableSpiEnc28j60, disableSpiEnc28j60, 550 /*BUFFER_SIZE*/ /*231 OK, 232 FAIL */);
 
-//xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     (void *)(CLIState), 1, &xHandleEnc);
+  
+  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(&CLIState), 1, &xHandleVTY);
+//  xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,               1, &xHandleSensors);
+  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     (void *)(&CLIState), 1, &xHandleEnc);
+  
 //xTaskCreate(vTaskMag, "Rs485", STACK_SIZE_VTY, NULL, tskIDLE_PRIORITY, &xHandleRs485);
 
   vTaskStartScheduler();

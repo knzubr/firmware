@@ -82,6 +82,36 @@ static void statusFunction(cmdState_t *state)
     fprintf(&state->myStdInOut, "Ostatni blad: %d (%d, %d)\r\n", cmdErrno, err1, err2);
   uint8_t miejsce = ramDyskLiczbaWolnychKlastrow();
   fprintf(&state->myStdInOut, "Miejsce w ram dysku %d/%d\r\n", miejsce,  L_KLASTROW);
+  
+  fprintf(&state->myStdInOut, "Adres struktury cli   0x%x\r\n", state);
+  fprintf(&state->myStdInOut, "Adres bufora cli      0x%x\r\n", state->CmdlineBuffer);
+  fprintf(&state->myStdInOut, "Adres bufora enc28j60 0x%x\r\n", Enc28j60_global.buf);
+  
+  uint16_t i;
+  uint8_t *tmp = Enc28j60_global.buf;
+  uint16_t lBladow = 0; 
+  
+  uint16_t *ptr = (uint16_t *)(tmp);
+  ptr--;
+  uint16_t l2 = *ptr;
+  ptr--;
+  uint16_t l1 = *ptr;
+  
+//  for (i=0; i<500; i++)
+//  {
+//    *tmp = (uint8_t)(i);
+//    tmp++;
+//    vTaskDelay(1);
+//  }
+//  tmp = Enc28j60_global.buf;
+//  for (i=0; i<550; i++)
+//  {
+//    if (*tmp =! (uint8_t)(i))
+//      lBladow++;
+//    tmp++;
+//    vTaskDelay(1);
+//  }
+//  fprintf(&state->myStdInOut, "Sterta %d %d\r\n", l1, l2);
 }
 
 static void pokazCzasFunction(cmdState_t *state)

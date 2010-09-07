@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <util/crc16.h>
 #include "ds1305.h"
+#include "enc28j60.h"
 
 // Znaki kontrolne w protokole Xmodem
 #define SOH                     0x01
@@ -36,5 +37,6 @@ extern xQueueHandle           xRs485Rec;
 extern xQueueHandle           xRs485Tx;
 
 extern volatile timeDecoded_t czasRtc;
+extern struct Enc28j60_config Enc28j60_global;
 
 #endif
