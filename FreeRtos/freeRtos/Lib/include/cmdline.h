@@ -22,14 +22,15 @@ typedef struct cmdState cmdState_t;
 typedef void (*CmdlineFuncPtrType)(cmdState_t *state);
 
 
-enum bufferHistory
+enum cmdBufferHistory
 {
-  EMPTY,
-  NOT_COPIED,
-  COPIED
+  NOT_COPIED   = 0,
+  COPIED       = 1
 };
 
 #define CMD_STATE_HISTORY 4
+#define CMD_STATE_HISTORY_MASK 0x03
+
 struct cmdState
 {
   char *CmdlineBuffer;                       /// CLI buffer.
@@ -40,11 +41,9 @@ struct cmdState
   uint8_t CmdlineBufferLength;
   uint8_t CmdlineBufferEditPos;
  
-  uint8_t historyRdIdx;                      /// History read index  (0 - CMD_STATE_HISTORY-1)
-  uint8_t historyWrIdx;                      /// History write index (0 - CMD_STATE_HISTORY-1) 
-  
-  uint8_t historyOffset;  
-  enum bufferHistory bufferHistoryState;
+  uint8_t historyWrIdx;                      /// History write index (0 - CMD_STATE_HISTORY-1)   
+  uint8_t historyDepthIdx;                   /// History depth index. Read idx = (historyWrIdx - historyDepthIdx) & CMD_STATE_HISTORY_MASK
+  enum cmdBufferHistory bufferHistoryState;
     
   uint8_t CmdlineInputVT100State;
   CmdlineFuncPtrType CmdlineExecFunction;
@@ -99,6 +98,11 @@ long cmdlineGetArgInt (uint8_t argnum, cmdState_t *state);
 long cmdlineGetArgHex (uint8_t argnum, cmdState_t *state);
 
 void cmdStateClear(cmdState_t *state);
+
+void cmdHistoryCopy(cmdState_t *state);
+
+void cmdHistoryMove(cmdState_t *state);
+
 
 /**
  * Konfiguruje strukturę do obsługi sesji interpretera poleceń

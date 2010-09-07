@@ -172,7 +172,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
 
   // Regular handling
   //Protection against buffer Overflow
-  if (state->CmdlineBufferLength >= state->bufferMaxSize)
+  if (state->CmdlineBufferLength == state->bufferMaxSize)
   {
     state->CmdlineBufferLength--;
     for (i=1; i < state->bufferMaxSize; i++)
@@ -183,6 +183,8 @@ void cmdlineInputFunc(char c, cmdState_t *state)
   
   if( (c >= 0x20) && (c < 0x7F) )
   {
+    if (state->bufferHistoryState == NOT_COPIED)
+      cmdHistoryCopy(state);
     // character is printable
     // is this a simple append
     if(state->CmdlineBufferEditPos == state->CmdlineBufferLength)
@@ -214,6 +216,9 @@ void cmdlineInputFunc(char c, cmdState_t *state)
   // handle special characters
   else if(c == ASCII_CR)
   {
+    if (state->bufferHistoryState == NOT_COPIED)
+      cmdHistoryMove(state);
+    
     // user pressed [ENTER]
     // echo CR and LF to terminal
     fputc(ASCII_CR         , &state->myStdInOut);
@@ -289,73 +294,101 @@ void cmdlineRepaint(cmdState_t *state, char *buf)
   i = state->CmdlineBufferLength;
   while(i--) 
     fputc(*buf++         , &state->myStdInOut);
+  i = state->bufferMaxSize - state->CmdlineBufferLength;
+  while (i--)
+    fputc(' ', &state->myStdInOut);
+  i = state->bufferMaxSize - state->CmdlineBufferLength;
+  while (i--)
+    fputc(ASCII_BS,  &state->myStdInOut);
+}
+
+void cmdHistoryCopy(cmdState_t *state)
+{
+  if (state->historyDepthIdx != 0)
+  {
+    uint8_t historyReadIdx = (state->historyWrIdx - state->historyDepthIdx) & CMD_STATE_HISTORY_MASK;
+    memset(state->CmdlineBuffer, 0, state->bufferMaxSize);
+    strcpy(state->CmdlineBuffer, state->CmdlineHistory[historyReadIdx]);
+  }
+  
+  state->historyDepthIdx = 0;
+  state->bufferHistoryState = COPIED;
+}
+
+void cmdHistoryMove(cmdState_t *state)
+{
+  uint8_t i=state->historyDepthIdx;
+
+  if (state->historyDepthIdx != 0)
+  {
+    state->CmdlineBuffer = state->CmdlineHistory[(state->historyWrIdx-i) & CMD_STATE_HISTORY_MASK];
+    for (i; i<CMD_STATE_HISTORY; i++)
+    {
+      state->CmdlineHistory[(state->historyWrIdx-i) & CMD_STATE_HISTORY_MASK] = state->CmdlineHistory[(state->historyWrIdx-i-1) & CMD_STATE_HISTORY_MASK];
+    }
+  }
+  state->CmdlineHistory[state->historyWrIdx] = state->CmdlineBuffer;
+
+  state->historyDepthIdx = 0;
+  state->bufferHistoryState = COPIED;
 }
 
 void cmdlineDoHistory(char action, cmdState_t *state)
 {
+  uint8_t historyReadIdx;
   switch(action)
   {
   case CMDLINE_HISTORY_SAVE:
     // copy CmdlineBuffer to history if not null string
+    state->CmdlineBufferLength  = 0;
+    state->CmdlineBufferEditPos = 0;     
+    state->bufferHistoryState   = NOT_COPIED;
+
     if( strlen(state->CmdlineBuffer) )
     {
-      state->historyRdIdx = state->historyWrIdx;
       state->historyWrIdx++;
-      if (state->historyWrIdx == CMD_STATE_HISTORY)
-      {
-        state->historyWrIdx = 0;
-      }
+      state->historyWrIdx &= CMD_STATE_HISTORY_MASK;
       
       state->CmdlineBuffer = state->CmdlineHistory[state->historyWrIdx];
-      memset(state->CmdlineBuffer, 0, state->bufferMaxSize);
-      state->CmdlineBufferLength  = 0;
-      state->CmdlineBufferEditPos = 0;
-    }
-    else
-    {
-      memset(state->CmdlineBuffer, 0, state->bufferMaxSize);
-      state->CmdlineBufferLength  = 0;
-      state->CmdlineBufferEditPos = 0;
     }
     break;
   case CMDLINE_HISTORY_PREV:
-    if (state->historyRdIdx == state->historyWrIdx)
-      break;
-
-    if (state->CmdlineHistory[state->historyRdIdx][0] == 0)
+    if (state->historyDepthIdx == CMD_STATE_HISTORY - 1)
+      break;                                               //We are on the end of the history list
+    
+    historyReadIdx = (state->historyWrIdx - state->historyDepthIdx - 1) & CMD_STATE_HISTORY_MASK;
+    
+    if (state->CmdlineHistory[historyReadIdx][0] == 0)
       break;
     
-    state->CmdlineBuffer = state->CmdlineHistory[state->historyRdIdx];
-
+    state->historyDepthIdx++;
+    state->historyDepthIdx &= CMD_STATE_HISTORY_MASK;
+    
     // set the buffer position to the end of the line
-    state->CmdlineBufferLength = strlen(state->CmdlineBuffer);
+    state->CmdlineBufferLength = strlen(state->CmdlineHistory[historyReadIdx]);
     state->CmdlineBufferEditPos = state->CmdlineBufferLength;
+    
+    state->bufferHistoryState = NOT_COPIED;
 
     // "re-paint" line
-    cmdlineRepaint(state, state->CmdlineBuffer);
-
-    // copy history to current buffer
-    if (state->historyRdIdx == 0)
-      state->historyRdIdx = CMD_STATE_HISTORY;
-    state->historyRdIdx --;
+    cmdlineRepaint(state, state->CmdlineHistory[historyReadIdx]);
     
     break;
   case CMDLINE_HISTORY_NEXT:      
-    state->historyRdIdx++;
-    if (state->historyRdIdx == CMD_STATE_HISTORY)
-      state->historyRdIdx = 0;
+    if (state->historyDepthIdx == 0)
+      break;                                               //We are on the begining of the history list
+
+    state->historyDepthIdx --;
+    historyReadIdx = (state->historyWrIdx - state->historyDepthIdx) & CMD_STATE_HISTORY_MASK;
+   
+    // set the buffer position to the end of the line
+    state->CmdlineBufferLength = strlen(state->CmdlineHistory[historyReadIdx]);
+    state->CmdlineBufferEditPos = state->CmdlineBufferLength;
     
-    if (state->CmdlineHistory[state->historyRdIdx][0] != 0)
-    {
-      state->CmdlineBuffer = state->CmdlineHistory[state->historyRdIdx];
+    state->bufferHistoryState = NOT_COPIED;
 
-      // set the buffer position to the end of the line
-      state->CmdlineBufferLength = strlen(state->CmdlineBuffer);
-      state->CmdlineBufferEditPos = state->CmdlineBufferLength;
-
-      // "re-paint" line
-      cmdlineRepaint(state, state->CmdlineBuffer);
-    }
+    // "re-paint" line
+    cmdlineRepaint(state, state->CmdlineHistory[historyReadIdx]);
     break;
   }
 }
