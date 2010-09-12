@@ -22,6 +22,17 @@
 static uint8_t Enc28j60Bank;
 static uint16_t gNextPacketPtr;
 
+/**
+ * Read register value (without changing the bank)
+ * @param op      - operation type
+ * @param address - register address
+ * @return register value
+ */
+static uint8_t  enc28j60ReadOp (uint8_t op, uint8_t address);
+static void     enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data);
+static void     enc28j60SetBank(uint8_t address);
+
+
 void Enc28j60Mem_init(uint8_t (*spiSendFunc)(uint8_t), uint8_t (*spiSendFuncNb)(uint8_t), void (*spiEnableEnc28j60Func)(void), void (*spiDisableEnc28j60Func)(void), uint16_t buffersize)
 {
   Enc28j60_global.spiSend            = spiSendFunc;
@@ -169,7 +180,6 @@ void enc28j60PhyWrite(uint8_t address, uint16_t data)
 
 void enc28j60clkout(uint8_t clk)
 {
-  //setup clkout: 2 is 12.5MHz:
   enc28j60Write(ECOCON, clk & 0x7);
 }
 

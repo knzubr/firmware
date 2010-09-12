@@ -31,7 +31,7 @@
 
 
 # MCU name
-MCU = atmega128
+MCU = atmega64
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -45,10 +45,11 @@ OPT = s
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SOURCE_DIR = ../../freeRtos/Source
-LIB_DIR    = ../../freeRtos/Lib
-PORT_DIR   = ../../freeRtos/portable/GCC/ATMega64
-PORT_MEM   = ../../freeRtos/portable/MemMang
+SOURCE_DIR  = ../../freeRtos/Source
+LIB_DIR     = ../../freeRtos/Lib
+LIB_DIR_NET = ../../freeRtos/Lib/net
+PORT_DIR    = ../../freeRtos/portable/GCC/ATMega64
+PORT_MEM    = ../../freeRtos/portable/MemMang
 
 SRC	= \
 main.c \
@@ -118,7 +119,7 @@ DEBUG_LEVEL=-g
 WARNINGS=-Wall -Wextra -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wsign-compare \
 		-Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wunused
 
-CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../freeRtos/Lib/include \
+CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../freeRtos/Lib/include  -I../../freeRtos/Lib/net/include\
 $(DEBUG_LEVEL) -O$(OPT) \
 -fsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \
 $(WARNINGS) \

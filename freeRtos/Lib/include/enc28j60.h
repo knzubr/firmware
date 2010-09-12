@@ -16,6 +16,16 @@
 //@{
 
 
+/*
+ Podział bufora. 2 k 768 B na odbieranie danych
+ 20 * 256 bajtów do obsługi 20 połączeń TCP
+ 256 bajtów do obsługi PING, ARP i innych
+ 
+ Konieczność przeprogramowania API
+ */
+  
+  
+  
 #ifndef ENC28J60_H
 #define ENC28J60_H
 #include <inttypes.h>
@@ -271,26 +281,60 @@ struct Enc28j60_config
   void     (*spiEnableEnc28j60)(void);     /// wskaźnik do funkcji, która podłącza urządzenie do magistrali SPI
   void     (*spiDisableEnc28j60)(void);    /// wskaźnik do funkcji, która odłącza urządzenie od magistrali SPI
   
-  uint16_t bufferSize;                     /// roxmisr tablicy pamięci z buforem
+  uint16_t bufferSize;                     /// rozmiar tablicy pamięci z buforem
   uint8_t  *buf;                           /// tablica pamięci do buforowania danych
 };
 struct Enc28j60_config Enc28j60_global;
 //TODO Adam: add in code doc
 // functions
 
+//TODO add atribute weak
 void     Enc28j60Mem_init(uint8_t (*spiSendFunc)(uint8_t), uint8_t (*spiSendFuncNb)(uint8_t), void (*spiEnableEnc28j60Func)(void), void (*spiDisableEnc28j60Func)(void), uint16_t buffersize);
 
-uint16_t enc28j60PhyReadH(uint8_t address);
-uint8_t  enc28j60ReadOp(uint8_t op, uint8_t address);
-void     enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data);
 void     enc28j60ReadBuffer(uint16_t len, uint8_t* data);
+
 void     enc28j60WriteBuffer(uint16_t len, uint8_t* data);
-void     enc28j60SetBank(uint8_t address);
+
+/**
+ * Reads Enc28j60 control register
+ * @param address - register address. Banks are changed automatically
+ * @return control register value
+ */
 uint8_t  enc28j60Read(uint8_t address);
+
+/**
+ * Writes Enc28j60 control register
+ * @param address - register address. Banks are changed automatically
+ * @param data    - control register value to be writen
+ */
 void     enc28j60Write(uint8_t address, uint8_t data);
+
+/**
+ * Reads Enc28j60 phy register
+ * @param address - register address. Banks are changed automatically
+ * @return phy register value
+ */
+uint16_t enc28j60PhyReadH(uint8_t address);
+
+/**
+ * Writes Enc28j60 phy register
+ * @param address - register address. Banks are changed automatically
+ * @param data    - phy register value to be writen
+ */
 void     enc28j60PhyWrite(uint8_t address, uint16_t data);
+
+/**
+ * Set clock output.
+ * @param clk clkout frequency = 6.25 MHz * clk. Clk (0-7)
+ */
 void     enc28j60clkout(uint8_t clk);
+
+/**
+ * Initialize enc28j60
+ * @param *macaddr - pointer to the mac address (6 bytes)
+ */
 void     enc28j60Init(uint8_t* macaddr);
+
 void     enc28j60PacketSend(uint16_t len, uint8_t* packet);
 uint8_t  enc28j60hasRxPkt(void);
 uint16_t enc28j60PacketReceive(uint16_t maxlen, uint8_t* packet);

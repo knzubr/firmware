@@ -26,6 +26,7 @@
 #include "net.h"
 #include "main.h"
 #include "hardware.h"
+//#include "netstack.h"
 
 // the password string (only the first 5 char checked), (only a-z,0-9,_ characters):
 char password[]="secret"; // must not be longer than 9 char
@@ -137,7 +138,7 @@ void enc28j60chipInit ( void )
 
 void encTask ( void *pvParameters )
 {
-    cmdState_t *state = (cmdState_t *)(pvParameters);
+    pvParameters = NULL;
     uint16_t plen;
     uint16_t dat_p;
 //  uint8_t i=1;
@@ -147,7 +148,7 @@ void encTask ( void *pvParameters )
     char str[30];
     char cmdval;
 
-    buf = Enc28j60_global.buf;
+//    buf = Enc28j60_global.buf;
     enc28j60chipInit();
 
 //     for ( ; ; )
@@ -157,10 +158,10 @@ void encTask ( void *pvParameters )
     
     for ( ; ; )
     {
-        vTaskDelay ( 100 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwolniony po odebrzeniu przerwania od ENC
+        vTaskDelay ( 1 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwolniony po odebrzeniu przerwania od ENC
 
         // get the next new packet:
-        plen = enc28j60PacketReceive ( BUFFER_SIZE, buf );
+        plen = enc28j60PacketReceive ( ENC28J60BUF_SIZE, Enc28j60_global.buf );
 
         /*plen will ne unequal to zero if there is a valid
         * packet (without crc error) */
@@ -171,70 +172,145 @@ void encTask ( void *pvParameters )
         // arp is broadcast if unknown but a host may also
         // verify the mac address by sending it to
         // a unicast address.
-        if ( eth_type_is_arp_and_my_ip ( buf,plen ) )
+        if ( eth_type_is_arp_and_my_ip(Enc28j60_global.buf, plen))
         {
-            make_arp_answer_from_request ( buf );
+            make_arp_answer_from_request(Enc28j60_global.buf);
             continue;
         }
 
         // check if ip packets are for us:
-        if ( eth_type_is_ip_and_my_ip ( buf,plen ) ==0 )
+        if ( eth_type_is_ip_and_my_ip ( Enc28j60_global.buf,plen ) ==0 )
             continue;
 
 
-        if ( buf[IP_PROTO_P]==IP_PROTO_ICMP_V && buf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V )
+        if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_ICMP_V && Enc28j60_global.buf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V )
         {
             // a ping packet, let's send pong
-            make_echo_reply_from_request ( buf,plen );
+            make_echo_reply_from_request (Enc28j60_global.buf, plen);
             continue;
         }
-//        continue;
 
-        // tcp port www start, compare only the lower byte
-        if ( buf[IP_PROTO_P]==IP_PROTO_TCP_V&&buf[TCP_DST_PORT_H_P]==0&&buf[TCP_DST_PORT_L_P]==MYWWWPORT )
+
+        if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP_V&& Enc28j60_global.buf[TCP_DST_PORT_H_P]==0&& Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYTELNETPORT )
         {
-            if ( buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V )
+            if ( Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V )
             {
-                make_tcp_synack_from_syn ( buf );
+                make_tcp_synack_from_syn (Enc28j60_global.buf );
                 // make_tcp_synack_from_syn does already send the syn,ack
                 continue;
             }
-            if ( buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V )
+            if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
             {
-                init_len_info ( buf ); // init some data structures
-                // we can possibly have no data, just ack:
+                init_len_info (Enc28j60_global.buf );  // init some data structures
+                                                       // we can possibly have no data, just ack:
                 dat_p=get_tcp_data_pointer();
                 if ( dat_p==0 )
                 {
-                    if ( buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V )
+                    if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V )
                     {
                         // finack, answer with ack
-                        make_tcp_ack_from_any ( buf );
+                        make_tcp_ack_from_any (Enc28j60_global.buf );
                     }
                     // just an ack with no data, wait for next packet
                     continue;
                 }
-                if ( strncmp ( "GET ", ( char * ) & ( buf[dat_p] ),4 ) !=0 )
+                if ( strncmp ( "GET ", ( char * ) & (Enc28j60_global.buf[dat_p] ),4 ) !=0 )
                 {
                     // head, post and other methods:
                     //
                     // for possible status codes see:
                     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-                    plen=fill_tcp_data_p ( buf,0,PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>200 OK</h1>" ) );
-                    goto SENDTCP;
+                    plen=fill_tcp_data_p (Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>200 OK</h1>" ) );
+                    goto SENDTCPSOCK;
                 }
-                if ( strncmp ( "/ ", ( char * ) & ( buf[dat_p+4] ),2 ) ==0 )
+                if ( strncmp ( "/ ", ( char * ) & (Enc28j60_global.buf[dat_p+4] ),2 ) ==0 )
                 {
-                    plen=fill_tcp_data_p ( buf,0,PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-                    plen=fill_tcp_data_p ( buf,plen,PSTR ( "<p>Usage: http://host_or_ip/password</p>\n" ) );
-                    goto SENDTCP;
+                    plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
+                    plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Usage: http://host_or_ip/password</p>\n" ) );
+                    goto SENDTCPSOCK;
                 }
-                cmd=analyse_get_url ( ( char * ) & ( buf[dat_p+5] ) );
+                cmd=analyse_get_url ( ( char * ) & (Enc28j60_global.buf[dat_p+5] ) );
                 // for possible status codes see:
                 // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
                 if ( cmd==-1 )
                 {
-                    plen=fill_tcp_data_p ( buf,0,PSTR ( "HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Unauthorized</h1>" ) );
+                    plen=fill_tcp_data_p (Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Unauthorized</h1>"));
+                    goto SENDTCPSOCK;
+                }
+//                 if ( cmd==1 )
+//                 {
+//                     PORTD|= ( 1<<PORTD7 );// transistor on
+//                 }
+//                 if ( cmd==0 )
+//                 {
+//                     PORTD &= ~ ( 1<<PORTD7 );// transistor off
+//                 }
+                if ( cmd==-3 )
+                {
+                    // redirect to add a trailing slash
+                    plen=moved_perm (Enc28j60_global.buf );
+                    goto SENDTCPSOCK;
+                }
+                //htonl(4);
+                // if (cmd==-2) or any other value
+                // just display the status:
+                plen=print_webpage (Enc28j60_global.buf, ( PORTD & ( 1<<PORTD7 ) ) );
+                //
+            SENDTCPSOCK:
+                make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+                make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+                continue;
+            }
+
+        }
+
+        continue;      
+
+        // tcp port www start, compare only the lower byte
+        if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP_V&& Enc28j60_global.buf[TCP_DST_PORT_H_P]==0&& Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYWWWPORT )
+        {
+            if ( Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V )
+            {
+                make_tcp_synack_from_syn (Enc28j60_global.buf );
+                // make_tcp_synack_from_syn does already send the syn,ack
+                continue;
+            }
+            if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
+            {
+                init_len_info (Enc28j60_global.buf ); // init some data structures
+                // we can possibly have no data, just ack:
+                dat_p=get_tcp_data_pointer();
+                if ( dat_p==0 )
+                {
+                    if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V )
+                    {
+                        // finack, answer with ack
+                        make_tcp_ack_from_any (Enc28j60_global.buf );
+                    }
+                    // just an ack with no data, wait for next packet
+                    continue;
+                }
+                if ( strncmp ( "GET ", ( char * ) & (Enc28j60_global.buf[dat_p] ),4 ) !=0 )
+                {
+                    // head, post and other methods:
+                    //
+                    // for possible status codes see:
+                    // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+                    plen=fill_tcp_data_p (Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>200 OK</h1>" ) );
+                    goto SENDTCP;
+                }
+                if ( strncmp ( "/ ", ( char * ) & (Enc28j60_global.buf[dat_p+4] ),2 ) ==0 )
+                {
+                    plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
+                    plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Usage: http://host_or_ip/password</p>\n" ) );
+                    goto SENDTCP;
+                }
+                cmd=analyse_get_url ( ( char * ) & (Enc28j60_global.buf[dat_p+5] ) );
+                // for possible status codes see:
+                // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+                if ( cmd==-1 )
+                {
+                    plen=fill_tcp_data_p (Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Unauthorized</h1>"));
                     goto SENDTCP;
                 }
 //                 if ( cmd==1 )
@@ -248,16 +324,16 @@ void encTask ( void *pvParameters )
                 if ( cmd==-3 )
                 {
                     // redirect to add a trailing slash
-                    plen=moved_perm ( buf );
+                    plen=moved_perm (Enc28j60_global.buf );
                     goto SENDTCP;
                 }
                 // if (cmd==-2) or any other value
                 // just display the status:
-                plen=print_webpage ( buf, ( PORTD & ( 1<<PORTD7 ) ) );
+                plen=print_webpage (Enc28j60_global.buf, ( PORTD & ( 1<<PORTD7 ) ) );
                 //
             SENDTCP:
-                make_tcp_ack_from_any ( buf ); // send ack for http get
-                make_tcp_ack_with_data ( buf,plen ); // send data
+                make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+                make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
                 continue;
             }
         }
@@ -265,12 +341,12 @@ void encTask ( void *pvParameters )
         // tcp port www end
         //
         // udp start, we listen on udp port 1200=0x4B0
-        if ( buf[IP_PROTO_P]==IP_PROTO_UDP_V&&buf[UDP_DST_PORT_H_P]==4&&buf[UDP_DST_PORT_L_P]==0xb0 )
+        if (Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_UDP_V && Enc28j60_global.buf[UDP_DST_PORT_H_P]==4 && Enc28j60_global.buf[UDP_DST_PORT_L_P]==0xb0 )
         {
-            payloadlen=buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
+            payloadlen = Enc28j60_global.buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
             // you must sent a string starting with v
             // e.g udpcom version 10.0.0.24
-            if ( verify_password ( ( char * ) & ( buf[UDP_DATA_P] ) ) )
+            if ( verify_password ( ( char * ) & ( Enc28j60_global.buf[UDP_DATA_P] ) ) )
             {
                 // find the first comma which indicates
                 // the start of a command:
@@ -278,7 +354,7 @@ void encTask ( void *pvParameters )
                 while ( cmd_pos<payloadlen )
                 {
                     cmd_pos++;
-                    if ( buf[UDP_DATA_P+cmd_pos]==',' )
+                    if ( Enc28j60_global.buf[UDP_DATA_P+cmd_pos]==',' )
                     {
                         cmd_pos++; // put on start of cmd
                         break;
@@ -288,7 +364,7 @@ void encTask ( void *pvParameters )
                 // a command is one char and a value. At
                 // least 3 characters long. It has an '=' on
                 // position 2:
-                if ( cmd_pos<2 || cmd_pos>payloadlen-3 || buf[UDP_DATA_P+cmd_pos+1]!='=' )
+                if ( cmd_pos<2 || cmd_pos>payloadlen-3 || Enc28j60_global.buf[UDP_DATA_P+cmd_pos+1]!='=' )
                 {
                     strcpy ( str,"e=no_cmd" );
                     goto ANSWER;
@@ -296,9 +372,9 @@ void encTask ( void *pvParameters )
 
                 // supported commands are
                 // t=1 t=0 t=?
-                if ( buf[UDP_DATA_P+cmd_pos]=='t' )
+                if ( Enc28j60_global.buf[UDP_DATA_P+cmd_pos]=='t' )
                 {
-                    cmdval=buf[UDP_DATA_P+cmd_pos+2];
+                    cmdval=Enc28j60_global.buf[UDP_DATA_P+cmd_pos+2];
                     if ( cmdval=='1' )
                     {
                         PORTD|= ( 1<<PORTD7 );// transistor on
@@ -327,7 +403,7 @@ void encTask ( void *pvParameters )
             }
             strcpy ( str,"e=invalid_pw" );
         ANSWER:
-            make_udp_reply_from_request ( buf,str,strlen ( str ),MYUDPPORT );
+            make_udp_reply_from_request(Enc28j60_global.buf, str, strlen ( str ), MYUDPPORT);
         }
     }
 }

@@ -8,15 +8,14 @@
 #include "ip_arp_udp_tcp.h"
 #include "enc28j60.h"
 #include "avr_compat.h"
-#include "net.h"
+//#include "net.h"
+#include "hardwareConfig.h"
 
-#define MYWWWPORT 80
-#define MYUDPPORT 1200
+#define MYWWWPORT    80
+#define MYTELNETPORT 23
+#define MYUDPPORT    1200
 
-#define BUFFER_SIZE 550
-
-uint8_t *buf;  //TODO naprawić malloc
-//uint8_t buf2[500];
+//uint8_t *buf;
 
 uint8_t verify_password(char *str);
 

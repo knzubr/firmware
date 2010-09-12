@@ -36,6 +36,7 @@
 
 
 
+struct command tm2p = {"sda", 3, NULL};
 
 //Globals
 cmdList_t  CLCommands;

@@ -161,11 +161,9 @@ portSHORT main( void )
 
   
   xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(&CLIState), 1, &xHandleVTY);
-//  xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,               1, &xHandleSensors);
-  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     (void *)(&CLIState), 1, &xHandleEnc);
-  
-//xTaskCreate(vTaskMag, "Rs485", STACK_SIZE_VTY, NULL, tskIDLE_PRIORITY, &xHandleRs485);
-
+//xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                1, &xHandleSensors);
+  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                1, &xHandleEnc);
+//xTaskCreate(vTaskMag,     NULL /*"Rs485"*/,   STACK_SIZE_VTY,     NULL, tskIDLE_PRIORITY, &xHandleRs485);
   vTaskStartScheduler();
   return 0;
 }

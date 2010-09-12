@@ -55,138 +55,153 @@ static uint8_t seqnum=0xa; // my initial tcp sequence number
 // The RFC has also a C code example: http://www.faqs.org/rfcs/rfc1071.html
 uint16_t checksum(uint8_t *buf1, uint16_t len,uint8_t type)
 {
-        // type 0=ip 
-        //      1=udp
-        //      2=tcp
-        uint32_t sum = 0;
+  // type 0=ip 
+  //      1=udp
+  //      2=tcp
+  uint32_t sum = 0;
 
-        //if(type==0){
-        //        // do not add anything
-        //}
-        if(type==1){
-                sum+=IP_PROTO_UDP_V; // protocol udp
-                // the length here is the length of udp (data+header len)
-                // =length given to this function - (IP.scr+IP.dst length)
-                sum+=len-8; // = real tcp len
-        }
-        if(type==2){
-                sum+=IP_PROTO_TCP_V; 
-                // the length here is the length of tcp (data+header len)
-                // =length given to this function - (IP.scr+IP.dst length)
-                sum+=len-8; // = real tcp len
-        }
-        // build the sum of 16bit words
-        while(len >1){
-                sum += 0xFFFF & (((uint32_t)*buf1<<8)|*(buf1+1));
-                buf1+=2;
-                len-=2;
-        }
-        // if there is a byte left then add it (padded with zero)
-        if (len){
-                sum += ((uint32_t)(0xFF & *buf1))<<8;
-        }
-        // now calculate the sum over the bytes in the sum
-        // until the result is only 16bit long
-        while (sum>>16){
-                sum = (sum & 0xFFFF)+(sum >> 16);
-        }
-        // build 1's complement:
-        return( (uint16_t) sum ^ 0xFFFF);
+  //if(type==0){
+  //        // do not add anything
+  //}
+  if(type==1)
+  {
+    sum+=IP_PROTO_UDP_V; // protocol udp
+    // the length here is the length of udp (data+header len)
+    // =length given to this function - (IP.scr+IP.dst length)
+    sum+=len-8; // = real tcp len
+  }
+  if(type==2)
+  {
+    sum+=IP_PROTO_TCP_V; 
+    // the length here is the length of tcp (data+header len)
+    // =length given to this function - (IP.scr+IP.dst length)
+    sum+=len-8; // = real tcp len
+  }
+  // build the sum of 16bit words
+  while(len >1)
+  {
+    sum += 0xFFFF & (((uint32_t)*buf1<<8)|*(buf1+1));
+    buf1+=2;
+    len-=2;
+  }
+  // if there is a byte left then add it (padded with zero)
+  if (len)
+  {
+    sum += ((uint32_t)(0xFF & *buf1))<<8;
+  }
+  // now calculate the sum over the bytes in the sum
+  // until the result is only 16bit long
+  while (sum>>16)
+  {
+    sum = (sum & 0xFFFF)+(sum >> 16);
+  }
+  // build 1's complement:
+  return( (uint16_t) sum ^ 0xFFFF);
 }
 
 // you must call this function once before you use any of the other functions:
-void init_ip_arp_udp_tcp(uint8_t *mymac,uint8_t *myip,uint8_t wwwp){
-        uint8_t i=0;
-        wwwport=wwwp;
-        while(i<4){
-                ipaddr[i]=myip[i];
-                i++;
-        }
-        i=0;
-        while(i<6){
-                macaddr[i]=mymac[i];
-                i++;
-        }
-}
-
-uint8_t eth_type_is_arp_and_my_ip(uint8_t *buf1,uint16_t len){
-        uint8_t i=0;
-        //  
-        if (len<41){
-                return(0);
-        }
-        if(buf1[ETH_TYPE_H_P] != ETHTYPE_ARP_H_V || 
-           buf1[ETH_TYPE_L_P] != ETHTYPE_ARP_L_V){
-                return(0);
-        }
-        while(i<4){
-                if(buf1[ETH_ARP_DST_IP_P+i] != ipaddr[i]){
-                        return(0);
-                }
-                i++;
-        }
-        return(1);
-}
-
-uint8_t eth_type_is_ip_and_my_ip(uint8_t *buf1,uint16_t len){
-        uint8_t i=0;
-        //eth+ip+udp header is 42
-        if (len<42){
-                return(0);
-        }
-        if(buf1[ETH_TYPE_H_P]!=ETHTYPE_IP_H_V || 
-           buf1[ETH_TYPE_L_P]!=ETHTYPE_IP_L_V){
-                return(0);
-        }
-        if (buf1[IP_HEADER_LEN_VER_P]!=0x45){
-                // must be IP V4 and 20 byte header
-                return(0);
-        }
-        while(i<4){
-                if(buf1[IP_DST_P+i]!=ipaddr[i]){
-                        return(0);
-                }
-                i++;
-        }
-        return(1);
-}
-// make a return eth header from a received eth packet
-void make_eth(uint8_t *buf1)
+void init_ip_arp_udp_tcp(uint8_t *mymac,uint8_t *myip,uint8_t wwwp)
 {
-        uint8_t i=0;
-        //
-        //copy the destination mac from the source and fill my mac into src
-        while(i<6){
-                buf1[ETH_DST_MAC +i]=buf1[ETH_SRC_MAC +i];
-                buf1[ETH_SRC_MAC +i]=macaddr[i];
-                i++;
-        }
+  uint8_t i=0;
+  wwwport=wwwp;
+  while(i<4)
+  {
+    ipaddr[i]=myip[i];
+    i++;
+  }
+  i=0;
+  while(i<6)
+  {
+    macaddr[i]=mymac[i];
+    i++;
+  }
 }
+
+uint8_t eth_type_is_arp_and_my_ip(uint8_t *buf1,uint16_t len)
+{
+  uint8_t i=0;
+
+  if (len<41)
+    return(0);
+
+  if(buf1[ETH_TYPE_H_P] != ETHTYPE_ARP_H_V || buf1[ETH_TYPE_L_P] != ETHTYPE_ARP_L_V)
+    return(0);
+
+  while(i<4)
+  {
+    if(buf1[ETH_ARP_DST_IP_P+i] != ipaddr[i])
+      return(0);
+    i++;
+  }
+  return(1);
+}
+
+uint8_t eth_type_is_ip_and_my_ip(uint8_t *buf1,uint16_t len)
+{
+  uint8_t i=0;
+  //eth+ip+udp header is 42
+  if (len<42)
+  {
+    return(0);
+  }
+  if(buf1[ETH_TYPE_H_P]!=ETHTYPE_IP_H_V || buf1[ETH_TYPE_L_P]!=ETHTYPE_IP_L_V)
+    return(0);
+
+  if (buf1[IP_HEADER_LEN_VER_P]!=0x45)
+  {
+    // must be IP V4 and 20 byte header
+    return(0);
+  }
+  while(i<4)
+  {
+    if(buf1[IP_DST_P+i]!=ipaddr[i])
+    {
+      return(0);
+    }
+    i++;
+  }
+  return(1);
+}
+
+// make a return eth header from a received eth packet
+void make_eth(uint8_t *buf)
+{
+  uint8_t i=0;
+  //
+  //copy the destination mac from the source and fill my mac into src
+  while(i<6)
+  {
+    buf[ETH_DST_MAC +i]=buf[ETH_SRC_MAC +i];
+    buf[ETH_SRC_MAC +i]=macaddr[i];
+    i++;
+  }
+}
+
 void fill_ip_hdr_checksum(uint8_t *buf1)
 {
-        uint16_t ck;
-        // clear the 2 byte checksum
-        buf1[IP_CHECKSUM_P]=0;
-        buf1[IP_CHECKSUM_P+1]=0;
-        buf1[IP_FLAGS_P]=0x40; // don't fragment
-        buf1[IP_FLAGS_P+1]=0;  // fragement offset
-        buf1[IP_TTL_P]=64; // ttl
-        // calculate the checksum:
-        ck=checksum(&buf1[IP_P], IP_HEADER_LEN,0);
-        buf1[IP_CHECKSUM_P]=ck>>8;
-        buf1[IP_CHECKSUM_P+1]=ck& 0xff;
+  uint16_t ck;
+  // clear the 2 byte checksum
+  buf1[IP_CHECKSUM_P]=0;
+  buf1[IP_CHECKSUM_P+1]=0;
+  buf1[IP_FLAGS_P]=0x40; // don't fragment
+  buf1[IP_FLAGS_P+1]=0;  // fragement offset
+  buf1[IP_TTL_P]=64; // ttl
+  // calculate the checksum:
+  ck=checksum(&buf1[IP_P], IP_HEADER_LEN,0);
+  buf1[IP_CHECKSUM_P]=ck>>8;
+  buf1[IP_CHECKSUM_P+1]=ck& 0xff;
 }
 
-// make a return ip header from a received ip packet
 void make_ip(uint8_t *buf1)
 {
-        uint8_t i=0;
-        while(i<4){
-                buf1[IP_DST_P+i]=buf1[IP_SRC_P+i];
-                buf1[IP_SRC_P+i]=ipaddr[i];
-                i++;
-        }
-        fill_ip_hdr_checksum(buf1);
+  uint8_t i=0;
+  while(i<4)
+  {
+    buf1[IP_DST_P+i]=buf1[IP_SRC_P+i];
+    buf1[IP_SRC_P+i]=ipaddr[i];
+    i++;
+  }
+  fill_ip_hdr_checksum(buf1);
 }
 
 // make a return tcp header from a received tcp packet
@@ -356,19 +371,18 @@ void make_tcp_synack_from_syn(uint8_t *buf1)
   enc28j60PacketSend(IP_HEADER_LEN+TCP_HEADER_LEN_PLAIN+4+ETH_HEADER_LEN, buf1);
 }
 
-// get a pointer to the start of tcp data in buf
-// Returns 0 if there is no data
-// You must call init_len_info once before calling this function
 uint16_t get_tcp_data_pointer(void)
 {
-        if (info_data_len){
-                return((uint16_t)TCP_SRC_PORT_H_P+info_hdr_len);
-        }else{
-                return(0);
-        }
+  if (info_data_len)
+  {
+    return((uint16_t)TCP_SRC_PORT_H_P+info_hdr_len);
+  }
+  else
+  {
+    return(0);
+  }
 }
 
-// do some basic length calculations and store the result in static varibales
 void init_len_info(uint8_t *buf1)
 {
   info_data_len=(((int16_t)buf1[IP_TOTLEN_H_P])<<8)|(buf1[IP_TOTLEN_L_P]&0xff);
