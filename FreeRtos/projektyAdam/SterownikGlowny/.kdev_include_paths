@@ -1,3 +1,4 @@
 /usr/lib/avr/include
 /home/adam/akme/FreeRtos/freeRtos/Lib/include
+/home/adam/akme/FreeRtos/freeRtos/Lib/net/include
 /home/adam/akme/FreeRtos/freeRtos/Source/include

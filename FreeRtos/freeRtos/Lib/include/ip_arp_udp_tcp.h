@@ -1,7 +1,8 @@
 /*********************************************
- * vim:sw=8:ts=8:si:et
+ * vim:sw=2:ts=2:si:et
  * To use the above modeline in vim you must have "set modeline" in your .vimrc
- * Author: Guido Socher 
+ * Author: Guido Socher
+ *         Adam Kaliszan
  * Copyright: GPL V2
  *
  * IP/ARP/UDP/TCP functions
@@ -23,7 +24,12 @@
 uint16_t checksum                    (uint8_t *buf1, uint16_t len, uint8_t type);
 void     make_eth                    (uint8_t *buf1);
 void     fill_ip_hdr_checksum        (uint8_t *buf1);
+
+/**
+ * make a return ip header from a received ip packet
+ */
 void     make_ip                     (uint8_t *buf1);
+
 void     make_tcphead                (uint8_t *buf1,uint16_t rel_ack_num,uint8_t mss,uint8_t cp_seq);
 
 // you must call this function once before you use any of the other functions:
@@ -36,7 +42,17 @@ void     make_echo_reply_from_request(uint8_t *buf1,uint16_t len);
 void     make_udp_reply_from_request (uint8_t *buf1,char *data,uint8_t datalen,uint16_t port);
 
 void     make_tcp_synack_from_syn    (uint8_t *buf1);
+
+/**
+ *do some basic length calculations and store the result in static varibales
+ */
 void     init_len_info               (uint8_t *buf1);
+
+/**
+ *get a pointer to the start of tcp data in buf
+ * Returns 0 if there is no data
+ * You must call init_len_info once before calling this function
+ */
 uint16_t get_tcp_data_pointer        (void);
 uint16_t fill_tcp_data_p             (uint8_t *buf1,uint16_t pos, const prog_char *progmem_s);
 uint16_t fill_tcp_data               (uint8_t *buf1,uint16_t pos, const char *s);

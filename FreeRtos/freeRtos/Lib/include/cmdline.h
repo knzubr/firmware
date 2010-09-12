@@ -13,6 +13,9 @@
 
 #include <avr/io.h>         // editor recognizes now types like uint8_t 
 
+
+
+
 // constants/macros/typdefs
 struct cmdState;
 struct cmdList;
@@ -60,6 +63,13 @@ struct cmdList
 
   /// number of commands currently registered
   uint8_t CmdlineNumCommands;
+};
+
+struct command
+{
+   char               *commandStr;
+  uint8_t             commandLength;
+  CmdlineFuncPtrType  commandFun;
 };
 
 

@@ -57,7 +57,9 @@
 #define ETH_SOCK_RX_20_BUF_ADDR      0x7A00
 
 #define ENC28J60BUF_SIZE             0x0400 // 1 kB
+#define NETWORK_STACK_BUF_SIZE       0x0400 // 1 kB
 #define ENC28J60BUF_ADDR             0x7C00 // 31 - 32 kB
+#define NETWORK_STACK_BUF            0x7C00 // 31 - 32 kB
 #define ENC28J60BUF_ADDR_END         ENC28J60BUF_ADDR + ENC28J60BUF_SIZE - 1
 
 /* Memory Map
