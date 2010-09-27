@@ -73,47 +73,29 @@ void VtyInit(void)
   cmdlineAddCommand("ac",      czytajAC_Function);
 }
 
+prog_char ostatniBlad[]      = "Ostatni blad: %d (%d, %d)\r\n";
+void printErrorInfo(cmdState_t *state)
+{
+  if (cmdErrno != 0)
+    fprintf_P(&state->myStdInOut, ostatniBlad,      cmdErrno, err1, err2);
+}
+
 #define odczyt(ZNAK, TIMEOUT) xQueueReceive(xVtyRec, (ZNAK), (TIMEOUT))
+
+prog_char LiczbaWatkow []    = "Liczba watkow: %d\r\n";
+prog_char miejsceNaStercie[] = "Miejsce na stercie  %d/%d\r\n";
+prog_char miejsceWRamDysku[] = "Miejsce w ram dysku %d/%d\r\n";
 
 static void statusFunction(cmdState_t *state)
 {
-  fprintf(&state->myStdInOut, "Liczba watkow: %d\r\n", uxTaskGetNumberOfTasks());
-  if (cmdErrno != 0)
-    fprintf(&state->myStdInOut, "Ostatni blad: %d (%d, %d)\r\n", cmdErrno, err1, err2);
+  fprintf_P(&state->myStdInOut, LiczbaWatkow, uxTaskGetNumberOfTasks());
+  printErrorInfo(state);
+  fprintf_P(&state->myStdInOut, miejsceNaStercie, xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
   uint8_t miejsce = ramDyskLiczbaWolnychKlastrow();
-  fprintf(&state->myStdInOut, "Miejsce w ram dysku %d/%d\r\n", miejsce,  L_KLASTROW);
-  
-  fprintf(&state->myStdInOut, "Adres struktury cli   0x%x\r\n", state);
-  fprintf(&state->myStdInOut, "Adres bufora cli      0x%x\r\n", state->CmdlineBuffer);
-  fprintf(&state->myStdInOut, "Adres bufora enc28j60 0x%x\r\n", Enc28j60_global.buf);
-  
-  uint16_t i;
-  uint8_t *tmp = Enc28j60_global.buf;
-  uint16_t lBladow = 0; 
-  
-  uint16_t *ptr = (uint16_t *)(tmp);
-  ptr--;
-  uint16_t l2 = *ptr;
-  ptr--;
-  uint16_t l1 = *ptr;
-  
-//  for (i=0; i<500; i++)
-//  {
-//    *tmp = (uint8_t)(i);
-//    tmp++;
-//    vTaskDelay(1);
-//  }
-//  tmp = Enc28j60_global.buf;
-//  for (i=0; i<550; i++)
-//  {
-//    if (*tmp =! (uint8_t)(i))
-//      lBladow++;
-//    tmp++;
-//    vTaskDelay(1);
-//  }
-//  fprintf(&state->myStdInOut, "Sterta %d %d\r\n", l1, l2);
+  fprintf_P(&state->myStdInOut, miejsceWRamDysku, miejsce,  L_KLASTROW);
 }
 
+prog_char aktualnyCzas[]     = "Aktualny czas %d:%d:%d\r\n";
 static void pokazCzasFunction(cmdState_t *state)
 {
   readTimeDecoded(&czasRtc);
@@ -122,7 +104,7 @@ static void pokazCzasFunction(cmdState_t *state)
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
   
   
-  fprintf(&state->myStdInOut, "Aktualny czas %d:%d:%d\r\n", godzina, minuta, sekunda);
+  fprintf_P(&state->myStdInOut, aktualnyCzas, godzina, minuta, sekunda);
 }
 
 static void ustawCzasFunction(cmdState_t *state)
@@ -149,18 +131,6 @@ static void ustawCzasFunction(cmdState_t *state)
   czasRtc.seconds.cJedn  = cJedn;
   
   setTimeDecoded(&czasRtc);
-  
-  
-//  uint8_t tab[8]= {1, 2, 3, 4, 5, 6, 7, 8};
-  
-//  uint8_t result;
-//  result = ds1305writeMem(20, 8, tab);
-//  if (result != 0)
-//    fprintf(&state->myStdInOut, "Nieudana proba zapisu: %d\r\n", result);
-//  result = ds1305readMem (20, 8, tab);
-//  if (result != 0)
-//    fprintf(&state->myStdInOut, "Nieudana proba odczytu: %d\r\n", result);
-//  fprintf(&state->myStdInOut, "tab[0] %d, tab[4] %d, tab[7] %d\r\n", tab[0], tab[4], tab[7]);  
 }
 
 static void czytajAC_Function(cmdState_t *state)
@@ -170,21 +140,36 @@ static void czytajAC_Function(cmdState_t *state)
   fprintf(&state->myStdInOut, "Wartosc probki na wejsciu %d: %d\r\n", nrWejscia, wynik);  
 }
 
+prog_char helpStr[] =
+"Dostepne opcje to:\r\n"
+"\tstatus\r\n"
+"\tpodnies\r\n"
+"\topusc\r\n"
+"\tping\r\n"
+"\txodb\r\n"
+"\txwysl\r\n"
+"\txflash\r\n"
+"\turp\r\n"
+"\tkrp\r\n"
+"\tdir\r\n"
+"\terp\r\n"
+"\tcrp\r\n";
+
 static void helpFunction(cmdState_t *state)
 {
-  fprintf(&state->myStdInOut, "Dostepne opcje to:\r\n");
-  fprintf(&state->myStdInOut, "\tstatus\r\n");
-  fprintf(&state->myStdInOut, "\tpodnies\r\n");
-  fprintf(&state->myStdInOut, "\topusc\r\n");
-  fprintf(&state->myStdInOut, "\tping\r\n");
-  fprintf(&state->myStdInOut, "\txodb\r\n");
-  fprintf(&state->myStdInOut, "\txwysl\r\n");
-  fprintf(&state->myStdInOut, "\txflash\r\n");
-  fprintf(&state->myStdInOut, "\turp\r\n");
-  fprintf(&state->myStdInOut, "\tkrp\r\n");
-  fprintf(&state->myStdInOut, "\tdir\r\n");
-  fprintf(&state->myStdInOut, "\terp\r\n");
-  fprintf(&state->myStdInOut, "\tcrp\r\n");
+  fprintf_P(&state->myStdInOut, helpStr);
+//  fprintf(&state->myStdInOut, "\tstatus\r\n");
+//  fprintf(&state->myStdInOut, "\tpodnies\r\n");
+//  fprintf(&state->myStdInOut, "\topusc\r\n");
+//  fprintf(&state->myStdInOut, "\tping\r\n");
+//  fprintf(&state->myStdInOut, "\txodb\r\n");
+//  fprintf(&state->myStdInOut, "\txwysl\r\n");
+//  fprintf(&state->myStdInOut, "\txflash\r\n");
+//  fprintf(&state->myStdInOut, "\turp\r\n");
+//  fprintf(&state->myStdInOut, "\tkrp\r\n");
+//  fprintf(&state->myStdInOut, "\tdir\r\n");
+//  fprintf(&state->myStdInOut, "\terp\r\n");
+//  fprintf(&state->myStdInOut, "\tcrp\r\n");
 #ifdef testZewPamiec
   fprintf(&state->myStdInOut, "\trtest\r\n");
 #endif
@@ -193,6 +178,11 @@ static void helpFunction(cmdState_t *state)
 #endif
 }
 
+
+prog_char OpuszczanieRoletyStr[] =
+"Opuszczanie rolety\r\n"
+"\tsterownik %d\r\n"
+"\troleta    %d\r\n";
 static void opuscFunction(cmdState_t *state)
 {
   uint8_t nrRolety;
@@ -204,11 +194,9 @@ static void opuscFunction(cmdState_t *state)
   nrRolety &= 0x01;
   wartosc = cmdlineGetArgInt(3, state);
 
-  fprintf(&state->myStdInOut,   "Opuszczanie rolety\r\n");
-  fprintf(&state->myStdInOut,   "\tsterownik %d\r\n", nrSterownika); 
-  fprintf(&state->myStdInOut,   "\troleta    %d\r\n", nrRolety+1);
-  if ((wartosc > 0) && (wartosc <=100))
-    fprintf(&state->myStdInOut, "\tpozycja   %d\r\n", wartosc);
+  fprintf_P(&state->myStdInOut,OpuszczanieRoletyStr, nrSterownika, nrRolety+1);
+//  if ((wartosc > 0) && (wartosc <=100))
+//    fprintf(&state->myStdInOut, "\tpozycja   %d\r\n", wartosc);
 
   uint16_t crc = 0;
   
@@ -236,6 +224,10 @@ static void opuscFunction(cmdState_t *state)
   uartRs485SendByte((uint8_t)(crc & 0xFF));
 }
 
+prog_char PodnoszenieRoletyStr[] =
+"Podnoszenie rolety\r\n"
+"\tsterownik %d\r\n"
+"\troleta    %d\r\n";
 static void podniesFunction(cmdState_t *state)
 {
   uint8_t nrRolety;
@@ -247,11 +239,9 @@ static void podniesFunction(cmdState_t *state)
   nrRolety &= 0x01;
   wartosc = cmdlineGetArgInt(3, state);
 
-  fprintf(&state->myStdInOut,   "Podnoszenie rolety\r\n");
-  fprintf(&state->myStdInOut,   "\tsterownik %d\r\n", nrSterownika); 
-  fprintf(&state->myStdInOut,   "\troleta    %d\r\n", nrRolety+1);
-  if ((wartosc > 0) && (wartosc <=100))
-    fprintf(&state->myStdInOut, "\tpozycja   %d\r\n", wartosc);
+  fprintf_P(&state->myStdInOut,   PodnoszenieRoletyStr, nrSterownika, nrRolety+1);
+//  if ((wartosc > 0) && (wartosc <=100))
+//    fprintf(&state->myStdInOut, "\tpozycja   %d\r\n", wartosc);
 
   uint16_t crc = 0;
   
@@ -287,6 +277,10 @@ static void ustawPortExtAFunction(cmdState_t *state)
   MPC23s17SetPortA(wyjscie, 0);
 }
 
+prog_char pingNieOdpowiada[]    = "Urzedzenie nr %d nie odpowiada\r\n";
+prog_char pingBladOdpowiedzi[]  = "Blad nr %d w odpowiedzi urzadzenia nr %d\r\n";
+prog_char pingZnalezionoStr[]   = "Znaleziono urzadzanie nr %d\r\n";
+
 static void pingFunction(cmdState_t *state)
 {
   static uint8_t nrSterownika;
@@ -297,8 +291,8 @@ static void pingFunction(cmdState_t *state)
   l_znakow = cmdlineGetArgInt(2, state);
 
   wynik = czyscBufOdb485(NULL);
-  if (wynik != 0)
-    fprintf(&state->myStdInOut, "!!! W buforze Rs485 pozostalo %d bajtow\r\n", wynik);
+//  if (wynik != 0)
+//    fprintf(&state->myStdInOut, "!!! W buforze Rs485 pozostalo %d bajtow\r\n", wynik);
     
   sendPing(nrSterownika, l_znakow, uartRs485SendByte);
 //  czyscBufOdb485(state);  
@@ -307,14 +301,17 @@ static void pingFunction(cmdState_t *state)
   {
     czyscBufOdb485(state);
     if (wynik == 1)
-      fprintf(&state->myStdInOut, "Urzedzenie nr %d nie odpowiada\r\n", nrSterownika);
+      fprintf_P(&state->myStdInOut, pingNieOdpowiada, nrSterownika);
     else
-      fprintf(&state->myStdInOut, "Blad nr %d w odpowiedzi urzadzenia nr %d\r\n", wynik, nrSterownika);
+      fprintf_P(&state->myStdInOut, pingBladOdpowiedzi, wynik, nrSterownika);
   }
   else
-    fprintf(&state->myStdInOut, "Znaleziono urzadzanie nr %d\r\n", nrSterownika);
+    fprintf_P(&state->myStdInOut, pingZnalezionoStr, nrSterownika);
 }
 
+prog_char flashowanieBladBuforaStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
+prog_char flashowanieBladOtwarciePliku[]       = "Nie mozna otworzyc pliku %s\r\n";
+prog_char flashowanieOczekiwanieNaBootloader[] = "Wykonuje się kod bootloadera, który oczekuje startu transmisji\r\n";
 static void flashowanieModWyk(cmdState_t *state)
 {
   //zablokuj proces do cyklicznego komunikowania się z modułami wykonawczymi
@@ -330,7 +327,7 @@ static void flashowanieModWyk(cmdState_t *state)
  
   blad = czyscBufOdb485(NULL);
   if (blad != 0)
-    fprintf(&state->myStdInOut, "!!! W budorze Rs485 pozostalo %d bajtow\r\n", blad);
+    fprintf_P(&state->myStdInOut, flashowanieBladBuforaStr, blad);
   blad = 0;
   
   nrUrzadzenia= cmdlineGetArgInt(1, state); 
@@ -350,7 +347,7 @@ static void flashowanieModWyk(cmdState_t *state)
   //Sprawdzanie, czy istnieje odpowiedni plik z firmware
   if (ramDyskOtworzPlik(nazwaPliku, &fdVty) != 0)
   {
-    fprintf(&state->myStdInOut, "Nie mozna otworzyc pliku %s\r\n", nazwaPliku);
+    fprintf_P(&state->myStdInOut, flashowanieBladOtwarciePliku, nazwaPliku);
     return;
   }
   
@@ -375,7 +372,7 @@ static void flashowanieModWyk(cmdState_t *state)
   if ((blad == 0) && (data == 'C'))
   {
     blad = 253;                                 //Na urządzeniu jest wgrany tylko bootloader
-    fprintf(&state->myStdInOut, "Wykonuje się kod bootloadera, który oczekuje startu transmisji\r\n");
+    fprintf_P(&state->myStdInOut, flashowanieOczekiwanieNaBootloader);
   }
 
   if ((blad == 0) && (data != SYNC))
@@ -463,7 +460,7 @@ static void flashowanieModWyk(cmdState_t *state)
   if ((blad != 0) && (blad != 253))
   {
     //odblokuj proces do cyklicznego komunikowania się z modułami wykonawczymi
-    fprintf(&state->myStdInOut, "Blad nr %d\r\n", blad);    
+    printErrorInfo(state);    
     ramDyskZamknijPlik(&fdVty);
     czyscBufOdb485(state);  
     return;

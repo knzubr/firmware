@@ -29,6 +29,8 @@
 
 
 void VtyInit(void);
+void printErrorInfo(cmdState_t *state);
+
 
 extern xQueueHandle           xVtyRec;
 extern xQueueHandle           xVtyTx;
@@ -38,5 +40,7 @@ extern xQueueHandle           xRs485Tx;
 
 extern volatile timeDecoded_t czasRtc;
 extern struct Enc28j60_config Enc28j60_global;
+
+
 
 #endif

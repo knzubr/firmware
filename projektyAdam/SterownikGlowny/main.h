@@ -40,6 +40,7 @@
 #define STACK_SIZE_VTY          1000
 
 #define STACK_SIZE_ENC           500
+
 #define STACK_SIZE_SENSORS       500
 
 
