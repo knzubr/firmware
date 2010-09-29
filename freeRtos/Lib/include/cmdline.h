@@ -6,24 +6,18 @@
 #define CMDLINE_HISTORY_PREV  1
 #define CMDLINE_HISTORY_NEXT  2
 
-//Configuration
-#define CMDLINE_MAX_COMMANDS    20
-#define CMDLINE_MAX_CMD_LENGTH  10
-
 
 #include <avr/io.h>         // editor recognizes now types like uint8_t 
-
-
-
+#include <avr/pgmspace.h>
 
 // constants/macros/typdefs
 struct cmdState;
-struct cmdList;
+struct command;
 
-typedef struct cmdList  cmdList_t;
+typedef struct command  command_t;
 typedef struct cmdState cmdState_t;
-typedef void (*CmdlineFuncPtrType)(cmdState_t *state);
 
+typedef void (*CmdlineFuncPtrType)(cmdState_t *state);
 
 enum cmdBufferHistory
 {
@@ -52,37 +46,23 @@ struct cmdState
   CmdlineFuncPtrType CmdlineExecFunction;
   
   FILE myStdInOut;
-};
-
-struct cmdList
-{ /// command list, each command is null-terminated string.
-  char CmdlineCommandList[CMDLINE_MAX_COMMANDS][CMDLINE_MAX_CMD_LENGTH];
   
-  /// function table
-  CmdlineFuncPtrType CmdlineFunctionList[CMDLINE_MAX_COMMANDS];
-
-  /// number of commands currently registered
-  uint8_t CmdlineNumCommands;
+  uint8_t errno;                             /// Error number
+  uint8_t err1;                              /// Additional error info 1
+  uint8_t err2;                              /// Additional error info 1
+  
+  const command_t *cmdList;
 };
 
 struct command
 {
-   char               *commandStr;
-  uint8_t             commandLength;
+  prog_char           *commandStr;
+  prog_char           *commandHelpStr;
   CmdlineFuncPtrType  commandFun;
 };
 
 
 // functions
-
-//! initalize the command line system
-void cmdlineInit(void);
-
-//! add a new command to the database of known commands
-// newCmdString should be a null-terminated command string with no whitespace
-// newCmdFuncPtr should be a pointer to the function to execute when the user enters the corresponding command string
-//   TODO remove this function and add constans table with strings and function pointers
-void cmdlineAddCommand(char* newCmdString, CmdlineFuncPtrType newCmdFuncPtr);
 
 //! call this function to pass input charaters from the user terminal
 void cmdlineInputFunc(char c, cmdState_t *state);
@@ -113,6 +93,11 @@ void cmdHistoryCopy(cmdState_t *state);
 
 void cmdHistoryMove(cmdState_t *state);
 
+/**
+ * Print all commands available for cmdState and its description
+ * @param state - command line interpreter state
+ */
+void cmdPrintHelp(cmdState_t *state);
 
 /**
  * Konfiguruje strukturę do obsługi sesji interpretera poleceń
@@ -121,6 +106,6 @@ void cmdHistoryMove(cmdState_t *state);
  * @param bufferTotalSize  - długość przydzielonego bufora. Min 32 * CMD_STATE_HISTORY bajtów
  * @param output_func      - wskaźnik do funkcji obsługującej strumień wyjściowy
  */
-void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream));
+void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands);
 
 #endif

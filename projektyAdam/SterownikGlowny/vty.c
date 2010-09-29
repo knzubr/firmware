@@ -7,6 +7,9 @@
 #include "mcp3008.h"
 #include "ds1305.h"
 
+#include "vty_en.h"
+//#include "vty_pl.h"
+
 static void helpFunction           (cmdState_t *state);
 static void statusFunction         (cmdState_t *state);
 static void opuscFunction          (cmdState_t *state);
@@ -33,18 +36,7 @@ static void testPamZewFunction     (cmdState_t *state);
 
 struct ramPlikFd    fdVty;
 
-prog_char errorOK[]                                   = "All OK\r\n";
-prog_char errorNoFile[]                               = "Brak pliku\r\n";
-prog_char errorxModemFrameStartTimeout[]              = "\r\n";
-prog_char errorxModemByteSendTimeout[]                = "\r\n";
-prog_char errorxModemWrongFrameNo[]                   = "\r\n";
-prog_char errorxModemFrameFrameNoCorrectionNotMatch[] = "\r\n";
-prog_char errorxModemFrameCrc[]                       = "xModem CRC error\r\n";
-prog_char errorxModemRemoteSideCan[]                  = "Remote side cancelled at frame no %d\r\n";
-prog_char errorxModemUnknownResponse[]                = "xModem unknown response 0x%x\r\n";
-prog_char errorBootloaderNotResponding[]              = "Bootloader is not responding\r\n";
-
-prog_char *errorStrings[] __ATTR_PROGMEM__ = {
+prog_char __ATTR_PROGMEM__ *errorStrings[] = {
   errorOK,
   errorNoFile,
   errorxModemFrameStartTimeout,
@@ -57,62 +49,37 @@ prog_char *errorStrings[] __ATTR_PROGMEM__ = {
   errorBootloaderNotResponding
 };
 
-
 prog_char okStr[] = "OK\r\n";
 prog_char nlStr[] = "\r\n";
 prog_char BladBuforaPozostaloBajtowStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
 
-prog_char cmd_help[]      = "help";             prog_char cmd_help_help[]     = "Print help string";
-prog_char cmd_status[]    = "status";           prog_char cmd_help_status[]   = "Print device status";
-prog_char cmd_time[]      = "time";             prog_char cmd_help_time[]     = "Print time";
 
-prog_char cmd_ping[]      = "ping";             prog_char cmd_help_ping[]     = "[Device no] Send ping to Rs485 device";
-prog_char cmd_xRec[]      = "xrec";             prog_char cmd_hekp_xodb[]     = "[file name] receive file using xModem";
-prog_char cmd_xSend[]     = "xsend";            prog_char cmd_help_xwysl[]    = "[file name] send file using xModem";
-prog_char cmd_xflash[]    = "xflash";           prog_char cmd_help_xflash[]   = "[device no] [file name] flash device connected to Rs485";
-#ifdef testZewPamiec
-prog_char cmd_rtest[]     = "rtest";            prog_char cmd_help_rtest[]    = "External ram test";
-#endif
-prog_char cmd_dir_rf[]    = "dirrf";            prog_char cmd_help_xRamDir[]  = "Print ramdisk files";
-prog_char cmd_create_rf[] = "crf";              prog_char cmd_help_crf[]      = "[file name] create ram file";
-prog_char cmd_erase_rf[]  = "eraserf";          prog_char cmd_help_erase_rf[] = "[file name] erase file from ram disk";
-prog_char cmd_edit_rf[]   = "editrf";           prog_char cmd_help_edit_rf[]  = "[file name] edit file located on ram disk";
-prog_char cmd_read_rf[]   = "readrf";           prog_char cmd_help_read_rf[]  = "[file name] read file located on ram disk";
-
-prog_char cmd_up[]        = "up";               prog_char cmd_help_up[]       = "[driver no] [channel] {value} move up";
-prog_char cmd_down[]      = "down";             prog_char cmd_help_down[]     = "[driver no] [channel] {value} move down";
-prog_char cmd_spa[]       = "spa";              prog_char cmd_help_spa[]      = "[value] set port A";
-
-prog_char cmd_settime[]   = "settime";          prog_char cmd_help_settime[]  = "[h] [m] [s] set time (24h format)";
-prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]       = "[channel 0-7] read analog value";
-
-
-//command_t cmdList[] __ATTR_PROGMEM__ =
-command_t cmdList[] =
+command_t __ATTR_PROGMEM__ cmdList[] =
 {
-  {cmd_help,      helpFunction},
-  {cmd_status,    statusFunction},
-  {cmd_time,      pokazCzasFunction},
+  {cmd_help,      cmd_help_help,      helpFunction},
+  {cmd_status,    cmd_help_status,    statusFunction},
+  {cmd_time,      cmd_help_time,      pokazCzasFunction},
   
-  {cmd_ping,      pingFunction},
-  {cmd_xRec,      goXmodemOdbierzFunction},
-  {cmd_xSend,     goXmodemWyslijFunction},
-  {cmd_xflash,    flashowanieModWyk},
+  {cmd_ping,      cmd_help_ping,      pingFunction},
+  {cmd_xRec,      cmd_help_xRec,      goXmodemOdbierzFunction},
+  {cmd_xSend,     cmd_help_xSend,     goXmodemWyslijFunction},
+  {cmd_xflash,    cmd_help_xflash,    flashowanieModWyk},
 #ifdef testZewPamiec
-  {cmd_rtest,     testPamZewFunction},
+  {cmd_rtest,     cmd_help_rtest,     testPamZewFunction},
 #endif
-  {cmd_dir_rf,    wypiszPlikiFunction},
-  {cmd_create_rf, dodajRamPlikFunction},
-  {cmd_erase_rf,  kasujRamPlikFunction},
-  {cmd_edit_rf,   edytujRamPlikFunction},
-  {cmd_read_rf,   czytajRamPlikFunction},
+  {cmd_dir_rf,    cmd_help_dir_rf,    wypiszPlikiFunction},
+  {cmd_create_rf, cmd_help_create_rf, dodajRamPlikFunction},
+  {cmd_erase_rf,  cmd_help_erase_rf,  kasujRamPlikFunction},
+  {cmd_edit_rf,   cmd_help_edit_rf,   edytujRamPlikFunction},
+  {cmd_read_rf,   cmd_help_read_rf,   czytajRamPlikFunction},
 
-  {cmd_up,        podniesFunction},
-  {cmd_down,      opuscFunction},
+  {cmd_up,        cmd_help_up,        podniesFunction},
+  {cmd_down,      cmd_help_down,      opuscFunction},
 
-  {cmd_spa,       ustawPortExtAFunction},
-  {cmd_settime,   ustawCzasFunction},
-  {cmd_ac,        czytajAC_Function},
+  {cmd_spa,       cmd_help_spa,       ustawPortExtAFunction},
+  {cmd_settime,   cmd_help_settime,   ustawCzasFunction},
+  {cmd_ac,        cmd_help_ac,        czytajAC_Function},
+  {NULL, NULL, NULL}
 };
 
 void VtyInit(cmdState_t* state)
@@ -137,7 +104,7 @@ static void statusFunction(cmdState_t *state)
 
 static void pokazCzasFunction(cmdState_t *state)
 {
-  readTimeDecoded(&czasRtc);
+  readTimeDecoded((timeDecoded_t *)(&czasRtc));
   uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
@@ -169,7 +136,7 @@ static void ustawCzasFunction(cmdState_t *state)
   czasRtc.seconds.cDzies = cDzies;
   czasRtc.seconds.cJedn  = cJedn;
   
-  setTimeDecoded(&czasRtc);
+  setTimeDecoded((timeDecoded_t *)(&czasRtc));
 }
 
 static void czytajAC_Function(cmdState_t *state)
@@ -200,7 +167,8 @@ prog_char helpStr[] =
 
 static void helpFunction(cmdState_t *state)
 {
-  fprintf_P(&state->myStdInOut, helpStr);
+  cmdPrintHelp(state);
+//  fprintf_P(&state->myStdInOut, helpStr);
 }
 
 
@@ -559,7 +527,7 @@ static void flashowanieModWyk(cmdState_t *state)
       break;
     }
     
-    blad = czyscBufOdb485(&state->myStdInOut);
+    blad = czyscBufOdb485(state);
     if (blad != 0)
     {
       fprintf_P(&state->myStdInOut, flashowaniePozostaloWBufZnakowStr, blad);

@@ -5,7 +5,7 @@ ADD_EXECUTABLE(sterownikglowny main.c                              main.h
                                hardwareConfig.h
                                protRs485.c                         protRs485.h
                                serial.c                            serial.h
-                               vty.c                               vty.h
+                               vty.c                               vty.h vty_pl.h vty_en.h  
                                sensors_task.c                      sensors_task.h
                                enc_task.c                          enc_task.h
                                ../protocol1.h
