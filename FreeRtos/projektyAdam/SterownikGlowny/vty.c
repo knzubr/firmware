@@ -30,6 +30,9 @@ static void pokazCzasFunction      (cmdState_t *state);
 static void ustawCzasFunction      (cmdState_t *state);
 static void czytajAC_Function      (cmdState_t *state);
 
+static void enableFunction         (cmdState_t *state);
+static void disableFunction        (cmdState_t *state);
+
 #ifdef testZewPamiec
 static void testPamZewFunction     (cmdState_t *state);
 #endif
@@ -54,7 +57,19 @@ prog_char nlStr[] = "\r\n";
 prog_char BladBuforaPozostaloBajtowStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
 
 
-command_t __ATTR_PROGMEM__ cmdList[] =
+command_t __ATTR_PROGMEM__ cmdListView[] =
+{
+  {cmd_help,      cmd_help_help,      helpFunction},
+  {cmd_status,    cmd_help_status,    statusFunction},
+  {cmd_time,      cmd_help_time,      pokazCzasFunction},  
+  {cmd_ping,      cmd_help_ping,      pingFunction},
+  {cmd_dir_rf,    cmd_help_dir_rf,    wypiszPlikiFunction},
+  {cmd_read_rf,   cmd_help_read_rf,   czytajRamPlikFunction},
+  {cmd_enable,    cmd_help_enable,    enableFunction},
+  {NULL, NULL, NULL}
+};
+
+command_t __ATTR_PROGMEM__ cmdListEnable[] =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
@@ -79,18 +94,28 @@ command_t __ATTR_PROGMEM__ cmdList[] =
   {cmd_spa,       cmd_help_spa,       ustawPortExtAFunction},
   {cmd_settime,   cmd_help_settime,   ustawCzasFunction},
   {cmd_ac,        cmd_help_ac,        czytajAC_Function},
+  {cmd_disable,   cmd_help_disable,   disableFunction},
   {NULL, NULL, NULL}
 };
 
 void VtyInit(cmdState_t* state)
 {
-  cmdStateConfigure(state, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, VtyPutChar, &cmdList[0]);
+  cmdStateConfigure(state, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, VtyPutChar, &cmdListEnable[0]);
 }
 
 void printErrorInfo(cmdState_t *state)
 {
   if (state->errno != 0)
     fprintf_P(&state->myStdInOut, errorStrings[state->errno], state->err1, state->err2);
+}
+
+static void enableFunction(cmdState_t *state)
+{
+  state->cmdList = cmdListEnable;
+}
+static void disableFunction(cmdState_t *state)
+{
+  state->cmdList = cmdListView;
 }
 
 static void statusFunction(cmdState_t *state)

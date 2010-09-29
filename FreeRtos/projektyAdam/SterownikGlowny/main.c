@@ -112,10 +112,6 @@ void vTaskMag(void *pvParameters)
     if(xQueueReceive(xRs485Rec, &znak, portMAX_DELAY))
     {
       sendPing(adr, 8, uartRs485SendByte);
-//      if (sprOdebrPing(adr, 8, xRs485Rec))
-//      {
-//        rprintf("Znaleziono ster adres %x", adr);
-//      }
       vTaskDelay(10);
     }
     adr++;
@@ -130,8 +126,6 @@ xTaskHandle xHandleSensors;
 void initExternalMem(void)
 {
   MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
-//  MCUCR |= (_BV(SRE) | _BV(SRW10));          //Włączenie pamięci zewnętrznej
-//  XMCRA |= (_BV(SRW11) | _BV(SRW01)| _BV(SRW00));
 }
 
 cmdState_t CLIState;
