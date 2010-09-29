@@ -35,6 +35,8 @@ prog_char cmd_spa[]       = "spa";              prog_char cmd_help_spa[]       =
 
 prog_char cmd_settime[]   = "settime";          prog_char cmd_help_settime[]   = "[h] [m] [s] set time (24h format)";
 prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]        = "[channel 0-7] read analog value";
+prog_char cmd_enable[]    = "enable";           prog_char cmd_help_enable[]    = "Enable mode";
+prog_char cmd_disable[]   = "disable";          prog_char cmd_help_disable[]   = "View mode";
 
 #else
 #error "You can't add two language files. Remove #include "vty_*.h" line in file vty.c"

@@ -33,8 +33,10 @@ prog_char cmd_up[]        = "podnies";          prog_char cmd_help_up[]        =
 prog_char cmd_down[]      = "opusc";            prog_char cmd_help_down[]      = "[numer sterownika] [nr rolety] {wartosc} opuszczanie rolety";
 prog_char cmd_spa[]       = "spa";              prog_char cmd_help_spa[]       = "[wartosc] ustaw zewnetrzny port A";
 
-prog_char cmd_settime[]   = "ustawczas";        prog_char cmd_help_settime[]   = "[h] [m] [s] ustawia czas w formacie 24h format";
+prog_char cmd_settime[]   = "ustawcz";          prog_char cmd_help_settime[]   = "[h] [m] [s] ustawia czas w formacie 24h format";
 prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]        = "[wejscie 0-7] czyta analogowa wartosc na wejsciu przetwornika";
+prog_char cmd_enable[]    = "admin";            prog_char cmd_help_enable[]    = "Wejscie w tryb uprzywilejowany";
+prog_char cmd_disable[]   = "normalny";         prog_char cmd_help_disable[]   = "Wyjscie z trybu uprzywilejowanego";
 
 #else
 #error "You can't add two language files. Remove #include "vty_*.h" line in file vty.c"
