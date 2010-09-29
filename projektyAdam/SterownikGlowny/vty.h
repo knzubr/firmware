@@ -28,7 +28,7 @@
 
 
 
-void VtyInit(void);
+void VtyInit(cmdState_t *state);
 void printErrorInfo(cmdState_t *state);
 
 
@@ -41,6 +41,20 @@ extern xQueueHandle           xRs485Tx;
 extern volatile timeDecoded_t czasRtc;
 extern struct Enc28j60_config Enc28j60_global;
 
+enum errorType
+{
+  AllOK  = 0,
+  noFile = 1,
+  xModemFrameStartTimeout = 2,
+  xModemByteSendTimeout = 3,
+  xModemWrongFrameNo = 4,
+  xModemFrameFrameNoCorrectionNotMatch = 5,
+  xModemFrameCrc = 6,
+  xModemRemoteSideCan = 7,
+  xModemUnknownResponse = 8,
+  bootloaderNotResponding = 9
+};
 
+typedef enum errorType errorType_t;
 
 #endif
