@@ -35,18 +35,12 @@
 #include "vt100.h"          // vty100 constans
 
 
-
-struct command tm2p = {"sda", 3, NULL};
-
-//Globals
-cmdList_t  CLCommands;
-
 // Constans Strings
 char PROGMEM CmdlinePrompt[]      = "DomOs>";
 char PROGMEM CmdlineNotice[]      = "cmdline: ";
 char PROGMEM CmdlineCmdNotFound[] = "# nk";
 
-void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream))
+void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands)
 {
   memset(state, 0, sizeof(cmdState_t));
   memset(buffPtr, 0, bufferTotalSize);
@@ -54,6 +48,8 @@ void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSi
   state->CmdlineBuffer = buffPtr;
   state->bufferMaxSize    = (uint8_t)(bufferTotalSize / CMD_STATE_HISTORY);
 
+  state->cmdList = commands;
+  
   uint8_t i;
   char *tmpPtr = buffPtr;
   for (i=0; i < CMD_STATE_HISTORY; i++)
@@ -78,22 +74,6 @@ void cmdStateClear(cmdState_t *state)
 
   // initialize executing function
   state->CmdlineExecFunction = 0;
-}
-
-void cmdlineInit(void)
-{
-  // initialize command list
-  CLCommands.CmdlineNumCommands = 0;
-}
-
-void cmdlineAddCommand(char* newCmdString, CmdlineFuncPtrType newCmdFuncPtr)
-{
-  // add command string to end of command list
-  strcpy(CLCommands.CmdlineCommandList[CLCommands.CmdlineNumCommands], newCmdString);
-  // add command function ptr to end of function list
-  CLCommands.CmdlineFunctionList[CLCommands.CmdlineNumCommands] = newCmdFuncPtr;
-  // increment number of registered commands
-  CLCommands.CmdlineNumCommands++;
 }
 
 void cmdlineInputFunc(char c, cmdState_t *state)
@@ -323,7 +303,7 @@ void cmdHistoryMove(cmdState_t *state)
   if (state->historyDepthIdx != 0)
   {
     state->CmdlineBuffer = state->CmdlineHistory[(state->historyWrIdx-i) & CMD_STATE_HISTORY_MASK];
-    for (i; i<CMD_STATE_HISTORY; i++)
+    for ( ; i<CMD_STATE_HISTORY; i++)
     {
       state->CmdlineHistory[(state->historyWrIdx-i) & CMD_STATE_HISTORY_MASK] = state->CmdlineHistory[(state->historyWrIdx-i-1) & CMD_STATE_HISTORY_MASK];
     }
@@ -396,7 +376,6 @@ void cmdlineDoHistory(char action, cmdState_t *state)
 
 void cmdlineProcessInputString(cmdState_t *state)
 {
-  uint8_t cmdIndex;
   uint8_t i=0;
 
   state->CmdlineExcBuffer = state->CmdlineBuffer;
@@ -418,19 +397,21 @@ void cmdlineProcessInputString(cmdState_t *state)
   }
 
   // search command list for match with entered command
-  for(cmdIndex=0; cmdIndex< CLCommands.CmdlineNumCommands; cmdIndex++)
+  command_t  tmp;
+  const command_t *tmpPtr = state->cmdList;
+  memcpy_P(&tmp, tmpPtr, sizeof(command_t));
+  do
   {
-    if( !strncmp(CLCommands.CmdlineCommandList[cmdIndex], state->CmdlineExcBuffer, i) )
+    if( !strncmp_P(state->CmdlineExcBuffer, tmp.commandStr, i) )      // user-entered command matched a command in the list (database)
     {
-      // user-entered command matched a command in the list (database)
-      // run the corresponding function
-      state->CmdlineExecFunction = CLCommands.CmdlineFunctionList[cmdIndex];
-      // new prompt will be output after user function runs
-      // and we're done
+      state->CmdlineExecFunction = tmp.commandFun;                    // run the corresponding function
       return;
     }
+    tmpPtr++;
+    memcpy_P(&tmp, tmpPtr, sizeof(command_t));
   }
-
+  while (tmp.commandStr != NULL);
+  
   // if we did not get a match
   // output an error message
   cmdlinePrintError(state);
@@ -524,4 +505,23 @@ long cmdlineGetArgHex(uint8_t argnum, cmdState_t *state)
 {
   char* endptr;
   return strtol(cmdlineGetArgStr(argnum, state), &endptr, 16);
+}
+
+void cmdPrintHelp(cmdState_t *state)
+{
+  command_t  tmp;
+  const command_t *tmpPtr = state->cmdList;
+  
+  memcpy_P(&tmp, tmpPtr, sizeof(command_t));
+  do
+  {
+    fprintf_P(&state->myStdInOut, tmp.commandStr);
+    fprintf_P(&state->myStdInOut, PSTR("\t"));
+    fprintf_P(&state->myStdInOut, tmp.commandHelpStr);
+    fprintf_P(&state->myStdInOut, PSTR("\r\n"));
+
+    tmpPtr++;
+    memcpy_P(&tmp, tmpPtr, sizeof(command_t));
+  }
+  while (tmp.commandFun != NULL);
 }
