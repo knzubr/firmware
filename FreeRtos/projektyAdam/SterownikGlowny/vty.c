@@ -32,6 +32,7 @@ static void czytajAC_Function      (cmdState_t *state);
 
 static void enableFunction         (cmdState_t *state);
 static void disableFunction        (cmdState_t *state);
+static void configureModeFunction  (cmdState_t *state);
 
 #ifdef testZewPamiec
 static void testPamZewFunction     (cmdState_t *state);
@@ -57,7 +58,7 @@ prog_char nlStr[] = "\r\n";
 prog_char BladBuforaPozostaloBajtowStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
 
 
-command_t __ATTR_PROGMEM__ cmdListView[] =
+command_t __ATTR_PROGMEM__ cmdListNormal[] =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
@@ -95,12 +96,26 @@ command_t __ATTR_PROGMEM__ cmdListEnable[] =
   {cmd_settime,   cmd_help_settime,   ustawCzasFunction},
   {cmd_ac,        cmd_help_ac,        czytajAC_Function},
   {cmd_disable,   cmd_help_disable,   disableFunction},
+  {cmd_configure, cmd_help_configure, configureModeFunction},
+  {NULL, NULL, NULL}
+};
+
+command_t __ATTR_PROGMEM__ cmdListConfigure[] =
+{
+  {cmd_help,      cmd_help_help,      helpFunction},
+  {cmd_status,    cmd_help_status,    statusFunction},
+  {cmd_time,      cmd_help_time,      pokazCzasFunction},
+  
+  {cmd_spa,       cmd_help_spa,       ustawPortExtAFunction},
+  {cmd_settime,   cmd_help_settime,   ustawCzasFunction},
+  {cmd_enable,    cmd_help_enable,    enableFunction},
+  {cmd_disable,   cmd_help_disable,   disableFunction},
   {NULL, NULL, NULL}
 };
 
 void VtyInit(cmdState_t* state)
 {
-  cmdStateConfigure(state, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, VtyPutChar, &cmdListEnable[0]);
+  cmdStateConfigure(state, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, VtyPutChar, &cmdListNormal[0], NR_NORMAL);
 }
 
 void printErrorInfo(cmdState_t *state)
@@ -111,13 +126,27 @@ void printErrorInfo(cmdState_t *state)
 
 static void enableFunction(cmdState_t *state)
 {
-  state->cmdList = cmdListEnable;
+  if (state->cliMode != RESTRICTED_NORMAL)
+  {
+    state->cmdList = cmdListEnable;
+    state->cliMode = NR_ENABLE;
+  }
 }
 static void disableFunction(cmdState_t *state)
 {
-  state->cmdList = cmdListView;
+  state->cmdList = cmdListNormal;
+  if (state->cliMode != RESTRICTED_NORMAL)
+    state->cliMode = NR_NORMAL;
 }
 
+static void configureModeFunction(cmdState_t *state)
+{
+  if (state->cliMode == NR_ENABLE)
+  {
+    state->cmdList = cmdListConfigure;
+    state->cliMode = NR_CONFIGURE;
+  }
+}
 static void statusFunction(cmdState_t *state)
 {
   fprintf_P(&state->myStdInOut, PSTR("Number of tasks: %d\r\n"), uxTaskGetNumberOfTasks());

@@ -29,7 +29,7 @@
 //#include "netstack.h"
 
 // the password string (only the first 5 char checked), (only a-z,0-9,_ characters):
-prog_char password[]="secret"; // must not be longer than 9 char
+char password[]="secret"; // must not be longer than 9 char
 
 uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};  // how did I get the mac addr? Translate the first 3 numbers into ascii is: TUX
 uint8_t myip[4] = {10,0,0,24};
@@ -158,7 +158,7 @@ void encTask ( void *pvParameters )
     
     for ( ; ; )
     {
-        vTaskDelay ( 1 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwolniony po odebrzeniu przerwania od ENC
+        vTaskDelay ( 0 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwolniony po odebrzeniu przerwania od ENC
 
         // get the next new packet:
         plen = enc28j60PacketReceive ( ENC28J60BUF_SIZE, Enc28j60_global.buf );
@@ -190,84 +190,8 @@ void encTask ( void *pvParameters )
             continue;
         }
 
-
-        if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP_V&& Enc28j60_global.buf[TCP_DST_PORT_H_P]==0&& Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYTELNETPORT )
-        {
-            if ( Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V )
-            {
-                make_tcp_synack_from_syn (Enc28j60_global.buf );
-                // make_tcp_synack_from_syn does already send the syn,ack
-                continue;
-            }
-            if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
-            {
-                init_len_info (Enc28j60_global.buf );  // init some data structures
-                                                       // we can possibly have no data, just ack:
-                dat_p=get_tcp_data_pointer();
-                if ( dat_p==0 )
-                {
-                    if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V )
-                    {
-                        // finack, answer with ack
-                        make_tcp_ack_from_any (Enc28j60_global.buf );
-                    }
-                    // just an ack with no data, wait for next packet
-                    continue;
-                }
-                if ( strncmp ( "GET ", ( char * ) & (Enc28j60_global.buf[dat_p] ),4 ) !=0 )
-                {
-                    // head, post and other methods:
-                    //
-                    // for possible status codes see:
-                    // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-                    plen=fill_tcp_data_p (Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>200 OK</h1>" ) );
-                    goto SENDTCPSOCK;
-                }
-                if ( strncmp ( "/ ", ( char * ) & (Enc28j60_global.buf[dat_p+4] ),2 ) ==0 )
-                {
-                    plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-                    plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Usage: http://host_or_ip/password</p>\n" ) );
-                    goto SENDTCPSOCK;
-                }
-                cmd=analyse_get_url ( ( char * ) & (Enc28j60_global.buf[dat_p+5] ) );
-                // for possible status codes see:
-                // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-                if ( cmd==-1 )
-                {
-                    plen=fill_tcp_data_p (Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Unauthorized</h1>"));
-                    goto SENDTCPSOCK;
-                }
-//                 if ( cmd==1 )
-//                 {
-//                     PORTD|= ( 1<<PORTD7 );// transistor on
-//                 }
-//                 if ( cmd==0 )
-//                 {
-//                     PORTD &= ~ ( 1<<PORTD7 );// transistor off
-//                 }
-                if ( cmd==-3 )
-                {
-                    // redirect to add a trailing slash
-                    plen=moved_perm (Enc28j60_global.buf );
-                    goto SENDTCPSOCK;
-                }
-                //htonl(4);
-                // if (cmd==-2) or any other value
-                // just display the status:
-                plen=print_webpage (Enc28j60_global.buf, ( PORTD & ( 1<<PORTD7 ) ) );
-                //
-            SENDTCPSOCK:
-                make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
-                make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
-                continue;
-            }
-
-        }
-
-        continue;      
-
         // tcp port www start, compare only the lower byte
-        if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP_V&& Enc28j60_global.buf[TCP_DST_PORT_H_P]==0&& Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYWWWPORT )
+        if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP_V && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYWWWPORT )
         {
             if ( Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V )
             {
@@ -341,69 +265,5 @@ void encTask ( void *pvParameters )
         // tcp port www end
         //
         // udp start, we listen on udp port 1200=0x4B0
-        if (Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_UDP_V && Enc28j60_global.buf[UDP_DST_PORT_H_P]==4 && Enc28j60_global.buf[UDP_DST_PORT_L_P]==0xb0 )
-        {
-            payloadlen = Enc28j60_global.buf[UDP_LEN_L_P]-UDP_HEADER_LEN;
-            // you must sent a string starting with v
-            // e.g udpcom version 10.0.0.24
-            if ( verify_password ( ( char * ) & ( Enc28j60_global.buf[UDP_DATA_P] ) ) )
-            {
-                // find the first comma which indicates
-                // the start of a command:
-                cmd_pos=0;
-                while ( cmd_pos<payloadlen )
-                {
-                    cmd_pos++;
-                    if ( Enc28j60_global.buf[UDP_DATA_P+cmd_pos]==',' )
-                    {
-                        cmd_pos++; // put on start of cmd
-                        break;
-                    }
-                }
-
-                // a command is one char and a value. At
-                // least 3 characters long. It has an '=' on
-                // position 2:
-                if ( cmd_pos<2 || cmd_pos>payloadlen-3 || Enc28j60_global.buf[UDP_DATA_P+cmd_pos+1]!='=' )
-                {
-                    strcpy ( str,"e=no_cmd" );
-                    goto ANSWER;
-                }
-
-                // supported commands are
-                // t=1 t=0 t=?
-                if ( Enc28j60_global.buf[UDP_DATA_P+cmd_pos]=='t' )
-                {
-                    cmdval=Enc28j60_global.buf[UDP_DATA_P+cmd_pos+2];
-                    if ( cmdval=='1' )
-                    {
-                        PORTD|= ( 1<<PORTD7 );// transistor on
-                        strcpy ( str,"t=1" );
-                        goto ANSWER;
-                    }
-                    else if ( cmdval=='0' )
-                    {
-                        PORTD &= ~ ( 1<<PORTD7 );// transistor off
-                        strcpy ( str,"t=0" );
-                        goto ANSWER;
-                    }
-                    else if ( cmdval=='?' )
-                    {
-                        if ( PORTD & ( 1<<PORTD7 ) )
-                        {
-                            strcpy ( str,"t=1" );
-                            goto ANSWER;
-                        }
-                        strcpy ( str,"t=0" );
-                        goto ANSWER;
-                    }
-                }
-                strcpy ( str,"e=no_such_cmd" );
-                goto ANSWER;
-            }
-            strcpy ( str,"e=invalid_pw" );
-        ANSWER:
-            make_udp_reply_from_request(Enc28j60_global.buf, str, strlen ( str ), MYUDPPORT);
-        }
     }
 }

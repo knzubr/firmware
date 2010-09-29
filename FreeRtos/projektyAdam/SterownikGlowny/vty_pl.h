@@ -37,6 +37,7 @@ prog_char cmd_settime[]   = "ustawcz";          prog_char cmd_help_settime[]   =
 prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]        = "[wejscie 0-7] czyta analogowa wartosc na wejsciu przetwornika";
 prog_char cmd_enable[]    = "admin";            prog_char cmd_help_enable[]    = "Wejscie w tryb uprzywilejowany";
 prog_char cmd_disable[]   = "normalny";         prog_char cmd_help_disable[]   = "Wyjscie z trybu uprzywilejowanego";
+prog_char cmd_configure[] = "konfig";           prog_char cmd_help_configure[] = "Wejscie w tryb konfiguracji";
 
 #else
 #error "You can't add two language files. Remove #include "vty_*.h" line in file vty.c"
