@@ -17,9 +17,6 @@ static void goXmodemWyslijFunction (cmdState_t *state);
 static void dodajRamPlikFunction   (cmdState_t *state);
 static void kasujRamPlikFunction   (cmdState_t *state);
 static void flashowanieModWyk      (cmdState_t *state);
-#ifdef debugRamDysk
-static void testujRamPlikFunction  (cmdState_t *state);
-#endif
 static void wypiszPlikiFunction    (cmdState_t *state);
 static void edytujRamPlikFunction  (cmdState_t *state);
 static void czytajRamPlikFunction  (cmdState_t *state);
@@ -36,66 +33,108 @@ static void testPamZewFunction     (cmdState_t *state);
 
 struct ramPlikFd    fdVty;
 
-uint8_t cmdErrno = 0;
-uint8_t err1;
-uint8_t err2;
+prog_char errorOK[]                                   = "All OK\r\n";
+prog_char errorNoFile[]                               = "Brak pliku\r\n";
+prog_char errorxModemFrameStartTimeout[]              = "\r\n";
+prog_char errorxModemByteSendTimeout[]                = "\r\n";
+prog_char errorxModemWrongFrameNo[]                   = "\r\n";
+prog_char errorxModemFrameFrameNoCorrectionNotMatch[] = "\r\n";
+prog_char errorxModemFrameCrc[]                       = "xModem CRC error\r\n";
+prog_char errorxModemRemoteSideCan[]                  = "Remote side cancelled at frame no %d\r\n";
+prog_char errorxModemUnknownResponse[]                = "xModem unknown response 0x%x\r\n";
+prog_char errorBootloaderNotResponding[]              = "Bootloader is not responding\r\n";
+
+prog_char *errorStrings[] __ATTR_PROGMEM__ = {
+  errorOK,
+  errorNoFile,
+  errorxModemFrameStartTimeout,
+  errorxModemByteSendTimeout,
+  errorxModemWrongFrameNo,
+  errorxModemFrameFrameNoCorrectionNotMatch,
+  errorxModemFrameCrc,
+  errorxModemRemoteSideCan,
+  errorxModemUnknownResponse,
+  errorBootloaderNotResponding
+};
 
 
+prog_char okStr[] = "OK\r\n";
+prog_char nlStr[] = "\r\n";
+prog_char BladBuforaPozostaloBajtowStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
 
-void VtyInit(void)
-{
-  cmdlineInit();
-  
-  cmdlineAddCommand("help",    helpFunction);
-  cmdlineAddCommand("status",  statusFunction);
-  cmdlineAddCommand("ping",    pingFunction);
-  cmdlineAddCommand("xodb",    goXmodemOdbierzFunction);
-  cmdlineAddCommand("xwysl",   goXmodemWyslijFunction);
-  cmdlineAddCommand("xflash",  flashowanieModWyk);
+prog_char cmd_help[]      = "help";             prog_char cmd_help_help[]     = "Print help string";
+prog_char cmd_status[]    = "status";           prog_char cmd_help_status[]   = "Print device status";
+prog_char cmd_time[]      = "time";             prog_char cmd_help_time[]     = "Print time";
+
+prog_char cmd_ping[]      = "ping";             prog_char cmd_help_ping[]     = "[Device no] Send ping to Rs485 device";
+prog_char cmd_xRec[]      = "xrec";             prog_char cmd_hekp_xodb[]     = "[file name] receive file using xModem";
+prog_char cmd_xSend[]     = "xsend";            prog_char cmd_help_xwysl[]    = "[file name] send file using xModem";
+prog_char cmd_xflash[]    = "xflash";           prog_char cmd_help_xflash[]   = "[device no] [file name] flash device connected to Rs485";
 #ifdef testZewPamiec
-  cmdlineAddCommand("rtest",   testPamZewFunction);
+prog_char cmd_rtest[]     = "rtest";            prog_char cmd_help_rtest[]    = "External ram test";
 #endif
-  cmdlineAddCommand("urp",     dodajRamPlikFunction);
-  cmdlineAddCommand("krp",     kasujRamPlikFunction);
-#ifdef debugRamDysk
-  cmdlineAddCommand("trp",     testujRamPlikFunction);  
+prog_char cmd_dir_rf[]    = "dirrf";            prog_char cmd_help_xRamDir[]  = "Print ramdisk files";
+prog_char cmd_create_rf[] = "crf";              prog_char cmd_help_crf[]      = "[file name] create ram file";
+prog_char cmd_erase_rf[]  = "eraserf";          prog_char cmd_help_erase_rf[] = "[file name] erase file from ram disk";
+prog_char cmd_edit_rf[]   = "editrf";           prog_char cmd_help_edit_rf[]  = "[file name] edit file located on ram disk";
+prog_char cmd_read_rf[]   = "readrf";           prog_char cmd_help_read_rf[]  = "[file name] read file located on ram disk";
+
+prog_char cmd_up[]        = "up";               prog_char cmd_help_up[]       = "[driver no] [channel] {value} move up";
+prog_char cmd_down[]      = "down";             prog_char cmd_help_down[]     = "[driver no] [channel] {value} move down";
+prog_char cmd_spa[]       = "spa";              prog_char cmd_help_spa[]      = "[value] set port A";
+
+prog_char cmd_settime[]   = "settime";          prog_char cmd_help_settime[]  = "[h] [m] [s] set time (24h format)";
+prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]       = "[channel 0-7] read analog value";
+
+
+//command_t cmdList[] __ATTR_PROGMEM__ =
+command_t cmdList[] =
+{
+  {cmd_help,      helpFunction},
+  {cmd_status,    statusFunction},
+  {cmd_time,      pokazCzasFunction},
+  
+  {cmd_ping,      pingFunction},
+  {cmd_xRec,      goXmodemOdbierzFunction},
+  {cmd_xSend,     goXmodemWyslijFunction},
+  {cmd_xflash,    flashowanieModWyk},
+#ifdef testZewPamiec
+  {cmd_rtest,     testPamZewFunction},
 #endif
-  cmdlineAddCommand("dir",     wypiszPlikiFunction);
-  cmdlineAddCommand("erp",     edytujRamPlikFunction);
-  cmdlineAddCommand("crp",     czytajRamPlikFunction);
-  
-  
-  cmdlineAddCommand("podnies", podniesFunction);
-  cmdlineAddCommand("opusc",   opuscFunction);
-  cmdlineAddCommand("upa",     ustawPortExtAFunction);
-  cmdlineAddCommand("czas",    pokazCzasFunction);
-  cmdlineAddCommand("uczas",   ustawCzasFunction);
-  cmdlineAddCommand("ac",      czytajAC_Function);
+  {cmd_dir_rf,    wypiszPlikiFunction},
+  {cmd_create_rf, dodajRamPlikFunction},
+  {cmd_erase_rf,  kasujRamPlikFunction},
+  {cmd_edit_rf,   edytujRamPlikFunction},
+  {cmd_read_rf,   czytajRamPlikFunction},
+
+  {cmd_up,        podniesFunction},
+  {cmd_down,      opuscFunction},
+
+  {cmd_spa,       ustawPortExtAFunction},
+  {cmd_settime,   ustawCzasFunction},
+  {cmd_ac,        czytajAC_Function},
+};
+
+void VtyInit(cmdState_t* state)
+{
+  cmdStateConfigure(state, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, VtyPutChar, &cmdList[0]);
 }
 
-prog_char ostatniBlad[]      = "Ostatni blad: %d (%d, %d)\r\n";
 void printErrorInfo(cmdState_t *state)
 {
-  if (cmdErrno != 0)
-    fprintf_P(&state->myStdInOut, ostatniBlad,      cmdErrno, err1, err2);
+  if (state->errno != 0)
+    fprintf_P(&state->myStdInOut, errorStrings[state->errno], state->err1, state->err2);
 }
-
-#define odczyt(ZNAK, TIMEOUT) xQueueReceive(xVtyRec, (ZNAK), (TIMEOUT))
-
-prog_char LiczbaWatkow []    = "Liczba watkow: %d\r\n";
-prog_char miejsceNaStercie[] = "Miejsce na stercie  %d/%d\r\n";
-prog_char miejsceWRamDysku[] = "Miejsce w ram dysku %d/%d\r\n";
 
 static void statusFunction(cmdState_t *state)
 {
-  fprintf_P(&state->myStdInOut, LiczbaWatkow, uxTaskGetNumberOfTasks());
+  fprintf_P(&state->myStdInOut, PSTR("Number of tasks: %d\r\n"), uxTaskGetNumberOfTasks());
   printErrorInfo(state);
-  fprintf_P(&state->myStdInOut, miejsceNaStercie, xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
-  uint8_t miejsce = ramDyskLiczbaWolnychKlastrow();
-  fprintf_P(&state->myStdInOut, miejsceWRamDysku, miejsce,  L_KLASTROW);
+  fprintf_P(&state->myStdInOut, PSTR("Heap state     : %d bytes free of %d\r\n"), xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
+  uint8_t ramDiscSpace = ramDyskLiczbaWolnychKlastrow();
+  fprintf_P(&state->myStdInOut, PSTR("Ram disk space : %d/%d\r\n"), ramDiscSpace,  L_KLASTROW);
 }
 
-prog_char aktualnyCzas[]     = "Aktualny czas %d:%d:%d\r\n";
 static void pokazCzasFunction(cmdState_t *state)
 {
   readTimeDecoded(&czasRtc);
@@ -104,7 +143,7 @@ static void pokazCzasFunction(cmdState_t *state)
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
   
   
-  fprintf_P(&state->myStdInOut, aktualnyCzas, godzina, minuta, sekunda);
+  fprintf_P(&state->myStdInOut, PSTR("Aktualny czas %d:%d:%d\r\n"), godzina, minuta, sekunda);
 }
 
 static void ustawCzasFunction(cmdState_t *state)
@@ -137,7 +176,7 @@ static void czytajAC_Function(cmdState_t *state)
 {
   uint8_t nrWejscia = cmdlineGetArgInt(1, state);
   uint16_t wynik = MCP3008_getSampleSingle(nrWejscia);
-  fprintf(&state->myStdInOut, "Wartosc probki na wejsciu %d: %d\r\n", nrWejscia, wynik);  
+  fprintf_P(&state->myStdInOut, PSTR("Wartosc probki na wejsciu %d: %d\r\n"), nrWejscia, wynik);  
 }
 
 prog_char helpStr[] =
@@ -153,29 +192,15 @@ prog_char helpStr[] =
 "\tkrp\r\n"
 "\tdir\r\n"
 "\terp\r\n"
-"\tcrp\r\n";
+"\tcrp\r\n"
+#ifdef testZewPamiec
+"\trtest\r\n"
+#endif
+;
 
 static void helpFunction(cmdState_t *state)
 {
   fprintf_P(&state->myStdInOut, helpStr);
-//  fprintf(&state->myStdInOut, "\tstatus\r\n");
-//  fprintf(&state->myStdInOut, "\tpodnies\r\n");
-//  fprintf(&state->myStdInOut, "\topusc\r\n");
-//  fprintf(&state->myStdInOut, "\tping\r\n");
-//  fprintf(&state->myStdInOut, "\txodb\r\n");
-//  fprintf(&state->myStdInOut, "\txwysl\r\n");
-//  fprintf(&state->myStdInOut, "\txflash\r\n");
-//  fprintf(&state->myStdInOut, "\turp\r\n");
-//  fprintf(&state->myStdInOut, "\tkrp\r\n");
-//  fprintf(&state->myStdInOut, "\tdir\r\n");
-//  fprintf(&state->myStdInOut, "\terp\r\n");
-//  fprintf(&state->myStdInOut, "\tcrp\r\n");
-#ifdef testZewPamiec
-  fprintf(&state->myStdInOut, "\trtest\r\n");
-#endif
-#ifdef debugRamDysk
-  fprintf(&state->myStdInOut, "\ttrp\r\n");
-#endif
 }
 
 
@@ -195,8 +220,8 @@ static void opuscFunction(cmdState_t *state)
   wartosc = cmdlineGetArgInt(3, state);
 
   fprintf_P(&state->myStdInOut,OpuszczanieRoletyStr, nrSterownika, nrRolety+1);
-//  if ((wartosc > 0) && (wartosc <=100))
-//    fprintf(&state->myStdInOut, "\tpozycja   %d\r\n", wartosc);
+  if ((wartosc > 0) && (wartosc <=100))
+    fprintf_P(&state->myStdInOut, PSTR("\tpozycja   %d\r\n"), wartosc);
 
   uint16_t crc = 0;
   
@@ -240,8 +265,8 @@ static void podniesFunction(cmdState_t *state)
   wartosc = cmdlineGetArgInt(3, state);
 
   fprintf_P(&state->myStdInOut,   PodnoszenieRoletyStr, nrSterownika, nrRolety+1);
-//  if ((wartosc > 0) && (wartosc <=100))
-//    fprintf(&state->myStdInOut, "\tpozycja   %d\r\n", wartosc);
+  if ((wartosc > 0) && (wartosc <=100))
+    fprintf_P(&state->myStdInOut, PSTR("\tpozycja   %d\r\n"), wartosc);
 
   uint16_t crc = 0;
   
@@ -291,8 +316,8 @@ static void pingFunction(cmdState_t *state)
   l_znakow = cmdlineGetArgInt(2, state);
 
   wynik = czyscBufOdb485(NULL);
-//  if (wynik != 0)
-//    fprintf(&state->myStdInOut, "!!! W buforze Rs485 pozostalo %d bajtow\r\n", wynik);
+  if (wynik != 0)
+    fprintf_P(&state->myStdInOut, BladBuforaPozostaloBajtowStr, wynik);
     
   sendPing(nrSterownika, l_znakow, uartRs485SendByte);
 //  czyscBufOdb485(state);  
@@ -309,9 +334,14 @@ static void pingFunction(cmdState_t *state)
     fprintf_P(&state->myStdInOut, pingZnalezionoStr, nrSterownika);
 }
 
-prog_char flashowanieBladBuforaStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
-prog_char flashowanieBladOtwarciePliku[]       = "Nie mozna otworzyc pliku %s\r\n";
+prog_char BladOtwarciePliku[]                  = "Nie mozna otworzyc pliku %s\r\n";
+prog_char flashowanieBrakOdpBootloaderaStr[]   = "Brak odpowiedzi bootloadera\r\n";
 prog_char flashowanieOczekiwanieNaBootloader[] = "Wykonuje się kod bootloadera, który oczekuje startu transmisji\r\n";
+prog_char flashowanieOtrzymanoOdpStr[]         = "Otrzymano odpowiedź od urządzenia. Liczba blokow do wyslania: %d\r\n";
+prog_char flashowanieBrakOdpNaRamkeNrStr[]     = "Brak odpowiedzi na ramke nr %d\r\n";
+prog_char flashowaniePozostaloWBufZnakowStr[]  = "W buforze odbiorczym pozostalo %d znakow\r\n";
+prog_char flashowanieOdbPrzerwOdbStr[]         = "Odbiorca przerwal odbior\r\n";
+prog_char flashowaniePrzekroczonoLimitStr[]    = "Przekroczono limit retransmisji\r\n";
 static void flashowanieModWyk(cmdState_t *state)
 {
   //zablokuj proces do cyklicznego komunikowania się z modułami wykonawczymi
@@ -327,7 +357,7 @@ static void flashowanieModWyk(cmdState_t *state)
  
   blad = czyscBufOdb485(NULL);
   if (blad != 0)
-    fprintf_P(&state->myStdInOut, flashowanieBladBuforaStr, blad);
+    fprintf_P(&state->myStdInOut, BladBuforaPozostaloBajtowStr, blad);
   blad = 0;
   
   nrUrzadzenia= cmdlineGetArgInt(1, state); 
@@ -347,7 +377,7 @@ static void flashowanieModWyk(cmdState_t *state)
   //Sprawdzanie, czy istnieje odpowiedni plik z firmware
   if (ramDyskOtworzPlik(nazwaPliku, &fdVty) != 0)
   {
-    fprintf_P(&state->myStdInOut, flashowanieBladOtwarciePliku, nazwaPliku);
+    fprintf_P(&state->myStdInOut, BladOtwarciePliku, nazwaPliku);
     return;
   }
   
@@ -481,7 +511,7 @@ static void flashowanieModWyk(cmdState_t *state)
     if(xQueueReceive(xRs485Rec, &data, 150) != pdTRUE)
     {
       blad = 15;
-      fprintf(&state->myStdInOut, "Brak odpowiedzi Bootloadera\r\n");
+      fprintf_P(&state->myStdInOut, flashowanieBrakOdpBootloaderaStr);
     }
     if (data != 'C')
       blad = 16;
@@ -499,7 +529,7 @@ static void flashowanieModWyk(cmdState_t *state)
   uint8_t liczbaBlokow = fdVty.wpis->rozmiarHi * 2;
   if (fdVty.wpis->rozmiarLo == 128)
     liczbaBlokow++;
-  fprintf(&state->myStdInOut, "Otrzymano odpowiedź od urządzenia. Liczba blokow do wyslania: %d\r\n", liczbaBlokow);
+  fprintf_P(&state->myStdInOut, flashowanieOtrzymanoOdpStr, liczbaBlokow);
   
   nrBloku = 1;
   lRetransmisji = 0;
@@ -525,14 +555,14 @@ static void flashowanieModWyk(cmdState_t *state)
     if(xQueueReceive(xRs485Rec, &data, 100) != pdTRUE)
     {
       blad = 250;
-      fprintf(&state->myStdInOut, "Brak odpowiedzi Bootloadera na ramke nr %d\r\n", nrBloku);
+      fprintf_P(&state->myStdInOut, flashowanieBrakOdpNaRamkeNrStr, nrBloku);
       break;
     }
     
     blad = czyscBufOdb485(&state->myStdInOut);
     if (blad != 0)
     {
-      fprintf(&state->myStdInOut, "W buforze odbiorczym pozostalo %d znakow\r\n", blad);
+      fprintf_P(&state->myStdInOut, flashowaniePozostaloWBufZnakowStr, blad);
       blad = 0;
     }
     if (data == ACK)
@@ -546,7 +576,7 @@ static void flashowanieModWyk(cmdState_t *state)
     if (data == CAN)
     {
       blad = 249;
-      fprintf(&state->myStdInOut, "Odbiorca przerwal odbior\r\n");
+      fprintf_P(&state->myStdInOut, flashowanieOdbPrzerwOdbStr);
       break;      
     }
 
@@ -563,7 +593,7 @@ static void flashowanieModWyk(cmdState_t *state)
     if (lRetransmisji == 3)
     {
       blad = 249;
-      fprintf(&state->myStdInOut, "Przekroczono limit retransmisji\r\n");
+      fprintf_P(&state->myStdInOut, flashowaniePrzekroczonoLimitStr);
       break;
     }
   }
@@ -587,22 +617,23 @@ static void flashowanieModWyk(cmdState_t *state)
   return;
 }
 
+prog_char xwyslijStartStr[] = "Xmodem: rozpoczynanie wysylania\r\n";
 static void goXmodemWyslijFunction(cmdState_t *state)
 {
-  fprintf(&state->myStdInOut, "Xmodem: rozpoczynanie wysylania\r\n");
+  fprintf_P(&state->myStdInOut, xwyslijStartStr);
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
-    fprintf(&state->myStdInOut, "Nie można otworzyć pliku\r\n");
+    fprintf_P(&state->myStdInOut, BladOtwarciePliku, cmdlineGetArgStr(1, state));
     return;
   }
 }
 
 static void goXmodemOdbierzFunction(cmdState_t *state)
 {
-  fprintf(&state->myStdInOut, "Xmodem: rozpoczynanie odbioru\r\n");
+  fprintf_P(&state->myStdInOut, PSTR("Xmodem: rozpoczynanie odbioru\r\n"));
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
-    fprintf(&state->myStdInOut, "Nie można otworzyć pliku\r\n");
+    fprintf_P(&state->myStdInOut, BladOtwarciePliku, cmdlineGetArgStr(1, state));
     return;
   }
    
@@ -625,13 +656,13 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
   uint8_t crcHi;
   uint8_t crcLo;
 
-  err1=0;
-  err2=0;
+  state->err1=0;
+  state->err2=0;
   liczbaProb = 20;
   for ( ; ; )
   {
     fputc('C'              , &state->myStdInOut);
-    while(!(UCSR1A & (1 << TXC1)));                              //CZekanie na opróżnienie bufora
+    while(!(UCSR1A & (1 << TXC1)));                              //Czekanie na opróżnienie bufora
 
     if(xQueueReceive(xVtyRec, &c, 100))
       if (c == SOH)
@@ -641,7 +672,7 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
     if (liczbaProb == 0)
     {
       ramDyskZamknijPlik(&fdVty);
-      cmdErrno = 255;
+      state->errno = (uint8_t)(AllOK);
       return;
     }
   }
@@ -655,13 +686,13 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
   {
     if (!xQueueReceive(xVtyRec, &nrBlokuZdalny, 100))
     {
-      cmdErrno = 11;
+      state->errno = (uint8_t)(xModemFrameStartTimeout);
       break; 
     }
     
     if (!xQueueReceive(xVtyRec, &nrBlokuZdalnyNeg, 1))
     {
-      cmdErrno = 12;
+      state->errno = (uint8_t)(xModemByteSendTimeout);
       break; 
     }
   
@@ -669,9 +700,9 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
     c = 255-nrBlokuZdalnyNeg;
     if (nrBlokuZdalny != c)
     {
-      cmdErrno = 1;
-      err1 = nrBlokuZdalny;
-      err2 = nrBlokuZdalnyNeg;
+      state->errno = (uint8_t)(xModemFrameFrameNoCorrectionNotMatch);
+      state->err1 = nrBlokuZdalny;
+      state->err2 = nrBlokuZdalnyNeg;
       break;
     }
     
@@ -687,9 +718,9 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
     //2 Sprawdzanie, czy pasuje numer bloku
     if (nrBlokuZdalny != nrBloku)
     {
-      cmdErrno = 2;
-      err1 = nrBlokuZdalnyNeg;
-      err2 = nrBloku;
+      state->errno = (uint8_t)(xModemWrongFrameNo);
+      state->err1 = nrBlokuZdalnyNeg;
+      state->err2 = nrBloku;
       break;
     }
         
@@ -699,18 +730,20 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
         *(zapPtr++) = c;
       else
       {
-        cmdErrno = 3;
+        state->errno = (uint8_t)(xModemByteSendTimeout);
         break;
       }
     }
     if (!xQueueReceive(xVtyRec, &crcHi, 10))
     {
-        cmdErrno = 13;
+        state->errno = (uint8_t)(xModemFrameCrc);
+        state->err1 = 2;
         break;      
     }
     if (!xQueueReceive(xVtyRec, &crcLo, 10))
     {
-        cmdErrno = 13;
+        state->errno = (uint8_t)(xModemFrameCrc);
+        state->err1 = 1;
         break;      
     }
 
@@ -736,15 +769,15 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
     
     if (liczbaProb == 0)
     {
-      err1 = nrBlokuZdalny;
-      err2 = nrBloku;
-      cmdErrno = 4;
+      state->err1 = nrBlokuZdalny;
+      state->err2 = nrBloku;
+      state->errno = (uint8_t)(xModemWrongFrameNo);
       break; 
     }
 
     if (!xQueueReceive(xVtyRec, &temp1, 100))
     {
-      cmdErrno = 10;
+      state->errno = (uint8_t)(xModemFrameStartTimeout);
       break;
     }
     
@@ -753,13 +786,14 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
       nrBloku++;
       zapPtr = ramDyskDodajBlokXmodem(&fdVty, nrBloku);
       zapPtrKopia = zapPtr;
+      state->errno = (uint8_t)(AllOK);
       continue;
     }
 
     if (temp1 == CAN)
     {
-      err2 = nrBloku;
-      cmdErrno = 5;
+      state->err1 = nrBloku;
+      state->errno = (uint8_t)(xModemRemoteSideCan);
       break;
     }
     if (temp1 == EOT)
@@ -770,10 +804,11 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
         if (temp1 == EOT)
           uartVtySendByte(ACK);  
       }
-      cmdErrno = 0;
+      state->errno = (uint8_t)(AllOK);
       break;
     }
-    cmdErrno = 7;
+    state->errno = (uint8_t)(xModemUnknownResponse);
+    state->err1 = temp1;
     break;
   }
   ramDyskZamknijPlik(&fdVty);
@@ -784,18 +819,16 @@ static void kasujRamPlikFunction(cmdState_t *state)
 {
   uint8_t rezultat;
   if ((rezultat =   ramDyskUsunPlik(cmdlineGetArgStr(1, state))) == 0)
-    fprintf(&state->myStdInOut, "OK\r\n");
-  else
-    fprintf(&state->myStdInOut, "Blad: %d\r\n", rezultat);
+    fprintf_P(&state->myStdInOut, okStr);
+  printErrorInfo(state);
 }
 
 static void dodajRamPlikFunction(cmdState_t *state)
 {
   uint8_t rezultat;
   if ((rezultat = ramDyskUtworzPlik(cmdlineGetArgStr(1, state))) == 0)
-    fprintf(&state->myStdInOut, "OK\r\n");
-  else
-    fprintf(&state->myStdInOut, "Blad: %d\r\n", rezultat);
+    fprintf_P(&state->myStdInOut, okStr);
+  printErrorInfo(state);
 }
 
 static void wypiszPlikiFunction(cmdState_t *state)
@@ -803,16 +836,17 @@ static void wypiszPlikiFunction(cmdState_t *state)
   ramDyskDir(&state->myStdInOut);
 }
 
+prog_char zapisDoPlikuStr[] = "Zapis do pliku. CTRL+C koniec\r\n";
 static void edytujRamPlikFunction(cmdState_t *state)
 {
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
-    fprintf(&state->myStdInOut, "Nie można otworzyć pliku\r\n");
+    fprintf_P(&state->myStdInOut, BladOtwarciePliku, cmdlineGetArgStr(1, state));
     return;
   }
   ramDyskUstawWskaznikNaKoniec(&fdVty);
   uint8_t znak = 0;
-  fprintf(&state->myStdInOut, "Zapis do pliku. CTRL+C koniec\r\n");
+  fprintf_P(&state->myStdInOut, zapisDoPlikuStr);
   while(1)
   {
     if(!xQueueReceive( xVtyRec, &znak, portMAX_DELAY))
@@ -827,17 +861,19 @@ static void edytujRamPlikFunction(cmdState_t *state)
   ramDyskZamknijPlik(&fdVty);
 }
 
+prog_char dulgoscPlikuStr[] = "Dlugosc pliku: %d\r\n";
+
 static void czytajRamPlikFunction(cmdState_t *state)
 {
   uint8_t rezultat;
   uint8_t znak = ' ';
   if ((rezultat = ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty)) != 0)
   {
-    fprintf(&state->myStdInOut, "Brak pliku\r\n");
+    fprintf_P(&state->myStdInOut, BladOtwarciePliku, cmdlineGetArgStr(1, state));
     return;
   }
   uint16_t rozmiar = fdVty.wpis->rozmiarHi * 256 + fdVty.wpis->rozmiarLo;
-  fprintf(&state->myStdInOut, "Dlugosc pliku: %d\r\n", rozmiar);
+  fprintf_P(&state->myStdInOut,dulgoscPlikuStr , rozmiar);
   while (rezultat == 0)
   {
     rezultat = ramDyskCzytajBajtZPliku(&fdVty, &znak);
@@ -846,7 +882,7 @@ static void czytajRamPlikFunction(cmdState_t *state)
     if (znak == '\r')
       uartVtySendByte('\n');
   }
-  fprintf(&state->myStdInOut, "\r\n");
+  fprintf_P(&state->myStdInOut, nlStr);
   ramDyskZamknijPlik(&fdVty);
 }
 
@@ -877,70 +913,4 @@ static void testPamZewFunction(cmdState_t *state)
 }
 #endif
 
-#ifdef debugRamDysk
-char tmpChar[20];
-static void testujRamPlikFunction(cmdState_t *state)
-{
-  uint8_t rezultat;
-  if ((rezultat = ramDyskUtworzPlik(cmdlineGetArgStr(1, state))) == 0)
-    fprintf(&state->myStdInOut, "Utorzono plik\r\n");
-  else
-  {
-    fprintf(&state->myStdInOut, "Blad tworzenia pliku: %d\r\n", rezultat);
-    return;
-  }
-  
-  if ((rezultat = ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty)) == 0)
-    fprintf(&state->myStdInOut, "Otwarto plik (pierwszy klaster=%d)\r\n", fdVty.wpis->pierwszyKlaster);
-  else
-  {
-    fprintf(&state->myStdInOut, "Blad Otwierania pliku: %d\r\n", rezultat);
-    return;
-  }
-  
-  if ((rezultat = ramDyskZapiszBajtDoPliku(&fdVty, 'a')) == 0)
-    fprintf(&state->myStdInOut, "Zapisano znak do pliku\r\n");
-  else
-  {
-    fprintf(&state->myStdInOut, "Blad zapisu znaku do pliku %d\r\n", rezultat);
-    return;
-  }
-  
-  rezultat = ramDyskZapiszBajtDoPliku(&fdVty, 'b');
-  if (rezultat == 0)
-    fprintf(&state->myStdInOut, "Zapisano znak do pliku\r\n");
-  else
-  {
-    fprintf(&state->myStdInOut, "Blad zapisu znaku do pliku %d\r\n", rezultat);
-    return;
-  }
-  uint8_t znak;
-  
-  rezultat = ramDyskUstawWskaznik(&fdVty, 0);
-  if (rezultat == 0)
-    fprintf(&state->myStdInOut, "Przestawiono wskaznik na poczatek pliku\r\n");
-  else
-  {
-    fprintf(&state->myStdInOut, "Blad przy przestawianiu wskaznika %d\r\n", rezultat);
-    return;
-  }
-  
-  rezultat = ramDyskCzytajBajtZPliku(&fdVty, &znak);
-  if (rezultat == 0)
-    fprintf(&state->myStdInOut, "Odczytano znak %c\r\n", znak);
-  else
-  {
-    fprintf(&state->myStdInOut, "Blad przy odczycie znaku %d\r\n", rezultat);
-    return;
-  }  
-  rezultat = ramDyskCzytajBajtZPliku(&fdVty, &znak);
-  if (rezultat == 0)
-    fprintf(&state->myStdInOut, "Odczytano znak %c\r\n", znak);
-  else
-  {
-    fprintf(&state->myStdInOut, "Blad przy odczycie znaku %d\r\n", rezultat);
-    return;
-  }
-  ramDyskZamknijPlik(&fdVty);
-}
-#endif
+

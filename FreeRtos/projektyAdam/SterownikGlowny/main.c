@@ -154,9 +154,8 @@ portSHORT main( void )
 
   xSerialPortInitMinimal();
   
-  VtyInit();
+  VtyInit(&CLIState);
 
-  cmdStateConfigure(&CLIState, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, VtyPutChar);
   Enc28j60Mem_init(spiSendSpinBlock, spiSend, enableSpiEnc28j60, disableSpiEnc28j60, 550 /*BUFFER_SIZE*/ /*231 OK, 232 FAIL */);
 
   
