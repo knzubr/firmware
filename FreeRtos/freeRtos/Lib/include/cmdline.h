@@ -25,6 +25,14 @@ enum cmdBufferHistory
   COPIED       = 1
 };
 
+enum cliModeState
+{
+  NR_NORMAL,
+  NR_ENABLE,
+  NR_CONFIGURE,
+  RESTRICTED_NORMAL
+};
+
 #define CMD_STATE_HISTORY 4
 #define CMD_STATE_HISTORY_MASK 0x03
 
@@ -51,6 +59,7 @@ struct cmdState
   uint8_t err1;                              /// Additional error info 1
   uint8_t err2;                              /// Additional error info 1
   
+  enum cliModeState cliMode;
   const command_t *cmdList;
 };
 
@@ -106,6 +115,6 @@ void cmdPrintHelp(cmdState_t *state);
  * @param bufferTotalSize  - długość przydzielonego bufora. Min 32 * CMD_STATE_HISTORY bajtów
  * @param output_func      - wskaźnik do funkcji obsługującej strumień wyjściowy
  */
-void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands);
+void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands, enum cliModeState mode);
 
 #endif
