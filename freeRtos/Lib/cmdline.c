@@ -7,7 +7,7 @@
 //              : Adam Kaliszan
 // Created      : 2003.07.16
 // Revised      : 2010.04.23
-// Version      : 0.2
+// Version      : 0.5
 // Target MCU   : Atmel AVR Series
 // Editor Tabs  : 2
 //
@@ -36,11 +36,13 @@
 
 
 // Constans Strings
-char PROGMEM CmdlinePrompt[]      = "DomOs>";
+char PROGMEM CmdlinePromptNormal[]      = "DomOs>";
+char PROGMEM CmdlinePromptEnable[]      = "DomOs#";
+char PROGMEM CmdlinePromptConfigure[]   = "DomOs@";
 char PROGMEM CmdlineNotice[]      = "cmdline: ";
 char PROGMEM CmdlineCmdNotFound[] = "# nk";
 
-void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands)
+void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands, enum cliModeState mode)
 {
   memset(state, 0, sizeof(cmdState_t));
   memset(buffPtr, 0, bufferTotalSize);
@@ -48,6 +50,7 @@ void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSi
   state->CmdlineBuffer = buffPtr;
   state->bufferMaxSize    = (uint8_t)(bufferTotalSize / CMD_STATE_HISTORY);
 
+  state->cliMode = mode;
   state->cmdList = commands;
   
   uint8_t i;
@@ -435,8 +438,23 @@ void cmdlineMainLoop(cmdState_t *state)
 
 void cmdlinePrintPrompt(cmdState_t *state)
 {
+  const char* ptr;
   // print a new command prompt
-  char* ptr = CmdlinePrompt;
+  switch (state->cliMode)
+  {
+    case NR_NORMAL:
+      ptr = CmdlinePromptNormal;
+      break;
+    case NR_ENABLE:
+      ptr = CmdlinePromptEnable;
+      break;
+    case NR_CONFIGURE:
+      ptr = CmdlinePromptConfigure;
+      break;
+    default:
+      ptr = CmdlinePromptNormal;
+      break;      
+  }
   while(pgm_read_byte(ptr))
     fputc(pgm_read_byte(ptr++)    , &state->myStdInOut);
 }
