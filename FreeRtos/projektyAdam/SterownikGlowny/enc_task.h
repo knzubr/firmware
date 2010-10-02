@@ -15,7 +15,9 @@
 #define MYTELNETPORT 23
 #define MYUDPPORT    1200
 
-//uint8_t *buf;
+uint8_t mymac[6];
+uint8_t myip[4];
+uint8_t mask;
 
 uint8_t verify_password(char *str);
 

@@ -31,8 +31,6 @@
 // the password string (only the first 5 char checked), (only a-z,0-9,_ characters):
 char password[]="secret"; // must not be longer than 9 char
 
-uint8_t mymac[6] = {0x54,0x55,0x58,0x10,0x00,0x24};  // how did I get the mac addr? Translate the first 3 numbers into ascii is: TUX
-uint8_t myip[4] = {10,0,0,24};
 
 uint8_t verify_password ( char *str )
 {

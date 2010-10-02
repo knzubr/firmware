@@ -1,6 +1,8 @@
 #ifndef LANG_VTY
 #define LANG_VTY EN
 
+// *************************** Error Strings *******************************************************
+
 prog_char errorOK[]                                   = "All OK\r\n";
 prog_char errorNoFile[]                               = "Brak pliku\r\n";
 prog_char errorxModemFrameStartTimeout[]              = "\r\n";
@@ -11,6 +13,20 @@ prog_char errorxModemFrameCrc[]                       = "xModem CRC error\r\n";
 prog_char errorxModemRemoteSideCan[]                  = "Remote side cancelled at frame no %d\r\n";
 prog_char errorxModemUnknownResponse[]                = "xModem unknown response 0x%x\r\n";
 prog_char errorBootloaderNotResponding[]              = "Bootloader is not responding\r\n";
+
+// *************************** Message Strings *****************************************************
+
+prog_char systemStateStr[]            = "System state:\r\n";
+prog_char statusNumberOfTasksStr[]    = "  Number of tasks : %d\r\n";
+prog_char statusStaticHeapStateStr[]  = "  FreeRtos heap   : %d free of %d bytes\r\n";
+prog_char statusDynamicHeapStateStr[] = "  Malloc heap     : %d free of %d bytes\r\n";
+prog_char statusRamDiskStateStr[]     = "  Ram disc space  : %d free of %d clusters\r\n";
+prog_char systemRamConfigStr[]        = "System settings:\r\n";
+prog_char statusMacStr[]              = "  Mac address     : %x:%x:%x:%x:%x:%x\r\n";
+prog_char statusIpStr[]               = "  IP addr./ mask  : %d.%d.%d.%d / %d\r\n";
+
+
+// *************************** Command Strings *****************************************************
 
 prog_char cmd_help[]      = "help";             prog_char cmd_help_help[]      = "Print help string";
 prog_char cmd_status[]    = "status";           prog_char cmd_help_status[]    = "Print device status";
@@ -38,6 +54,9 @@ prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]        =
 prog_char cmd_enable[]    = "enable";           prog_char cmd_help_enable[]    = "Enable mode";
 prog_char cmd_disable[]   = "disable";          prog_char cmd_help_disable[]   = "View mode";
 prog_char cmd_configure[] = "config";           prog_char cmd_help_configure[] = "Configure mode";
+prog_char cmd_conf_ip[]   = "ip";               prog_char cmd_help_conf_ip[]   = "[A1] [A2] [A3] [A4] [mask] set IP address and mask";
+prog_char cmd_conf_mac[]  = "mac";              prog_char cmd_help_conf_mac[]  = "[A1] [A2] [A2] [A3] [A4] [A5] set MAC address";
+prog_char cmd_conf_save[] = "save";             prog_char cmd_help_conf_save[] = "Save configuration";
 
 #else
 #error "You can't add two language files. Remove #include "vty_*.h" line in file vty.c"

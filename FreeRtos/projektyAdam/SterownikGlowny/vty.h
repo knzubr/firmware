@@ -6,6 +6,10 @@
 #include <util/crc16.h>
 #include "ds1305.h"
 #include "enc28j60.h"
+#include "memory_x.h"
+#include "configuration.h"
+
+#define LANG EN
 
 // Znaki kontrolne w protokole Xmodem
 #define SOH                     0x01
@@ -31,6 +35,9 @@
 void VtyInit(cmdState_t *state);
 void printErrorInfo(cmdState_t *state);
 
+extern uint8_t mymac[6];
+extern uint8_t myip[4];
+extern uint8_t mask;
 
 extern xQueueHandle           xVtyRec;
 extern xQueueHandle           xVtyTx;

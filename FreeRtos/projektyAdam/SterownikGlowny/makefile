@@ -53,6 +53,7 @@ PORT_MEM    = ../../freeRtos/portable/MemMang
 
 SRC	= \
 main.c \
+configuration.c \
 serial.c \
 hardware.c \
 protRs485.c \
@@ -60,6 +61,7 @@ sensors_task.c \
 vty.c \
 enc_task.c \
 $(LIB_DIR)/spi.c \
+$(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/xmodem.c \
@@ -156,7 +158,7 @@ ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 # 64 KB of external RAM, starting after internal RAM (ATmega128!),
 # only used for heap (malloc()).
 #EXTMEMOPTS = -Wl,--defsym=__heap_start=0x801100,--defsym=__heap_end=0x807fff
-EXTMEMOPTS = -Wl,--defsym=__heap_start=0x801100,--defsym=__heap_end=0x802bff
+EXTMEMOPTS = -Wl,--defsym=__heap_start=0x801100,--defsym=__heap_end=0x8027ff
 
 #EXTMEMOPTS = -Wl
 
@@ -192,12 +194,19 @@ LDFLAGS += -lm
 #
 
 # Programming support using avrdude.
-AVRDUDE             = avrdude
-AVRDUDE_PROGRAMMER  = jtag1
-AVRDUDE_PORT        = /dev/jtag
-AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
-#AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
+AVRDUDE              = avrdude
+AVRDUDE_PROGRAMMER   = jtag1
+AVRDUDE_PORT         = /dev/jtag
+AVRDUDE_FLAGS        = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_WRITE_FLASH  = -U flash:w:$(TARGET).hex
+AVRDUDE_WRITE_EEPROM  = -U eeprom:w:$(TARGET).eep
+AVRDUDE_READ_EEPROM   = -U eeprom:r:$(TARGET).eep
+AVRDUDE_WRITE_FUSES_H = -U hfuse:w:$(TARGET).hfuse:i
+AVRDUDE_READ_FUSES_H  = -U hfuse:r:$(TARGET).hfuse:i
+AVRDUDE_WRITE_FUSES_L = -U lfuse:w:$(TARGET).lfuse:i
+AVRDUDE_READ_FUSES_L  = -U lfuse:r:$(TARGET).lfuse:i
+AVRDUDE_WRITE_FUSES_E = -U efuse:w:$(TARGET).efuse:i
+AVRDUDE_READ_FUSES_E  = -U efuse:r:$(TARGET).efuse:i
 
 
 # Uncomment the following if you want avrdude's erase cycle counter.
@@ -322,10 +331,20 @@ extcoff: $(TARGET).elf
 
 
 # Program the device.  
+flash:  $(TARGET).hex $(TARGET).eep
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
+
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
+readfuses:
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_READ_FUSES_L) $(AVRDUDE_READ_FUSES_H) $(AVRDUDE_READ_FUSES_E)
 
+programfuses:
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FUSES_L) $(AVRDUDE_WRITE_FUSES_H) $(AVRDUDE_WRITE_FUSES_E)
+
+reset:
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_READ_FUSES_L)
 
 
 # Create final output files (.hex, .eep) from ELF output file.
