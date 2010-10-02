@@ -5,6 +5,11 @@
 #include <stdio.h>
 #include <util/crc16.h>
 #include "ds1305.h"
+#include "enc28j60.h"
+#include "memory_x.h"
+#include "configuration.h"
+
+#define LANG EN
 
 // Znaki kontrolne w protokole Xmodem
 #define SOH                     0x01
@@ -27,7 +32,12 @@
 
 
 
-void VtyInit(void);
+void VtyInit(cmdState_t *state);
+void printErrorInfo(cmdState_t *state);
+
+extern uint8_t mymac[6];
+extern uint8_t myip[4];
+extern uint8_t mask;
 
 extern xQueueHandle           xVtyRec;
 extern xQueueHandle           xVtyTx;
@@ -36,5 +46,22 @@ extern xQueueHandle           xRs485Rec;
 extern xQueueHandle           xRs485Tx;
 
 extern volatile timeDecoded_t czasRtc;
+extern struct Enc28j60_config Enc28j60_global;
+
+enum errorType
+{
+  AllOK  = 0,
+  noFile = 1,
+  xModemFrameStartTimeout = 2,
+  xModemByteSendTimeout = 3,
+  xModemWrongFrameNo = 4,
+  xModemFrameFrameNoCorrectionNotMatch = 5,
+  xModemFrameCrc = 6,
+  xModemRemoteSideCan = 7,
+  xModemUnknownResponse = 8,
+  bootloaderNotResponding = 9
+};
+
+typedef enum errorType errorType_t;
 
 #endif
