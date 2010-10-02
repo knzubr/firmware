@@ -4,15 +4,15 @@
 // --------------------- Konfiguracja pamięci ------------------------------------
 //
 
+#define HEAP_BEGIN                   0x1100
+#define HEAP_END                     CLI_1_BUF_ADDR - 1
+#define HEAP_SIZE                    HEAP_END - HEAP_BEGIN + 1
+
 #define CLI_BUF_TOT_LEN              0x0100
 #define CLI_1_BUF_ADDR               0x2800
-#define CLI_1_HIST_BUF_ADDR          0x2840
 #define CLI_2_BUF_ADDR               0x2900
-#define CLI_2_HIST_BUF_ADDR          0x2940
 #define CLI_3_BUF_ADDR               0x2A00
-#define CLI_3_HIST_BUF_ADDR          0x2A40
 #define CLI_4_BUF_ADDR               0x2B00
-#define CLI_4_HIST_BUF_ADDR          0x2B40
 
 #define ETH_SOCK_BUF_LEN             0x0200
 #define ETH_SOCK_TX_1_BUF_ADDR       0x2C00

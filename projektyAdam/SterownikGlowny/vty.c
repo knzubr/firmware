@@ -6,9 +6,16 @@
 #include "mpc23s17.h"
 #include "mcp3008.h"
 #include "ds1305.h"
+#include "hardwareConfig.h"
+#include "configuration.h"
 
 #include "vty_en.h"
 //#include "vty_pl.h"
+
+#ifndef LANG_VTY
+#error "Vty Language not defined"
+#endif
+
 
 static void helpFunction           (cmdState_t *state);
 static void statusFunction         (cmdState_t *state);
@@ -27,12 +34,17 @@ static void czytajRamPlikFunction  (cmdState_t *state);
 static void ustawPortExtAFunction  (cmdState_t *state);
 
 static void pokazCzasFunction      (cmdState_t *state);
-static void ustawCzasFunction      (cmdState_t *state);
 static void czytajAC_Function      (cmdState_t *state);
 
 static void enableFunction         (cmdState_t *state);
 static void disableFunction        (cmdState_t *state);
 static void configureModeFunction  (cmdState_t *state);
+
+static void ustawIpFunction        (cmdState_t *state);
+static void setMacAddrFunction     (cmdState_t *state);
+static void ustawCzasFunction      (cmdState_t *state);
+
+static void saveConfigFunction     (cmdState_t *state);
 
 #ifdef testZewPamiec
 static void testPamZewFunction     (cmdState_t *state);
@@ -106,8 +118,11 @@ command_t __ATTR_PROGMEM__ cmdListConfigure[] =
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_time,      cmd_help_time,      pokazCzasFunction},
   
-  {cmd_spa,       cmd_help_spa,       ustawPortExtAFunction},
   {cmd_settime,   cmd_help_settime,   ustawCzasFunction},
+  {cmd_conf_ip,   cmd_help_conf_ip,   ustawIpFunction},
+  {cmd_conf_mac,  cmd_help_conf_mac,  setMacAddrFunction},
+  {cmd_conf_save, cmd_help_conf_save, saveConfigFunction},
+
   {cmd_enable,    cmd_help_enable,    enableFunction},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {NULL, NULL, NULL}
@@ -147,13 +162,32 @@ static void configureModeFunction(cmdState_t *state)
     state->cliMode = NR_CONFIGURE;
   }
 }
+
+// ******************************************************************************************************************************************************
+
 static void statusFunction(cmdState_t *state)
 {
-  fprintf_P(&state->myStdInOut, PSTR("Number of tasks: %d\r\n"), uxTaskGetNumberOfTasks());
-  printErrorInfo(state);
-  fprintf_P(&state->myStdInOut, PSTR("Heap state     : %d bytes free of %d\r\n"), xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
+  fprintf_P(&state->myStdInOut, PSTR(SYSTEM_NAME" ver "S_VERSION" build "__DATE__", "__TIME__"\r\n")); 
+  //Print system state
+  fprintf_P(&state->myStdInOut, systemStateStr);
+  fprintf_P(&state->myStdInOut, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
+  fprintf_P(&state->myStdInOut, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
+  fprintf_P(&state->myStdInOut, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);  //TODO FIXME
   uint8_t ramDiscSpace = ramDyskLiczbaWolnychKlastrow();
-  fprintf_P(&state->myStdInOut, PSTR("Ram disk space : %d/%d\r\n"), ramDiscSpace,  L_KLASTROW);
+  fprintf_P(&state->myStdInOut, statusRamDiskStateStr,     ramDiscSpace,  L_KLASTROW);
+  printErrorInfo(state);
+  
+  //Print system configuration
+  fprintf_P(&state->myStdInOut, systemRamConfigStr);
+  fprintf_P(&state->myStdInOut, statusMacStr, mymac[0], mymac[1], mymac[2], mymac[3], mymac[4], mymac[5]);
+  fprintf_P(&state->myStdInOut, statusIpStr, myip[0], myip[1], myip[2], myip[3], mask);
+  
+  //Print time
+/*  readTimeDecoded((timeDecoded_t *)(&czasRtc));
+  uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
+  uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
+  uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
+  fprintf_P(&state->myStdInOut, PSTR("%d:%d:%d\r\n"), godzina, minuta, sekunda);*/
 }
 
 static void pokazCzasFunction(cmdState_t *state)
@@ -161,9 +195,7 @@ static void pokazCzasFunction(cmdState_t *state)
   readTimeDecoded((timeDecoded_t *)(&czasRtc));
   uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
-  uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
-  
-  
+  uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;  
   fprintf_P(&state->myStdInOut, PSTR("Aktualny czas %d:%d:%d\r\n"), godzina, minuta, sekunda);
 }
 
@@ -193,6 +225,25 @@ static void ustawCzasFunction(cmdState_t *state)
   setTimeDecoded((timeDecoded_t *)(&czasRtc));
 }
 
+static void ustawIpFunction(cmdState_t *state)
+{
+  myip[0] =   cmdlineGetArgInt(1, state);
+  myip[1] =   cmdlineGetArgInt(2, state);
+  myip[2] =   cmdlineGetArgInt(3, state);
+  myip[3] =   cmdlineGetArgInt(4, state);
+  mask    =   cmdlineGetArgInt(5, state);
+}
+
+static void setMacAddrFunction(cmdState_t *state)
+{
+  mymac[0] = cmdlineGetArgHex(1, state);
+  mymac[1] = cmdlineGetArgHex(2, state);
+  mymac[2] = cmdlineGetArgHex(3, state);
+  mymac[3] = cmdlineGetArgHex(4, state);
+  mymac[4] = cmdlineGetArgHex(5, state);
+  mymac[5] = cmdlineGetArgHex(6, state);
+}
+
 static void czytajAC_Function(cmdState_t *state)
 {
   uint8_t nrWejscia = cmdlineGetArgInt(1, state);
@@ -200,29 +251,9 @@ static void czytajAC_Function(cmdState_t *state)
   fprintf_P(&state->myStdInOut, PSTR("Wartosc probki na wejsciu %d: %d\r\n"), nrWejscia, wynik);  
 }
 
-prog_char helpStr[] =
-"Dostepne opcje to:\r\n"
-"\tstatus\r\n"
-"\tpodnies\r\n"
-"\topusc\r\n"
-"\tping\r\n"
-"\txodb\r\n"
-"\txwysl\r\n"
-"\txflash\r\n"
-"\turp\r\n"
-"\tkrp\r\n"
-"\tdir\r\n"
-"\terp\r\n"
-"\tcrp\r\n"
-#ifdef testZewPamiec
-"\trtest\r\n"
-#endif
-;
-
 static void helpFunction(cmdState_t *state)
 {
   cmdPrintHelp(state);
-//  fprintf_P(&state->myStdInOut, helpStr);
 }
 
 
@@ -906,6 +937,11 @@ static void czytajRamPlikFunction(cmdState_t *state)
   }
   fprintf_P(&state->myStdInOut, nlStr);
   ramDyskZamknijPlik(&fdVty);
+}
+
+static void saveConfigFunction(cmdState_t *state)
+{
+  saveConfiguration();
 }
 
 #ifdef testZewPamiec

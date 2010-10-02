@@ -1,6 +1,8 @@
 #ifndef LANG_VTY
 #define LANG_VTY PL
 
+// *************************** Error Strings *******************************************************
+
 prog_char errorOK[]                                   = "Wszystko poprawnie\r\n";
 prog_char errorNoFile[]                               = "Brak pliku\r\n";
 prog_char errorxModemFrameStartTimeout[]              = "\r\n";
@@ -11,6 +13,20 @@ prog_char errorxModemFrameCrc[]                       = "xModem CRC error\r\n";
 prog_char errorxModemRemoteSideCan[]                  = "Strona zdalna przerwala transmisje na ramce nr %d\r\n";
 prog_char errorxModemUnknownResponse[]                = "xModem nieznana odpowiedx 0x%x\r\n";
 prog_char errorBootloaderNotResponding[]              = "Bootloader nie odpowiada\r\n";
+
+// *************************** Message Strings *****************************************************
+
+prog_char systemStateStr[]            = "Stan systemu:\r\n";
+prog_char statusNumberOfTasksStr[]    = "  Liczba zadan        : %d\r\n";
+prog_char statusStaticHeapStateStr[]  = "  Sterta dla FreeRtos : %d wolnych z %d bajtow\r\n";
+prog_char statusDynamicHeapStateStr[] = "  Sterta dla malloc   : %d wolnych z %d bajtow\r\n";
+prog_char statusRamDiskStateStr[]     = "  Ram dysk            : %d wolnych z %d klastrow\r\n";
+prog_char systemRamConfigStr[]        = "Ustawienia systemu:\r\n";
+prog_char statusMacStr[]              = "  Adres MAC           : %x:%x:%x:%x:%x:%x\r\n";
+prog_char statusIpStr[]               = "  Adres IP / maska    : %d.%d.%d.%d / %d\r\n";
+
+
+// *************************** Command Strings *****************************************************
 
 prog_char cmd_help[]      = "pomoc";            prog_char cmd_help_help[]      = "Wypisuje wszystkie komendy";
 prog_char cmd_status[]    = "status";           prog_char cmd_help_status[]    = "Wypisuje status urzadzenia";
@@ -38,6 +54,9 @@ prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]        =
 prog_char cmd_enable[]    = "admin";            prog_char cmd_help_enable[]    = "Wejscie w tryb uprzywilejowany";
 prog_char cmd_disable[]   = "normalny";         prog_char cmd_help_disable[]   = "Wyjscie z trybu uprzywilejowanego";
 prog_char cmd_configure[] = "konfig";           prog_char cmd_help_configure[] = "Wejscie w tryb konfiguracji";
+prog_char cmd_conf_ip[]   = "ip";               prog_char cmd_help_conf_ip[]   = "[A1] [A2] [A2] [A3] [mask] ustaw adres IP i maske";
+prog_char cmd_conf_mac[]  = "mac";              prog_char cmd_help_conf_mac[]  = "[A1] [A2] [A2] [A3] [A4] [A5] ustaw adres MAC";
+prog_char cmd_conf_save[] = "zapisz";           prog_char cmd_help_conf_save[] = "Zapisz konfiguracje";
 
 #else
 #error "You can't add two language files. Remove #include "vty_*.h" line in file vty.c"

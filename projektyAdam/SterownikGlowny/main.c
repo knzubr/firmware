@@ -51,8 +51,10 @@
 #include "mpc23s17.h"
 #include "mcp3008.h"
 #include "enc28j60.h"
+#include "memory_x.h"
+#include "configuration.h"
 
-struct sterRolet sterownikiRolet[MAKS_L_STER_ROLET];
+//struct sterRolet sterownikiRolet[MAKS_L_STER_ROLET];
 
 xQueueHandle xVtyRec;
 xQueueHandle xRs485Rec;
@@ -128,16 +130,18 @@ void initExternalMem(void)
   MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
 }
 
-cmdState_t CLIState;
+cmdState_t *CLIStateSerial1;
 
 portSHORT main( void )
 {
+  loadConfiguration();
 //   
   ramDyskInit();              //Inicjalizacja Ram dysku
 #ifdef ENABLE_RESET_COUNTER
   prvIncrementResetCount();
 #endif
 
+  CLIStateSerial1  = xmalloc(sizeof(cmdState_t));
   hardwareInit();
   
   spiInit(disableAllSpiDevices);
@@ -148,15 +152,14 @@ portSHORT main( void )
 
   xSerialPortInitMinimal();
   
-  VtyInit(&CLIState);
+  VtyInit(CLIStateSerial1);
 
   Enc28j60Mem_init(spiSendSpinBlock, spiSend, enableSpiEnc28j60, disableSpiEnc28j60, 550 /*BUFFER_SIZE*/ /*231 OK, 232 FAIL */);
-
   
-  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(&CLIState), 1, &xHandleVTY);
-//xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                1, &xHandleSensors);
-  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                0, &xHandleEnc);
-//xTaskCreate(vTaskMag,     NULL /*"Rs485"*/,   STACK_SIZE_VTY,     NULL, tskIDLE_PRIORITY, &xHandleRs485);
+  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1), 1, &xHandleVTY);
+//xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                      1, &xHandleSensors);
+  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                      0, &xHandleEnc);
+//xTaskCreate(vTaskMag,     NULL /*"Rs485"*/,   STACK_SIZE_VTY,     NULL,       tskIDLE_PRIORITY, &xHandleRs485);
   vTaskStartScheduler();
   return 0;
 }

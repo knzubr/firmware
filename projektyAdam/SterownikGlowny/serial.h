@@ -20,9 +20,10 @@
 #define serUCSRC_SELECT         ( ( unsigned portCHAR ) 0x80 )
 #define serEIGHT_DATA_BITS      ( ( unsigned portCHAR ) 0x06 )
 
-/// Serial 0
 
-/**
+// ******************************* Serial 0 RS485 *********************
+
+/*
  * Włączenie przerwania pusty bufor nadawczy dla magistrali Rs485
  */
 #define vInterruptRs485On()        \
@@ -36,7 +37,7 @@
 
 #define vIsInterruptRs485On()  (UCSR0B & serDATA_INT_ENABLE)
 
-/**
+/*
  * Wyłączenie przerwania pusty bufor nadawczy dla magistrali Rs485
  */
 #define vInterruptRs485Off()       \
@@ -49,9 +50,9 @@
 }
 
 
-///Serial 1
+// ******************************* Serial 1 USB ***********************
 
-/**
+/*
  * Włączenie przerwania pusty bufor nadawczy dla VTY
  */
 #define vInterruptVtyOn()             \
@@ -65,7 +66,7 @@
 
 #define vIsInterruptVtyOn()  (UCSR1B & serDATA_INT_ENABLE)
 
-/**
+/*
  * Wyłączenie przerwania pusty bufor nadawczy dla VTY
  */
 #define vInterruptVtyOff()            \
@@ -77,7 +78,9 @@
   UCSR1B = ucInByte;               \
 }
 
-
+/**
+ * Serial 1 (VTY) receiver que
+ */
 extern xQueueHandle         xVtyRec;
 extern xQueueHandle         xRs485Rec;
 extern xQueueHandle         xVtyTx;

@@ -1,6 +1,7 @@
 PROJECT(sterownikglowny)
 
 ADD_EXECUTABLE(sterownikglowny main.c                              main.h
+                               configuration.c                     configuration.h
                                hardware.c                          hardware.h
                                hardwareConfig.h
                                protRs485.c                         protRs485.h
@@ -15,6 +16,7 @@ add_library(Protocols          ../../freeRtos/Lib/vt100.c          ../../freeRto
                                ../../freeRtos/Lib/xmodem.c         ../../freeRtos/Lib/include/xmodem.h           # Obsługa systemu transmisji Xmodem
                                )
 add_library(Hardware           ../../freeRtos/Lib/spi.c            ../../freeRtos/Lib/include/spi.h              # Obsługa magistrali SPI
+                               ../../freeRtos/Lib/memory_x.c       ../../freeRtos/Lib/include/memory_x.h         # Obsługa malloc. Zlicza wolną i zajętą pamięć na stercie.
                                ../../freeRtos/Lib/mpc23s17.c       ../../freeRtos/Lib/include/mpc23s17.h         # Obsługa ekspandera portu
                                ../../freeRtos/Lib/mcp3008.c        ../../freeRtos/Lib/include/mcp3008.h          # Obsługa przetwornika A/C
                                ../../freeRtos/Lib/ds1305.c         ../../freeRtos/Lib/include/ds1305.h           # Obsługa zegara RTC
