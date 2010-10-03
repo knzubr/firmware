@@ -9,9 +9,9 @@
    9               		.global __do_clear_bss
   12               		.text
   13               	.Ltext0:
- 211               	.global	sensorsTask
- 213               	sensorsTask:
- 214               		.stabd	46,0,0
+ 218               	.global	sensorsTask
+ 220               	sensorsTask:
+ 221               		.stabd	46,0,0
    0:sensors_task.c **** /*********************************************
    1:sensors_task.c ****  * vim:sw=8:ts=8:si:et
    2:sensors_task.c ****  * To use the above modeline in vim you must have "set modeline" in your .vimrc
@@ -38,42 +38,50 @@
   23:sensors_task.c **** 
   24:sensors_task.c **** void sensorsTask(void* pvParameters)
   25:sensors_task.c **** {
- 216               	.LM0:
- 217               	.LFBB1:
- 218               	/* prologue: function */
- 219               	/* frame size = 0 */
- 220               	.L2:
+ 223               	.LM0:
+ 224               	.LFBB1:
+ 225               	/* prologue: function */
+ 226               	/* frame size = 0 */
+ 227               	.L2:
   26:sensors_task.c ****   pvParameters = NULL;
   27:sensors_task.c ****   for( ; ; )
   28:sensors_task.c ****   {
   29:sensors_task.c ****     vTaskDelay(10);
- 222               	.LM1:
- 223 0000 8AE0      		ldi r24,lo8(10)
- 224 0002 90E0      		ldi r25,hi8(10)
- 225 0004 0E94 0000 		call vTaskDelay
- 226 0008 00C0      		rjmp .L2
- 228               	.Lscope1:
- 230               		.stabd	78,0,0
- 231               		.comm xSemaphoreSpiSS,2,1
- 232               		.comm xSpiRx,2,1
- 233               		.comm DS1305_global,6,1
- 234               		.comm czasRtc,7,1
- 235               		.comm klastry,128,1
- 236               		.comm MPC_global,6,1
- 237               		.comm MCP3008_global,6,1
- 246               	.Letext0:
+ 229               	.LM1:
+ 230 0000 8AE0      		ldi r24,lo8(10)
+ 231 0002 90E0      		ldi r25,hi8(10)
+ 232 0004 0E94 0000 		call vTaskDelay
+ 233 0008 00C0      		rjmp .L2
+ 235               	.Lscope1:
+ 237               		.stabd	78,0,0
+ 238               		.comm xSemaphoreSpiSS,2,1
+ 239               		.comm xSpiRx,2,1
+ 240               		.comm DS1305_global,6,1
+ 241               		.comm Enc28j60_global,12,1
+ 242               		.comm mymac,6,1
+ 243               		.comm myip,4,1
+ 244               		.comm mask,1,1
+ 245               		.comm czasRtc,7,1
+ 246               		.comm klastry,128,1
+ 247               		.comm MPC_global,6,1
+ 248               		.comm MCP3008_global,6,1
+ 261               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 sensors_task.c
-     /tmp/ccRLTc0e.s:2      *ABS*:000000000000003f __SREG__
-     /tmp/ccRLTc0e.s:3      *ABS*:000000000000003e __SP_H__
-     /tmp/ccRLTc0e.s:4      *ABS*:000000000000003d __SP_L__
-     /tmp/ccRLTc0e.s:5      *ABS*:0000000000000034 __CCP__
-     /tmp/ccRLTc0e.s:6      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccRLTc0e.s:7      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccRLTc0e.s:213    .text:0000000000000000 sensorsTask
+     /tmp/ccc18Cyk.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/ccc18Cyk.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/ccc18Cyk.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/ccc18Cyk.s:5      *ABS*:0000000000000034 __CCP__
+     /tmp/ccc18Cyk.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccc18Cyk.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccc18Cyk.s:220    .text:0000000000000000 sensorsTask
                             *COM*:0000000000000002 xSemaphoreSpiSS
                             *COM*:0000000000000002 xSpiRx
                             *COM*:0000000000000006 DS1305_global
+                            *COM*:000000000000000c Enc28j60_global
+                            *COM*:0000000000000006 mymac
+                            *COM*:0000000000000004 myip
+                            *COM*:0000000000000001 mask
                             *COM*:0000000000000007 czasRtc
                             *COM*:0000000000000080 klastry
                             *COM*:0000000000000006 MPC_global

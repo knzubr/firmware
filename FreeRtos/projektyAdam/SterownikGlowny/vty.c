@@ -17,40 +17,45 @@
 #endif
 
 
-static void helpFunction           (cmdState_t *state);
-static void statusFunction         (cmdState_t *state);
-static void opuscFunction          (cmdState_t *state);
-static void podniesFunction        (cmdState_t *state);
-static void pingFunction           (cmdState_t *state);
-static void goXmodemOdbierzFunction(cmdState_t *state);
-static void goXmodemWyslijFunction (cmdState_t *state);
-static void dodajRamPlikFunction   (cmdState_t *state);
-static void kasujRamPlikFunction   (cmdState_t *state);
-static void flashowanieModWyk      (cmdState_t *state);
-static void wypiszPlikiFunction    (cmdState_t *state);
-static void edytujRamPlikFunction  (cmdState_t *state);
-static void czytajRamPlikFunction  (cmdState_t *state);
+static cliExRes_t helpFunction           (cmdState_t *state);
+static cliExRes_t statusFunction         (cmdState_t *state);
+static cliExRes_t opuscFunction          (cmdState_t *state);
+static cliExRes_t podniesFunction        (cmdState_t *state);
+static cliExRes_t pingFunction           (cmdState_t *state);
+static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state);
+static cliExRes_t goXmodemWyslijFunction (cmdState_t *state);
+static cliExRes_t dodajRamPlikFunction   (cmdState_t *state);
+static cliExRes_t kasujRamPlikFunction   (cmdState_t *state);
+static cliExRes_t flashowanieModWyk      (cmdState_t *state);
+static cliExRes_t wypiszPlikiFunction    (cmdState_t *state);
+static cliExRes_t edytujRamPlikFunction  (cmdState_t *state);
+static cliExRes_t czytajRamPlikFunction  (cmdState_t *state);
 
-static void ustawPortExtAFunction  (cmdState_t *state);
+static cliExRes_t ustawPortExtAFunction  (cmdState_t *state);
 
-static void pokazCzasFunction      (cmdState_t *state);
-static void czytajAC_Function      (cmdState_t *state);
+static cliExRes_t pokazCzasFunction      (cmdState_t *state);
+static cliExRes_t czytajAC_Function      (cmdState_t *state);
 
-static void enableFunction         (cmdState_t *state);
-static void disableFunction        (cmdState_t *state);
-static void configureModeFunction  (cmdState_t *state);
+static cliExRes_t enableFunction         (cmdState_t *state);
+static cliExRes_t disableFunction        (cmdState_t *state);
+static cliExRes_t configureModeFunction  (cmdState_t *state);
 
-static void ustawIpFunction        (cmdState_t *state);
-static void setMacAddrFunction     (cmdState_t *state);
-static void ustawCzasFunction      (cmdState_t *state);
+static cliExRes_t ustawIpFunction        (cmdState_t *state);
+static cliExRes_t setMacAddrFunction     (cmdState_t *state);
+static cliExRes_t ustawCzasFunction      (cmdState_t *state);
 
-static void saveConfigFunction     (cmdState_t *state);
+static cliExRes_t saveConfigFunction     (cmdState_t *state);
 
 #ifdef testZewPamiec
-static void testPamZewFunction     (cmdState_t *state);
+static cliExRes_t testPamZewFunction     (cmdState_t *state);
 #endif
 
-struct ramPlikFd    fdVty;
+struct ramPlikFd    fdVty;  //TODO move it to CLI struct
+
+prog_char okStr[] = "OK\r\n";
+prog_char nlStr[] = "\r\n";
+prog_char BladBuforaPozostaloBajtowStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
+
 
 prog_char __ATTR_PROGMEM__ *errorStrings[] = {
   errorOK,
@@ -64,11 +69,6 @@ prog_char __ATTR_PROGMEM__ *errorStrings[] = {
   errorxModemUnknownResponse,
   errorBootloaderNotResponding
 };
-
-prog_char okStr[] = "OK\r\n";
-prog_char nlStr[] = "\r\n";
-prog_char BladBuforaPozostaloBajtowStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
-
 
 command_t __ATTR_PROGMEM__ cmdListNormal[] =
 {
@@ -139,35 +139,42 @@ void printErrorInfo(cmdState_t *state)
     fprintf_P(&state->myStdInOut, errorStrings[state->errno], state->err1, state->err2);
 }
 
-static void enableFunction(cmdState_t *state)
+static cliExRes_t enableFunction(cmdState_t *state)
 {
   if (state->cliMode != RESTRICTED_NORMAL)
   {
     state->cmdList = cmdListEnable;
     state->cliMode = NR_ENABLE;
+    return OK_SILENT;
   }
+  return ERROR_OPERATION_NOT_ALLOWED;
 }
-static void disableFunction(cmdState_t *state)
+static cliExRes_t disableFunction(cmdState_t *state)
 {
   state->cmdList = cmdListNormal;
   if (state->cliMode != RESTRICTED_NORMAL)
+  {
     state->cliMode = NR_NORMAL;
+  }
+  return OK_SILENT;
 }
 
-static void configureModeFunction(cmdState_t *state)
+static cliExRes_t configureModeFunction(cmdState_t *state)
 {
   if (state->cliMode == NR_ENABLE)
   {
     state->cmdList = cmdListConfigure;
     state->cliMode = NR_CONFIGURE;
+    return OK_SILENT;
   }
+  return ERROR_OPERATION_NOT_ALLOWED;
 }
 
 // ******************************************************************************************************************************************************
 
-static void statusFunction(cmdState_t *state)
+static cliExRes_t statusFunction(cmdState_t *state)
 {
-  fprintf_P(&state->myStdInOut, PSTR(SYSTEM_NAME" ver "S_VERSION" build "__DATE__", "__TIME__"\r\n")); 
+  fprintf_P(&state->myStdInOut, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n")); 
   //Print system state
   fprintf_P(&state->myStdInOut, systemStateStr);
   fprintf_P(&state->myStdInOut, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
@@ -188,18 +195,20 @@ static void statusFunction(cmdState_t *state)
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
   fprintf_P(&state->myStdInOut, PSTR("%d:%d:%d\r\n"), godzina, minuta, sekunda);*/
+  return OK_SILENT;
 }
 
-static void pokazCzasFunction(cmdState_t *state)
+static cliExRes_t pokazCzasFunction(cmdState_t *state)
 {
   readTimeDecoded((timeDecoded_t *)(&czasRtc));
   uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;  
   fprintf_P(&state->myStdInOut, PSTR("Aktualny czas %d:%d:%d\r\n"), godzina, minuta, sekunda);
+  return OK_SILENT;
 }
 
-static void ustawCzasFunction(cmdState_t *state)
+static cliExRes_t ustawCzasFunction(cmdState_t *state)
 {
   uint8_t godzina =  cmdlineGetArgInt(1, state);
   uint8_t minuta  =  cmdlineGetArgInt(2, state);
@@ -223,37 +232,46 @@ static void ustawCzasFunction(cmdState_t *state)
   czasRtc.seconds.cJedn  = cJedn;
   
   setTimeDecoded((timeDecoded_t *)(&czasRtc));
+  return OK_SILENT;
 }
 
-static void ustawIpFunction(cmdState_t *state)
+static cliExRes_t ustawIpFunction(cmdState_t *state)
 {
+  if (state->argc < 5)
+    return SYNTAX_ERROR;
   myip[0] =   cmdlineGetArgInt(1, state);
   myip[1] =   cmdlineGetArgInt(2, state);
   myip[2] =   cmdlineGetArgInt(3, state);
   myip[3] =   cmdlineGetArgInt(4, state);
   mask    =   cmdlineGetArgInt(5, state);
+  return OK_SILENT;
 }
 
-static void setMacAddrFunction(cmdState_t *state)
+static cliExRes_t setMacAddrFunction(cmdState_t *state)
 {
-  mymac[0] = cmdlineGetArgHex(1, state);
+  if (state->argc < 6)
+    return SYNTAX_ERROR;  mymac[0] = cmdlineGetArgHex(1, state);
+
   mymac[1] = cmdlineGetArgHex(2, state);
   mymac[2] = cmdlineGetArgHex(3, state);
   mymac[3] = cmdlineGetArgHex(4, state);
   mymac[4] = cmdlineGetArgHex(5, state);
   mymac[5] = cmdlineGetArgHex(6, state);
+  return OK_SILENT;
 }
 
-static void czytajAC_Function(cmdState_t *state)
+static cliExRes_t czytajAC_Function(cmdState_t *state)
 {
   uint8_t nrWejscia = cmdlineGetArgInt(1, state);
   uint16_t wynik = MCP3008_getSampleSingle(nrWejscia);
   fprintf_P(&state->myStdInOut, PSTR("Wartosc probki na wejsciu %d: %d\r\n"), nrWejscia, wynik);  
+  return OK_SILENT;
 }
 
-static void helpFunction(cmdState_t *state)
+static cliExRes_t helpFunction(cmdState_t *state)
 {
   cmdPrintHelp(state);
+  return OK_SILENT;
 }
 
 
@@ -261,7 +279,7 @@ prog_char OpuszczanieRoletyStr[] =
 "Opuszczanie rolety\r\n"
 "\tsterownik %d\r\n"
 "\troleta    %d\r\n";
-static void opuscFunction(cmdState_t *state)
+static cliExRes_t opuscFunction(cmdState_t *state)
 {
   uint8_t nrRolety;
   uint8_t nrSterownika;
@@ -300,22 +318,23 @@ static void opuscFunction(cmdState_t *state)
   
   uartRs485SendByte((uint8_t)(crc>>8));
   uartRs485SendByte((uint8_t)(crc & 0xFF));
+  return OK_SILENT;
 }
 
 prog_char PodnoszenieRoletyStr[] =
 "Podnoszenie rolety\r\n"
 "\tsterownik %d\r\n"
 "\troleta    %d\r\n";
-static void podniesFunction(cmdState_t *state)
+static cliExRes_t podniesFunction(cmdState_t *state)
 {
-  uint8_t nrRolety;
-  uint8_t nrSterownika;
-  uint8_t wartosc;
+  if (state->argc < 2)
+    return SYNTAX_ERROR;
   
-  nrSterownika = cmdlineGetArgInt(1, state);
-  nrRolety = cmdlineGetArgInt(2, state);
-  nrRolety &= 0x01;
-  wartosc = cmdlineGetArgInt(3, state);
+  uint8_t nrSterownika = (cmdlineGetArgInt(1, state) & 0x3F);
+  uint8_t nrRolety     = (cmdlineGetArgInt(2, state) & 0x01);
+  uint8_t wartosc = 255;
+  if (state->argc > 2)
+    wartosc = cmdlineGetArgInt(3, state);
 
   fprintf_P(&state->myStdInOut,   PodnoszenieRoletyStr, nrSterownika, nrRolety+1);
   if ((wartosc > 0) && (wartosc <=100))
@@ -346,21 +365,26 @@ static void podniesFunction(cmdState_t *state)
   
   uartRs485SendByte((uint8_t)(crc>>8));
   uartRs485SendByte((uint8_t)(crc & 0xFF));
+  return OK_SILENT;
 }
 
-static void ustawPortExtAFunction(cmdState_t *state)
+static cliExRes_t ustawPortExtAFunction(cmdState_t *state)
 {
   uint8_t wyjscie = cmdlineGetArgInt(1, state);
   MPC23s17SetDirA(0x00, 0);
   MPC23s17SetPortA(wyjscie, 0);
+  return OK_SILENT;
 }
 
 prog_char pingNieOdpowiada[]    = "Urzedzenie nr %d nie odpowiada\r\n";
 prog_char pingBladOdpowiedzi[]  = "Blad nr %d w odpowiedzi urzadzenia nr %d\r\n";
 prog_char pingZnalezionoStr[]   = "Znaleziono urzadzanie nr %d\r\n";
 
-static void pingFunction(cmdState_t *state)
+static cliExRes_t pingFunction(cmdState_t *state)
 {
+  if (state->argc < 2)
+    return SYNTAX_ERROR;
+  
   static uint8_t nrSterownika;
   static uint8_t wynik;
   static uint8_t l_znakow;
@@ -385,6 +409,7 @@ static void pingFunction(cmdState_t *state)
   }
   else
     fprintf_P(&state->myStdInOut, pingZnalezionoStr, nrSterownika);
+  return OK_SILENT;
 }
 
 prog_char BladOtwarciePliku[]                  = "Nie mozna otworzyc pliku %s\r\n";
@@ -395,7 +420,7 @@ prog_char flashowanieBrakOdpNaRamkeNrStr[]     = "Brak odpowiedzi na ramke nr %d
 prog_char flashowaniePozostaloWBufZnakowStr[]  = "W buforze odbiorczym pozostalo %d znakow\r\n";
 prog_char flashowanieOdbPrzerwOdbStr[]         = "Odbiorca przerwal odbior\r\n";
 prog_char flashowaniePrzekroczonoLimitStr[]    = "Przekroczono limit retransmisji\r\n";
-static void flashowanieModWyk(cmdState_t *state)
+static cliExRes_t flashowanieModWyk(cmdState_t *state)
 {
   //zablokuj proces do cyklicznego komunikowania się z modułami wykonawczymi
 
@@ -431,7 +456,7 @@ static void flashowanieModWyk(cmdState_t *state)
   if (ramDyskOtworzPlik(nazwaPliku, &fdVty) != 0)
   {
     fprintf_P(&state->myStdInOut, BladOtwarciePliku, nazwaPliku);
-    return;
+    return ERROR_INFORM;
   }
   
   //Wysyłanie polecenia restartu
@@ -546,7 +571,7 @@ static void flashowanieModWyk(cmdState_t *state)
     printErrorInfo(state);    
     ramDyskZamknijPlik(&fdVty);
     czyscBufOdb485(state);  
-    return;
+    return ERROR_INFORM;
   }
   if (blad == 0)
   {
@@ -576,7 +601,7 @@ static void flashowanieModWyk(cmdState_t *state)
   {
     ramDyskZamknijPlik(&fdVty);
     //odblokuj proces do cyklicznego komunikowania się z modułami wykonawczymi
-    return;
+    return ERROR_INFORM;
   } 
 
   uint8_t liczbaBlokow = fdVty.wpis->rozmiarHi * 2;
@@ -667,27 +692,28 @@ static void flashowanieModWyk(cmdState_t *state)
   czyscBufOdb485(state);  
   ramDyskZamknijPlik(&fdVty);
   //odblokuj proces do cyklicznego komunikowania się z modułami wykonawczymi
-  return;
+  return OK_SILENT;
 }
 
 prog_char xwyslijStartStr[] = "Xmodem: rozpoczynanie wysylania\r\n";
-static void goXmodemWyslijFunction(cmdState_t *state)
+static cliExRes_t goXmodemWyslijFunction(cmdState_t *state)
 {
   fprintf_P(&state->myStdInOut, xwyslijStartStr);
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
     fprintf_P(&state->myStdInOut, BladOtwarciePliku, cmdlineGetArgStr(1, state));
-    return;
+    return ERROR_INFORM;
   }
+  return OK_SILENT;
 }
 
-static void goXmodemOdbierzFunction(cmdState_t *state)
+static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state)
 {
   fprintf_P(&state->myStdInOut, PSTR("Xmodem: rozpoczynanie odbioru\r\n"));
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
     fprintf_P(&state->myStdInOut, BladOtwarciePliku, cmdlineGetArgStr(1, state));
-    return;
+    return ERROR_INFORM;
   }
    
   uint8_t  i = 25;
@@ -726,7 +752,7 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
     {
       ramDyskZamknijPlik(&fdVty);
       state->errno = (uint8_t)(AllOK);
-      return;
+      return ERROR_INFORM;
     }
   }
   
@@ -865,37 +891,43 @@ static void goXmodemOdbierzFunction(cmdState_t *state)
     break;
   }
   ramDyskZamknijPlik(&fdVty);
-  return;
+  return OK_SILENT;
 }
 
-static void kasujRamPlikFunction(cmdState_t *state)
+static cliExRes_t kasujRamPlikFunction(cmdState_t *state)
 {
   uint8_t rezultat;
   if ((rezultat =   ramDyskUsunPlik(cmdlineGetArgStr(1, state))) == 0)
     fprintf_P(&state->myStdInOut, okStr);
   printErrorInfo(state);
+  return OK_SILENT;
 }
 
-static void dodajRamPlikFunction(cmdState_t *state)
+static cliExRes_t dodajRamPlikFunction(cmdState_t *state)
 {
   uint8_t rezultat;
   if ((rezultat = ramDyskUtworzPlik(cmdlineGetArgStr(1, state))) == 0)
+  {
     fprintf_P(&state->myStdInOut, okStr);
+    return OK_INFORM;
+  }
   printErrorInfo(state);
+  return OK_INFORM;
 }
 
-static void wypiszPlikiFunction(cmdState_t *state)
+static cliExRes_t wypiszPlikiFunction(cmdState_t *state)
 {
   ramDyskDir(&state->myStdInOut);
+  return OK_SILENT;
 }
 
 prog_char zapisDoPlikuStr[] = "Zapis do pliku. CTRL+C koniec\r\n";
-static void edytujRamPlikFunction(cmdState_t *state)
+static cliExRes_t edytujRamPlikFunction(cmdState_t *state)
 {
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
     fprintf_P(&state->myStdInOut, BladOtwarciePliku, cmdlineGetArgStr(1, state));
-    return;
+    return ERROR_INFORM;
   }
   ramDyskUstawWskaznikNaKoniec(&fdVty);
   uint8_t znak = 0;
@@ -912,18 +944,19 @@ static void edytujRamPlikFunction(cmdState_t *state)
     ramDyskZapiszBajtDoPliku(&fdVty, znak);
   }
   ramDyskZamknijPlik(&fdVty);
+  return OK_SILENT;
 }
 
 prog_char dulgoscPlikuStr[] = "Dlugosc pliku: %d\r\n";
 
-static void czytajRamPlikFunction(cmdState_t *state)
+static cliExRes_t czytajRamPlikFunction(cmdState_t *state)
 {
   uint8_t rezultat;
   uint8_t znak = ' ';
   if ((rezultat = ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty)) != 0)
   {
     fprintf_P(&state->myStdInOut, BladOtwarciePliku, cmdlineGetArgStr(1, state));
-    return;
+    return ERROR_INFORM;
   }
   uint16_t rozmiar = fdVty.wpis->rozmiarHi * 256 + fdVty.wpis->rozmiarLo;
   fprintf_P(&state->myStdInOut,dulgoscPlikuStr , rozmiar);
@@ -937,15 +970,18 @@ static void czytajRamPlikFunction(cmdState_t *state)
   }
   fprintf_P(&state->myStdInOut, nlStr);
   ramDyskZamknijPlik(&fdVty);
+  return OK_SILENT;
 }
 
-static void saveConfigFunction(cmdState_t *state)
+static cliExRes_t saveConfigFunction(cmdState_t *state)
 {
+  state = NULL;
   saveConfiguration();
+  return OK_SILENT;
 }
 
 #ifdef testZewPamiec
-static void testPamZewFunction(cmdState_t *state)
+static cliExRes_t testPamZewFunction(cmdState_t *state)
 {
   state = NULL;
   uint8_t *ptr;
@@ -968,6 +1004,7 @@ static void testPamZewFunction(cmdState_t *state)
       ptr++;
     }
   }
+  return OK_SILENT;
 }
 #endif
 
