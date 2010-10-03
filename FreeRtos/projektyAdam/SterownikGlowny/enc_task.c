@@ -160,7 +160,6 @@ void encTask ( void *pvParameters )
 
         // get the next new packet:
         plen = enc28j60PacketReceive ( ENC28J60BUF_SIZE, Enc28j60_global.buf );
-
         /*plen will ne unequal to zero if there is a valid
         * packet (without crc error) */
         if ( plen==0 )

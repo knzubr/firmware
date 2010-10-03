@@ -29,19 +29,16 @@
 
 
 
-struct MPC_config
-{
-  uint8_t (*spiSend)(uint8_t data); /// wskaźnik do funkcji, która wysyła i odbiera dane przez SPI
-  void (*spiEnableMpc)(void);
-  void (*spiDisableAll)(void);  
-};
+//struct MPC_config
+//{
+//};
 
-struct MPC_config MPC_global;
+//struct MPC_config MPC_global;
 
 // functions
 
-
-void MPC23S17_init(uint8_t (*spiSendFunc)(uint8_t data), void (*spiEnableMpcFunc)(void), void (*spiDisableMpcFunc)(void));
+void enableSpiMPC23S17(void)  __attribute__ ((weak));
+void disableSpiMPC23S17(void) __attribute__ ((weak));
 
 /**
  * Ustawia kierunek na porcie A

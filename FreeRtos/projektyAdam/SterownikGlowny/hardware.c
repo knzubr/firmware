@@ -2,10 +2,17 @@
 #include "hardwareConfig.h"
 #include "spi.h"
 #include <avr/io.h>
+#include <avr/interrupt.h>
+
+xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
 
 void hardwareInit(void)
 {
   //DDRA = 0x00;  //External Memory
+  portENTER_CRITICAL();
+  xSpiRx          = xQueueCreate(1, 1);
+  portEXIT_CRITICAL();
+
   DDRB = 0xF7;
   PORTB = 0xD1;
   /*
@@ -57,6 +64,25 @@ void hardwareInit(void)
    6 - 
    7 - 
    */
+}
+
+uint8_t spiSend(uint8_t data)
+{
+  uint8_t result;
+  SPDR = data;
+  xQueueReceive(xSpiRx, &result, 10); 
+  return result;
+}
+
+uint8_t spiSendSpinBlock(uint8_t data)
+{
+  SPDR = data;
+  SPCR &= ~(1<<SPIE);                //Disable SPI interrupt
+  while(!(SPSR&(1<<SPIF)));
+  data = SPSR;                       //Clearing interrupt flag
+  data = SPDR;                       //Resfing DPI buffer register
+  SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
+  return data;                     
 }
 
 void disableAllSpiDevices(void)
@@ -115,7 +141,7 @@ void disableAllSpiDevices(void)
 #endif
 }
 
-void enableSpiEnc28j60(void)
+void spiEnableEnc28j60(void)
 {
 #if ENC_SPI_CS_EN_MASK_OR != 0
   ENC_SPI_CS_PORT |= ENC_SPI_CS_EN_MASK_OR;
@@ -125,7 +151,7 @@ void enableSpiEnc28j60(void)
 #endif
 }
 
-void disableSpiEnc28j60(void)
+void spiDisableEnc28j60(void)
 {
 #if ENC_SPI_CS_EN_MASK_OR != 0
   ENC_SPI_CS_PORT &= (~ENC_SPI_CS_EN_MASK_OR);
@@ -201,7 +227,7 @@ void disableSpiMCP3008(void)
 //#define DS_SPCR_OR_MASK            (1<<SPR1)
 #define DS_SPCR_OR_MASK ((1<<CPHA)|(1<<SPR0))
 //#define DS_SPCR_OR_MASK (1<<CPHA)
-void enableSpiDs1305(void)
+void spiEnableDS1305(void)
 {
   SPCR |= DS_SPCR_OR_MASK;
 //spiSetCPHA();
@@ -213,7 +239,7 @@ void enableSpiDs1305(void)
 #endif
 }
 
-void disableSpiDs1305(void)
+void spiDisableDS1305(void)
 {
   SPCR &= ~DS_SPCR_OR_MASK;
 //  spiClearCPHA();
@@ -223,4 +249,21 @@ void disableSpiDs1305(void)
 #if DS1305_SPI_CS_EN_MASK_AND != 0xFF
   DS1305_SPI_CS_PORT |= (~DS1305_SPI_CS_EN_MASK_AND);
 #endif  
+}
+
+ISR(SPI_STC_vect)
+{
+  static signed portBASE_TYPE xHigherPriorityTaskWoken; 
+
+  static uint8_t data;
+  data = SPDR;
+  
+  xQueueSendFromISR(xSpiRx, &data, &xHigherPriorityTaskWoken);
+
+  if( xHigherPriorityTaskWoken )
+  {
+    taskYIELD();
+  }
+  
+  //clear SPI interrupt SPI |= 1;
 }
