@@ -12,6 +12,13 @@
  */
 void hardwareInit(void);
 
+// ************************ Obsługa Rs485 ******************************
+void takeRs485(void);
+void releaseRs485(void);
+void rs485Send(uint8_t c);
+uint8_t rs485Receive(uint8_t *c, uint8_t timeout);
+
+// ************************ Obsługa SPI ********************************
 void disableAllSpiDevices(void);
 
 void enableSpiEnc28j60(void);

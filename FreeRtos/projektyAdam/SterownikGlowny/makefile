@@ -56,7 +56,6 @@ main.c \
 configuration.c \
 serial.c \
 hardware.c \
-protRs485.c \
 sensors_task.c \
 vty.c \
 enc_task.c \
@@ -71,6 +70,7 @@ $(LIB_DIR)/mpc23s17.c \
 $(LIB_DIR)/mcp3008.c \
 $(LIB_DIR)/ip_arp_udp_tcp.c \
 $(LIB_DIR)/enc28j60.c \
+$(LIB_DIR)/Rs485_prot.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \
@@ -201,11 +201,11 @@ AVRDUDE_FLAGS        = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_WRITE_FLASH  = -U flash:w:$(TARGET).hex
 AVRDUDE_WRITE_EEPROM  = -U eeprom:w:$(TARGET).eep
 AVRDUDE_READ_EEPROM   = -U eeprom:r:$(TARGET).eep
-AVRDUDE_WRITE_FUSES_H = -U hfuse:w:$(TARGET).hfuse:i
+AVRDUDE_WRITE_FUSES_H = -U hfuse:w:0x90:m
 AVRDUDE_READ_FUSES_H  = -U hfuse:r:$(TARGET).hfuse:i
-AVRDUDE_WRITE_FUSES_L = -U lfuse:w:$(TARGET).lfuse:i
+AVRDUDE_WRITE_FUSES_L = -U lfuse:w:0xff:m
 AVRDUDE_READ_FUSES_L  = -U lfuse:r:$(TARGET).lfuse:i
-AVRDUDE_WRITE_FUSES_E = -U efuse:w:$(TARGET).efuse:i
+AVRDUDE_WRITE_FUSES_E = -U efuse:w:0xff:m
 AVRDUDE_READ_FUSES_E  = -U efuse:r:$(TARGET).efuse:i
 
 

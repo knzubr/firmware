@@ -8,6 +8,7 @@
 #include "enc28j60.h"
 #include "memory_x.h"
 #include "configuration.h"
+#include "Rs485_prot.h"
 
 #define LANG EN
 
@@ -59,7 +60,9 @@ enum errorType
   xModemFrameCrc = 6,
   xModemRemoteSideCan = 7,
   xModemUnknownResponse = 8,
-  bootloaderNotResponding = 9
+  noRemoteDevice = 9,
+  bootloaderNotResponding = 10,
+  cantOpenFile = 11
 };
 
 typedef enum errorType errorType_t;

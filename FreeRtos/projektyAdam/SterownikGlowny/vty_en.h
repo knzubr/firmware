@@ -12,7 +12,9 @@ prog_char errorxModemFrameFrameNoCorrectionNotMatch[] = "\r\n";
 prog_char errorxModemFrameCrc[]                       = "xModem CRC error\r\n";
 prog_char errorxModemRemoteSideCan[]                  = "Remote side cancelled at frame no %d\r\n";
 prog_char errorxModemUnknownResponse[]                = "xModem unknown response 0x%x\r\n";
+prog_char errorNoRemoteDevice[]                       = "Device %d is not responding (%d)\r\n";
 prog_char errorBootloaderNotResponding[]              = "Bootloader is not responding\r\n";
+prog_char errorOpenFile[]                             = "Can't open file %s\r\n";
 
 // *************************** Message Strings *****************************************************
 
@@ -25,6 +27,14 @@ prog_char systemRamConfigStr[]        = "System settings:\r\n";
 prog_char statusMacStr[]              = "  Mac address     : %x:%x:%x:%x:%x:%x\r\n";
 prog_char statusIpStr[]               = "  IP addr./ mask  : %d.%d.%d.%d / %d\r\n";
 
+prog_char editRamFileIntroStr[]       = "Writing to file. Press CTRL+C to quit\r\n";
+prog_char readRamFIleLenStr[]         = "File length: %d\r\n";
+
+prog_char xwyslijStartStr[]           = "Xmodem: Transmission start\r\n";
+
+prog_char movingCurtainUpStr[]        = "Podnoszenie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
+prog_char movingCurtainDownStr[]      = "Opuszczanie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
+prog_char movingCurtainPosStr[]       = "\tpozycja   %d\r\n";
 
 // *************************** Command Strings *****************************************************
 

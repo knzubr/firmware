@@ -27,6 +27,8 @@ void xSerialPortInitMinimal(void)
     xVtyTx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
     xRs485Rec = xQueueCreate( 16, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
     xRs485Tx = xQueueCreate( 4, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
+    
+    vSemaphoreCreateBinary(xSemaphoreRs485); 
   }
   portEXIT_CRITICAL();
   
@@ -67,6 +69,11 @@ void uartRs485SendByte(uint8_t data)
   vInterruptRs485On();
 }
 
+uint8_t rs485Receive(uint8_t *c, uint8_t timeout)
+{
+  return xQueueReceive(xRs485Rec, c, timeout);
+}
+
 ISR(USART0_UDRE_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
@@ -91,6 +98,26 @@ ISR(USART0_TX_vect)
 {
   if (!vIsInterruptRs485On())
     Rs485TxStop();
+}
+
+uint8_t flushRs485RecBuffer(void)
+{
+  uint8_t temp;
+  uint8_t wynik = 0;
+  while(xQueueReceive(xRs485Rec, &temp, 10) == pdTRUE)
+    wynik++;
+    
+  return wynik;
+}
+
+void    takeRs485(void)
+{
+  xSemaphoreTake(xSemaphoreRs485, portMAX_DELAY);
+}
+
+void    releaseRs485(void)
+{
+  xSemaphoreGive(xSemaphoreRs485);
 }
 
 /*-----------------------------------------------------------*/
