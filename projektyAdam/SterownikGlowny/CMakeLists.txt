@@ -4,16 +4,15 @@ ADD_EXECUTABLE(sterownikglowny main.c                              main.h
                                configuration.c                     configuration.h
                                hardware.c                          hardware.h
                                hardwareConfig.h
-                               protRs485.c                         protRs485.h
                                serial.c                            serial.h
                                vty.c                               vty.h vty_pl.h vty_en.h  
                                sensors_task.c                      sensors_task.h
                                enc_task.c                          enc_task.h
-                               ../protocol1.h
                                )
 add_library(Protocols          ../../freeRtos/Lib/vt100.c          ../../freeRtos/Lib/include/vt100.h            # Obsługa sekwencji stosowanytch w VT100
                                ../../freeRtos/Lib/cmdline.c        ../../freeRtos/Lib/include/cmdline.h          # Obsługa interpretera poleceń
                                ../../freeRtos/Lib/xmodem.c         ../../freeRtos/Lib/include/xmodem.h           # Obsługa systemu transmisji Xmodem
+                               ../../freeRtos/Lib/Rs485_prot.c     ../../freeRtos/Lib/include/Rs485_prot.h       # Obsługa protokołu komunikującego się przez magistralę Rs485 z modułami wykonawczymi                                                                   ../../freeRtos/Lib/include/protocol1.h        # Rs485 Protocol constans
                                )
 add_library(Hardware           ../../freeRtos/Lib/spi.c            ../../freeRtos/Lib/include/spi.h              # Obsługa magistrali SPI
                                ../../freeRtos/Lib/memory_x.c       ../../freeRtos/Lib/include/memory_x.h         # Obsługa malloc. Zlicza wolną i zajętą pamięć na stercie.

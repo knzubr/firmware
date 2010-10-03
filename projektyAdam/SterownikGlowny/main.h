@@ -16,7 +16,6 @@
 #include "hardwareConfig.h"
 #include "cmdline.h"
 #include "vty.h"
-#include "protRs485.h"
 #include "ramdysk.h"
 #include "spi.h"
 
@@ -31,6 +30,7 @@
 #include "enc28j60.h"
 #include "enc_task.h"
 #include "memory_x.h"
+#include "Rs485_prot.h"
 
 #define mainCHECK_TASK_PRIORITY 1
 #define mainCHECK_PERIOD 1

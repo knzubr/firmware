@@ -46,13 +46,13 @@
 #include "task.h"
 #include "enc_task.h"
 #include "sensors_task.h"
-#include "protRs485.h"
 #include "serial.h"
 #include "mpc23s17.h"
 #include "mcp3008.h"
 #include "enc28j60.h"
 #include "memory_x.h"
 #include "configuration.h"
+#include "Rs485_prot.h"
 
 //struct sterRolet sterownikiRolet[MAKS_L_STER_ROLET];
 
@@ -113,7 +113,7 @@ void vTaskMag(void *pvParameters)
   {
     if(xQueueReceive(xRs485Rec, &znak, portMAX_DELAY))
     {
-      sendPing(adr, 8, uartRs485SendByte);
+      rs485ping(adr);
       vTaskDelay(10);
     }
     adr++;
@@ -158,7 +158,7 @@ portSHORT main( void )
   
   xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1), 1, &xHandleVTY);
 //xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                      1, &xHandleSensors);
-  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                      0, &xHandleEnc);
+//  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                      0, &xHandleEnc);
 //xTaskCreate(vTaskMag,     NULL /*"Rs485"*/,   STACK_SIZE_VTY,     NULL,       tskIDLE_PRIORITY, &xHandleRs485);
   vTaskStartScheduler();
   return 0;

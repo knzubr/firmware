@@ -12,7 +12,9 @@ prog_char errorxModemFrameFrameNoCorrectionNotMatch[] = "\r\n";
 prog_char errorxModemFrameCrc[]                       = "xModem CRC error\r\n";
 prog_char errorxModemRemoteSideCan[]                  = "Strona zdalna przerwala transmisje na ramce nr %d\r\n";
 prog_char errorxModemUnknownResponse[]                = "xModem nieznana odpowiedx 0x%x\r\n";
+prog_char errorNoRemoteDevice[]                       = "Urządzenie %d nie odpowiada (%d)\r\n";
 prog_char errorBootloaderNotResponding[]              = "Bootloader nie odpowiada\r\n";
+prog_char errorOpenFile[]                             = "Nie mozna otworzyc pliku %s\r\n";
 
 // *************************** Message Strings *****************************************************
 
@@ -25,6 +27,14 @@ prog_char systemRamConfigStr[]        = "Ustawienia systemu:\r\n";
 prog_char statusMacStr[]              = "  Adres MAC           : %x:%x:%x:%x:%x:%x\r\n";
 prog_char statusIpStr[]               = "  Adres IP / maska    : %d.%d.%d.%d / %d\r\n";
 
+prog_char editRamFileIntroStr[]       = "Zapis do pliku. CTRL+C koniec\r\n";
+prog_char readRamFIleLenStr[]         = "File length: %d\r\n";
+
+prog_char xwyslijStartStr[]           = "Xmodem: rozpoczynanie wysylania\r\n";
+
+prog_char movingCurtainUpStr[]        = "Podnoszenie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
+prog_char movingCurtainDownStr[]      = "Opuszczanie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
+prog_char movingCurtainPosStr[]       = "\tpozycja   %d\r\n";
 
 // *************************** Command Strings *****************************************************
 
