@@ -42,7 +42,7 @@ static cliExRes_t configureModeFunction  (cmdState_t *state);
 
 static cliExRes_t ustawIpFunction        (cmdState_t *state);
 static cliExRes_t setMacAddrFunction     (cmdState_t *state);
-static cliExRes_t ustawCzasFunction      (cmdState_t *state);
+static cliExRes_t setTimeFunction        (cmdState_t *state);
 
 static cliExRes_t saveConfigFunction     (cmdState_t *state);
 
@@ -107,7 +107,7 @@ command_t __ATTR_PROGMEM__ cmdListEnable[] =
   {cmd_down,      cmd_help_down,      curtainDownFunction},
 
   {cmd_spa,       cmd_help_spa,       ustawPortExtAFunction},
-  {cmd_settime,   cmd_help_settime,   ustawCzasFunction},
+  {cmd_settime,   cmd_help_settime,   setTimeFunction},
   {cmd_ac,        cmd_help_ac,        czytajAC_Function},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {cmd_configure, cmd_help_configure, configureModeFunction},
@@ -120,7 +120,7 @@ command_t __ATTR_PROGMEM__ cmdListConfigure[] =
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_time,      cmd_help_time,      pokazCzasFunction},
   
-  {cmd_settime,   cmd_help_settime,   ustawCzasFunction},
+  {cmd_settime,   cmd_help_settime,   setTimeFunction},
   {cmd_conf_ip,   cmd_help_conf_ip,   ustawIpFunction},
   {cmd_conf_mac,  cmd_help_conf_mac,  setMacAddrFunction},
   {cmd_conf_save, cmd_help_conf_save, saveConfigFunction},
@@ -214,7 +214,7 @@ static cliExRes_t pokazCzasFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
-static cliExRes_t ustawCzasFunction(cmdState_t *state)
+static cliExRes_t setTimeFunction(cmdState_t *state)
 {
   uint8_t godzina =  cmdlineGetArgInt(1, state);
   uint8_t minuta  =  cmdlineGetArgInt(2, state);

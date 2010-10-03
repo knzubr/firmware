@@ -12,7 +12,6 @@
 
 
 xSemaphoreHandle  xSemaphoreSpiSS;    /// Flaga blokująca jednoczesny dostęp do magistrali wielu urządzeniom
-xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
 
 /**
  * Inicjalizacja magistrali SPI, utworzenie semaforów
@@ -31,7 +30,7 @@ void spiClearCPOL(void);
  * @param uint8_t bajt do wysłania
  * @return odebrany bajt z magistrali SPI
  */
-uint8_t spiSend(uint8_t data);
+uint8_t spiSend(uint8_t data) __attribute__ ((weak));
 
 
 /**
@@ -40,7 +39,7 @@ uint8_t spiSend(uint8_t data);
  * @param uint8_t bajt do wysłania
  * @return odebrany bajt z magistrali SPI
  */
-uint8_t spiSendSpinBlock(uint8_t data);
+uint8_t spiSendSpinBlock(uint8_t data) __attribute__ ((weak));
 
 /**
  * Zajmuje magistralę SPI.

@@ -32,16 +32,13 @@ static uint8_t  enc28j60ReadOp (uint8_t op, uint8_t address);
 static void     enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data);
 static void     enc28j60SetBank(uint8_t address);
 
+void spiEnableEnc28j60(void)  {};
+void spiDisableEnc28j60(void) {};
 
-void Enc28j60Mem_init(uint8_t (*spiSendFunc)(uint8_t), uint8_t (*spiSendFuncNb)(uint8_t), void (*spiEnableEnc28j60Func)(void), void (*spiDisableEnc28j60Func)(void), uint16_t buffersize)
-{
-  Enc28j60_global.spiSend            = spiSendFunc;
-  Enc28j60_global.spiSendNB          = spiSendFuncNb;
-  Enc28j60_global.spiEnableEnc28j60  = spiEnableEnc28j60Func;
-  Enc28j60_global.spiDisableEnc28j60 = spiDisableEnc28j60Func;
-  
-  Enc28j60_global.buf                = ENC28J60BUF_ADDR;
-  Enc28j60_global.bufferSize         = ENC28J60BUF_SIZE;
+void Enc28j60Mem_init(uint8_t *buf, uint16_t size)
+{  
+  Enc28j60_global.buf                = buf;
+  Enc28j60_global.bufferSize         = size;
   memset(Enc28j60_global.buf, 0, Enc28j60_global.bufferSize);
 }
 
@@ -49,21 +46,21 @@ uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
 {
   uint8_t result;
   spiTake();
-  Enc28j60_global.spiEnableEnc28j60();
+  spiEnableEnc28j60();
   
   // issue read command
-  Enc28j60_global.spiSend(op | (address & ADDR_MASK));
+  spiSend(op | (address & ADDR_MASK));
 
   // read data
-  result = Enc28j60_global.spiSend(0x00);
+  result = spiSend(0x00);
 
   // do dummy read if needed (for mac and mii, see datasheet page 29)
   if(address & 0x80)
   {
-    result = Enc28j60_global.spiSend(0x00);
+    result = spiSend(0x00);
   }
 
-  Enc28j60_global.spiDisableEnc28j60();
+  spiDisableEnc28j60();
   spiGive();
   return result; 
 }
@@ -71,48 +68,48 @@ uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
 void enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data)
 {
   spiTake();
-  Enc28j60_global.spiEnableEnc28j60();
+  spiEnableEnc28j60();
   // issue write command
   //spiSend(op | (address & ADDR_MASK));
-  Enc28j60_global.spiSend(op | (address & ADDR_MASK));
-  Enc28j60_global.spiSend(data);
-  Enc28j60_global.spiDisableEnc28j60();
+  spiSend(op | (address & ADDR_MASK));
+  spiSend(data);
+  spiDisableEnc28j60();
   spiGive();
 }
 
 void enc28j60ReadBuffer(uint16_t len, uint8_t* data)
 {
   spiTake();
-  Enc28j60_global.spiEnableEnc28j60();
+  spiEnableEnc28j60();
   uint8_t tmp;
   // issue read command
   //spiSend(ENC28J60_READ_BUF_MEM);
-  Enc28j60_global.spiSend(ENC28J60_READ_BUF_MEM);
+  spiSend(ENC28J60_READ_BUF_MEM);
   while(len)
   {
     len--;
-    *data = Enc28j60_global.spiSend(0x00);
+    *data = spiSend(0x00);
     data++;
   }
   *data='\0';
-  Enc28j60_global.spiDisableEnc28j60();
+  spiDisableEnc28j60();
   spiGive();
 }
 
 void enc28j60WriteBuffer(uint16_t len, uint8_t* data)
 {
   spiTake();
-  Enc28j60_global.spiEnableEnc28j60();
+  spiEnableEnc28j60();
   // issue write command
   //spiSend(ENC28J60_WRITE_BUF_MEM);      // 
-  Enc28j60_global.spiSend(ENC28J60_WRITE_BUF_MEM);
+  spiSend(ENC28J60_WRITE_BUF_MEM);
   while(len)
   {
     len--;
-    Enc28j60_global.spiSend(*data);       // write data
+    spiSend(*data);       // write data
     data++;
   }
-  Enc28j60_global.spiDisableEnc28j60();  
+  spiDisableEnc28j60();  
   spiGive();
 }
 
@@ -147,7 +144,8 @@ uint16_t enc28j60PhyReadH(uint8_t address)
   _delay_us(15);
 
   // wait until the PHY read completes
-  while(enc28j60Read(MISTAT) & MISTAT_BUSY);
+  while(enc28j60Read(MISTAT) & MISTAT_BUSY)
+   vTaskDelay ( 0 ); //FIXME być może tutaj następuje zawieszenie
 
   // reset reading bit
   enc28j60Write(MICMD, 0x00);
@@ -174,7 +172,7 @@ void enc28j60PhyWrite(uint8_t address, uint16_t data)
   
   while(enc28j60Read(MISTAT) & MISTAT_BUSY)
   {
-    _delay_us(15);
+    vTaskDelay ( 0 );         //FIXME być może tutaj następuje zakleszczenie
   }
 }
 
@@ -296,6 +294,7 @@ void enc28j60PacketSend(uint16_t len, uint8_t* packet)
       enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
       enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
     }
+    vTaskDelay ( 0 ); //FIXME być może tutaj następuje zakleszczenie
   }
   // Set the write pointer to start of transmit buffer area
   enc28j60Write(EWRPTL, TXSTART_INIT&0xFF);
@@ -333,7 +332,7 @@ uint16_t enc28j60PacketReceive(uint16_t maxlen, uint8_t* packet)
   // check if a packet has been received and buffered
   //if( !(enc28j60Read(EIR) & EIR_PKTIF) ){
   // The above does not work. See Rev. B4 Silicon Errata point 6.
-  if( enc28j60Read(EPKTCNT) ==0 )
+  if( enc28j60Read(EPKTCNT) == 0 )
   {
     return(0);
   }

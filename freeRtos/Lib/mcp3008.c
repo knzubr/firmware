@@ -15,13 +15,9 @@
 #include "mcp3008.h"
 #include "spi.h"
 
+void enableSpiMCP3008(void)   {};
+void disableSpiMCP3008(void)  {};
 
-void MCP3008_init(uint8_t (*spiSendFunc)(uint8_t data), void (*spiEnableMcpFunc)(void), void (*spiDisableMcpFunc)(void))
-{
-  MCP3008_global.spiSend       = spiSendFunc;
-  MCP3008_global.spiEnableMcp  = spiEnableMcpFunc;
-  MCP3008_global.spiDisablMcp  = spiDisableMcpFunc;
-}
 
 uint16_t MCP3008_getSampleDiff(uint8_t inputNo)
 {
@@ -31,13 +27,13 @@ uint16_t MCP3008_getSampleDiff(uint8_t inputNo)
   inputNo &= 0x70;
   
   spiTake();
-  MCP3008_global.spiEnableMcp();
+  enableSpiMCP3008();
   
-  MCP3008_global.spiSend(0x01);                //Start
-  resultHi = MCP3008_global.spiSend(inputNo);  //DIFF/!SGL A2 A1 A0 X X X X
-  resultLo = MCP3008_global.spiSend(0);        //X X X X X X X X
+  spiSend(0x01);                               //Start
+  resultHi = spiSend(inputNo);  //DIFF/!SGL A2 A1 A0 X X X X
+  resultLo = spiSend(0);        //X X X X X X X X
   
-  MCP3008_global.spiDisablMcp(); 
+  disableSpiMCP3008(); 
   spiGive();
   
   resultHi &= 0x03;
@@ -53,13 +49,13 @@ uint16_t MCP3008_getSampleSingle(uint8_t inputNo)
   inputNo |= 0x80;
   
   spiTake();
-  MCP3008_global.spiEnableMcp();
+  enableSpiMCP3008();
   
-  MCP3008_global.spiSend(0x01);                //Start
-  resultHi = MCP3008_global.spiSend(inputNo);  //DIFF/!SGL A2 A1 A0 X X X X
-  resultLo = MCP3008_global.spiSend(0);        //X X X X X X X X
+  spiSend(0x01);                //Start
+  resultHi = spiSend(inputNo);  //DIFF/!SGL A2 A1 A0 X X X X
+  resultLo = spiSend(0);        //X X X X X X X X
   
-  MCP3008_global.spiDisablMcp(); 
+  disableSpiMCP3008(); 
   spiGive();
   
   resultHi &= 0x03;

@@ -141,24 +141,16 @@ portSHORT main( void )
   prvIncrementResetCount();
 #endif
 
-  CLIStateSerial1  = xmalloc(sizeof(cmdState_t));
   hardwareInit();
-  
   spiInit(disableAllSpiDevices);
-  MPC23S17_init(spiSend, enableSpiMPC23S17, disableSpiMPC23S17);
-  MCP3008_init(spiSend, enableSpiMCP3008, disableSpiMCP3008);
-  Ds1305_init(spiSend, enableSpiDs1305, disableSpiDs1305); 
-
-
-  xSerialPortInitMinimal();
-  
+  xSerialPortInitMinimal(); 
+  Enc28j60Mem_init(ENC28J60BUF_ADDR, ENC28J60BUF_SIZE);
+  CLIStateSerial1  = xmalloc(sizeof(cmdState_t));
   VtyInit(CLIStateSerial1);
-
-  Enc28j60Mem_init(spiSendSpinBlock, spiSend, enableSpiEnc28j60, disableSpiEnc28j60, 550 /*BUFFER_SIZE*/ /*231 OK, 232 FAIL */);
   
   xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1), 1, &xHandleVTY);
 //xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                      1, &xHandleSensors);
-//  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                      0, &xHandleEnc);
+  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                      0, &xHandleEnc);
 //xTaskCreate(vTaskMag,     NULL /*"Rs485"*/,   STACK_SIZE_VTY,     NULL,       tskIDLE_PRIORITY, &xHandleRs485);
   vTaskStartScheduler();
   return 0;
