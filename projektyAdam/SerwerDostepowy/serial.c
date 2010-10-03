@@ -30,11 +30,14 @@ void xSerialPortInitMinimal(void)
   }
   portEXIT_CRITICAL();
   
-  UBRR0L = 7;
+  UBRR0L = 103;
   UBRR0H = 0;
 
-  UBRR1L = 7;
+  UBRR1L = 103;
   UBRR1H = 0;
+  
+  UDR0='A';
+  UDR1='B';
 
   UCSR0B = ((1<<TXCIE0)|(1<<RXCIE0)|(1<<TXEN0)|(1<<RXEN0));
   UCSR0C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */

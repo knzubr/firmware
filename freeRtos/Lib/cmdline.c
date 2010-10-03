@@ -7,7 +7,7 @@
 //              : Adam Kaliszan
 // Created      : 2003.07.16
 // Revised      : 2010.04.23
-// Version      : 0.5
+// Version      : 0.6
 // Target MCU   : Atmel AVR Series
 // Editor Tabs  : 2
 //
@@ -39,8 +39,20 @@
 char PROGMEM CmdlinePromptNormal[]      = "DomOs>";
 char PROGMEM CmdlinePromptEnable[]      = "DomOs#";
 char PROGMEM CmdlinePromptConfigure[]   = "DomOs@";
-char PROGMEM CmdlineNotice[]      = "cmdline: ";
-char PROGMEM CmdlineCmdNotFound[] = "# nk";
+char PROGMEM CmdlineNotice[]            = "cmdline: ";
+char PROGMEM CmdlineCmdNotFound[]       = "# nk";
+
+
+// internal commands
+static void cmdlineRepaint            (cmdState_t *state, char *buf);
+static void cmdlineDoHistory          (char action, cmdState_t *state);
+static void cmdlineProcessInputString (cmdState_t *state);
+static void cmdlinePrintPrompt        (cmdState_t *state);
+static void cmdlinePrintError         (cmdState_t *state);
+static void cmdStateClear             (cmdState_t *state);
+static void cmdHistoryCopy            (cmdState_t *state);
+static void cmdHistoryMove            (cmdState_t *state);
+
 
 void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands, enum cliModeState mode)
 {
@@ -380,59 +392,75 @@ void cmdlineDoHistory(char action, cmdState_t *state)
 void cmdlineProcessInputString(cmdState_t *state)
 {
   uint8_t i=0;
+  state->CmdlineExcBuffer = state->CmdlineBuffer;                     // We will use exec buffer later to read the arguments
 
-  state->CmdlineExcBuffer = state->CmdlineBuffer;
+  while( !((state->CmdlineExcBuffer[i] == ' ')                        // find the end of the command (excluding arguments)
+    || (state->CmdlineExcBuffer[i] == 0)) )                           // find first whitespace character in CmdlineBuffer
+    i++;                                                              // i determines the cammand length
 
-  // save command in history
-  cmdlineDoHistory(CMDLINE_HISTORY_SAVE, state);
-
-  // find the end of the command (excluding arguments)
-  // find first whitespace character in CmdlineBuffer
-  while( !((state->CmdlineExcBuffer[i] == ' ') || (state->CmdlineExcBuffer[i] == 0)) ) i++;
-
-  if(!i)
+  if(!i)                                                              // command was null or empty
   {
-    // command was null or empty
-    // output a new prompt
-    cmdlinePrintPrompt(state);
-    // we're done
+    cmdlinePrintPrompt(state);                                        // output a new prompt
     return;
   }
 
-  // search command list for match with entered command
-  command_t  tmp;
-  const command_t *tmpPtr = state->cmdList;
-  memcpy_P(&tmp, tmpPtr, sizeof(command_t));
-  do
+  const command_t *tmpPtr = state->cmdList;                           // Set list of commands. The list depends of the cli mode
+  command_t  tmp;                                                     // We need to create this object. We can't directly
+  memcpy_P(&tmp, tmpPtr, sizeof(command_t));                          // read from flash. We need to copy it before.
+
+  do                                                                  // search command list for match with entered command
   {
-    if( !strncmp_P(state->CmdlineExcBuffer, tmp.commandStr, i) )      // user-entered command matched a command in the list (database)
-    {
-      state->CmdlineExecFunction = tmp.commandFun;                    // run the corresponding function
+    if( !strncmp_P(state->CmdlineExcBuffer, tmp.commandStr, i) )      // user-entered command matched a command in the list
+    {                                                                 // 
+      state->CmdlineExecFunction = tmp.commandFun;                    // set function pointer
+      state->command_str         = tmp.commandStr;
+      state->command_help_str    = tmp.commandHelpStr;
+      cmdlineDoHistory(CMDLINE_HISTORY_SAVE, state);                  // save command in history
       return;
     }
-    tmpPtr++;
-    memcpy_P(&tmp, tmpPtr, sizeof(command_t));
+    tmpPtr++;                                                         // Next command
+    memcpy_P(&tmp, tmpPtr, sizeof(command_t));                        // Copy this command from flash to ram
   }
-  while (tmp.commandStr != NULL);
+  while (tmp.commandStr != NULL);                                     // Last command on the list is NULL. It is required !!!
   
   // if we did not get a match
-  // output an error message
-  cmdlinePrintError(state);
-  // output a new prompt
-  cmdlinePrintPrompt(state);
+  cmdlinePrintError(state);                                           // output an error message
+  cmdlinePrintPrompt(state);                                          // output a new prompt
 }
 
 void cmdlineMainLoop(cmdState_t *state)
 {
-  // do we have a command/function to be executed
-  if(state->CmdlineExecFunction)
+  cliExRes_t result;
+  if(state->CmdlineExecFunction)                // do we have a command/function to be executed
   {
-    // run it
-    state->CmdlineExecFunction(state);
-    // reset
-    state->CmdlineExecFunction = 0;
-    // output new prompt
-    cmdlinePrintPrompt(state);
+    state->argc = cmdLineGetLastArgIdx(state);  // get number of arguments
+    result = state->CmdlineExecFunction(state); // run it
+    
+    switch(result)
+    {
+      case OK_INFORM:
+        fprintf_P(&state->myStdInOut, PSTR("OK\r\n"));
+        break;
+      case SYNTAX_ERROR:
+        fprintf_P(&state->myStdInOut, PSTR("Syntax Error. Use: "));
+        fprintf_P(&state->myStdInOut, state->command_str);
+        fprintf_P(&state->myStdInOut, PSTR(" "));
+        fprintf_P(&state->myStdInOut, state->command_help_str);
+        fprintf_P(&state->myStdInOut, PSTR("\r\n"));
+        break;
+      case ERROR_INFORM:
+        fprintf_P(&state->myStdInOut, PSTR("Operation failed\r\n"));
+        break;
+      case ERROR_OPERATION_NOT_ALLOWED:
+        fprintf_P(&state->myStdInOut, PSTR("Operation not allowed\r\n"));
+        break;
+      default:
+        break;
+    }
+    state->CmdlineExecFunction = NULL;          // reset
+    state->command_str         = NULL;
+    state->command_help_str    = NULL;
+    cmdlinePrintPrompt(state);                  // output new prompt
   }
 }
 
@@ -487,9 +515,27 @@ void cmdlinePrintError(cmdState_t *state)
   fputc('\n'        , &state->myStdInOut);
 }
 
-// argument retrieval commands
 
-// return string pointer to argument [argnum]
+uint8_t cmdLineGetLastArgIdx(cmdState_t *state)
+{
+  uint8_t result = 0;
+  uint8_t lastWhite = 1;
+  char *str = state->CmdlineExcBuffer;
+  while(*str != 0)
+  {
+    if (*str == ' ')
+    {
+      if (lastWhite == 0)
+        result++;
+      lastWhite = 1;
+    }
+    else
+      lastWhite = 0;
+    str++;
+  }
+  return result;
+}
+
 char* cmdlineGetArgStr(uint8_t argnum, cmdState_t *state)
 {
   // find the offset of argument number [argnum]

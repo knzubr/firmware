@@ -1,3 +1,26 @@
+/*! \file cmdline.h \brief Command-Line Interface Library. */
+//*****************************************************************************
+//
+// File Name    : 'cmdline.c'
+// Title        : Command-Line Interface Library
+// Author       : Pascal Stang - Copyright (C) 2003
+//              : Adam Kaliszan
+// Created      : 2003.07.16
+// Revised      : 2010.04.23
+// Version      : 0.6
+// Target MCU   : Atmel AVR Series
+// Editor Tabs  : 2
+//
+// NOTE: This code is currently below version 1.0, and therefore is considered
+// to be lacking in some functionality or documentation, or may not be fully
+// tested.  Nonetheless, you can expect most functions to work.
+//
+// This code is distributed under the GNU Public License
+// which can be found at http://www.gnu.org/licenses/gpl.txt
+//
+//*****************************************************************************
+
+//----- Include Files ---------------------------------------------------------
 #ifndef CMDLINE_H
 #define CMDLINE_H
 
@@ -13,11 +36,13 @@
 // constants/macros/typdefs
 struct cmdState;
 struct command;
+enum   cliExecuteResult;
 
-typedef struct command  command_t;
-typedef struct cmdState cmdState_t;
+typedef struct command         command_t;
+typedef struct cmdState        cmdState_t;
+typedef enum cliExecuteResult  cliExRes_t;
 
-typedef void (*CmdlineFuncPtrType)(cmdState_t *state);
+typedef cliExRes_t (*CmdlineFuncPtrType)(cmdState_t *state);
 
 enum cmdBufferHistory
 {
@@ -33,6 +58,17 @@ enum cliModeState
   RESTRICTED_NORMAL
 };
 
+enum cliExecuteResult
+{
+  OK_SILENT =0,
+  OK_INFORM,
+  SYNTAX_ERROR,
+  ERROR_SILENT,
+  ERROR_INFORM,
+  ERROR_OPERATION_NOT_ALLOWED
+};
+
+
 #define CMD_STATE_HISTORY 4
 #define CMD_STATE_HISTORY_MASK 0x03
 
@@ -43,64 +79,82 @@ struct cmdState
   char *CmdlineHistory[CMD_STATE_HISTORY];   /// CLI history. History Size = 3. Sorry for Hardcodding
 
   uint8_t bufferMaxSize;                     /// Total buffer size / CMD_STATE_HISTORY
-  uint8_t CmdlineBufferLength;
-  uint8_t CmdlineBufferEditPos;
+  uint8_t CmdlineBufferLength;               /// Number of writen chars in buffer
+  uint8_t CmdlineBufferEditPos;              /// Edit position in the buffer
  
   uint8_t historyWrIdx;                      /// History write index (0 - CMD_STATE_HISTORY-1)   
   uint8_t historyDepthIdx;                   /// History depth index. Read idx = (historyWrIdx - historyDepthIdx) & CMD_STATE_HISTORY_MASK
-  enum cmdBufferHistory bufferHistoryState;
+  enum cmdBufferHistory bufferHistoryState;  /// Buffer history state
     
-  uint8_t CmdlineInputVT100State;
-  CmdlineFuncPtrType CmdlineExecFunction;
+  uint8_t CmdlineInputVT100State;            /// Commandline State TODO add enum type
+  const char* command_str;                   /// Executing command string
+  const char* command_help_str;              /// Executing command help string
+  CmdlineFuncPtrType CmdlineExecFunction;    /// Pointer to the funtion that match to the string writen in buffer
+  uint8_t   argc;                            /// Index of last argument
   
-  FILE myStdInOut;
+  FILE myStdInOut;                           /// Input / output stream descriptor
   
-  uint8_t errno;                             /// Error number
-  uint8_t err1;                              /// Additional error info 1
-  uint8_t err2;                              /// Additional error info 1
+  uint8_t  errno;                            /// Error number
+  uint16_t err1;                             /// Additional error info 1
+  uint8_t  err2;                             /// Additional error info 1
   
-  enum cliModeState cliMode;
-  const command_t *cmdList;
+  enum cliModeState cliMode;                 /// CLI mode (NORMAL, ENABLED, CONFIGURE)
+  const command_t *cmdList;                  /// Each CLI mode has own command list
 };
 
 struct command
 {
-  prog_char           *commandStr;
-  prog_char           *commandHelpStr;
-  CmdlineFuncPtrType  commandFun;
+  prog_char           *commandStr;           /// Command string
+  prog_char           *commandHelpStr;       /// Command help string
+  CmdlineFuncPtrType  commandFun;            /// Command function pointer
 };
 
 
 // functions
 
-//! call this function to pass input charaters from the user terminal
+/**
+ * call this function to pass input charaters from the user terminal
+ * @param c     - new char
+ * @param state - cli state
+ */
 void cmdlineInputFunc(char c, cmdState_t *state);
 
-//! call this function in your program's main loop
+/**
+ * call this function in task
+ * @param state - cli state
+ */
 void cmdlineMainLoop(cmdState_t *state);
 
-// internal commands
-void cmdlineRepaint            (cmdState_t *state, char *buf);
-void cmdlineDoHistory          (char action, cmdState_t *state);
-void cmdlineProcessInputString (cmdState_t *state);
-void cmdlinePrintPrompt        (cmdState_t *state);
-void cmdlinePrintError         (cmdState_t *state);
+/**
+ * Get last argument index.
+ * @param state - cli state
+ * @return last argument index
+ */
+uint8_t cmdLineGetLastArgIdx(cmdState_t *state);
 
 // argument retrieval commands
-//! returns a string pointer to argument number [argnum] on the command line
+/**
+ * returns a string pointer to argument number [argnum] on the command line
+ * @param argnum - argument no. Number of first arg is 1
+ * @param state  - cli state
+ * @return char pointer
+ */
 char* cmdlineGetArgStr(uint8_t argnum, cmdState_t *state);
 
-//! returns the decimal integer interpretation of argument number [argnum]
+/**
+ * returns the decimal integer interpretation of argument number [argnum]
+ * @param argnum - argument no. Number of first arg is 1
+ * @param state  - cli state
+ * @return long int
+ */
 long cmdlineGetArgInt (uint8_t argnum, cmdState_t *state);
 
-//! returns the hex integer interpretation of argument number [argnum]
+/**
+ * returns the hex integer interpretation of argument number [argnum]
+ * @param argnum - argument no. Number of first arg is 1
+ * @param state  - cli state
+ */
 long cmdlineGetArgHex (uint8_t argnum, cmdState_t *state);
-
-void cmdStateClear(cmdState_t *state);
-
-void cmdHistoryCopy(cmdState_t *state);
-
-void cmdHistoryMove(cmdState_t *state);
 
 /**
  * Print all commands available for cmdState and its description
