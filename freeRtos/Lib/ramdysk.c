@@ -556,3 +556,39 @@ uint8_t ramDyskLiczbaWolnychKlastrow(void)
       wynik++;
   return wynik;
 }
+
+
+static int getSTD(FILE *stream)
+{
+  uint8_t wynik;
+  struct ramPlikFd *fd = (struct ramPlikFd *)(fdev_get_udata(stream));
+  
+  if (ramDyskCzytajBajtZPliku(fd, &wynik) == 0)
+    return wynik;
+  return EOF;
+}
+
+static int putSTD(char c, FILE *stream)
+{
+  struct ramPlikFd *fd = (struct ramPlikFd *)(fdev_get_udata(stream));
+  return ramDyskZapiszBajtDoPliku(fd, c);  
+}
+
+uint8_t ramDyskOtworzPlikStdIo(const char *nazwa, struct ramPlikFd *fd, FILE *stream, uint8_t flags)
+{
+  uint8_t wynik = ramDyskOtworzPlik(nazwa, fd);
+  if (wynik != 0)
+    return wynik;
+  
+  fdev_setup_stream(stream, putSTD, getSTD, flags);
+  fdev_set_udata(stream, fd);
+  return 0;
+}
+
+uint8_t ramDyskZamknijPlikStdIo(FILE *stream)
+{
+  struct ramPlikFd *fd = (struct ramPlikFd *)(fdev_get_udata(stream));
+  ramDyskZamknijPlik(fd);
+  fclose(stream);
+  return fd->wpis->lAktOtw;
+}
