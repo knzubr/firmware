@@ -33,7 +33,7 @@ struct ramPlik
  */
 struct ramPlikFd
 {
-  uint8_t  *Wsk;             /// Wskaźnik z adresem pamięci, do którego będzie zapis
+  uint8_t  *Wsk;             /// Wskaźnik z adresem pamięci, do którego będzie zapis lub odczyt
   uint8_t  IndLo;            /// Mniej znaczący bajt indeksu pliku (zapisu lub odczytu)
   uint8_t  IndHi;            /// Bardziej znaczący bajt indeksu pliku
 //  uint8_t  ostatniKlaster;   /// Numer ostatniego klastera
@@ -158,6 +158,22 @@ void ramDyskDir(FILE *ostream);
  * @return liczba wolnych klastrów.
  */
 uint8_t ramDyskLiczbaWolnychKlastrow(void);
+
+/**
+ * Otwiera strumień dla biblioteki StdIO
+ * @param nazwa  - nazwa pliku do otwarcia
+ * @param fd     - wskaźnik do deskryptora pliku. Należy wcześniej umieścić obiekt w pamięci lub na stosie
+ * @param stream - wskaźnik do struktury FILE biblioteki StdIo
+ * @param flags  - flagi
+ */
+uint8_t ramDyskOtworzPlikStdIo(const char *nazwa, struct ramPlikFd *fd, FILE *stream, uint8_t flags);
+
+/**
+ * Zamyka strumień wejścia/wyjścia obsługujący działający na Ram Pliku. Ważne by nie wywoływać tej funkcji z innym strumieniem.
+ * @param stream - wskaźnik do struktury FILE biblioteki StdIo
+ * @return liczba pozostałych deskryptorów związanych z zamykanym plikiem
+ */
+uint8_t ramDyskZamknijPlikStdIo(FILE *stream);
 
 
 #endif /* RAMDYSK_H */
