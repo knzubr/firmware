@@ -118,7 +118,6 @@ void disableAllSpiDevices(void)
 #if disableSpiPORTD_AND != 0xFF
   PORTD &= disableSpiPORTD_AND;
 #endif
-
 #if disableSpiPORTE_OR != 0
   PORTE |= disableSpiPORTE_OR;
 #endif
@@ -211,6 +210,7 @@ void enableSpiMCP3008(void)
 #if MCP3008_SPI_CS_EN_MASK_AND != 0xFF
   MCP3008_SPI_CS_PORT &= MCP3008_SPI_CS_EN_MASK_AND;
 #endif  
+
 }
 
 void disableSpiMCP3008(void)
@@ -224,13 +224,11 @@ void disableSpiMCP3008(void)
 #endif
 }
 
-//#define DS_SPCR_OR_MASK            (1<<SPR1)
 #define DS_SPCR_OR_MASK ((1<<CPHA)|(1<<SPR0))
-//#define DS_SPCR_OR_MASK (1<<CPHA)
+
 void spiEnableDS1305(void)
 {
   SPCR |= DS_SPCR_OR_MASK;
-//spiSetCPHA();
 #if DS1305_SPI_CS_EN_MASK_OR != 0
   DS1305_SPI_CS_PORT |= DS1305_SPI_CS_EN_MASK_OR;
 #endif
@@ -241,13 +239,12 @@ void spiEnableDS1305(void)
 
 void spiDisableDS1305(void)
 {
-  SPCR &= ~DS_SPCR_OR_MASK;
-//  spiClearCPHA();
+  SPCR &= (~(DS_SPCR_OR_MASK));
 #if DS1305_SPI_CS_EN_MASK_OR != 0
-  DS1305_SPI_CS_PORT &= (~DS1305_SPI_CS_EN_MASK_OR);
+  DS1305_SPI_CS_PORT &= (~(DS1305_SPI_CS_EN_MASK_OR));
 #endif
 #if DS1305_SPI_CS_EN_MASK_AND != 0xFF
-  DS1305_SPI_CS_PORT |= (~DS1305_SPI_CS_EN_MASK_AND);
+  DS1305_SPI_CS_PORT |= (~(DS1305_SPI_CS_EN_MASK_AND));
 #endif  
 }
 

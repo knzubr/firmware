@@ -111,6 +111,8 @@ void cmdlineInputFunc(char c, cmdState_t *state)
       cmdlineDoHistory(CMDLINE_HISTORY_NEXT, state);
       break;
     case VT100_ARROWRIGHT:
+      if (state->bufferHistoryState == NOT_COPIED)
+        cmdHistoryCopy(state);
       // if the edit position less than current string length
       if(state->CmdlineBufferEditPos < state->CmdlineBufferLength)
       {
@@ -129,6 +131,9 @@ void cmdlineInputFunc(char c, cmdState_t *state)
       break;
     case VT100_ARROWLEFT:
       // if the edit position is non-zero
+      if (state->bufferHistoryState == NOT_COPIED)
+        cmdHistoryCopy(state);
+      
       if(state->CmdlineBufferEditPos)
       {
         // decrement the edit position
