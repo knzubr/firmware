@@ -5,7 +5,7 @@
 static void    sendPing(uint8_t addr, uint8_t pingLen);
 static uint8_t receivePong(uint8_t addr, uint8_t pingLen);
 static void    sendHello(uint8_t addr);
-static uint8_t receiveHello(uint8_t addr, void* response);
+static uint8_t receiveHello(uint8_t* response, uint8_t maxSize);
 
 // ********************* Those function have to be implemented in your project *************
 void takeRs485(void)                              { }
@@ -104,11 +104,80 @@ uint8_t receivePong(uint8_t addr, uint8_t dataLen)
 
 static void    sendHello(uint8_t addr)
 {
+  uint16_t crc = _crc_xmodem_update(0, SYNC);
+  uartRs485SendByte(SYNC);
+
+  crc = _crc_xmodem_update(crc, addr);
+  uartRs485SendByte(addr);
+
+  crc = _crc_xmodem_update(crc, rPING);
+  uartRs485SendByte(rHELLO);
+
+  crc = _crc_xmodem_update(crc, 0);
+  uartRs485SendByte(0);
   
+  uartRs485SendByte((uint8_t)(crc >> 8));
+  uartRs485SendByte((uint8_t)(crc & 0xFF));
 }
-static uint8_t receiveHello(uint8_t addr, void* response)
+
+static uint8_t receiveHello(uint8_t* response, uint8_t maxSize)
 {
-  return 1;
+  uint16_t crc;
+  uint8_t data; 
+  //SYNC
+  if(rs485Receive(&data, 20) == pdFALSE)
+    return 8;
+  
+  if (data != SYNC)
+    return 2;
+  crc = _crc_xmodem_update(0, data);
+
+  //Adres ma być wartość 0
+  if(rs485Receive(&data, 1) == 0)
+    return 3;
+
+  if (data != 0)
+    return 4;
+  
+  crc = _crc_xmodem_update(crc, data);
+
+  //Kod rozkazu. Ma być rPING
+  if(rs485Receive(&data, 1) == pdFALSE)
+    return 5;
+  if (data != rHELLO)
+    return 6;
+  crc = _crc_xmodem_update(crc, data);
+
+  //Długość odpowiedzi
+  if(rs485Receive(&data, 1) == pdFALSE)
+    return 7;
+  if (data != maxSize)
+    return 1;
+  crc = _crc_xmodem_update(crc, data);
+
+  
+  for (data=0; data < maxSize; data++)
+  {
+    if(rs485Receive(response, 5) == pdFALSE)
+      return 20;
+    crc = _crc_xmodem_update(crc, *((uint8_t *)(response)));
+    response++; 
+  }
+
+  uint8_t crcHi;
+  uint8_t crcLo;
+  if(rs485Receive(&crcHi, 1) != pdTRUE)
+    return 21;
+  
+  if(xQueueReceive(xRs485Rec, &crcLo, 1) != pdTRUE)
+    return 22;
+
+  if (crcHi != (uint8_t)(crc>>8))
+    return 254;
+  if (crcLo != (uint8_t)(crc & 0xFF))
+    return 255;
+  
+  return 0; 
 }
 
 // ************************ Rs485 API ************************************
@@ -124,6 +193,16 @@ uint8_t rs485ping(uint8_t devAddr)
   releaseRs485();
   return result;
 }
+
+uint8_t rs485hello(uint8_t devAddr, void *data, uint8_t maxSize)
+{
+  takeRs485();
+  sendHello(devAddr);
+  uint8_t result = receiveHello((uint8_t *)(data), maxSize); 
+  releaseRs485();
+  return result;
+}
+
 
 uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr)
 {
