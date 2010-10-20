@@ -19,14 +19,63 @@
 #include <stdio.h>
 #include <avr/pgmspace.h>
 #include "sensors_task.h"
+#include "memory_x.h"
 #include "main.h"
+#include "Rs485_prot.h"
+
+
+
+void sensorsTaskInit(void)
+{
+  rollers = xmalloc(MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
+}
 
 
 void sensorsTask(void* pvParameters)
 {
+  uint8_t addr, i;
   pvParameters = NULL;
   for( ; ; )
   {
+    struct sterRolet *tmp = NULL;
+    for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+      if (rollers[i].rsDeviceState.adres == addr)
+        tmp = &rollers[i];
+    
+    if (rs485ping(addr)==0)
+    {
+      if (tmp == NULL)
+      {
+        for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+        {
+          if (rollers[i].rsDeviceState.adres == 0)
+          {
+            tmp = &rollers[i];
+            tmp->rsDeviceState.adres = addr;
+            break;
+          }
+        }
+      }
+      if (tmp != NULL)
+      {
+        tmp->rsDeviceState.stan &= (~NOT_DETECTED);
+        rs485hello(addr, (void *)(tmp->rsDeviceState.version), 7);
+      }
+    }
+    else
+    {
+      if (tmp != NULL)
+      {
+        if (tmp->rsDeviceState.stan & NOT_DETECTED)
+        {
+          tmp->rsDeviceState.adres = 0;
+        }
+        tmp->rsDeviceState.stan |= NOT_DETECTED;
+      }
+    }
+    addr++;
+    if (addr == 0)
+      addr++;
     vTaskDelay(10);
   }
 }

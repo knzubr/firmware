@@ -51,12 +51,7 @@
 //#define debugRamDysk            1
 //#define testZewPamiec           1
 
-struct sterRolet
-{
-  uint8_t adres;
-  uint8_t stan;
-  uint8_t roleta[2];
-};
+
 
 volatile timeDecoded_t czasRtc;
 

@@ -6,7 +6,7 @@
 // hello response
 //  +------+----------+---------+--------+----------------+-------+-------+-------+-------+-------+-------+-------+-------+
 //  | SYNC | rHELLO   | address | length | data1          | data2 | data3 | data4 | data5 | data6 | data7 | CrcHi | CrcLo |
-//  |      |          |    0    |    7   |mode(b/r/s/..)|my addr|version|version|version|version|version|       |       |
+//  |      |          |    0    |    7   |mode(b/r/s/..)  |my addr|version|version|version|version|version|       |       |
 //  |      |          |         |        | b              |       |   v   |       |  .    |       |       |       |       |
 //  +------+----------+---------+--------+----------------+-------+-------+-------+-------+-------+-------+-------+-------+
 // mode:
