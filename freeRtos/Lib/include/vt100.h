@@ -14,12 +14,12 @@
 // to be lacking in some functionality or documentation, or may not be fully
 // tested.  Nonetheless, you can expect most functions to work.
 //
-///	\ingroup general
-/// \defgroup vt100 VT100 Terminal Function Library (vt100.c)
-/// \code #include "vt100.h" \endcode
-/// \par Overview
-///		This library provides functions for sending VT100 escape codes to
-///	control a connected VT100 or ANSI terminal.� Commonly useful functions
+/// @ingroup general
+/// @defgroup vt100 VT100 Terminal Function Library (vt100.c)
+/// @code #include "vt100.h" \endcode
+/// @par Overview
+/// This library provides functions for sending VT100 escape codes to
+/// control a connected VT100 or ANSI terminal.� Commonly useful functions
 /// include setting the cursor position, clearing the screen, setting the text
 /// attributes (bold, inverse, blink, etc), and setting the text color.� This
 /// library will slowly be expanded to include support for codes as needed and

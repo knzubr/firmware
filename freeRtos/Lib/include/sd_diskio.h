@@ -2,6 +2,8 @@
 #define _DISKIO_H
 
 #include "integer.h"
+#include "spi.h"
+#include "hardware.h"
 
 #define _READONLY	0	/* 1: Read-only mode */
 #define _USE_IOCTL	1
@@ -29,8 +31,9 @@ typedef enum {
 
 /**
  * Initialize Disk Drive
+ * @param drv - drive number
  */
-DSTATUS disk_initialize (void);
+DSTATUS disk_initialize (uint8_t drv);
 
 /**
  * Read Partial Sector  
@@ -38,9 +41,9 @@ DSTATUS disk_initialize (void);
  * @param  sector - Sector number (LBA)
  * @param  sofs   - Offset in the sector
  * @param  count  - Number of byter to read (bytes or word ?)
- * @return 
+ * @return DRESULT
  */
-DRESULT disk_readp (BYTE *dest, DWORD sector, WORD sofs, WORD count);
+DRESULT disk_readp (void* dest, DWORD sector, WORD sofs, WORD count);
 
 /**
  * Write Partial Sector
@@ -53,8 +56,8 @@ DRESULT disk_writep (const BYTE* buff, DWORD sc);
 #define STA_NODISK  0x02              /** No medium in the drive */
 
 
-DRESULT disk_ioctl (BYTE, BYTE, void*);
-void	disk_timerproc (void);
+//DRESULT disk_ioctl (BYTE, BYTE, void*);
+//void	disk_timerproc (void);
 
 
 /* Command code for disk_ioctrl() */
@@ -78,7 +81,25 @@ void	disk_timerproc (void);
 #define ATA_GET_MODEL       21
 #define ATA_GET_SN          22
 
+/* Definitions for MMC/SDC command */
 
+#define CMD0    (0)             /** GO_IDLE_STATE */
+#define CMD1    (1)             /** SEND_OP_COND (MMC) */
+#define	ACMD41  (0x80+41)       /** SEND_OP_COND (SDC) */
+#define CMD8    (8)             /** SEND_IF_COND */
+#define CMD9    (9)             /** SEND_CSD */
+#define CMD10   (10)            /** SEND_CID */
+#define CMD12   (12)            /** STOP_TRANSMISSION */
+#define ACMD13  (0x80+13)       /** SD_STATUS (SDC) */
+#define CMD16   (16)            /** SET_BLOCKLEN */
+#define CMD17   (17)            /** READ_SINGLE_BLOCK */
+#define CMD18   (18)            /** READ_MULTIPLE_BLOCK */
+#define CMD23   (23)            /** SET_BLOCK_COUNT (MMC) */
+#define	ACMD23  (0x80+23)       /** SET_WR_BLK_ERASE_COUNT (SDC) */
+#define CMD24   (24)            /** WRITE_BLOCK */
+#define CMD25   (25)            /** WRITE_MULTIPLE_BLOCK */
+#define CMD55   (55)            /** APP_CMD */
+#define CMD58   (58)            /** READ_OCR */
 
 
 /* Card type flags (CardType) */

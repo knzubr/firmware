@@ -7,6 +7,7 @@ ADD_EXECUTABLE(sterownikglowny main.c                                  main.h
                                vty.c                                   vty.h vty_pl.h vty_en.h  
                                sensors_task.c                          sensors_task.h
                                enc_task.c                              enc_task.h
+                               net.h                                                                                     # ten plik należy przesunąć
                                )
 
 add_library(Config             hardwareConfig.h                                                                          # Hardware config

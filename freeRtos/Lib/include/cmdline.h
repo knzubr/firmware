@@ -33,6 +33,8 @@
 #include <avr/io.h>         // editor recognizes now types like uint8_t 
 #include <avr/pgmspace.h>
 
+//@{
+
 // constants/macros/typdefs
 struct cmdState;
 struct command;
@@ -171,4 +173,5 @@ void cmdPrintHelp(cmdState_t *state);
  */
 void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands, enum cliModeState mode);
 
+//@}
 #endif

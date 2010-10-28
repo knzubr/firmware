@@ -10,7 +10,7 @@
 #include "main.h"
 #include "ramdysk.h"
 
-
+//@{
 
 /**
  * Struktura do obsługi protokołu Xmodem
@@ -62,6 +62,6 @@ struct xmodemUchwyt
  * @return 0 - wszystko OK 
  */
 //uint8_t xmodemWyslij(struct xmodemUchwyt *uchwyt);
-
+//@}
 #endif
 
