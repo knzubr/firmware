@@ -74,6 +74,11 @@ static void prvIncrementResetCount( void );
 void vApplicationIdleHook( void );
 
 /**
+ * RTC clock support
+ */
+void vApplicationTickHook( void );
+
+/**
  * Proces odpowiedzialny za obsługę VTY
  * @param pvParameters ignorowane parametry
  */
@@ -162,6 +167,16 @@ void vApplicationIdleHook( void )
   for( ;; )
   {
     vCoRoutineSchedule();
+  }
+}
+
+void vApplicationTickHook( void )
+{
+  static uint8_t tickCntr = configTICK_RATE_HZ;
+  if (--tickCntr == 0)
+  {
+    tickCntr = configTICK_RATE_HZ;
+    
   }
 }
 
