@@ -7,7 +7,7 @@
 #include "ramdysk.h"
 #include "protocol1.h"
 
-
+//@{
 struct rs485device
 {
   uint8_t adres;         /// Device Address on Rs485 bus
@@ -72,4 +72,5 @@ uint8_t rs485curtainUp(uint8_t deviceAddr, uint8_t curtainNo, uint8_t pos);
  */
 uint8_t rs485curtainDown(uint8_t deviceAddr, uint8_t curtainNo, uint8_t pos);
 
+//@}
 #endif
