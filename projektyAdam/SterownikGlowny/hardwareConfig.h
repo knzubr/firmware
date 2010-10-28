@@ -234,7 +234,7 @@
 
 //PORT G
 // PG3 - SD
-#define disableSpiPORTG_OR           0x00
-#define disableSpiPORTG_AND          0xF7
+#define disableSpiPORTG_OR           0x08
+#define disableSpiPORTG_AND          0xFF
 
 #endif

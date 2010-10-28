@@ -19,9 +19,8 @@
 #include "ramdysk.h"
 #include "spi.h"
 
-#include "xitoa.h"
 #include "ff.h"
-#include "diskio.h"
+#include "sd_diskio.h"
 #include "rtc.h"
 #include "mpc23s17.h"
 #include "mcp3008.h"
