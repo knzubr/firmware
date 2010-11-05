@@ -38,7 +38,8 @@
 #define ROLLER2_DOWN          0x80
 
 
-
+extern volatile uint8_t temperature;
+extern volatile uint8_t voltage;
 
 
 struct sterRolet *rollers;

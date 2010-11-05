@@ -28,15 +28,34 @@
 void sensorsTaskInit(void)
 {
   rollers = xmalloc(MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
+  memset(rollers, 0, MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
 }
-
 
 void sensorsTask(void* pvParameters)
 {
-  uint8_t addr, i;
   pvParameters = NULL;
+  uint8_t addr = 255;
+  uint8_t i;
+
   for( ; ; )
   {
+    addr++;
+    
+    if (addr == 0)
+    {
+      uint16_t tmp1 = MCP3008_getSampleSingle(0);
+      voltage = (uint8_t)(tmp1>>5);
+      vTaskDelay(10);
+      tmp1 = MCP3008_getSampleSingle(1);
+      tmp1 *=10;
+      temperature = (uint8_t)(tmp1 / 24);
+    
+      vTaskDelay(10);
+
+      continue;
+    }
+    //continue;
+
     struct sterRolet *tmp = NULL;
     for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
       if (rollers[i].rsDeviceState.adres == addr)
@@ -73,9 +92,7 @@ void sensorsTask(void* pvParameters)
         tmp->rsDeviceState.stan |= NOT_DETECTED;
       }
     }
-    addr++;
-    if (addr == 0)
-      addr++;
+
     vTaskDelay(10);
   }
 }

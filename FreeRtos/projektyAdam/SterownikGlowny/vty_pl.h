@@ -23,12 +23,17 @@ prog_char statusNumberOfTasksStr[]    = "  Liczba zadan        : %d\r\n";
 prog_char statusStaticHeapStateStr[]  = "  Sterta dla FreeRtos : %d wolnych z %d bajtow\r\n";
 prog_char statusDynamicHeapStateStr[] = "  Sterta dla malloc   : %d wolnych z %d bajtow\r\n";
 prog_char statusRamDiskStateStr[]     = "  Ram dysk            : %d wolnych z %d klastrow\r\n";
+prog_char statusTemperatureStr[]      = "  Temperatura         : %d C\r\n";
+prog_char statusVoltageStr[]          = "  Napiecie            : %d V\r\n";
 prog_char systemRamConfigStr[]        = "Ustawienia systemu:\r\n";
 prog_char statusMacStr[]              = "  Adres MAC           : %x:%x:%x:%x:%x:%x\r\n";
 prog_char statusIpStr[]               = "  Adres IP / maska    : %d.%d.%d.%d / %d\r\n";
 
+prog_char statusRs485listStr[]        = "Wykryte urzadzenia na magistrali RS 485:\r\n";
+prog_char statusRollerDescStr[]       = "  Adres %d firmware %c%c%c%c%c\r\n";
+
 prog_char editRamFileIntroStr[]       = "Zapis do pliku. CTRL+C koniec\r\n";
-prog_char readRamFIleLenStr[]         = "File length: %d\r\n";
+prog_char readRamFIleLenStr[]         = "Dlugosc pliku: %d\r\n";
 
 prog_char xwyslijStartStr[]           = "Xmodem: rozpoczynanie wysylania\r\n";
 

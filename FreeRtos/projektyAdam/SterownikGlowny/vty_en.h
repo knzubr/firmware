@@ -23,9 +23,14 @@ prog_char statusNumberOfTasksStr[]    = "  Number of tasks : %d\r\n";
 prog_char statusStaticHeapStateStr[]  = "  FreeRtos heap   : %d free of %d bytes\r\n";
 prog_char statusDynamicHeapStateStr[] = "  Malloc heap     : %d free of %d bytes\r\n";
 prog_char statusRamDiskStateStr[]     = "  Ram disc space  : %d free of %d clusters\r\n";
+prog_char statusTemperatureStr[]      = "  Temperature     : %d C\r\n";
+prog_char statusVoltageStr[]          = "  Voltage         : %d V\r\n";
 prog_char systemRamConfigStr[]        = "System settings:\r\n";
 prog_char statusMacStr[]              = "  Mac address     : %x:%x:%x:%x:%x:%x\r\n";
 prog_char statusIpStr[]               = "  IP addr./ mask  : %d.%d.%d.%d / %d\r\n";
+
+prog_char statusRs485listStr[]        = "Detected RS 485 devices:\r\n";
+prog_char statusRollerDescStr[]       = "  Address %d firmware %c%c%c%c%c\r\n";
 
 prog_char editRamFileIntroStr[]       = "Writing to file. Press CTRL+C to quit\r\n";
 prog_char readRamFIleLenStr[]         = "File length: %d\r\n";

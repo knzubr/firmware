@@ -9,6 +9,7 @@
 #include "memory_x.h"
 #include "configuration.h"
 #include "Rs485_prot.h"
+#include "sensors_task.h"
 
 #define LANG EN
 
@@ -40,6 +41,9 @@ extern uint8_t mymac[6];
 extern uint8_t myip[4];
 extern uint8_t mask;
 
+extern volatile uint8_t temperature;
+extern volatile uint8_t voltage;
+
 extern xQueueHandle           xVtyRec;
 extern xQueueHandle           xVtyTx;
 
@@ -48,6 +52,8 @@ extern xQueueHandle           xRs485Tx;
 
 extern volatile timeDecoded_t czasRtc;
 extern struct Enc28j60_config Enc28j60_global;
+
+extern struct sterRolet       *rollers;
 
 enum errorType
 {
