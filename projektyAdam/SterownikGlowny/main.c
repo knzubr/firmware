@@ -62,6 +62,9 @@ xQueueHandle xRs485Rec;
 xQueueHandle xVtyTx;
 xQueueHandle xRs485Tx;
 
+volatile uint8_t temperature;
+volatile uint8_t voltage;
+
 //xSemaphoreHandle xSemaphoreVty;
 //xSemaphoreHandle xSemaphoreRs485;
 //xSemaphoreHandle xSemaphoreVtyBusy;
@@ -152,6 +155,8 @@ portSHORT main( void )
   Enc28j60Mem_init(ENC28J60BUF_ADDR, ENC28J60BUF_SIZE);
   CLIStateSerial1  = xmalloc(sizeof(cmdState_t));
   VtyInit(CLIStateSerial1);
+  
+  sensorsTaskInit();
   
   xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1), 1, &xHandleVTY);
   xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                      1, &xHandleSensors);

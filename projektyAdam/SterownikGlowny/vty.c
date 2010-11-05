@@ -186,6 +186,9 @@ static cliExRes_t statusFunction(cmdState_t *state)
   fprintf_P(&state->myStdInOut, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
   fprintf_P(&state->myStdInOut, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
   fprintf_P(&state->myStdInOut, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);  //TODO FIXME
+  fprintf_P(&state->myStdInOut, statusTemperatureStr, temperature); 
+  fprintf_P(&state->myStdInOut, statusVoltageStr, voltage); 
+
   uint8_t ramDiscSpace = ramDyskLiczbaWolnychKlastrow();
   fprintf_P(&state->myStdInOut, statusRamDiskStateStr,     ramDiscSpace,  L_KLASTROW);
   printErrorInfo(state);
@@ -195,12 +198,27 @@ static cliExRes_t statusFunction(cmdState_t *state)
   fprintf_P(&state->myStdInOut, statusMacStr, mymac[0], mymac[1], mymac[2], mymac[3], mymac[4], mymac[5]);
   fprintf_P(&state->myStdInOut, statusIpStr, myip[0], myip[1], myip[2], myip[3], mask);
   
+  //Print Rs485 Execitive modules
+  fprintf_P(&state->myStdInOut, statusRs485listStr);
+  uint8_t i;
+  
+  struct sterRolet *rolTmp = rollers;
+  for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+  {
+    if (rolTmp->rsDeviceState.adres != 0)
+    {
+      fprintf_P(&state->myStdInOut, statusRollerDescStr, rolTmp->rsDeviceState.adres, rolTmp->rsDeviceState.version[0], rolTmp->rsDeviceState.version[1], rolTmp->rsDeviceState.version[2], rolTmp->rsDeviceState.version[3], rolTmp->rsDeviceState.version[4]);  
+    }
+    rolTmp++;
+  }
+  
   //Print time FIXME deadlock problem
 /*  readTimeDecoded((timeDecoded_t *)(&czasRtc));
   uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
   fprintf_P(&state->myStdInOut, PSTR("%d:%d:%d\r\n"), godzina, minuta, sekunda);*/
+
   return OK_SILENT;
 }
 
