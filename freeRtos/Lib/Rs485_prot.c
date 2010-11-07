@@ -1,6 +1,14 @@
 #include "Rs485_prot.h"
-
 #include <util/crc16.h>
+#include <stdio.h>
+
+#if LANG_EN
+#include "Rs485_prot_en.h"
+#endif
+
+#if LANG_PL
+#include "Rs485_prot_pl.h"
+#endif
 
 static void    sendPing(uint8_t addr, uint8_t pingLen);
 static uint8_t receivePong(uint8_t addr, uint8_t pingLen);
@@ -13,6 +21,10 @@ void releaseRs485(void)                           { }
 void uartRs485SendByte(uint8_t c)                 { c=0; }
 uint8_t rs485Receive(uint8_t *c, uint8_t timeout) {  timeout = 0; c = NULL; return 1; }
 uint8_t flushRs485RecBuffer(void)                 {return 1;}
+
+
+
+
 
 // ********************* Hiden Functions ***************************************************
 void sendPing(uint8_t addr, uint8_t pingLen)
@@ -110,7 +122,7 @@ static void    sendHello(uint8_t addr)
   crc = _crc_xmodem_update(crc, addr);
   uartRs485SendByte(addr);
 
-  crc = _crc_xmodem_update(crc, rPING);
+  crc = _crc_xmodem_update(crc, rHELLO);
   uartRs485SendByte(rHELLO);
 
   crc = _crc_xmodem_update(crc, 0);
@@ -141,7 +153,7 @@ static uint8_t receiveHello(uint8_t* response, uint8_t maxSize)
   
   crc = _crc_xmodem_update(crc, data);
 
-  //Kod rozkazu. Ma być rPING
+  //Kod rozkazu. Ma być rHELLO
   if(rs485Receive(&data, 1) == pdFALSE)
     return 5;
   if (data != rHELLO)
@@ -151,10 +163,12 @@ static uint8_t receiveHello(uint8_t* response, uint8_t maxSize)
   //Długość odpowiedzi
   if(rs485Receive(&data, 1) == pdFALSE)
     return 7;
-  if (data != maxSize)
+  if (data > maxSize)
     return 1;
+  
   crc = _crc_xmodem_update(crc, data);
-
+  memset(response, 0, maxSize);
+  maxSize = data;
   
   for (data=0; data < maxSize; data++)
   {
@@ -182,6 +196,35 @@ static uint8_t receiveHello(uint8_t* response, uint8_t maxSize)
 
 // ************************ Rs485 API ************************************
 
+uint8_t rollersMemInit(void)
+{
+  rollers = xmalloc(MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
+  memset(rollers, 0, MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
+}
+
+#ifdef LANG_RS485_PROT
+uint8_t printRs485devices(FILE *stream)
+{
+  uint8_t result = 0;
+  struct sterRolet *rolTmp = rollers;
+  
+  //Print RollerDrivers
+  for (uint8_t i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+  {
+    if (rolTmp->address != 0)
+    {
+      fprintf_P(stream, statusRollerDescStr, rolTmp->address, rolTmp->response.parsed.stateRoller1 & 0x3F, rolTmp->response.parsed.stateRoller2 & 0x3F);
+      fprintf_P(stream, statusRollerDescStr2, rolTmp->response.parsed.firmware);
+      result++;
+    }
+    rolTmp++;
+  }
+  
+  
+  return result;
+}
+#endif
+
 uint8_t rs485ping(uint8_t devAddr)
 {
   takeRs485();
@@ -194,11 +237,52 @@ uint8_t rs485ping(uint8_t devAddr)
   return result;
 }
 
-uint8_t rs485hello(uint8_t devAddr, void *data, uint8_t maxSize)
+uint8_t rs485rollerHello(uint8_t devAddr)
 {
+  struct sterRolet *tmp = NULL;
+  uint8_t i;
+  for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+    if (rollers[i].address == devAddr)
+      tmp = &rollers[i];
+    
+  if (rs485ping(devAddr)==0)
+  {
+    if (tmp == NULL)
+    {
+      for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+      {
+        if (rollers[i].address == 0)
+        {
+          tmp = &rollers[i];
+          tmp->address = devAddr;
+          break;
+        }
+      }
+    }
+    if (tmp != NULL)
+    {
+      tmp->state &= (~NOT_DETECTED);
+      tmp->address = devAddr;
+    }
+    else
+      return 1;
+  }
+  else
+  {
+    if (tmp != NULL)
+    {
+      if (tmp->state & NOT_DETECTED)
+      {
+        tmp->address = 0;
+      }
+      tmp->state |= NOT_DETECTED;
+      return 2;
+    }
+  }
+
   takeRs485();
   sendHello(devAddr);
-  uint8_t result = receiveHello((uint8_t *)(data), maxSize); 
+  uint8_t result = receiveHello((tmp->response.data), HELLO_RESP_LEN); 
   releaseRs485();
   return result;
 }

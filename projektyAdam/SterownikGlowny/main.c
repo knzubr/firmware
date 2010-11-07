@@ -142,13 +142,11 @@ cmdState_t *CLIStateSerial1;
 
 portSHORT main( void )
 {
-  loadConfiguration();
-//   
-  ramDyskInit();              //Inicjalizacja Ram dysku
 #ifdef ENABLE_RESET_COUNTER
   prvIncrementResetCount();
 #endif
 
+  ramDyskInit();              //Inicjalizacja Ram dysku
   hardwareInit();
   spiInit(disableAllSpiDevices);
   xSerialPortInitMinimal(); 
@@ -157,11 +155,12 @@ portSHORT main( void )
   VtyInit(CLIStateSerial1);
   
   sensorsTaskInit();
+
+  loadConfiguration();
   
   xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1), 1, &xHandleVTY);
   xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                      1, &xHandleSensors);
   xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                      0, &xHandleEnc);
-//xTaskCreate(vTaskMag,     NULL /*"Rs485"*/,   STACK_SIZE_VTY,     NULL,       tskIDLE_PRIORITY, &xHandleRs485);
   vTaskStartScheduler();
   return 0;
 }

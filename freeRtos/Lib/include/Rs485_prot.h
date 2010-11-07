@@ -6,20 +6,37 @@
 #include <util/crc16.h>
 #include "ramdysk.h"
 #include "protocol1.h"
+#include "softwareConfig.h"
+
 
 //@{
-struct rs485device
+
+struct helloRespParsed
 {
-  uint8_t adres;         /// Device Address on Rs485 bus
-  uint8_t stan;          /// Device state
-  uint8_t version[5];    /// Firmware Version  
+  uint8_t stateRoller1;      //7 - moving up, 6 - moving down, 5-0 - position
+  uint8_t stateRoller2;      //7 - moving up, 6 0 moving down, 5-0 - position
+  char    firmware[5];
 };
+  
+union helloResponse
+{
+  uint8_t data[HELLO_RESP_LEN];
+  struct helloRespParsed parsed;
+};
+
+
 
 struct sterRolet 
 {
-  struct rs485device rsDeviceState __attribute__ ((packed));
-  uint8_t roleta[2];     /// Rollers states
+  uint8_t state;
+  uint8_t address;
+  union helloResponse response;
+  uint8_t empty;
 };
+
+
+struct sterRolet *rollers;
+
 
 // ******************************** Hardware specyfic function ***********************
 void    takeRs485(void)                           __attribute__ ((weak));
@@ -27,6 +44,19 @@ void    releaseRs485(void)                        __attribute__ ((weak));
 void    uartRs485SendByte(uint8_t c)              __attribute__ ((weak));
 uint8_t rs485Receive(uint8_t *c, uint8_t timeout) __attribute__ ((weak));
 uint8_t flushRs485RecBuffer(void)                 __attribute__ ((weak));
+
+
+uint8_t rollersMemInit(void);
+
+#ifdef LANG_EN | LANG_PL
+/**
+ * Prints list of Rs485 devices
+ * @param stream - outpuf stream
+ * @return number of printed devices
+ */
+uint8_t printRs485devices(FILE *stream);
+#endif
+
 
 /**
  * Sends Ping and waits for response
@@ -36,15 +66,11 @@ uint8_t flushRs485RecBuffer(void)                 __attribute__ ((weak));
 uint8_t rs485ping(uint8_t devAddr);
 
 /**
- * Sends Ping and waits for response
+ * Sends Hello message to the roller driver and reads its response
  * @param devAddr - device address
- * @param *data   - data pointer
- * @param maxSize - maximum size of data that can be written
- * @return 0 - All OK, 1 - wrong size, 2 - no response
+ * @return 0 - All OK, 1 - no space in memory to write info, 2 - no response, 3 - wrong address
  */
-uint8_t rs485hello(uint8_t devAddr, void *data, uint8_t maxSize);
-
-
+uint8_t rs485rollerHello(uint8_t devAddr);
 
 /**
  * Flash remote device connected to Rs485 bus

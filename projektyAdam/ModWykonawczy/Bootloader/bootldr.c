@@ -24,8 +24,8 @@
 #include <util/crc16.h>
 
 #include "bootldr.h"
-#include "../../protocol1.h"
-#include "../../xModemCommands.h"
+#include "../../../freeRtos/Lib/include/protocol1.h"
+#include "../../../freeRtos/Lib/include/xModemCommands.h"
 
 uint8_t         KEY[]                        = {SYNC, 0x1F, rFLASH, 0x01, 0x1f, 0x40, 0x50};
 uint8_t         helloBuf[]                   = {SYNC, 0, rHELLO, 7, 'b', 0, 'v', '0', '.', '5', '0'};   //rHELLO response

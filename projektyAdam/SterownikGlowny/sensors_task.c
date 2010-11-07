@@ -22,13 +22,14 @@
 #include "memory_x.h"
 #include "main.h"
 #include "Rs485_prot.h"
+#include "protocol1.h"
 
 
 
 void sensorsTaskInit(void)
 {
-  rollers = xmalloc(MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
-  memset(rollers, 0, MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
+  LockersMemInit();
+  rollersMemInit();
 }
 
 void sensorsTask(void* pvParameters)
@@ -39,60 +40,37 @@ void sensorsTask(void* pvParameters)
 
   for( ; ; )
   {
-    addr++;
-    
-    if (addr == 0)
-    {
-      uint16_t tmp1 = MCP3008_getSampleSingle(0);
-      voltage = (uint8_t)(tmp1>>5);
-      vTaskDelay(10);
-      tmp1 = MCP3008_getSampleSingle(1);
-      tmp1 *=10;
-      temperature = (uint8_t)(tmp1 / 24);
-    
-      vTaskDelay(10);
-
-      continue;
-    }
-    //continue;
-
-    struct sterRolet *tmp = NULL;
-    for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
-      if (rollers[i].rsDeviceState.adres == addr)
-        tmp = &rollers[i];
-    
-    if (rs485ping(addr)==0)
-    {
-      if (tmp == NULL)
-      {
-        for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
-        {
-          if (rollers[i].rsDeviceState.adres == 0)
-          {
-            tmp = &rollers[i];
-            tmp->rsDeviceState.adres = addr;
-            break;
-          }
-        }
-      }
-      if (tmp != NULL)
-      {
-        tmp->rsDeviceState.stan &= (~NOT_DETECTED);
-        rs485hello(addr, (void *)(tmp->rsDeviceState.version), 7);
-      }
-    }
-    else
-    {
-      if (tmp != NULL)
-      {
-        if (tmp->rsDeviceState.stan & NOT_DETECTED)
-        {
-          tmp->rsDeviceState.adres = 0;
-        }
-        tmp->rsDeviceState.stan |= NOT_DETECTED;
-      }
-    }
-
+    uint16_t tmp;
+    //Read power suply voltage
+    tmp = MCP3008_getSampleSingle(0);
+    voltage = (uint8_t)(tmp>>5);
     vTaskDelay(10);
+      
+    //Read temperature inside chasis
+    tmp = MCP3008_getSampleSingle(1);
+    tmp *=10;
+    temperature = (uint8_t)(tmp / 24);
+    vTaskDelay(10);
+      
+    //read lock
+    checkLockerSensors();
+
+    for (addr = FIRST_ROLLER_DRIVER_ADDR; addr <= LAST_ROLLER_DRIVER_ADDR; addr++)
+    {
+      rs485rollerHello(addr);
+      vTaskDelay(10);
+    }
+
+    for (addr = FIRST_LIGHT_DRIVER_ADDR; addr <= LAST_LIGHT_DRIVER_ADDR; addr++)
+    {
+      ;
+      //vTaskDelay(10);
+    }
+    
+    for (addr = FIRST_SENSOR_ADDR; addr <= LAST_SENSOR_ADDR; addr++)
+    {
+      ;
+      //vTaskDelay(10);
+    }
   }
 }

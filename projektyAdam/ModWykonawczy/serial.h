@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "semphr.h"
+#include "../../freeRtos/Lib/include/protocol1.h"
 
 #define BOOT_START 0x1C00
 
@@ -47,25 +48,10 @@
   UCSR0B = ucInByte;               \
 }
 
-
-#define SYNC              0x5A
-
-#define rOpuscRolete1     0x10
-#define rOpuscRolete2     0x11
-
-#define rPodniesRolete1   0x20
-#define rPodniesRolete2   0x21
-
-#define rZatrzymajRolete1 0x30
-#define rZatrzymajRolete2 0x31
-
-#define PING              0x80
-#define rFLASH            0x81
-
 #define MAX_DATA_LEN 14
 
 extern uint8_t adres;
-
+extern char bHelloResp[];
 extern xQueueHandle xRoleta[2];
 
 typedef enum

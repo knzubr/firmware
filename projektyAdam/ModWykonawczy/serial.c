@@ -54,6 +54,7 @@
 #include "queue.h"
 #include "task.h"
 #include "serial.h"
+#include "../../freeRtos/Lib/include/protocol1.h"
 #include "hardware.h"
 
 //#define debug 1
@@ -115,8 +116,11 @@ static uint8_t wykonajRozkaz(void)
       wysylac = 3;
       break;
 
-    case PING:
+    case rPING:
       wysylac = 1;
+      break;
+    case rHELLO:
+      wysylac = 4;
       break;
     case rFLASH:
       wysylac = 1;
@@ -176,17 +180,9 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         stan = s_rozkaz;
         crc = _crc_xmodem_update(crc, znak);
         if (znak == adres)
-        {
           dobryAdres = 1;
-        }
         else
-        {
-#if debug
-          dobryAdres = 1;
-#else
           dobryAdres = 0;
-#endif
-        }
       }
       else
       {
@@ -342,6 +338,30 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         else if (rezultat == 3)
         {
           crQUEUE_SEND(xHandle, xRoleta[1], (void *)(&wiadomosc), 0, &xResult); 
+        }
+        else if (rezultat == 4)
+        {
+          //SYNC
+          crc = 0;
+          uint8_t temp;
+          
+          //Dane 
+          for (temp = 0; temp < 11; temp++)
+          {
+            crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&bHelloResp[temp]), 1, &xResult);
+            crc = _crc_xmodem_update(crc, bHelloResp[temp]);
+          }
+  
+          temp = (uint8_t)(crc>>8);
+          crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&temp), 1, &xResult);
+          temp = (uint8_t)(crc & 0xFF);
+          crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&temp), 1, &xResult);
+
+          if (xResult == pdPASS)
+          {
+            TxStart();
+          }
+          vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
         }
         Led1Off();
         Led2Off();

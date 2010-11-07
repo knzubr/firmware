@@ -28,12 +28,8 @@
 #define B0_OLATB  0x15
 
 
-
-//struct MPC_config
-//{
-//};
-
-//struct MPC_config MPC_global;
+volatile uint8_t portA;
+volatile uint8_t portB;
 
 // functions
 
@@ -62,11 +58,40 @@ void MPC23s17SetDirB(uint8_t portBdir, uint8_t addr);
 void MPC23s17SetPortA(uint8_t portAout, uint8_t addr);
 
 /**
+ * Ustawia wybrane bity na wyjściu portu A
+ * @param  portAout    - kierunak dla każdej linni w porcie 0 - wejście, 1 - wyjście
+ * @param  addr        - adres (0-8) portu. Kilka scalaków MPC... może działać pod tą samą linią adresową CS w magistrali SPI
+ */
+void MPC23s17SetBitsOnPortA(uint8_t portAout, uint8_t addr);
+
+/**
+ * Zeruje wybrane bity na wyjściu portu A
+ * @param  portAout    - kierunak dla każdej linni w porcie 0 - wejście, 1 - wyjście
+ * @param  addr        - adres (0-8) portu. Kilka scalaków MPC... może działać pod tą samą linią adresową CS w magistrali SPI
+ */
+void MPC23s17ClearBitsOnPortA(uint8_t portAout, uint8_t addr);
+
+/**
  * Ustawia wyjście na porcie B
  * @param  portBout    - stan portu wyjściowego
  * @param  addr        - adres (0-8) portu. Kilka scalaków MPC... może działać pod tą samą linią adresową CS w magistrali SPI
  */
 void MPC23s17SetPortB(uint8_t portBout, uint8_t addr);
+
+/**
+ * Ustawia wybrane bity na wyjściu portu B
+ * @param  portAout    - kierunak dla każdej linni w porcie 0 - wejście, 1 - wyjście
+ * @param  addr        - adres (0-8) portu. Kilka scalaków MPC... może działać pod tą samą linią adresową CS w magistrali SPI
+ */
+void MPC23s17SetBitsOnPortB(uint8_t portAout, uint8_t addr);
+
+/**
+ * Zeruje wybrane bity na wyjściu portu B
+ * @param  portAout    - kierunak dla każdej linni w porcie 0 - wejście, 1 - wyjście
+ * @param  addr        - adres (0-8) portu. Kilka scalaków MPC... może działać pod tą samą linią adresową CS w magistrali SPI
+ */
+void MPC23s17ClearBitsOnPortB(uint8_t portAout, uint8_t addr);
+
 
 /**
  * Czyta wejście portu A
