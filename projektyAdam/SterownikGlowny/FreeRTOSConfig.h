@@ -74,7 +74,7 @@
 #define configMAX_PRIORITIES            ( ( unsigned portBASE_TYPE ) 3 )
 
 #define configMINIMAL_STACK_SIZE        ( ( unsigned portSHORT ) 100 )
-#define configTOTAL_HEAP_SIZE           ( (size_t ) ( 2600 ) )
+#define configTOTAL_HEAP_SIZE           ( (size_t ) ( 2700 ) )
 //2800
 #define configMAX_TASK_NAME_LEN         ( 10 )
 #define configUSE_TRACE_FACILITY        1
@@ -95,5 +95,10 @@
 #define INCLUDE_vTaskSuspend            1
 #define INCLUDE_vTaskDelayUntil         1
 #define INCLUDE_vTaskDelay              1
+
+#define STACK_SIZE_VTY          1100
+#define STACK_SIZE_ENC           500
+#define STACK_SIZE_SENSORS       500
+
 
 #endif /* FREERTOS_CONFIG_H */

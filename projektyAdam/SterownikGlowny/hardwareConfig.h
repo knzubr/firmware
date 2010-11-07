@@ -3,17 +3,29 @@
 
 // --------------------- Configuration I/O module --------------------------------
 
+//Locker 1 (723 / 687) broken
 #define LOCK_SENS_1_LIGHT 0x40
 #define LOCK_SENS_1_AC_IN 4
+#define LOCK_SENS_1_THR   700
+#define LOCK_SENS_1_ENA   0
 
+//Locker 2 (603 / 993) OK
 #define LOCK_SENS_2_LIGHT 0x20
 #define LOCK_SENS_2_AC_IN 5
+#define LOCK_SENS_2_THR   750
+#define LOCK_SENS_2_ENA   1
 
+//Locker 3 (934/937) broken
 #define LOCK_SENS_3_LIGHT 0x10
 #define LOCK_SENS_3_AC_IN 6
+#define LOCK_SENS_3_THR   700
+#define LOCK_SENS_3_ENA   0
 
+//Locker 4 (831 / 980) OK
 #define LOCK_SENS_4_LIGHT 0x08
 #define LOCK_SENS_4_AC_IN 7
+#define LOCK_SENS_4_THR   900
+#define LOCK_SENS_4_ENA   1
 
 
 // --------------------- Konfiguracja pamięci ------------------------------------

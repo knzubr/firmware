@@ -33,22 +33,10 @@
 
 #define mainCHECK_TASK_PRIORITY 1
 #define mainCHECK_PERIOD 1
-#define mainRESET_COUNT_ADDRESS			( ( void * ) 0x50 )
 
 #define SYSTEM_NAME "FreeRtos+"
-#define S_VERSION "0.2"
+#define S_VERSION "0.21"
 
-///Konfiguracja Commandlina
-
-#define STACK_SIZE_VTY          1000
-#define STACK_SIZE_ENC           500
-#define STACK_SIZE_SENSORS       500
-
-
-#define MAKS_L_STER_ROLET       5
-
-//#define debugRamDysk            1
-//#define testZewPamiec           1
 
 
 

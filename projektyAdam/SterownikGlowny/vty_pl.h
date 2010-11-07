@@ -47,7 +47,7 @@ prog_char movingCurtainPosStr[]       = "\tpozycja   %d\r\n";
 // *************************** Command Strings *****************************************************
 
 prog_char cmd_help[]      = "pomoc";            prog_char cmd_help_help[]      = "Wypisuje wszystkie komendy";
-prog_char cmd_status[]    = "status";           prog_char cmd_help_status[]    = "Wypisuje status urzadzenia";
+prog_char cmd_status[]    = "status";           prog_char cmd_help_status[]    = "{nazwa pliku} Wypisuje status urzadzenia na ekranie lub zapisuje do pliku";
 prog_char cmd_time[]      = "czas";             prog_char cmd_help_time[]      = "Wypisuje czas";
 
 prog_char cmd_ping[]      = "ping";             prog_char cmd_help_ping[]      = "[numer sterownika] Wysyla ping do sterownika podpietego do magistrali Rs485";
