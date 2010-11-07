@@ -1,4 +1,6 @@
 #include "hardware.h"
+#include "memory_x.h"
+
 
 void hardwareInit(void)
 {

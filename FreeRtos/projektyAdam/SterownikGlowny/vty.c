@@ -8,9 +8,15 @@
 #include "hardwareConfig.h"
 #include "configuration.h"
 #include "Rs485_prot.h"
+#include "softwareConfig.h"
 
+#if LANG_EN
 #include "vty_en.h"
-//#include "vty_pl.h"
+#endif
+
+#if LANG_PL
+#include "vty_pl.h"
+#endif
 
 #ifndef LANG_VTY
 #error "Vty Language not defined"
@@ -185,7 +191,7 @@ static cliExRes_t statusFunction(cmdState_t *state)
   fprintf_P(&state->myStdInOut, systemStateStr);
   fprintf_P(&state->myStdInOut, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
   fprintf_P(&state->myStdInOut, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
-  fprintf_P(&state->myStdInOut, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);  //TODO FIXME
+  fprintf_P(&state->myStdInOut, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);
   fprintf_P(&state->myStdInOut, statusTemperatureStr, temperature); 
   fprintf_P(&state->myStdInOut, statusVoltageStr, voltage); 
 
@@ -200,17 +206,15 @@ static cliExRes_t statusFunction(cmdState_t *state)
   
   //Print Rs485 Execitive modules
   fprintf_P(&state->myStdInOut, statusRs485listStr);
-  uint8_t i;
+  uint8_t numOfDev = printRs485devices(&state->myStdInOut);
+  if (numOfDev == 0)
+    fprintf_P(&state->myStdInOut, statusNoRs485Dev);  
   
-  struct sterRolet *rolTmp = rollers;
-  for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
-  {
-    if (rolTmp->rsDeviceState.adres != 0)
-    {
-      fprintf_P(&state->myStdInOut, statusRollerDescStr, rolTmp->rsDeviceState.adres, rolTmp->rsDeviceState.version[0], rolTmp->rsDeviceState.version[1], rolTmp->rsDeviceState.version[2], rolTmp->rsDeviceState.version[3], rolTmp->rsDeviceState.version[4]);  
-    }
-    rolTmp++;
-  }
+  //Print locker sensors
+  fprintf_P(&state->myStdInOut, statusLockerSensorsStr);
+  numOfDev = printLockers(&state->myStdInOut);
+  if (numOfDev == 0)
+    fprintf_P(&state->myStdInOut, statusLockerSensorsDisStr);
   
   //Print time FIXME deadlock problem
 /*  readTimeDecoded((timeDecoded_t *)(&czasRtc));

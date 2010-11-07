@@ -50,6 +50,7 @@
 */
 
 #include "main.h"
+#include "../../freeRtos/Lib/include/protocol1.h"
 
 /**
  * Proces odpowiedzialny za obsługę klawiszy
@@ -70,8 +71,9 @@ void vApplicationIdleHook( void );
 
 /*-----------------------------------------------------------*/
 
-///Adres urządzenia.
+/* Device address on RS 485 bus */
 uint8_t adres;
+char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r', 0, 'v', '0', '.', '5', '1'};
 
 t_stan_klawiszy	roleta1 = {0, 0, 0, 0, bezczynny};
 t_stan_klawiszy	roleta2 = {0, 0, 0, 0, bezczynny};

@@ -30,7 +30,10 @@ prog_char statusMacStr[]              = "  Mac address     : %x:%x:%x:%x:%x:%x\r
 prog_char statusIpStr[]               = "  IP addr./ mask  : %d.%d.%d.%d / %d\r\n";
 
 prog_char statusRs485listStr[]        = "Detected RS 485 devices:\r\n";
-prog_char statusRollerDescStr[]       = "  Address %d firmware %c%c%c%c%c\r\n";
+prog_char statusNoRs485Dev[]          = "  Can't find any device\r\n";
+
+prog_char statusLockerSensorsStr[]    = "Locker sensors states:\r\n";
+prog_char statusLockerSensorsDisStr[] = "  Locker sensors disabled\r\n";
 
 prog_char editRamFileIntroStr[]       = "Writing to file. Press CTRL+C to quit\r\n";
 prog_char readRamFIleLenStr[]         = "File length: %d\r\n";
@@ -73,6 +76,4 @@ prog_char cmd_conf_ip[]   = "ip";               prog_char cmd_help_conf_ip[]   =
 prog_char cmd_conf_mac[]  = "mac";              prog_char cmd_help_conf_mac[]  = "[A1] [A2] [A2] [A3] [A4] [A5] set MAC address";
 prog_char cmd_conf_save[] = "save";             prog_char cmd_help_conf_save[] = "Save configuration";
 
-#else
-#error "You can't add two language files. Remove #include "vty_*.h" line in file vty.c"
 #endif

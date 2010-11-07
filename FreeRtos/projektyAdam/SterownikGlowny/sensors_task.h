@@ -25,7 +25,7 @@
 #ifndef SENSORS_TASK_H
 #define SENSORS_TASK_H
 
-#define MAX_NUMBER_OF_ROLLERS 10
+
 
 
 #define NOT_DETECTED          0x01
@@ -42,7 +42,7 @@ extern volatile uint8_t temperature;
 extern volatile uint8_t voltage;
 
 
-struct sterRolet *rollers;
+
 
 void sensorsTaskInit(void);
 

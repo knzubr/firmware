@@ -11,8 +11,6 @@
 #include "Rs485_prot.h"
 #include "sensors_task.h"
 
-#define LANG EN
-
 // Znaki kontrolne w protokole Xmodem
 #define SOH                     0x01
 #define STX                     0x02

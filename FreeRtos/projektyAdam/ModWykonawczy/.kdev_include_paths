@@ -1,4 +1,2 @@
-RESOLVE: SOURCE=../../freeRtos/Source/include BUILD=
-../../freeRtos/Source/include
+/home/adam/akme/FreeRtos/freeRtos/Source/include
 /usr/lib/avr/include
-

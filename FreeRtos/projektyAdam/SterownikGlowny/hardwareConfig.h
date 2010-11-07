@@ -1,6 +1,21 @@
 #ifndef HARDWARE_CONFIG_H
 #define HARDWARE_CONFIG_H
 
+// --------------------- Configuration I/O module --------------------------------
+
+#define LOCK_SENS_1_LIGHT 0x40
+#define LOCK_SENS_1_AC_IN 4
+
+#define LOCK_SENS_2_LIGHT 0x20
+#define LOCK_SENS_2_AC_IN 5
+
+#define LOCK_SENS_3_LIGHT 0x10
+#define LOCK_SENS_3_AC_IN 6
+
+#define LOCK_SENS_4_LIGHT 0x08
+#define LOCK_SENS_4_AC_IN 7
+
+
 // --------------------- Konfiguracja pamięci ------------------------------------
 //
 

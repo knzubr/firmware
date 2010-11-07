@@ -4,14 +4,20 @@ ADD_EXECUTABLE(sterownikglowny main.c                                  main.h
                                configuration.c                         configuration.h                                   # Load / save configuration
                                hardware.c                              hardware.h
                                serial.c                                serial.h
-                               vty.c                                   vty.h vty_pl.h vty_en.h  
+                               vty.c                                   vty.h  
                                sensors_task.c                          sensors_task.h
                                enc_task.c                              enc_task.h
                                net.h                                                                                     # ten plik należy przesunąć
                                )
 
+add_library(Lang               vty_pl.h                                vty_en.h
+                               Rs485_prot_pl.h                         Rs485_prot_en.h
+                               hardware_pl.h                           hardware_en.h
+                               )
+
 add_library(Config             hardwareConfig.h                                                                          # Hardware config
                                FreeRTOSConfig.h                                                                          # FreeRTOSConfig.h
+                               softwareConfig.h                                                                          # Software configuration ie. language
                                ffconf.h                                                                                  # Petits File system config
                                )
 

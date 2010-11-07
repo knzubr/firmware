@@ -1,8 +1,24 @@
 #include "hardware.h"
+#include "softwareConfig.h"
+#include <stdio.h>
+#include <string.h>
+
 #include "hardwareConfig.h"
 #include "spi.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
+
+#include "memory_x.h"
+#include "mpc23s17.h"
+#include "mcp3008.h"
+
+#if LANG_EN
+#include "hardware_en.h"
+#endif
+
+#if LANG_PL
+#include "hardware_pl.h"
+#endif
 
 xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
 
@@ -65,6 +81,57 @@ void hardwareInit(void)
    7 - 
    */
 }
+
+void LockersMemInit(void)
+{
+  lockSensors = xmalloc(4 * sizeof(struct lockerSensor));
+}
+
+uint8_t printLockers(FILE *stream)
+{
+  uint8_t i;
+  uint8_t result = 0;
+  struct lockerSensor *tmpLock = lockSensors;
+  for (i=1; i<=4; i++)
+  {
+    if (tmpLock->enabled)
+    {
+      fprintf_P(stream, statusLockerSensDescStr, i);
+      if (tmpLock->threshold > tmpLock->acVal)
+        fprintf_P(stream, statusLockerOpenStr);
+      else
+        fprintf_P(stream, statusLockerCloseStr);
+      fprintf_P(stream, statusLockerSensAdditionalDescStr, tmpLock->threshold, tmpLock->acVal);
+      result++;
+    }
+    tmpLock++;
+  }
+  return result;
+}
+
+void checkLockerSensors(void)
+{
+  MPC23s17SetBitsOnPortA(LOCK_SENS_1_LIGHT, 0);
+  lockSensors[0].acVal = MCP3008_getSampleSingle(LOCK_SENS_1_AC_IN);
+  MPC23s17ClearBitsOnPortA(LOCK_SENS_1_LIGHT, 0);
+  lockSensors[0].locked = (lockSensors[0].acVal > lockSensors[0].threshold) ? 1 : 0;
+  
+  MPC23s17SetBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
+  lockSensors[1].acVal = MCP3008_getSampleSingle(LOCK_SENS_2_AC_IN);
+  MPC23s17ClearBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
+  lockSensors[1].locked = (lockSensors[1].acVal > lockSensors[1].threshold) ? 1 : 0;
+
+  MPC23s17SetBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
+  lockSensors[2].acVal = MCP3008_getSampleSingle(LOCK_SENS_3_AC_IN);
+  MPC23s17ClearBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
+  lockSensors[2].locked = (lockSensors[2].acVal > lockSensors[2].threshold) ? 1 : 0;
+
+  MPC23s17SetBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
+  lockSensors[3].acVal = MCP3008_getSampleSingle(LOCK_SENS_4_AC_IN);
+  MPC23s17ClearBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
+  lockSensors[3].locked = (lockSensors[3].acVal > lockSensors[3].threshold) ? 1 : 0;
+}
+
 
 uint8_t spiSend(uint8_t data)
 {
