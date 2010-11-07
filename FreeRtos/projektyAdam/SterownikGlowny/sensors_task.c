@@ -23,6 +23,7 @@
 #include "main.h"
 #include "Rs485_prot.h"
 #include "protocol1.h"
+#include "mpc23s17.h"
 
 
 
@@ -37,6 +38,10 @@ void sensorsTask(void* pvParameters)
   pvParameters = NULL;
   uint8_t addr = 255;
   uint8_t i;
+
+  MPC23s17SetDirA(0x00, 0);
+  
+  MPC23s17SetDirB(0x00, 0);
 
   for( ; ; )
   {

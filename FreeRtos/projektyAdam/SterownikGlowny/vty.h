@@ -35,6 +35,8 @@
 void VtyInit(cmdState_t *state);
 void printErrorInfo(cmdState_t *state);
 
+void printStatus(FILE *stream);
+
 extern uint8_t mymac[6];
 extern uint8_t myip[4];
 extern uint8_t mask;

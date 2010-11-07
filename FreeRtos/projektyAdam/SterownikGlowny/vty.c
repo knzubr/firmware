@@ -182,39 +182,38 @@ static cliExRes_t configureModeFunction(cmdState_t *state)
   return ERROR_OPERATION_NOT_ALLOWED;
 }
 
-// ************************** CLI Functions *********************************************************************************
-
-static cliExRes_t statusFunction(cmdState_t *state)
+// ************************** VTY API ***************************************************************************************
+void printStatus(FILE *stream)
 {
-  fprintf_P(&state->myStdInOut, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n")); 
+  fprintf_P(stream, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n")); 
   //Print system state
-  fprintf_P(&state->myStdInOut, systemStateStr);
-  fprintf_P(&state->myStdInOut, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
-  fprintf_P(&state->myStdInOut, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
-  fprintf_P(&state->myStdInOut, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);
-  fprintf_P(&state->myStdInOut, statusTemperatureStr, temperature); 
-  fprintf_P(&state->myStdInOut, statusVoltageStr, voltage); 
+  fprintf_P(stream, systemStateStr);
+  fprintf_P(stream, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
+  fprintf_P(stream, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
+  fprintf_P(stream, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);
+  fprintf_P(stream, statusTemperatureStr, temperature); 
+  fprintf_P(stream, statusVoltageStr, voltage); 
 
-  uint8_t ramDiscSpace = ramDyskLiczbaWolnychKlastrow();
-  fprintf_P(&state->myStdInOut, statusRamDiskStateStr,     ramDiscSpace,  L_KLASTROW);
-  printErrorInfo(state);
+  uint8_t tmp = ramDyskLiczbaWolnychKlastrow();
+  fprintf_P(stream, statusRamDiskStateStr,     tmp,  L_KLASTROW);
+//  printErrorInfo(state); //TODO fix and uncomment
   
   //Print system configuration
-  fprintf_P(&state->myStdInOut, systemRamConfigStr);
-  fprintf_P(&state->myStdInOut, statusMacStr, mymac[0], mymac[1], mymac[2], mymac[3], mymac[4], mymac[5]);
-  fprintf_P(&state->myStdInOut, statusIpStr, myip[0], myip[1], myip[2], myip[3], mask);
+  fprintf_P(stream, systemRamConfigStr);
+  fprintf_P(stream, statusMacStr, mymac[0], mymac[1], mymac[2], mymac[3], mymac[4], mymac[5]);
+  fprintf_P(stream, statusIpStr, myip[0], myip[1], myip[2], myip[3], mask);
   
   //Print Rs485 Execitive modules
-  fprintf_P(&state->myStdInOut, statusRs485listStr);
-  uint8_t numOfDev = printRs485devices(&state->myStdInOut);
-  if (numOfDev == 0)
-    fprintf_P(&state->myStdInOut, statusNoRs485Dev);  
+  fprintf_P(stream, statusRs485listStr);
+  tmp = printRs485devices(stream);
+  if (tmp == 0)
+    fprintf_P(stream, statusNoRs485Dev);  
   
   //Print locker sensors
-  fprintf_P(&state->myStdInOut, statusLockerSensorsStr);
-  numOfDev = printLockers(&state->myStdInOut);
-  if (numOfDev == 0)
-    fprintf_P(&state->myStdInOut, statusLockerSensorsDisStr);
+  fprintf_P(stream, statusLockerSensorsStr);
+  tmp = printLockers(stream);
+  if (tmp == 0)
+    fprintf_P(stream, statusLockerSensorsDisStr);
   
   //Print time FIXME deadlock problem
 /*  readTimeDecoded((timeDecoded_t *)(&czasRtc));
@@ -222,8 +221,30 @@ static cliExRes_t statusFunction(cmdState_t *state)
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
   fprintf_P(&state->myStdInOut, PSTR("%d:%d:%d\r\n"), godzina, minuta, sekunda);*/
+  
+}
 
-  return OK_SILENT;
+
+// ************************** CLI Functions *********************************************************************************
+
+static cliExRes_t statusFunction(cmdState_t *state)
+{
+  if (state->argc < 1)
+  {
+    printStatus(&state->myStdInOut);
+    return OK_SILENT; 
+  }
+  
+  FILE stream;
+  if (ramDyskOtworzPlikStdIo(cmdlineGetArgStr(1, state), &fdVty, &stream, __SWR | __SRD) != 0)
+  {
+    fprintf_P(&state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
+    return ERROR_INFORM;
+  }
+
+  printStatus(&stream);
+  ramDyskZamknijPlikStdIo(&stream);
+  return OK_SILENT; 
 }
 
 static cliExRes_t pokazCzasFunction(cmdState_t *state)
@@ -278,8 +299,9 @@ static cliExRes_t ustawIpFunction(cmdState_t *state)
 static cliExRes_t setMacAddrFunction(cmdState_t *state)
 {
   if (state->argc < 6)
-    return SYNTAX_ERROR;  mymac[0] = cmdlineGetArgHex(1, state);
-
+    return SYNTAX_ERROR;  
+  
+  mymac[0] = cmdlineGetArgHex(1, state);
   mymac[1] = cmdlineGetArgHex(2, state);
   mymac[2] = cmdlineGetArgHex(3, state);
   mymac[3] = cmdlineGetArgHex(4, state);

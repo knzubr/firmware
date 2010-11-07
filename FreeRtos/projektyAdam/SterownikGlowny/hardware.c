@@ -111,25 +111,45 @@ uint8_t printLockers(FILE *stream)
 
 void checkLockerSensors(void)
 {
-  MPC23s17SetBitsOnPortA(LOCK_SENS_1_LIGHT, 0);
-  lockSensors[0].acVal = MCP3008_getSampleSingle(LOCK_SENS_1_AC_IN);
-  MPC23s17ClearBitsOnPortA(LOCK_SENS_1_LIGHT, 0);
-  lockSensors[0].locked = (lockSensors[0].acVal > lockSensors[0].threshold) ? 1 : 0;
+  if (lockSensors[0].enabled)
+  {
+    MPC23s17SetBitsOnPortA(LOCK_SENS_1_LIGHT, 0);
+    vTaskDelay(30);
+    lockSensors[0].acVal = MCP3008_getSampleSingle(LOCK_SENS_1_AC_IN);
+    MPC23s17ClearBitsOnPortA(LOCK_SENS_1_LIGHT, 0);
+    lockSensors[0].locked = (lockSensors[0].acVal > lockSensors[0].threshold) ? 1 : 0;
+    vTaskDelay(10);
+  }
   
-  MPC23s17SetBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
-  lockSensors[1].acVal = MCP3008_getSampleSingle(LOCK_SENS_2_AC_IN);
-  MPC23s17ClearBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
-  lockSensors[1].locked = (lockSensors[1].acVal > lockSensors[1].threshold) ? 1 : 0;
-
-  MPC23s17SetBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
-  lockSensors[2].acVal = MCP3008_getSampleSingle(LOCK_SENS_3_AC_IN);
-  MPC23s17ClearBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
-  lockSensors[2].locked = (lockSensors[2].acVal > lockSensors[2].threshold) ? 1 : 0;
-
-  MPC23s17SetBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
-  lockSensors[3].acVal = MCP3008_getSampleSingle(LOCK_SENS_4_AC_IN);
-  MPC23s17ClearBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
-  lockSensors[3].locked = (lockSensors[3].acVal > lockSensors[3].threshold) ? 1 : 0;
+  if (lockSensors[1].enabled)
+  {
+    MPC23s17SetBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
+    vTaskDelay(30);
+    lockSensors[1].acVal = MCP3008_getSampleSingle(LOCK_SENS_2_AC_IN);
+    MPC23s17ClearBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
+    lockSensors[1].locked = (lockSensors[1].acVal > lockSensors[1].threshold) ? 1 : 0;
+    vTaskDelay(10);
+  }
+  
+  if (lockSensors[2].enabled)
+  {
+    MPC23s17SetBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
+    vTaskDelay(30);
+    lockSensors[2].acVal = MCP3008_getSampleSingle(LOCK_SENS_3_AC_IN);
+    MPC23s17ClearBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
+    lockSensors[2].locked = (lockSensors[2].acVal > lockSensors[2].threshold) ? 1 : 0;
+    vTaskDelay(10);
+  }
+  
+  if (lockSensors[3].enabled)
+  {
+    MPC23s17SetBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
+    vTaskDelay(30);
+    lockSensors[3].acVal = MCP3008_getSampleSingle(LOCK_SENS_4_AC_IN);
+    MPC23s17ClearBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
+    lockSensors[3].locked = (lockSensors[3].acVal > lockSensors[3].threshold) ? 1 : 0;
+    vTaskDelay(10);
+  }
 }
 
 
