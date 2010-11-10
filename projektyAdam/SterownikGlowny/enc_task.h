@@ -21,23 +21,22 @@ uint8_t mask;
 
 uint8_t verify_password(char *str);
 
-//! takes a string of the form password/commandNumber and analyse it
-//! return values: -1 invalid password, otherwise command number
-//!                -2 no command given but password valid
-//!                -3 valid password, no command and no trailing "/"
-int8_t analyse_get_url(char *str);
+/**
+ * takes a string of url address and process it
+ * @param str - part of URL string
+ * @param [out] - filename or command
+ * @return 1 - read from ram dysk, 2 - read from SD card, 3 - execute CLI command
+ */
+uint8_t analyse_get_url (const char *str, char *fname);
 
-//! answer HTTP/1.0 301 Moved Permanently\r\nLocation: password/\r\n\r\n
-//! to redirect to the url ending in a slash
-uint16_t moved_perm(uint8_t *buf);
-
-//! prepare the webpage by writing the data to the tcp send buffer
-uint16_t print_webpage(uint8_t *buf,uint8_t on_off);
-
-//! Enc28j60 task
+/**
+ * Enc28j60 task
+ */
 void encTask(void *pvParameters);
 
-//! initialize enc28j60
+/**
+ * initialize enc28j60
+ */
 void enc28j60chipInit(void);
 
 extern struct Enc28j60_config Enc28j60_global;
