@@ -45,11 +45,10 @@ OPT = s
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SOURCE_DIR  = ../../freeRtos/Source
-LIB_DIR     = ../../freeRtos/Lib
-LIB_DIR_NET = ../../freeRtos/Lib/net
-PORT_DIR    = ../../freeRtos/portable/GCC/ATMega64
-PORT_MEM    = ../../freeRtos/portable/MemMang
+SOURCE_DIR = ../../freeRtos/Source
+LIB_DIR    = ../../freeRtos/Lib
+PORT_DIR   = ../../freeRtos/portable/GCC/ATMega64
+PORT_MEM   = ../../freeRtos/portable/MemMang
 
 SRC	= \
 main.c \
@@ -77,9 +76,6 @@ $(SOURCE_DIR)/list.c \
 $(SOURCE_DIR)/croutine.c \
 $(PORT_MEM)/heap_avr.c \
 $(PORT_DIR)/port.c
-
-
-#spiStd.c \
 
 
 #regtest.c \
@@ -121,7 +117,7 @@ DEBUG_LEVEL=-g
 WARNINGS=-Wall -Wextra -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wsign-compare \
 		-Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wunused
 
-CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../freeRtos/Lib/include  -I../../freeRtos/Lib/net/include\
+CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../freeRtos/Lib/include \
 $(DEBUG_LEVEL) -O$(OPT) \
 -fsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \
 $(WARNINGS) \
@@ -157,7 +153,6 @@ ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 
 # 64 KB of external RAM, starting after internal RAM (ATmega128!),
 # only used for heap (malloc()).
-#EXTMEMOPTS = -Wl,--defsym=__heap_start=0x801100,--defsym=__heap_end=0x807fff
 EXTMEMOPTS = -Wl,--defsym=__heap_start=0x801100,--defsym=__heap_end=0x8027ff
 
 #EXTMEMOPTS = -Wl
@@ -194,13 +189,13 @@ LDFLAGS += -lm
 #
 
 # Programming support using avrdude.
-AVRDUDE              = avrdude
-AVRDUDE_PROGRAMMER   = jtag1
-AVRDUDE_PORT         = /dev/jtag
-AVRDUDE_FLAGS        = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
-AVRDUDE_WRITE_FLASH  = -U flash:w:$(TARGET).hex
-AVRDUDE_WRITE_EEPROM  = -U eeprom:w:$(TARGET).eep
-AVRDUDE_READ_EEPROM   = -U eeprom:r:$(TARGET).eep
+AVRDUDE             = avrdude
+AVRDUDE_PROGRAMMER  = jtag1
+AVRDUDE_PORT        = /dev/jtag
+AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
+AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
+AVRDUDE_READ_EEPROM  = -U eeprom:r:$(TARGET)_readed.eep
 AVRDUDE_WRITE_FUSES_H = -U hfuse:w:0x90:m
 AVRDUDE_READ_FUSES_H  = -U hfuse:r:$(TARGET).hfuse:i
 AVRDUDE_WRITE_FUSES_L = -U lfuse:w:0xff:m
