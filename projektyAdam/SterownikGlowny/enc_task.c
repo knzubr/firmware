@@ -27,6 +27,7 @@
 #include "main.h"
 #include "hardware.h"
 //#include "netstack.h"
+#include "ramdysk.h"
 
 // the password string (only the first 5 char checked), (only a-z,0-9,_ characters):
 char password[]="secret"; // must not be longer than 9 char
@@ -179,11 +180,35 @@ void encTask ( void *pvParameters )
         if (cmd == 1)
         {
           plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Do zaimpelentowania wyswietlenie pliku o nazwie " ) );
+  
+          //Open the filen
+          ramPlikFd fd;
+          ramDyskOtworzPlik(filename, &fd);
+          if (fd == NULL)
+          {
+            plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Nie mozna otworzyc pliku o nazwie: " ) );
+            plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);
+            plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " umieszczonego w ram dysku</p>\n" ) );
+            make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+            make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+            continue;
+          }
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Zawartosc pliku " ) );
           plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);
-          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " z ram dysku</p>\n" ) );
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " zapisanego w ram dysku:<br>" ) );
+
+          char c;
+          while (plen < Enc28j60_global.bufferSize - 30)
+          {
+            if (ramDyskCzytajBajtZPliku(&fd , &c) != 0)
+              break;
+            plen = add_tcp_byte(Enc28j60_global.buf, plen, c);
+          }
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "</p>\n"));
+          ramDyskZamknijPlik(&fd);
           make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
           make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+
           continue;
         }
 
