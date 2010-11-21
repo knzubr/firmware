@@ -10,6 +10,7 @@
 #include "avr_compat.h"
 //#include "net.h"
 #include "hardwareConfig.h"
+#include "hardware.h"
 
 #define MYWWWPORT    80
 #define MYTELNETPORT 23
@@ -19,15 +20,27 @@ uint8_t mymac[6];
 uint8_t myip[4];
 uint8_t mask;
 
+
+typedef enum 
+{
+  URLramDysk,
+  URLsdDysk,
+  URLstatus,
+  URLerror
+} urlSource_t;
+
+
+extern struct lockerSensor *lockSensors;
+
 uint8_t verify_password(char *str);
 
 /**
  * takes a string of url address and process it
  * @param str - part of URL string
  * @param [out] - filename or command
- * @return 1 - read from ram dysk, 2 - read from SD card, 3 - execute CLI command
+ * @return http source (SD, RamDysk, status)
  */
-uint8_t analyse_get_url (const char *str, char *fname);
+urlSource_t analyse_get_url (const char *str, char *fname);
 
 /**
  * Enc28j60 task

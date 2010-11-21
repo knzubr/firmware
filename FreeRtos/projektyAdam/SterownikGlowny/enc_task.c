@@ -45,12 +45,21 @@ uint8_t verify_password ( char *str )
 }
 
 
-uint8_t analyse_get_url (const char *str, char *fname)
+urlSource_t analyse_get_url (const char *str, char *fname)
 {
-  uint8_t result = 1;
+  uint8_t result = URLerror;
+  if (strncmp_P(str, PSTR("status"), 6) == 0)
+    return URLstatus;
+    
+  if (strncmp_P(str, PSTR("rd/"), 3) == 0)
+  {
+    result = URLramDysk;
+    str += 3;
+  }
+
   if (strncmp_P(str, PSTR("sd/"), 3) == 0)
   {
-    result = 2;
+    result = URLsdDysk;
     str += 3;
   }
    
@@ -70,7 +79,7 @@ uint8_t analyse_get_url (const char *str, char *fname)
     i++;
   }
   if (i == 0)
-    result = 0;
+    result = URLerror;
   
   return result;
 }
@@ -84,6 +93,54 @@ void enc28j60chipInit ( void )
     enc28j60PhyWrite    (PHLCON, 0x476);
     vTaskDelay          (2);
     init_ip_arp_udp_tcp (mymac, myip, MYWWWPORT);
+}
+
+uint16_t printHTMLstatus(char *buf, uint16_t pos, uint16_t maxPos)
+{
+  char *tmpPtr;
+
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ( "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>"));
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ( "<h3>Status</h3>"));
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p>"SYSTEM_NAME" ver <b>"S_VERSION"</b> build: "__DATE__", "__TIME__"</p>"));
+  
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p><table border=1>"));
+
+  tmpPtr = getBufPosToWrite(buf, pos);
+  pos +=sprintf_P(tmpPtr, PSTR("<tr><td>Temperatura</td><td>%d C</td></tr>"), temperature);
+  tmpPtr = getBufPosToWrite(buf, pos);
+  pos +=sprintf_P(tmpPtr, PSTR("<tr><td>Napięcie na magistrali</td><td>%d V</td></tr>"), voltage);
+
+  uint8_t tmp = ramDyskLiczbaWolnychKlastrow();
+  tmpPtr = getBufPosToWrite(buf, pos);
+  pos +=sprintf_P(tmpPtr, PSTR("<tr><td>Liczba wolnych klastrów</td><td>%d / %d</td></tr>"), tmp, L_KLASTROW);
+
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("</table></p>"));
+
+  tmpPtr = getBufPosToWrite(buf, pos);
+  
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR("<h3>Czujniki rygli</h3>"));
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p><table border=1>"));
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<tr align=\"center\"><td>Czujnik nr</td><td>Położenie rygla</td><td>Odczyt z przetwornika AC</td><td>Wart graniczna</td></tr>"));
+  for (tmp = 0; tmp < 4; tmp++)
+  {
+    if (lockSensors[tmp].enabled)
+    {
+      tmpPtr = getBufPosToWrite(buf, pos);
+      pos +=sprintf_P(tmpPtr, PSTR("<tr><td>%d</td>"), tmp+1);
+      if (lockSensors[tmp].locked)
+        pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<td>zamknięty</td>"));
+      else
+        pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<td>otwarty</td>"));
+
+      tmpPtr = getBufPosToWrite(buf, pos);
+      pos +=sprintf_P(tmpPtr, PSTR("<td>%d</td><td>%d</td>"), lockSensors[tmp].acVal, lockSensors[tmp].threshold);
+      pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("</tr>"));
+    }
+  }
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("</table></p>"));
+
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR("<h3>Moduły wykonawcze</h3>"));
+  return pos;
 }
 
 
@@ -177,7 +234,7 @@ void encTask ( void *pvParameters )
 
         cmd = analyse_get_url (( char * )(&Enc28j60_global.buf[dat_p+5]), filename);
 
-        if (cmd == 1)
+        if (cmd == URLramDysk)
         {
           plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
   
@@ -211,7 +268,7 @@ void encTask ( void *pvParameters )
           continue;
         }
 
-        if (cmd == 2)
+        if (cmd == URLsdDysk)
         {
           plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
           plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Do zaimpelentowania wyswietlenie pliku o nazwie " ) );
@@ -220,6 +277,14 @@ void encTask ( void *pvParameters )
           make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
           make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
           continue;
+        }
+        if (cmd == URLstatus)
+        {
+          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
+          plen=printHTMLstatus(Enc28j60_global.buf, plen, Enc28j60_global.bufferSize);  
+          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+          continue;  
         }
       }
     }
