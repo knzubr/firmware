@@ -66,6 +66,7 @@ prog_char cmd_read_rf[]   = "czytrp";           prog_char cmd_help_read_rf[]   =
 prog_char cmd_up[]        = "podnies";          prog_char cmd_help_up[]        = "[numer sterownika] [nr rolety] {wartosc} podnoszenie rolety";
 prog_char cmd_down[]      = "opusc";            prog_char cmd_help_down[]      = "[numer sterownika] [nr rolety] {wartosc} opuszczanie rolety";
 prog_char cmd_spa[]       = "spa";              prog_char cmd_help_spa[]       = "[wartosc] ustaw zewnetrzny port A";
+prog_char cmd_spb[]       = "spb";              prog_char cmd_help_spb[]       = "[wartosc] ustaw zewnetrzny port B";
 
 prog_char cmd_settime[]   = "ustawcz";          prog_char cmd_help_settime[]   = "[h] [m] [s] ustawia czas w formacie 24h format";
 prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]        = "[wejscie 0-7] czyta analogowa wartosc na wejsciu przetwornika";

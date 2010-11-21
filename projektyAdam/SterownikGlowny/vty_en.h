@@ -66,6 +66,7 @@ prog_char cmd_read_rf[]   = "readrf";           prog_char cmd_help_read_rf[]   =
 prog_char cmd_up[]        = "up";               prog_char cmd_help_up[]        = "[driver no] [channel] {value} move up";
 prog_char cmd_down[]      = "down";             prog_char cmd_help_down[]      = "[driver no] [channel] {value} move down";
 prog_char cmd_spa[]       = "spa";              prog_char cmd_help_spa[]       = "[value] set port A";
+prog_char cmd_spb[]       = "spb";              prog_char cmd_help_spb[]       = "[value] set port B";
 
 prog_char cmd_settime[]   = "settime";          prog_char cmd_help_settime[]   = "[h] [m] [s] set time (24h format)";
 prog_char cmd_ac[]        = "ac";               prog_char cmd_help_ac[]        = "[channel 0-7] read analog value";
