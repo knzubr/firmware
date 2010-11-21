@@ -15,7 +15,7 @@
 #ifndef MPC32S17_H
 #define MPC32S17_H
 
-#include <inttypes.h>
+#include <stdint.h>
 #include "main.h"
 #include "spi.h"
 

@@ -182,9 +182,8 @@ void encTask ( void *pvParameters )
           plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
   
           //Open the filen
-          ramPlikFd fd;
-          ramDyskOtworzPlik(filename, &fd);
-          if (fd == NULL)
+          struct ramPlikFd fd;
+          if (ramDyskOtworzPlik(filename, &fd) != 0)
           {
             plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Nie mozna otworzyc pliku o nazwie: " ) );
             plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);

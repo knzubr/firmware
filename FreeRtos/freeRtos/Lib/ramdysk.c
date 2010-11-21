@@ -1,4 +1,5 @@
 #include "ramdysk.h"
+#include <string.h>
 
 #define systemTime() 0; //Dodać w pliku hardware.h funkcje do odczytu czasu systemowego
 
@@ -118,14 +119,26 @@ static struct ramPlik* znajdzPlik(const char *nazwa)
   uint8_t dlNazwy = strlen(nazwa);        //Skracanie podanej nazwy do 8 znaków
   if (dlNazwy > 8)
     dlNazwy = 8;
+  
+  
   if (nazwa[dlNazwy-1] == 0)
     dlNazwy--;                            //Nie sprawdzamy czy string kończy się /0
   struct ramPlik *plik;
-
   uint8_t temp;
   uint8_t tempKlaster=0;
   uint8_t tempKlaster2;
 
+  for (temp=1; temp < dlNazwy; temp ++)
+  {
+    if (nazwa[temp] == ' ')               //Pozbycie sie spacji
+    {
+      dlNazwy = temp;
+      break; 
+    }
+  }
+  if (dlNazwy == 0)
+    return NULL;
+  
   do
   {
     plik = (struct ramPlik *)(dataPtr(tempKlaster, 0));  //Odczyt pierwszego nagłówka pliku w klastrze
@@ -178,9 +191,20 @@ void ramDyskInit(void)
 }
 uint8_t ramDyskUtworzPlik(const char *nazwa)
 {                                        //Nowo utworzony plik nie zajmuje żadnego klastra
-  uint8_t temp = strlen(nazwa);
-  if (temp > 8)
-    temp = 8;
+  uint8_t dlNazwy = strlen(nazwa);
+  uint8_t i;
+  if (dlNazwy > 8)
+    dlNazwy = 8;
+  
+  for (i=0; i<dlNazwy; i++)
+  {  if (nazwa[i] == ' ')
+     {
+       dlNazwy = i;
+       break;
+     }
+  }
+  if (dlNazwy == 0)
+    return 0;
   
   struct ramPlik *plik;
   if ((plik = znajdzPlik(nazwa)) != NULL)
@@ -190,9 +214,9 @@ uint8_t ramDyskUtworzPlik(const char *nazwa)
   
   if ((plik = znajdzMiejsceNaWpis()) != NULL) //Szukanie pustego wpisu (nagłówka) po skasowanym pliku
   {
-    memset(plik, 0, 12);                 //Czyszczenie wpisu (pola: pierwszyKlaster, rozmiarLo, rozmiarHi, lAktOtw ustawione na wartość 0)
-    strncpy(plik->nazwa, nazwa, temp);   //Ustawianie odpowiedniej nazwy pliku
-    plik -> dataMod = systemTime();      //Ustawianie czasu modyfikacji
+    memset(plik, 0, 12);                      //Czyszczenie wpisu (pola: pierwszyKlaster, rozmiarLo, rozmiarHi, lAktOtw ustawione na wartość 0)
+    strncpy(plik->nazwa, nazwa, dlNazwy);     //Ustawianie odpowiedniej nazwy pliku
+    plik -> dataMod = systemTime();           //Ustawianie czasu modyfikacji
     return 0;                            
   }
   return 1;
