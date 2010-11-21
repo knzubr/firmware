@@ -120,13 +120,13 @@ uint16_t printHTMLstatus(char *buf, uint16_t pos, uint16_t maxPos)
   
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR("<h3>Czujniki rygli</h3>"));
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p><table border=1>"));
-  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<tr align=\"center\"><td>Czujnik nr</td><td>Położenie rygla</td><td>Odczyt z przetwornika AC</td><td>Wart graniczna</td></tr>"));
+  pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<tr><td>Czujnik nr</td><td>Położenie rygla</td><td>Odczyt z przetwornika AC</td><td>Wart graniczna</td></tr>"));
   for (tmp = 0; tmp < 4; tmp++)
   {
     if (lockSensors[tmp].enabled)
     {
       tmpPtr = getBufPosToWrite(buf, pos);
-      pos +=sprintf_P(tmpPtr, PSTR("<tr><td>%d</td>"), tmp+1);
+      pos +=sprintf_P(tmpPtr, PSTR("<tr align=\"center\"><td>%d</td>"), tmp+1);
       if (lockSensors[tmp].locked)
         pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<td>zamknięty</td>"));
       else
