@@ -75,13 +75,13 @@ void MPC23s17SetBitsOnPortA(uint8_t portAout, uint8_t addr)
   addr &= 0x0E;
   addr |= 0x40;        //OPCODE 0100 AAA 0 bit0: 0 - zapis, 1 - odczyt 
 
+  portA |= portAout;  
+
   spiTake();
   enableSpiMPC23S17();
-  portA |= portAout;  
   spiSend(addr);
   spiSend(B0_OLATA);
   spiSend(portA);  
-
   disableSpiMPC23S17();
   spiGive();
 }
@@ -92,13 +92,13 @@ void MPC23s17ClearBitsOnPortA(uint8_t portAout, uint8_t addr)
   addr &= 0x0E;
   addr |= 0x40;        //OPCODE 0100 AAA 0 bit0: 0 - zapis, 1 - odczyt 
 
+  portA &= (~portAout);
+
   spiTake();
   enableSpiMPC23S17();
-  portA &= (~portAout);
   spiSend(addr);
   spiSend(B0_OLATA);
   spiSend(portA);  
-
   disableSpiMPC23S17();
   spiGive();
 }
@@ -109,13 +109,13 @@ void MPC23s17SetPortB(uint8_t portBout, uint8_t addr)
   addr &= 0x0E;
   addr |= 0x40;        //OPCODE 0100 AAA 0 bit0: 0 - zapis, 1 - odczyt 
 
+  portB = portBout;
+
   spiTake();
   enableSpiMPC23S17();
-  portB = portBout;
   spiSend(addr);
   spiSend(B0_OLATB);
   spiSend(portB);  
-
   disableSpiMPC23S17();
   spiGive();
 }
@@ -126,13 +126,13 @@ void MPC23s17SetBitsOnPortB(uint8_t portBout, uint8_t addr)
   addr &= 0x0E;
   addr |= 0x40;        //OPCODE 0100 AAA 0 bit0: 0 - zapis, 1 - odczyt 
 
+  portB |= portBout;
+
   spiTake();
   enableSpiMPC23S17();
-  portB |= portBout;
   spiSend(addr);
   spiSend(B0_OLATB);
   spiSend(portB);  
-
   disableSpiMPC23S17();
   spiGive();
 }
@@ -143,9 +143,10 @@ void MPC23s17ClearBitsOnPortB(uint8_t portBout, uint8_t addr)
   addr &= 0x0E;
   addr |= 0x40;        //OPCODE 0100 AAA 0 bit0: 0 - zapis, 1 - odczyt 
 
+  portB &= (~portBout);
+
   spiTake();
   enableSpiMPC23S17();
-  portB &= (~portBout);
   spiSend(addr);
   spiSend(B0_OLATB);
   spiSend(portB);  
