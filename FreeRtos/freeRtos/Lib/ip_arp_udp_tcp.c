@@ -366,6 +366,11 @@ void init_len_info(uint8_t *buf1)
   }
 }
 
+char *getBufPosToWrite(uint8_t *buf, uint16_t pos)
+{
+  return &buf[TCP_CHECKSUM_L_P+3+pos];  
+}
+
 uint16_t fill_tcp_data_p(uint8_t *buf1, uint16_t pos, const prog_char *progmem_s)
 {
   char c;

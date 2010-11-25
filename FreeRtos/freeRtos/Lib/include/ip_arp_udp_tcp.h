@@ -84,6 +84,15 @@ void     init_len_info               (uint8_t *buf1);
  */
 uint16_t get_tcp_data_pointer        (void);
 
+
+/**
+ * Return memory addres to write to the buffer
+ * @param *buffer pointer to the beginning of TCP buffer
+ * @param *pos - write index
+ */
+char *getBufPosToWrite(uint8_t *buf, uint16_t pos);
+
+
 /**
  * fill in tcp data at position pos. pos=0 means start of tcp data. 
  * @param buf       - output buffer
