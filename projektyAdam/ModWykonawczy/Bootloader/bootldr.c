@@ -19,11 +19,11 @@
 
 #include "bootldr.h"
 
-uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 7, 0xFF , 0xFF, 'b', '0', '.', '6', '0'};   //rHELLO response
-uint8_t         pingBuf[HDR_LEN+PROT_BUF_LEN] = {SYNC, 0, rPING, 8};                                     //rPING  response
-uint8_t         noCommandBuf[]                = {SYNC, 0, rUNKNOWN, 0};                                  //unknown command response
+uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 7, 0xFF , 0xFF, 'b', '0', '.', '6', '1'};   //rHELLO response
+uint8_t         pingBuf[HDR_LEN+PROT_BUF_LEN] = {SYNC, 0, rPING, 8};                                          //rPING  response
+uint8_t         noCommandBuf[]                = {SYNC, 0, rUNKNOWN, 0};                                       //unknown command response
 
-uint8_t         buf[BUFSIZE];                                                                            // xModem receive buffer
+uint8_t         buf[BUFSIZE];                                                                                 // xModem receive buffer
 uint8_t         bufptr;
 uint8_t         pagptr;
 uint8_t         ch;
@@ -139,13 +139,14 @@ void wykonajRozkaz(void)
   if (protRozkaz == rFLASH)
   {
     stan = xModem;
+    return;
   }
-  else if (protRozkaz == rHELLO)
+  if (protRozkaz == rHELLO)
   {
-    helloBuf[5] = adres;
-    sendBuf(helloBuf, 11);
+    sendBuf(helloBuf, HDR_LEN+7);
+    return;
   }
-  else if (protRozkaz == rPING)
+  if (protRozkaz == rPING)
   {
     if (protDlDanych > PROT_BUF_LEN)
       protDlDanych = PROT_BUF_LEN;
@@ -153,11 +154,9 @@ void wykonajRozkaz(void)
     for (tmp=0; tmp<protDlDanych; tmp++)
       pingBuf[HDR_LEN+tmp] = protBuf[tmp];    
     sendBuf(pingBuf,  protDlDanych+HDR_LEN);
+    return;
   }
-  else
-  {
-    sendBuf(noCommandBuf,  4);
-  }
+  sendBuf(noCommandBuf,  4);
 }
 
 int main(void)
@@ -234,8 +233,13 @@ int main(void)
           break;
 
         case dlDanych:
-          protDlDanych = tmp;          
+          protDlDanych = tmp;
           stan = dane;
+          if (protDlDanych == 0)
+          {
+            stan = crcHi;
+            crcObl = crc;
+          }
           break;
 
         case dane:
