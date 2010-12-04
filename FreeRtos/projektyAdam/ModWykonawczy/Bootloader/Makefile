@@ -68,7 +68,8 @@ size: $(TARGET).hex
 AVRDUDE             = avrdude
 AVRDUDE_PROGRAMMER  = stk500v2
 AVRDUDE_PORT        = /dev/avrStk500v2prog
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
+AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex -U lfuse:w:0xff:m -U hfuse:w:0xdf:m 
+#-U efuse:w:0xf8:m 
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 

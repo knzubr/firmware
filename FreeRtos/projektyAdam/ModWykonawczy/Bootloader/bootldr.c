@@ -17,22 +17,13 @@
   Date:          2010.4
 */
 
-#include <avr/io.h>
-#include <avr/boot.h>
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-#include <util/crc16.h>
-
 #include "bootldr.h"
-#include "../../../freeRtos/Lib/include/protocol1.h"
-#include "../../../freeRtos/Lib/include/xModemCommands.h"
 
-uint8_t         KEY[]                        = {SYNC, 0x1F, rFLASH, 0x01, 0x1f, 0x40, 0x50};
-uint8_t         helloBuf[]                   = {SYNC, 0, rHELLO, 7, 'b', 0, 'v', '0', '.', '5', '0'};   //rHELLO response
-uint8_t         pingBuf[PROT_BUF_LEN + 4]    = {SYNC, 0, rPING, 0};                                     //rPING  response
-uint8_t         noCommandBuf[]               = {SYNC, 0, rNIEZNANY, 0};                                 //unknown command response
+uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 7, 0xFF , 0xFF, 'b', '0', '.', '6', '0'};   //rHELLO response
+uint8_t         pingBuf[HDR_LEN+PROT_BUF_LEN] = {SYNC, 0, rPING, 8};                                     //rPING  response
+uint8_t         noCommandBuf[]                = {SYNC, 0, rUNKNOWN, 0};                                  //unknown command response
 
-uint8_t         buf[BUFSIZE];                                                                           // xModem receive buffer
+uint8_t         buf[BUFSIZE];                                                                            // xModem receive buffer
 uint8_t         bufptr;
 uint8_t         pagptr;
 uint8_t         ch;
@@ -106,6 +97,7 @@ void resetStateMachine(void)
   stan        = sync;
   crc         = 0;
   protDaneWsk = 0;
+  cnt         = TimeOutCnt; 
 }
 
 void sendBuf(uint8_t *buf, uint8_t len)
@@ -120,6 +112,7 @@ void sendBuf(uint8_t *buf, uint8_t len)
   }
   WriteCom((uint8_t)(crc>>8));
   WriteCom((uint8_t)(crc & 0xFF));
+  crc=0;
 }
 
 
@@ -133,6 +126,8 @@ void wykonajRozkaz(void)
   {       
     return;
   }
+  stan = sync;
+  cnt         = TimeOutCnt;
   if (adres != protAddr)
   {
     if (protRozkaz == rFLASH)
@@ -156,8 +151,8 @@ void wykonajRozkaz(void)
       protDlDanych = PROT_BUF_LEN;
     pingBuf[3] = protDlDanych;
     for (tmp=0; tmp<protDlDanych; tmp++)
-      pingBuf[4+tmp] = protBuf[tmp];    
-    sendBuf(pingBuf,  protDlDanych+4);
+      pingBuf[HDR_LEN+tmp] = protBuf[tmp];    
+    sendBuf(pingBuf,  protDlDanych+HDR_LEN);
   }
   else
   {
