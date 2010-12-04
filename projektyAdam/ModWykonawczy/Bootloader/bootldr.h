@@ -20,6 +20,15 @@
 #ifndef _BOOTLDR_H_
 #define _BOOTLDR_H_        1
 
+#include <avr/io.h>
+#include <avr/boot.h>
+#include <avr/pgmspace.h>
+#include <avr/interrupt.h>
+#include <util/crc16.h>
+
+#include "../../../freeRtos/Lib/include/protocol1.h"
+#include "../../../freeRtos/Lib/include/xModemCommands.h"
+
 #define PROT_BUF_LEN      32                  /// Rs485 rec buffer length
 
 
@@ -144,6 +153,11 @@
 #define DataInCom()        (UCSR0A & (1 << RXC0))
 #define ReadCom()          UDR0
 
+//@{
+/**
+ * Stan automatu:
+ * sync, addr, rozkaz, dlDanych, dane, crcHi, crcLo, xModem
+ */
 enum stanAutomatu
 {
   sync,
@@ -157,10 +171,17 @@ enum stanAutomatu
 };
 typedef enum stanAutomatu stanAutomatu_t;
 
+/**
+ * Leave bootloader mode
+ */
 void quit(void)         __attribute__((noreturn));
+
+/**
+ * Wait for a tame of different device flashing and leave next bootloader mode
+ */
 void waitAndQuit(void)  __attribute__((noreturn));
 
-
+//@}
 #endif
 
 //End of file: bootldr.h
