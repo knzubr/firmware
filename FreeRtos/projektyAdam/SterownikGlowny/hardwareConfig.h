@@ -41,7 +41,9 @@
 #define CLI_3_BUF_ADDR               0x2A00
 #define CLI_4_BUF_ADDR               0x2B00
 
-#define ETH_SOCK_BUF_LEN             0x0200
+#define ETH_SOCK_BUF_BASE            0x2C00
+#define ETH_SOCK_BUF_RX_TXLEN        0x0200
+#define ETH_SOCK_BUF_LEN             0x0100
 #define ETH_SOCK_TX_1_BUF_ADDR       0x2C00
 #define ETH_SOCK_RX_1_BUF_ADDR       0x2E00
 #define ETH_SOCK_TX_2_BUF_ADDR       0x3000

@@ -1,4 +1,5 @@
 /*
+ 
 	FreeRTOS.org V5.2.0 - Copyright (C) 2003-2009 Richard Barry.
 	This file is part of the FreeRTOS.org distribution.
 	FreeRTOS.org is free software; you can redistribute it and/or modify it 
@@ -43,18 +44,6 @@
 */
 
 #include "main.h"
-#include "task.h"
-#include "enc_task.h"
-#include "sensors_task.h"
-#include "serial.h"
-#include "mpc23s17.h"
-#include "mcp3008.h"
-#include "enc28j60.h"
-#include "memory_x.h"
-#include "configuration.h"
-#include "Rs485_prot.h"
-
-//struct sterRolet sterownikiRolet[MAKS_L_STER_ROLET];
 
 xQueueHandle xVtyRec;
 xQueueHandle xRs485Rec;
@@ -65,14 +54,6 @@ xQueueHandle xRs485Tx;
 volatile uint8_t temperature;
 volatile uint8_t voltage;
 
-//xSemaphoreHandle xSemaphoreVty;
-//xSemaphoreHandle xSemaphoreRs485;
-//xSemaphoreHandle xSemaphoreVtyBusy;
-//xSemaphoreHandle xSemaphoreRs485Busy;
-
-#ifdef ENABLE_RESET_COUNTER
-static void prvIncrementResetCount( void );
-#endif
 
 void vApplicationIdleHook( void );
 
@@ -142,15 +123,12 @@ cmdState_t *CLIStateSerial1;
 
 portSHORT main( void )
 {
-#ifdef ENABLE_RESET_COUNTER
-  prvIncrementResetCount();
-#endif
-
   ramDyskInit();              //Inicjalizacja Ram dysku
   hardwareInit();
   spiInit(disableAllSpiDevices);
+
+// VTY on serial  
   xSerialPortInitMinimal(); 
-  Enc28j60Mem_init(ENC28J60BUF_ADDR, ENC28J60BUF_SIZE);
   CLIStateSerial1  = xmalloc(sizeof(cmdState_t));
   VtyInit(CLIStateSerial1);
   
@@ -158,9 +136,9 @@ portSHORT main( void )
 
   loadConfiguration();
   
-  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1), 1, &xHandleVTY);
-  xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                      1, &xHandleSensors);
-  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                      0, &xHandleEnc);
+  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     &CLIStateSerial1->myStdInOut, 0, &xHandleEnc);
+  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1),    1, &xHandleVTY);
+  xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                         1, &xHandleSensors);
   vTaskStartScheduler();
   return 0;
 }
@@ -180,16 +158,6 @@ void vApplicationTickHook( void )
   if (--tickCntr == 0)
   {
     tickCntr = configTICK_RATE_HZ;
-    
+    arpTimer();    
   }
 }
-
-#ifdef ENABLE_RESET_COUNTER
-static void prvIncrementResetCount( void )
-{
-  unsigned portCHAR ucCount;
-  eeprom_read_block( &ucCount, mainRESET_COUNT_ADDRESS, sizeof( ucCount ) );
-  ucCount++;
-  eeprom_write_byte( mainRESET_COUNT_ADDRESS, ucCount );
-}
-#endif

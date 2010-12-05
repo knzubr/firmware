@@ -129,6 +129,7 @@ typedef xQUEUE * xQueueHandle;
  * functions are documented in the API header file.
  */
 xQueueHandle xQueueCreate( unsigned portBASE_TYPE uxQueueLength, unsigned portBASE_TYPE uxItemSize ) PRIVILEGED_FUNCTION;
+xQueueHandle xQueueCreateExternal( unsigned portBASE_TYPE uxQueueLength, unsigned portBASE_TYPE uxItemSize, void *address ) PRIVILEGED_FUNCTION;
 signed portBASE_TYPE xQueueGenericSend( xQueueHandle xQueue, const void * const pvItemToQueue, portTickType xTicksToWait, portBASE_TYPE xCopyPosition ) PRIVILEGED_FUNCTION;
 unsigned portBASE_TYPE uxQueueMessagesWaiting( const xQueueHandle pxQueue ) PRIVILEGED_FUNCTION;
 void vQueueDelete( xQueueHandle xQueue ) PRIVILEGED_FUNCTION;
@@ -260,6 +261,55 @@ size_t xQueueSizeInBytes;
 			xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1;
 
 			pxNewQueue->pcHead = ( signed char * ) pvPortMalloc( xQueueSizeInBytes );
+			if( pxNewQueue->pcHead != NULL )
+			{
+				/* Initialise the queue members as described above where the
+				queue type is defined. */
+				pxNewQueue->pcTail = pxNewQueue->pcHead + ( uxQueueLength * uxItemSize );
+				pxNewQueue->uxMessagesWaiting = 0;
+				pxNewQueue->pcWriteTo = pxNewQueue->pcHead;
+				pxNewQueue->pcReadFrom = pxNewQueue->pcHead + ( ( uxQueueLength - 1 ) * uxItemSize );
+				pxNewQueue->uxLength = uxQueueLength;
+				pxNewQueue->uxItemSize = uxItemSize;
+				pxNewQueue->xRxLock = queueUNLOCKED;
+				pxNewQueue->xTxLock = queueUNLOCKED;
+
+				/* Likewise ensure the event queues start with the correct state. */
+				vListInitialise( &( pxNewQueue->xTasksWaitingToSend ) );
+				vListInitialise( &( pxNewQueue->xTasksWaitingToReceive ) );
+
+				traceQUEUE_CREATE( pxNewQueue );
+				return  pxNewQueue;
+			}
+			else
+			{
+				traceQUEUE_CREATE_FAILED();
+				vPortFree( pxNewQueue );
+			}
+		}
+	}
+
+	/* Will only reach here if we could not allocate enough memory or no memory
+	was required. */
+	return NULL;
+}
+
+xQueueHandle xQueueCreateExternal( unsigned portBASE_TYPE uxQueueLength, unsigned portBASE_TYPE uxItemSize, void *address )
+{
+xQUEUE *pxNewQueue;
+size_t xQueueSizeInBytes;
+
+	/* Allocate the new queue structure. */
+	if( uxQueueLength > ( unsigned portBASE_TYPE ) 0 )
+	{
+		pxNewQueue = ( xQUEUE * ) pvPortMalloc( sizeof( xQUEUE ) );
+		if( pxNewQueue != NULL )
+		{
+			/* Create the list of pointers to queue items.  The queue is one byte
+			longer than asked for to make wrap checking easier/faster. */
+			xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1;
+
+			pxNewQueue->pcHead = ( signed char * ) (address);
 			if( pxNewQueue->pcHead != NULL )
 			{
 				/* Initialise the queue members as described above where the

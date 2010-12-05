@@ -1,71 +1,112 @@
-/*! \file nic.h \brief Network Interface Card (NIC) software definition. */
-//*****************************************************************************
-//
-// File Name	: 'nic.h'
-// Title		: Network Interface Card (NIC) software definition
-// Author		: Pascal Stang
-// Created		: 8/22/2004
-// Revised		: 7/3/2005
-// Version		: 0.1
-// Target MCU	: Atmel AVR series
-// Editor Tabs	: 4
-//
-///	\ingroup network
-/// \defgroup nic Network Interface Card (NIC) software definition (nic.h)
-///	\code #include "net/nic.h" \endcode
-///	\par Description
-///		This is the software interface standard for network interface hardware
-///		as used by AVRlib.  Drivers for network hardware must implement these
-///		functions to allow upper network layers to initialize the interface,
-///		and send and receive net traffic.
-//
-//	This code is distributed under the GNU Public License
-//		which can be found at http://www.gnu.org/licenses/gpl.txt
-//*****************************************************************************
+/**
+ * @file     nic.h 
+ * @version  0.2
+ * @brief    Network Interface Card (NIC) software definition. 
+ * @ingroup  network
+ * @author   Pascal Stang, Adam Kaliszan
+ * @defgroup nic Network Interface Card (NIC) software definition (nic.h)
+ * @code #include "net/nic.h" @endcode
+ * @par Description
+ *      This is the software interface standard for network interface hardware
+ *      as used by AVRlib.  Drivers for network hardware must implement these
+ *      functions to allow upper network layers to initialize the interface,
+ *      and send and receive net traffic.
+ * 
+ * Editor Tabs  : 4
+ * Target MCU   : Atmel AVR series
+ * Created      : 22.08.2004
+ * Revised      : 28.11.2010
+ *
+ * This code is distributed under the GNU Public License
+ * which can be found at http://www.gnu.org/licenses/gpl.txt
+ */
 //@{
 
 #ifndef NIC_H
 #define NIC_H
 
 #include <inttypes.h>
+#include <stdio.h>
+#include <string.h>
+#include <avr/eeprom.h>
 
-//! Initialize network interface hardware.
-/// Reset and bring up network interface hardware. This function should leave
-/// the network interface ready to handle \c nicSend() and \c nicPoll() requests.
-/// \note For some hardware, this command will take a non-negligible amount of
-/// time (1-2 seconds).
+#include "net.h"
+#include <avr/pgmspace.h>
+#include "hardwareConfig.h"
+#include "softwareConfig.h"
+
+typedef struct
+{ 
+  uint16_t          bufferSize;                     /// rozmiar tablicy pamięci z buforem
+  uint8_t           *buf;                           /// tablica pamięci do buforowania danych
+  struct netEthAddr mac;
+}  nicState_t;
+
+nicState_t       nicState;
+
+
+/**
+ * Create mac buffer and next call hardware specyfic function to initialize NIC
+ * @note For some hardware, this command will take a non-negligible amount of time (1-2 seconds).
+ */
 void nicInit(void);
 
-//! Send packet on network interface.
-/// Function accepts the length (in bytes) of the data to be sent, and a pointer
-///	to the data.  This send command may assume an ethernet-like 802.3 header is at the
-/// beginning of the packet, and contains the packet addressing information.
-///	See net.h documentation for ethernet header format.
-void nicSend(unsigned int len, unsigned char* packet);
+/**
+ * Initialize network interface hardware.
+ * Hardware specyfic function
+ * Reset and bring up network interface hardware. This function should leave
+ * the network interface ready to handle \c nicSend() and \c nicPoll() requests.
+ * @note For some hardware, this command will take a non-negligible amount of time (1-2 seconds).
+ */
+void nicMacInit(void)                     __attribute__ ((weak));
 
-//! Check network interface; return next received packet if avaialable.
-/// Function accepts the maximum allowable packet length (in bytes), and a
-///	pointer to the received packet buffer.  Return value is the length
-///	(in bytes) of the packet recevied, or zero if no packet is available.
-/// Upper network layers may assume that an ethernet-like 802.3 header is at
-/// the beginning of the packet, and contains the packet addressing information.
-/// See net.h documentation for ethernet header format.
-unsigned int nicPoll(unsigned int maxlen, unsigned char* packet);
 
-//! Return the 48-bit hardware node (MAC) address of this network interface.
-///	This function can return a MAC address read from the NIC hardware, if available.
-///	If the hardware does not provide a MAC address, a software-defined address may be
-///	returned.  It may be acceptable to return an address that is less than 48-bits.
-void nicGetMacAddress(uint8_t* macaddr);
+/** Send packet on network interface.
+ * Function accepts the length (in bytes) of the data to be sent, and a pointer
+ * to the data.  This send command may assume an ethernet-like 802.3 header is at the
+ * beginning of the packet, and contains the packet addressing information.
+ * See net.h documentation for ethernet header format.
+ * @param length - data length
+ */
+void nicSend(uint16_t len)                __attribute__ ((weak));
 
-//! Set the 48-bit hardware node (MAC) address of this network interface.
-///	This function may not be supported on all hardware.
-void nicSetMacAddress(uint8_t* macaddr);
+/**
+ * Check network interface.
+ * Upper network layers may assume that an ethernet-like 802.3 header is at the beginning 
+ * of the packet, and contains the packet addressing information, without the preamble
+ * See net.h documentation for ethernet header format
+ * received data are stored in global buffer <b>nicBuffer</b>
+ * @return number of received bytes
+ */
+unsigned int nicPoll(void)               __attribute__ ((weak));
 
-//! Print network interface hardware registers.
-/// Prints a formatted list of names and values of NIC registers for debugging
-/// purposes.
-inline void nicRegDump(void);
+/**
+ * Gets mac address of the network interface.
+ * This function can return a MAC address read from the NIC hardware, if available.
+ * If the hardware does not provide a MAC address, a software-defined address may be
+ * returned.  It may be acceptable to return an address that is less than 48-bits.
+ * @param [out] macaddr* - pointer to the mac address.
+ */
+void nicGetMacAddress(uint8_t* macaddr)  __attribute__ ((weak));
+
+/**
+ * Set the 48-bit hardware node (MAC) address of this network interface.
+ * This function may not be supported on all hardware.
+ * @param [in] macaddr* - pointer to the mac address.
+ */
+void nicSetMacAddress(uint8_t* macaddr)  __attribute__ ((weak));
+
+/**
+ * Print network interface hardware registers.
+ * Prints a formatted list of names and values of NIC registers for debugging purposes.
+ * @param stream - input stream
+ */
+void nicRegDump(FILE *stream)            __attribute__ ((weak));
+
+/**
+ * Save nic parameters like MAC
+ */
+void saveNic(void);
 
 #endif
 //@}

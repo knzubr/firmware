@@ -1,26 +1,26 @@
 #ifndef ENC_TASK_H
 #define ENC_TASK_H 1
 
+#include <stdio.h>
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include <string.h>
-#include <avr/pgmspace.h>
-#include "ip_arp_udp_tcp.h"
+
 #include "enc28j60.h"
-#include "avr_compat.h"
-//#include "net.h"
-#include "hardwareConfig.h"
+#include "net.h"
+#include "nic.h"
+#include "ip.h"
+#include "arp.h"
+#include "udp.h"
+#include "tcp.h"
+#include "icmp.h"
 #include "hardware.h"
-
-#define MYWWWPORT    80
-#define MYTELNETPORT 23
-#define MYUDPPORT    1200
-
-uint8_t mymac[6];
-uint8_t myip[4];
-uint8_t mask;
+#include "hardwareConfig.h"
+#include "softwareConfig.h"
 
 
+//TODO add new task: http server
 typedef enum 
 {
   URLramDysk,
@@ -47,10 +47,5 @@ urlSource_t analyse_get_url (const char *str, char *fname);
  */
 void encTask(void *pvParameters);
 
-/**
- * initialize enc28j60
- */
-void enc28j60chipInit(void);
-
-extern struct Enc28j60_config Enc28j60_global;
+extern nicState_t nicState;
 #endif

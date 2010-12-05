@@ -21,10 +21,22 @@
 //  | 0x5A |          |         |        |       |     |       |       |       |
 //  +------+----------+---------+--------+-------+     +-------+-------+-------+
 //
+// CRC is calculated according to all bytes without CRC Hi and Lo on the frame end (including sync and excluding CrcHi and CrcLo)
 
 // *********************************** Ping message  **************************************************************
 #define rPING             0x80
+// ping: master->slave
+//  +------+------+---------+--------+-------+     +-------+-------+-------+
+//  | SYNC | type | address | length | data1 | ... | dataX | CrcHi | CrcLo |
+//  | 0x5A | 0x80 |         |    X   |       |     |       |       |       |
+//  +------+------+---------+--------+-------+     +-------+-------+-------+
 
+
+// ping response: slave->master
+//  +------+------+---------+--------+-------+     +-------+-------+-------+
+//  | SYNC | type | address | length | data1 | ... | dataX | CrcHi | CrcLo |
+//  | 0x5A | 0x80 |    0    |    X   |       |     |       |       |       |
+//  +------+------+---------+--------+-------+     +-------+-------+-------+
 
 // *********************************** Hello message **************************************************************
 #define rHELLO            0x82
@@ -40,7 +52,7 @@
 //  +------+------+---------+--------+--------+--------+-------+-------+-------+-------+-------+-------+-------+
 //  | SYNC | type | address | length | data1  | data2  | data3 | data4 | data5 | data6 | data7 | CrcHi | CrcLo |
 //  | 0x5A | 0x82 |    0    |    7   | state1 | state2 |version|version|version|version|version|       |       |
-//  |      |      |         |        |        |        |   v   |       |  .    |       |       |       |       |
+//  |      |      |         |        |        |        |'v'/'b'|       |  '.'  |       |       |       |       |
 //  +------+------+---------+--------+--------+--------+-------+-------+-------+-------+-------+-------+-------+
 
 //offsets of hello response data field 
@@ -75,6 +87,6 @@
 #define rZatrzymajRolete2 0x31
 
 // *********************************** Unknown message  ************************************************************
-#define rNIEZNANY         0xFF
+#define rUNKNOWN          0xFF
 
 #endif /* PROTOCOL1_H */

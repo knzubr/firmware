@@ -5,22 +5,26 @@
  * Copyright: GPL V2
  * http://www.gnu.org/licenses/gpl.html
  *
- * Based on the enc28j60.c file from the AVRlib library by Pascal Stang.
+ * Based on the enc28j60.c file from the AVRlib library by Pascal Stang
  * For AVRlib See http://www.procyonengineering.com/
  * Used with explicit permission of Pascal Stang.
  *
  * Title: Microchip ENC28J60 Ethernet Interface Driver
  * Chip type           : ATMEGA88 with ENC28J60
  *********************************************/
-#include <avr/io.h>
-#include <util/delay.h>
+
 #include "enc28j60.h"
-#include "spi.h"
-#include <stdio.h>
-#include "hardwareConfig.h"
+
 
 static uint8_t Enc28j60Bank;
 static uint16_t gNextPacketPtr;
+
+
+/**
+ * Initialize enc28j60
+ * @param *macaddr - pointer to the mac address (6 bytes)
+ */
+static void     enc28j60Init(uint8_t* macaddr);
 
 /**
  * Read register value (without changing the bank)
@@ -31,15 +35,58 @@ static uint16_t gNextPacketPtr;
 static uint8_t  enc28j60ReadOp (uint8_t op, uint8_t address);
 static void     enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data);
 static void     enc28j60SetBank(uint8_t address);
+static void     enc28j60ReadBuffer(uint16_t len, uint8_t* data);
+static void     enc28j60WriteBuffer(uint16_t len, uint8_t* data);
 
-void spiEnableEnc28j60(void)  {};
-void spiDisableEnc28j60(void) {};
+/**
+ * Reads Enc28j60 control register
+ * @param address - register address. Banks are changed automatically
+ * @return control register value
+ */
+static uint8_t  enc28j60Read(uint8_t address);
 
-void Enc28j60Mem_init(uint8_t *buf, uint16_t size)
-{  
-  Enc28j60_global.buf                = buf;
-  Enc28j60_global.bufferSize         = size;
-  memset(Enc28j60_global.buf, 0, Enc28j60_global.bufferSize);
+/**
+ * Writes Enc28j60 control register
+ * @param address - register address. Banks are changed automatically
+ * @param data    - control register value to be writen
+ */
+static void     enc28j60Write(uint8_t address, uint8_t data);
+
+/**
+ * Reads Enc28j60 phy register
+ * @param address - register address. Banks are changed automatically
+ * @return phy register value
+ */
+static uint16_t enc28j60PhyReadH(uint8_t address);
+
+/**
+ * Writes Enc28j60 phy register
+ * @param address - register address. Banks are changed automatically
+ * @param data    - phy register value to be writen
+ */
+static void     enc28j60PhyWrite(uint8_t address, uint16_t data);
+
+/**
+ * Set clock output.
+ * @param clk clkout frequency = 6.25 MHz * clk. Clk (0-7)
+ */
+static void     enc28j60clkout(uint8_t clk);
+
+
+//void     enc28j60BufferSend(uint16_t len, roundBuffer* buffer);
+
+uint8_t  enc28j60hasRxPkt(void);
+uint8_t  enc28j60getrev(void);
+uint8_t  enc28j60linkup(void);
+
+void nicMacInit(void)
+{ 
+    vTaskDelay          (5);
+    enc28j60Init        (nicState.mac.addr);
+//  enc28j60clkout      (2);     // change clkout from 6.25MHz to 12.5MHz
+    vTaskDelay          (5);
+    enc28j60PhyWrite    (PHLCON, 0x476);
+    vTaskDelay          (2);
 }
 
 uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
@@ -81,9 +128,6 @@ void enc28j60ReadBuffer(uint16_t len, uint8_t* data)
 {
   spiTake();
   spiEnableEnc28j60();
-  uint8_t tmp;
-  // issue read command
-  //spiSend(ENC28J60_READ_BUF_MEM);
   spiSend(ENC28J60_READ_BUF_MEM);
   while(len)
   {
@@ -113,6 +157,27 @@ void enc28j60WriteBuffer(uint16_t len, uint8_t* data)
   spiGive();
 }
 
+// void enc28j60WriteRoundBuffer(uint8_t len, roundBuffer *buffer)
+// {
+//   spiTake();
+//   spiEnableEnc28j60();
+//   // issue write command
+//   //spiSend(ENC28J60_WRITE_BUF_MEM);      // 
+//   spiSend(ENC28J60_WRITE_BUF_MEM);
+//   uint8_t data;
+//   while(len)
+//   {
+//     len--;
+//     data = *buffer->readIdx.ptr16;   
+//     buffer->readIdx.ptr.L++;
+//     
+//     spiSend(*data);       // write data
+//   }
+//   spiDisableEnc28j60();  
+//   spiGive();
+// }
+
+
 void enc28j60SetBank(uint8_t address)
 {
   // set the bank (if needed)
@@ -141,7 +206,7 @@ uint16_t enc28j60PhyReadH(uint8_t address)
   enc28j60Write(MIREGADR, address);
   enc28j60Write(MICMD, MICMD_MIIRD);
   
-  _delay_us(15);
+  vTaskDelay(0);
 
   // wait until the PHY read completes
   while(enc28j60Read(MISTAT) & MISTAT_BUSY)
@@ -185,7 +250,7 @@ void enc28j60Init(uint8_t* macaddr)
 {
   // perform system reset
   
-  //TODO reset PE2
+  //ENC28j60 reset is on PE2 TODO add in hardware.c macros for that.
   PORTE &= ~0x04;
   vTaskDelay(5); // 50ms
   PORTE |= 0x04;
@@ -252,13 +317,8 @@ void enc28j60Init(uint8_t* macaddr)
   
   // do bank 3 stuff
   // write MAC address
-  // NOTE: MAC address in ENC28J60 is byte-backward
-  enc28j60Write(MAADR5, macaddr[0]);
-  enc28j60Write(MAADR4, macaddr[1]);
-  enc28j60Write(MAADR3, macaddr[2]);
-  enc28j60Write(MAADR2, macaddr[3]);
-  enc28j60Write(MAADR1, macaddr[4]);
-  enc28j60Write(MAADR0, macaddr[5]);
+
+  nicSetMacAddress(macaddr);
   
   // no loopback of transmitted frames
   enc28j60PhyWrite(PHCON2, PHCON2_HDLDIS);
@@ -283,7 +343,7 @@ uint8_t enc28j60linkup(void)
   return(enc28j60PhyReadH(PHSTAT2) && 4);
 }
 
-void enc28j60PacketSend(uint16_t len, uint8_t* packet)
+void nicSend(uint16_t len)
 {
   // Check no transmit in progress
   while (enc28j60ReadOp(ENC28J60_READ_CTRL_REG, ECON1) & ECON1_TXRTS)
@@ -305,7 +365,7 @@ void enc28j60PacketSend(uint16_t len, uint8_t* packet)
   // write per-packet control byte (0x00 means use macon3 settings)
   enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
   // copy the packet into the transmit buffer
-  enc28j60WriteBuffer(len, packet);
+  enc28j60WriteBuffer(len, nicState.buf);
   // send the contents of the transmit buffer onto the network
   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
 }
@@ -320,12 +380,7 @@ uint8_t enc28j60hasRxPkt(void)
   return(1);
 }
 
-// Gets a packet from the network receive buffer, if one is available.
-// The packet will by headed by an ethernet header.
-//      maxlen  The maximum acceptable length of a retrieved packet.
-//      packet  Pointer where packet data should be stored.
-// Returns: Packet length in bytes if a packet was retrieved, zero otherwise.
-uint16_t enc28j60PacketReceive(uint16_t maxlen, uint8_t* packet)
+uint16_t nicPoll(void)
 {
   uint16_t rxstat;
   uint16_t len;
@@ -351,13 +406,14 @@ uint16_t enc28j60PacketReceive(uint16_t maxlen, uint8_t* packet)
   rxstat  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
   rxstat |= ((uint16_t)enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0))<<8;
   // limit retrieve length
-  if (len>maxlen-1)
+  if (len> nicState.bufferSize -1)
   {
-    len=maxlen-1;
+    len= nicState.bufferSize-1;
   }
   // check CRC and symbol errors (see datasheet page 44, table 7-3):
   // The ERXFCON.CRCEN is set by default. Normally we should not
   // need to check this.
+
   if ((rxstat & 0x80)==0)
   {
     // invalid
@@ -366,7 +422,7 @@ uint16_t enc28j60PacketReceive(uint16_t maxlen, uint8_t* packet)
   else
   {
     // copy the packet from the receive buffer
-    enc28j60ReadBuffer(len, packet);
+    enc28j60ReadBuffer(len, nicState.buf);
   }
   // Move the RX read pointer to the start of the next received packet
   // This frees the memory we just read out
@@ -375,6 +431,7 @@ uint16_t enc28j60PacketReceive(uint16_t maxlen, uint8_t* packet)
   // Move the RX read pointer to the start of the next received packet
   // This frees the memory we just read out.
   // However, compensate for the errata point 13, rev B4: enver write an even address!
+  //FIXME remove this warning
   if ((gNextPacketPtr - 1 < RXSTART_INIT) || (gNextPacketPtr -1 > RXSTOP_INIT))
   {
     enc28j60Write(ERXRDPTL, (RXSTOP_INIT)&0xFF);
@@ -389,3 +446,43 @@ uint16_t enc28j60PacketReceive(uint16_t maxlen, uint8_t* packet)
   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON2, ECON2_PKTDEC);
   return(len);
 }
+
+void spiEnableEnc28j60(void)  {};
+void spiDisableEnc28j60(void) {};
+
+void     nicSetMacAddress(uint8_t* macaddr)
+{
+//NOTE: MAC address in ENC28J60 is byte-backward
+  enc28j60Write(MAADR5, macaddr[0]); 
+  enc28j60Write(MAADR4, macaddr[1]);
+  enc28j60Write(MAADR3, macaddr[2]);
+  enc28j60Write(MAADR2, macaddr[3]);
+  enc28j60Write(MAADR1, macaddr[4]);
+  enc28j60Write(MAADR0, macaddr[5]);
+  //strncpy((void *)(nicState.mac.addr), (void *)(macaddr), 6);
+}
+
+void     nicGetMacAddress(uint8_t* macaddr)
+{
+  macaddr[5] = enc28j60Read(MAADR0); 
+  macaddr[4] = enc28j60Read(MAADR1); 
+  macaddr[3] = enc28j60Read(MAADR2); 
+  macaddr[2] = enc28j60Read(MAADR3); 
+  macaddr[1] = enc28j60Read(MAADR4); 
+  macaddr[0] = enc28j60Read(MAADR5); 
+  //strncpy((void *)(nicState.mac.addr), (void *)(macaddr), 6);
+}
+
+void     nicRegDump(FILE *stream)
+{
+  uint8_t temp;
+  fprintf_P(stream, PSTR("ENC28j60 stan rejestrow:\r\n"));
+
+  temp = enc28j60Read(MAADR0); fprintf_P(stream, PSTR("\tMAADR0 0x%x\r\n"), temp);
+  temp = enc28j60Read(MAADR1); fprintf_P(stream, PSTR("\tMAADR1 0x%x\r\n"), temp);
+  temp = enc28j60Read(MAADR2); fprintf_P(stream, PSTR("\tMAADR2 0x%x\r\n"), temp);
+  temp = enc28j60Read(MAADR3); fprintf_P(stream, PSTR("\tMAADR3 0x%x\r\n"), temp);
+  temp = enc28j60Read(MAADR4); fprintf_P(stream, PSTR("\tMAADR4 0x%x\r\n"), temp);
+  temp = enc28j60Read(MAADR5); fprintf_P(stream, PSTR("\tMAADR5 0x%x\r\n"), temp);
+}
+

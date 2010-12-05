@@ -1,14 +1,19 @@
 #ifndef HARDWARE_H
 #define HARDWARE_H
 
-#include <avr/io.h>
 #include <stdio.h>
+#include <string.h>
+#include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+
 #include "memory_x.h"
+#include "hardwareConfig.h"
 #include "softwareConfig.h"
+
 #include "mpc23s17.h"
 #include "mcp3008.h"
+#include "spi.h"
 
 #define Rs485TxStart() (PORTG |=  0x10)
 #define Rs485TxStop()  (PORTG &=  0xEF)

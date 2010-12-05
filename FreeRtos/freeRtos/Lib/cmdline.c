@@ -1,25 +1,26 @@
-/*! \file cmdline.c \brief Command-Line Interface Library. */
-//*****************************************************************************
-//
-// File Name    : 'cmdline.c'
-// Title        : Command-Line Interface Library
-// Author       : Pascal Stang - Copyright (C) 2003
-//              : Adam Kaliszan
-// Created      : 2003.07.16
-// Revised      : 2010.04.23
-// Version      : 0.6
-// Target MCU   : Atmel AVR Series
-// Editor Tabs  : 2
-//
-// NOTE: This code is currently below version 1.0, and therefore is considered
-// to be lacking in some functionality or documentation, or may not be fully
-// tested.  Nonetheless, you can expect most functions to work.
-//
-// This code is distributed under the GNU Public License
-// which can be found at http://www.gnu.org/licenses/gpl.txt
-//
-//*****************************************************************************
-
+/**
+ * @file        cmdline.h 
+ * @author      Pascal Stang, Adam Kaliszan
+ * @brief       Command-Line Interface Library
+ * @ingroup     protocols
+ * @version     0.6
+ * Created      2003.07.16
+ * Revised      2010.04.23
+ * Editor Tabs  2
+ * Target MCU   Atmel AVR Series
+ *
+ * @par Description
+ * This library provides cammand lineinterpreter, that works on many instances. 
+ * Each instance requires: separate input/output stream, and separate instance of cmdState struct
+ * The library was optimised under memory consumption.
+ *
+ * @note: This code is currently below version 1.0, and therefore is considered
+ * to be lacking in some functionality or documentation, or may not be fully
+ * tested.  Nonetheless, you can expect most functions to work.
+ *
+ * This code is distributed under the GNU Public License
+ * which can be found at http://www.gnu.org/licenses/gpl.txt
+*/
 //----- Include Files ---------------------------------------------------------
 
 #include "main.h"
@@ -45,7 +46,7 @@ char PROGMEM CmdlineCmdNotFound[]       = "# nk";
 
 // internal commands
 static void cmdlineRepaint            (cmdState_t *state, char *buf);
-static void cmdlineDoHistory          (char action, cmdState_t *state);
+static void cmdlineDoHistory          (enum cliHistoryAction action, cmdState_t *state);
 static void cmdlineProcessInputString (cmdState_t *state);
 static void cmdlinePrintPrompt        (cmdState_t *state);
 static void cmdlinePrintError         (cmdState_t *state);
@@ -334,7 +335,7 @@ void cmdHistoryMove(cmdState_t *state)
   state->bufferHistoryState = COPIED;
 }
 
-void cmdlineDoHistory(char action, cmdState_t *state)
+void cmdlineDoHistory(enum cliHistoryAction action, cmdState_t *state)
 {
   uint8_t historyReadIdx;
   switch(action)

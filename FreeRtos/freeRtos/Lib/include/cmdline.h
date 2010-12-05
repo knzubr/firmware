@@ -1,40 +1,39 @@
-/*! \file cmdline.h \brief Command-Line Interface Library. */
-//*****************************************************************************
-//
-// File Name    : 'cmdline.c'
-// Title        : Command-Line Interface Library
-// Author       : Pascal Stang - Copyright (C) 2003
-//              : Adam Kaliszan
-// Created      : 2003.07.16
-// Revised      : 2010.04.23
-// Version      : 0.6
-// Target MCU   : Atmel AVR Series
-// Editor Tabs  : 2
-//
-// NOTE: This code is currently below version 1.0, and therefore is considered
-// to be lacking in some functionality or documentation, or may not be fully
-// tested.  Nonetheless, you can expect most functions to work.
-//
-// This code is distributed under the GNU Public License
-// which can be found at http://www.gnu.org/licenses/gpl.txt
-//
-//*****************************************************************************
-
+/**
+ * @file        cmdline.h 
+ * @author      Pascal Stang, Adam Kaliszan
+ * @brief       Command-Line Interface Library
+ * @ingroup     protocols
+ * @version     0.6
+ * Created      2003.07.16
+ * Revised      2010.04.23
+ * Editor Tabs  2
+ * Target MCU   Atmel AVR Series
+ *
+ * @par Description
+ * This library provides cammand lineinterpreter, that works on many instances. 
+ * Each instance requires: separate input/output stream, and separate instance of cmdState struct
+ * The library was optimised under memory consumption.
+ *
+ * @note: This code is currently below version 1.0, and therefore is considered
+ * to be lacking in some functionality or documentation, or may not be fully
+ * tested.  Nonetheless, you can expect most functions to work.
+ *
+ * This code is distributed under the GNU Public License
+ * which can be found at http://www.gnu.org/licenses/gpl.txt
+*/
 //----- Include Files ---------------------------------------------------------
 #ifndef CMDLINE_H
 #define CMDLINE_H
-
-//enum substitute
-#define CMDLINE_HISTORY_SAVE  0
-#define CMDLINE_HISTORY_PREV  1
-#define CMDLINE_HISTORY_NEXT  2
 
 
 #include <avr/io.h>         // editor recognizes now types like uint8_t 
 #include <avr/pgmspace.h>
 
+#include "softwareConfig.h"
+
 //@{
 
+  
 // constants/macros/typdefs
 struct cmdState;
 struct command;
@@ -70,9 +69,12 @@ enum cliExecuteResult
   ERROR_OPERATION_NOT_ALLOWED
 };
 
-
-#define CMD_STATE_HISTORY 4
-#define CMD_STATE_HISTORY_MASK 0x03
+enum cliHistoryAction
+{
+  CMDLINE_HISTORY_SAVE,
+  CMDLINE_HISTORY_PREV,
+  CMDLINE_HISTORY_NEXT
+};
 
 struct cmdState
 {

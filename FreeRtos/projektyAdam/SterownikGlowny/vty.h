@@ -3,13 +3,21 @@
 
 #include "main.h"
 #include <stdio.h>
+#include <avr/pgmspace.h>
 #include <util/crc16.h>
+
 #include "ds1305.h"
 #include "enc28j60.h"
 #include "memory_x.h"
 #include "configuration.h"
 #include "Rs485_prot.h"
 #include "sensors_task.h"
+#include "nic.h"
+#include "ip.h"
+#include "net.h"
+#include "arp.h"
+#include "cmdline.h"
+
 
 // Znaki kontrolne w protokole Xmodem
 #define SOH                     0x01
@@ -31,15 +39,12 @@
 #define XMODEM_BUFFER_SIZE		128
 
 
+extern nicState_t nicState;
 
 void VtyInit(cmdState_t *state);
 void printErrorInfo(cmdState_t *state);
 
 void printStatus(FILE *stream);
-
-extern uint8_t mymac[6];
-extern uint8_t myip[4];
-extern uint8_t mask;
 
 extern volatile uint8_t temperature;
 extern volatile uint8_t voltage;
