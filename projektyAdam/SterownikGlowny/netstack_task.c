@@ -13,91 +13,66 @@
  * Chip type           : Atmega88 or Atmega168 or Atmega328 with ENC28J60
  * Note: there is a version number in the text. Search for tuxgraphics
  *********************************************/
-#include <avr/io.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <avr/pgmspace.h>
-#include "enc_task.h"
-#include "ip_arp_udp_tcp.h"
-#include "enc28j60.h"
-//#include "timeout.h"
-//#include "avr_compat.h"
-#include "net.h"
-#include "main.h"
-#include "hardware.h"
-//#include "netstack.h"
-#include "ramdysk.h"
+#include "netstack_task.h"
 
 // the password string (only the first 5 char checked), (only a-z,0-9,_ characters):
-char password[]="secret"; // must not be longer than 9 char
-char filename[12]="xxx";
+//char password[]="secret"; // must not be longer than 9 char
+//char filename[12]="xxx";
 
-uint8_t verify_password ( char *str )
-{
-    // the first characters of the received string are
-    // a simple password/cookie:
-    if ( strncmp ( password,str,5 ) ==0 )
-    {
-        return ( 1 );
-    }
-    return ( 0 );
-}
+// uint8_t verify_password ( char *str )
+// {
+//     // the first characters of the received string are
+//     // a simple password/cookie:
+//     if ( strncmp ( password,str,5 ) ==0 )
+//     {
+//         return ( 1 );
+//     }
+//     return ( 0 );
+// }
 
 
-urlSource_t analyse_get_url (const char *str, char *fname)
-{
-  uint8_t result = URLerror;
-  if (strncmp_P(str, PSTR("status"), 6) == 0)
-    return URLstatus;
-    
-  if (strncmp_P(str, PSTR("rd/"), 3) == 0)
-  {
-    result = URLramDysk;
-    str += 3;
-  }
+// urlSource_t analyse_get_url (const char *str, char *fname)
+// {
+//   uint8_t result = URLerror;
+//   if (strncmp_P(str, PSTR("status"), 6) == 0)
+//     return URLstatus;
+//     
+//   if (strncmp_P(str, PSTR("rd/"), 3) == 0)
+//   {
+//     result = URLramDysk;
+//     str += 3;
+//   }
+// 
+//   if (strncmp_P(str, PSTR("sd/"), 3) == 0)
+//   {
+//     result = URLsdDysk;
+//     str += 3;
+//   }
+//    
+//   uint8_t i=0;
+//   while (i < 12)
+//   {
+//     if (((*str >= 'a') && (*str <= 'z')) || ((*str >= 'A') && (*str <= 'Z')) || ((*str >= '0') && (*str <= '9')))
+//     {
+//       fname[i] = *str;
+//     }
+//     else
+//     {
+//       fname[i] = 0;
+//       break;
+//     }
+//     str++;
+//     i++;
+//   }
+//   if (i == 0)
+//     result = URLerror;
+//   
+//   return result;
+// }
 
-  if (strncmp_P(str, PSTR("sd/"), 3) == 0)
-  {
-    result = URLsdDysk;
-    str += 3;
-  }
-   
-  uint8_t i=0;
-  while (i < 12)
-  {
-    if (((*str >= 'a') && (*str <= 'z')) || ((*str >= 'A') && (*str <= 'Z')) || ((*str >= '0') && (*str <= '9')))
-    {
-      fname[i] = *str;
-    }
-    else
-    {
-      fname[i] = 0;
-      break;
-    }
-    str++;
-    i++;
-  }
-  if (i == 0)
-    result = URLerror;
-  
-  return result;
-}
-
-void enc28j60chipInit ( void )
-{
-    vTaskDelay          (5);
-    enc28j60Init        (mymac);
-//  enc28j60clkout      (2);     // change clkout from 6.25MHz to 12.5MHz
-    vTaskDelay          (5);
-    enc28j60PhyWrite    (PHLCON, 0x476);
-    vTaskDelay          (2);
-    init_ip_arp_udp_tcp (mymac, myip, MYWWWPORT);
-}
-
-uint16_t printHTMLstatus(char *buf, uint16_t pos, uint16_t maxPos)
-{
-  char *tmpPtr;
+/*uint16_t printHTMLstatus(char *buf, uint16_t pos, uint16_t maxPos)
+{*/
+/*  char *tmpPtr;
 
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ( "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>"));
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ( "<h3>Status</h3>"));
@@ -140,56 +115,92 @@ uint16_t printHTMLstatus(char *buf, uint16_t pos, uint16_t maxPos)
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("</table></p>"));
 
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR("<h3>Moduły wykonawcze</h3>"));
-  return pos;
-}
+  return pos;*/
+//   return 0;
+// }
 
 
 void encTask ( void *pvParameters )
 {
-  pvParameters = NULL;
+  FILE *netstackDebug = (FILE *) pvParameters;
   uint16_t plen;
-  uint16_t dat_p;
-  uint8_t cmd_pos=0;
-  int8_t cmd;
-  uint8_t payloadlen=0;
-  char str[30];
-  char cmdval;
 
-  enc28j60chipInit();
+  nicInit();
+  ipInit();
+  arpInit();
+  icmpInit();
+
+  //TODO    init_ip_arp_udp_tcp (mymac, ipGetConfig()->ip, MYWWWPORT);
+
+  struct netEthHeader* ethPacket;
+  
   
   for ( ; ; )
   {
     vTaskDelay ( 0 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwolniony po odebrzeniu przerwania od ENC
     
     // get the next new packet:
-    plen = enc28j60PacketReceive ( ENC28J60BUF_SIZE, Enc28j60_global.buf );
+    plen = nicPoll();
     /*plen will ne unequal to zero if there is a valid
     * packet (without crc error) */
     if ( plen==0 )
       continue;
 
+    ethPacket = (struct netEthHeader *)(nicState.buf);
+    
+    if(ethPacket->type == htons(ETHTYPE_IP))             // process an IP packet
+    {
+      arpIpIn((struct netEthIpHeader*)(nicState.buf));
+      netstackIPProcess(plen-ETH_HEADER_LEN, (ip_hdr*)(&nicState.buf[ETH_HEADER_LEN]));
+    }
+    else if(ethPacket->type == htons(ETHTYPE_ARP))       // process an ARP packet
+    {
+      arpArpIn(plen, ((struct netEthArpHeader*)(nicState.buf)));
+    }
+    else
+    {
+      if (netstackDebug != NULL)
+      {
+        fprintf_P(netstackDebug, PSTR("Unknown packet\r\n"));
+      }
+    }
+    
+    continue;
+  }
+}
+
+#if 0
+//   uint16_t dat_p;
+//   uint8_t cmd_pos=0;
+//   int8_t cmd;
+//   uint8_t payloadlen=0;
+//   char str[30];
+//   char cmdval;
+
+
     // arp is broadcast if unknown but a host may also
     // verify the mac address by sending it to
-    // a unicast address.
+    // a unicast address.  
     if ( eth_type_is_arp_and_my_ip(Enc28j60_global.buf, plen))
     {
       make_arp_answer_from_request(Enc28j60_global.buf);
       continue;
     }
 
-    // check if ip packets are for us:
+    // IP - check if ip packets are for us:
     if ( eth_type_is_ip_and_my_ip ( Enc28j60_global.buf,plen ) ==0 )
       continue;
 
-    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_ICMP_V && Enc28j60_global.buf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V )
+    // PING
+    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_ICMP && Enc28j60_global.buf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V )
     {
       // a ping packet, let's send pong
       make_echo_reply_from_request (Enc28j60_global.buf, plen);
       continue;
     }
 
-    // tcp port www start, compare only the lower byte
-    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP_V && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYWWWPORT )
+    // TCP WWW tcp port www start, compare only the lower byte
+    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYWWWPORT )
     {
       if ( Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V )
       {
@@ -288,5 +299,10 @@ void encTask ( void *pvParameters )
         }
       }
     }
-  }
-}
+    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_H_P]==MYTELNETPOERT_H 
+      && (Enc28j60_global.buf[TCP_DST_PORT_L_P]>=MYTELNETPOERT_L || Enc28j60_global.buf[TCP_DST_PORT_L_P]<=MYTELNETPOERT_L + 20))
+    {
+      processIpPacket(Enc28j60_global.buf);
+      continue;
+    }
+#endif

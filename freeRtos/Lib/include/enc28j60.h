@@ -1,40 +1,35 @@
-/*****************************************************************************
-* vim:sw=8:ts=8:si:et
-*
-* Title      : Microchip ENC28J60 Ethernet Interface Driver
-* Author     : Pascal Stang 
-* Modified by: Adam Kaliszan
-* Copyright: GPL V2
-*
-*This driver provides initialization and transmit/receive
-*functions for the Microchip ENC28J60 10Mb Ethernet Controller and PHY.
-*This chip is novel in that it is a full MAC+PHY interface all in a 28-pin
-*chip, using an SPI interface to the host processor.
-*
-*
-*****************************************************************************/
+/**
+ * vim:sw=2:ts=2:si:et
+ * @file      enc28j60.h
+ * Title      : Microchip ENC28J60 Ethernet Interface Driver
+ * @author    Pascal Stang, Adam Kaliszan 
+ * @version   0.2
+ * Copyright: GPL V2
+ *
+ * This driver provides initialization and transmit/receive
+ * functions for the Microchip ENC28J60 10Mb Ethernet Controller and PHY.
+ * This chip is novel in that it is a full MAC+PHY interface all in a 28-pin
+ * chip, using an SPI interface to the host processor.
+ *
+ *
+ */
 //@{
 
 
-/*
- Podział bufora. 2 k 768 B na odbieranie danych
- 20 * 256 bajtów do obsługi 20 połączeń TCP
- 256 bajtów do obsługi PING, ARP i innych
- 
- Konieczność przeprogramowania API
- */
-  
-  
-  
 #ifndef ENC28J60_H
 #define ENC28J60_H
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
+#include <avr/io.h>
+
 #include "main.h"
+#include "nic.h"
 #include "spi.h"
 #include "hardwareConfig.h"
-
+#include "tcp.h"
+#include "memory_x.h"
 
 // ENC28J60 Control Registers
 // Control register definitions are a combination of address,
@@ -273,69 +268,19 @@
 #define        MAX_FRAMELEN        1500        // (note: maximum ethernet frame length would be 1518)
 //#define MAX_FRAMELEN     600
 
+extern nicState_t nicState;
 
-struct Enc28j60_config
-{ 
-  uint16_t bufferSize;                     /// rozmiar tablicy pamięci z buforem
-  uint8_t  *buf;                           /// tablica pamięci do buforowania danych
-};
-struct Enc28j60_config Enc28j60_global;
+void     nicMacInit(void);
 
-void     Enc28j60Mem_init(uint8_t *buf, uint16_t size);
+void     nicSend(uint16_t len);
+uint16_t nicPoll(void);
 
-void     enc28j60ReadBuffer(uint16_t len, uint8_t* data);
+void     nicGetMacAddress(uint8_t* macaddr);
+void     nicSetMacAddress(uint8_t* macaddr);
+void     nicRegDump(FILE *stream);
 
-void     enc28j60WriteBuffer(uint16_t len, uint8_t* data);
-
-
-void spiEnableEnc28j60(void) __attribute__ ((weak));
-void spiDisableEnc28j60(void) __attribute__ ((weak));
-
-/**
- * Reads Enc28j60 control register
- * @param address - register address. Banks are changed automatically
- * @return control register value
- */
-uint8_t  enc28j60Read(uint8_t address);
-
-/**
- * Writes Enc28j60 control register
- * @param address - register address. Banks are changed automatically
- * @param data    - control register value to be writen
- */
-void     enc28j60Write(uint8_t address, uint8_t data);
-
-/**
- * Reads Enc28j60 phy register
- * @param address - register address. Banks are changed automatically
- * @return phy register value
- */
-uint16_t enc28j60PhyReadH(uint8_t address);
-
-/**
- * Writes Enc28j60 phy register
- * @param address - register address. Banks are changed automatically
- * @param data    - phy register value to be writen
- */
-void     enc28j60PhyWrite(uint8_t address, uint16_t data);
-
-/**
- * Set clock output.
- * @param clk clkout frequency = 6.25 MHz * clk. Clk (0-7)
- */
-void     enc28j60clkout(uint8_t clk);
-
-/**
- * Initialize enc28j60
- * @param *macaddr - pointer to the mac address (6 bytes)
- */
-void     enc28j60Init(uint8_t* macaddr);
-
-void     enc28j60PacketSend(uint16_t len, uint8_t* packet);
-uint8_t  enc28j60hasRxPkt(void);
-uint16_t enc28j60PacketReceive(uint16_t maxlen, uint8_t* packet);
-uint8_t  enc28j60getrev(void);
-uint8_t  enc28j60linkup(void);
+void     spiEnableEnc28j60(void) __attribute__ ((weak));
+void     spiDisableEnc28j60(void) __attribute__ ((weak));
 
 #endif
 //@}

@@ -135,6 +135,66 @@ typedef void * xQueueHandle;
  */
 xQueueHandle xQueueCreate( unsigned portBASE_TYPE uxQueueLength, unsigned portBASE_TYPE uxItemSize );
 
+
+/**
+ * queue. h
+ * <pre>
+ xQueueHandle xQueueCreateExternal(
+							  unsigned portBASE_TYPE uxQueueLength,
+							  unsigned portBASE_TYPE uxItemSize
+							  memory address
+						  );
+ * </pre>
+ *
+ * Creates a new queue instance.  This allocates in external, specyfied by user memory the storage required by the
+ * new queue and returns a handle for the queue.
+ *
+ * @param uxQueueLength The maximum number of items that the queue can contain.
+ *
+ * @param uxItemSize The number of bytes each item in the queue will require.
+ * Items are queued by copy, not by reference, so this is the number of bytes
+ * that will be copied for each posted item.  Each item on the queue must be
+ * the same size.
+ *
+ * @return If the queue is successfully create then a handle to the newly
+ * created queue is returned.  If the queue cannot be created then 0 is
+ * returned.
+ *
+ * Example usage:
+   <pre>
+ struct AMessage
+ {
+	char ucMessageID;
+	char ucData[ 20 ];
+ };
+
+ void vATask( void *pvParameters )
+ {
+ xQueueHandle xQueue1, xQueue2;
+
+	// Create a queue capable of containing 10 unsigned long values.
+	xQueue1 = xQueueCreateExternal( 10, sizeof( unsigned long ), 0x8000 );
+	if( xQueue1 == 0 )
+	{
+		// Queue was not created and must not be used.
+	}
+
+	// Create a queue capable of containing 10 pointers to AMessage structures.
+	// These should be passed by pointer as they contain a lot of data.
+	xQueue2 = xQueueCreateExternal( 10, sizeof( struct AMessage * ) );
+	if( xQueue2 == 0 )
+	{
+		// Queue was not created and must not be used.
+	}
+
+	// ... Rest of task code.
+ }
+ </pre>
+ * \defgroup xQueueCreate xQueueCreate
+ * \ingroup QueueManagement
+ */
+xQueueHandle xQueueCreateExternal( unsigned portBASE_TYPE uxQueueLength, unsigned portBASE_TYPE uxItemSize, void *address);
+
 /**
  * queue. h
  * <pre>

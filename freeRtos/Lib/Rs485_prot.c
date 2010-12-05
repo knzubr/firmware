@@ -4,10 +4,12 @@
 
 #if LANG_EN
 #include "Rs485_prot_en.h"
+#define PRINT_RS485_DEVICE 1
 #endif
 
 #if LANG_PL
 #include "Rs485_prot_pl.h"
+#define PRINT_RS485_DEVICE 1
 #endif
 
 static void    sendPing(uint8_t addr, uint8_t pingLen);
@@ -196,13 +198,13 @@ static uint8_t receiveHello(uint8_t* response, uint8_t maxSize)
 
 // ************************ Rs485 API ************************************
 
-uint8_t rollersMemInit(void)
+void rollersMemInit(void)
 {
   rollers = xmalloc(MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
   memset(rollers, 0, MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
 }
 
-#ifdef LANG_RS485_PROT
+#ifdef PRINT_RS485_DEVICE
 uint8_t printRs485devices(FILE *stream)
 {
   uint8_t result = 0;
@@ -223,7 +225,7 @@ uint8_t printRs485devices(FILE *stream)
   
   return result;
 }
-#endif
+#endif /*PRINT_RS485_DEVICE*/
 
 uint8_t rs485ping(uint8_t devAddr)
 {
@@ -279,7 +281,7 @@ uint8_t rs485rollerHello(uint8_t devAddr)
       return 2;
     }
   }
-
+  
   takeRs485();
   sendHello(devAddr);
   uint8_t result = receiveHello((tmp->response.data), HELLO_RESP_LEN); 
@@ -288,7 +290,7 @@ uint8_t rs485rollerHello(uint8_t devAddr)
 }
 
 
-uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr)
+uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr, FILE *debugStr)
 {
   uint16_t crc;
   uint8_t  blad = 0;
@@ -311,12 +313,18 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr)
   // Odbieranie odpowiedzi po wysłaniu polecenia restartu
   //Odbieranie SYNC lub C
   if(rs485Receive(&data, 100) != pdTRUE)
+  {
     blad = 1;                                  // Timeout
+    if (debugStr != NULL)
+      fprintf_P(debugStr, PSTR("rFLASH timeout\r\n"));
+  }
   crc = _crc_xmodem_update(0, data);
  
   if ((blad == 0) && (data == 'C'))
   {
     blad = 253;                                //Na urządzeniu jest wgrany tylko bootloader
+    if (debugStr != NULL)
+      fprintf_P(debugStr, PSTR("na urzadzeniu wgrany jest tylko bootloader\r\n"));    
   }
   else
   {
@@ -430,11 +438,16 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr)
     else
       blad = 0;
   }
+  else
+    blad = 0;
+  
    
   if (blad != 0)
   {
     releaseRs485();
     flushRs485RecBuffer();  
+    if (debugStr != NULL)
+      fprintf_P(debugStr, PSTR("bootloader nie rozpoczal odbioru danych\r\n"));     
     return 1;
   }
  
@@ -447,6 +460,8 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr)
    
   while (nrBloku <= liczbaBlokow)
   {
+    if (debugStr != NULL)
+      fputc('#', debugStr);
     crc = 0;
     uartRs485SendByte(SOH);
     uartRs485SendByte(nrBloku);
@@ -501,7 +516,9 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr)
       }
     }
   }
-  
+  if (debugStr != NULL)
+    fprintf_P(debugStr, PSTR("\r\nOK\r\n"));
+
   flushRs485RecBuffer();  
   releaseRs485();
   return 0;

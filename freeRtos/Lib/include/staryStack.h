@@ -14,6 +14,7 @@
 
 #include "enc_task.h"
 //@{
+
 /**
  * Calculates CRC 16 bit checksum
  *   The Ip checksum is calculated over the ip header only starting

@@ -1,69 +1,134 @@
-/*! \file ip.h \brief IP (Internet Protocol) Library. */
-//*****************************************************************************
-//
-// File Name	: 'ip.h'
-// Title		: IP (Internet Protocol) Library
-// Author		: Pascal Stang
-// Created		: 8/30/2004
-// Revised		: 7/3/2005
-// Version		: 0.1
-// Target MCU	: Atmel AVR series
-// Editor Tabs	: 4
-//
-///	\ingroup network
-///	\defgroup ip IP (Internet Protocol) Library (ip.c)
-///	\code #include "net/ip.h" \endcode
-///	\par Description
-///		The IP (Internet Protocol) library provide support for sending IP and
-///		IP-related packets.  It's not clear if additional features are needed
-///		or will be added, or even if this is the proper way to facilitate IP
-///		packet operations.
-//
-//	This code is distributed under the GNU Public License
-//		which can be found at http://www.gnu.org/licenses/gpl.txt
-//*****************************************************************************
-//@{
-
+/**
+ * @file      ip.h
+ * @version   0.2
+ * @brief     IP (Internet Protocol) Library.
+ * @author    Pascal Stang, Adam Kaliszan
+ * @ingroup network
+ * @defgroup ip IP (Internet Protocol) Library (ip.c)
+ * @code #include "net/ip.h" \endcode
+ * @par Description
+ *              The IP (Internet Protocol) library provide support for sending IP and
+ *              IP-related packets.  It's not clear if additional features are needed
+ *              or will be added, or even if this is the proper way to facilitate IP
+ *              packet operations.
+ * Created      : 30.08.2004
+ * Revised      : 28/11.2010
+ * Target MCU	: Atmel AVR series
+ * Editor Tabs	: 2
+ *
+ *              This code is distributed under the GNU Public License
+ *              which can be found at http://www.gnu.org/licenses/gpl.txt
+ */
 #ifndef IP_H
 #define IP_H
 
-#include "net.h"
-#include "arp.h"
-
 #include <inttypes.h>
+#include <stdio.h>
+#include <avr/eeprom.h>
 
-struct ipConfig				///< IP addressing/configuration structure
+#include "softwareConfig.h"
+#include "net.h"
+#include "icmp.h"
+#include "nic.h"
+#include "arp.h"
+#include "udp.h"
+#include "tcp.h"
+
+
+//@{
+/**
+ * IP addressing/configuration structure
+ */
+struct ipConfig                 
 {
-	uint32_t ip;			///< IP address
-	uint32_t netmask;		///< netmask
-	uint32_t gateway;		///< gateway IP address
+  uint32_t ip;                  ///< IP address
+  uint32_t netmask;             ///< netmask
+  uint32_t gateway;             ///< gateway IP address
+  
+#if IP_DEBUG
+  FILE*    dbgStream;           ///debug stream
+  uint8_t  dbgLevel;
+#endif
 };
+
+struct ipConfig   IpMyConfig;     ///< Local IP address/config structure
+extern nicState_t nicState;
 
 #define IP_TIME_TO_LIVE		128		///< default Time-To-Live (TTL) value to use in IP headers
 
-//! Set our IP address and routing information.
-/// The myIp value will be used in the source field of IP packets.
-/// Use this function to set and reset the system IP address.
+
+#if IP_DEBUG
+/**
+ * Enable or disable debug stream
+ * @param *stream - output stream. Do not use network stream. NULL value disable debug stream 
+ * @param level   - level of sending details (0-3)
+ */
+void setIpDebug(FILE *stream, uint8_t level);
+#endif
+
+/**
+ * Read Ip config
+ * Initializes ARP
+ */
+void ipInit(void);
+
+/**
+ * Save Ip config
+ */
+void ipSaveConfig(void);
+
+
+/**
+ *
+ */
+void netstackIPProcess(uint16_t len, ip_hdr* packet);
+
+
+
+/**
+ * Set our IP address and routing information.
+ * The myIp value will be used in the source field of IP packets.
+ * Use this function to set and reset the system IP address.
+ * @param myIp      - local IP address
+ * @param netmask   - 32 bit network mask
+ * @param gatewayIp - default gateway
+ */
 void ipSetConfig(uint32_t myIp, uint32_t netmask, uint32_t gatewayIp);
 
-//! Get our local IP address.
-/// Returns current IP address value.
-//uint32_t ipGetMyAddress(void);
+/**
+ * @param myIp   - ip Address
+ */
+void ipSetConfigIp(uint32_t myIp);
 
-//! Get our local IP configuration.
-/// Returns pointer to current IP address/configuration.
+/**
+ * @param netmask - 32 bit network mask
+ */
+void ipSetConfigMask(uint32_t netmask);
+
+/**
+ * @param gatewayIp - default gateway
+ */
+void ipSetConfigGw(uint32_t gatewayIp);
+
+/**
+ * Get our local IP configuration.
+ * @return pointer to current IP address/configuration.
+ */
 struct ipConfig* ipGetConfig(void);
 
-//! Print IP configuration
-///
-void ipPrintConfig(struct ipConfig* config);
+/**
+ * Print IP configuration
+ * @param straem - input stream
+ * @param *config - pointer to IP config struct
+ */
+void ipPrintConfig(FILE *stream, struct ipConfig* config);
 
 
-//! Send an IP packet.
-void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len, uint8_t* data);
+/**
+ * Send an IP packet.
+ */
+void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len);
 
-//! Send a UDP/IP packet.
-void udpSend(uint32_t dstIp, uint16_t dstPort, uint16_t len, uint8_t* data);
 
 #endif
 //@}

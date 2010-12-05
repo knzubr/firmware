@@ -1,8 +1,8 @@
-/*********************************************
- * vim:sw=8:ts=8:si:et
+/**
+ * vim:sw=2:ts=2:si:et
  * To use the above modeline in vim you must have "set modeline" in your .vimrc
  *
- * Author: Guido Socher 
+ * @author Guido Socher 
  * Copyright: GPL V2
  * See http://www.gnu.org/licenses/gpl.html
  *
@@ -20,16 +20,19 @@
  *********************************************/
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include "avr_compat.h"
 #include "net.h"
 #include "enc28j60.h"
+#include "softwareConfig.h"
 
-static uint8_t wwwport=80; // 80 is just a default value. Gets overwritten during init
-static uint8_t macaddr[6];
-static uint8_t ipaddr[4];
-static int16_t info_hdr_len=0;
-static int16_t info_data_len=0;
-static uint8_t seqnum=0xa; // my initial tcp sequence number
+//@{
+
+extern uint8_t wwwport;
+extern uint8_t macaddr[6];
+extern uint8_t ipaddr[4];
+extern int16_t info_hdr_len;
+extern int16_t info_data_len;
+extern uint8_t seqnum; // my initial tcp sequence number
+
 
 
 uint16_t checksum(uint8_t *buf1, uint16_t len,uint8_t type)
@@ -44,14 +47,14 @@ uint16_t checksum(uint8_t *buf1, uint16_t len,uint8_t type)
   //}
   if(type==1)
   {
-    sum+=IP_PROTO_UDP_V; // protocol udp
+    sum+=IP_PROTO_UDP; // protocol udp
     // the length here is the length of udp (data+header len)
     // =length given to this function - (IP.scr+IP.dst length)
     sum+=len-8; // = real tcp len
   }
   if(type==2)
   {
-    sum+=IP_PROTO_TCP_V; 
+    sum+=IP_PROTO_TCP; 
     // the length here is the length of tcp (data+header len)
     // =length given to this function - (IP.scr+IP.dst length)
     sum+=len-8; // = real tcp len
@@ -461,5 +464,5 @@ void make_tcp_ack_with_data(uint8_t *buf1,uint16_t dlen)
   buf1[TCP_CHECKSUM_L_P]=j& 0xff;
   enc28j60PacketSend(IP_HEADER_LEN+TCP_HEADER_LEN_PLAIN+dlen+ETH_HEADER_LEN, buf1);
 }
-
+//@}
 /* end of ip_arp_udp.c */

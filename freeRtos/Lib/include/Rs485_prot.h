@@ -1,13 +1,18 @@
 #ifndef RS485_PROT_H
 #define RS485_PROT_H
 
-#include "main.h"
 #include <stdio.h>
 #include <util/crc16.h>
 #include "ramdysk.h"
 #include "protocol1.h"
 #include "softwareConfig.h"
 
+#ifdef LANG_EN
+#define PRINT_RS485_DEVICE 1
+#endif /*LANG_EN*/
+#ifdef LANG_PL
+#define PRINT_RS485_DEVICE 1
+#endif /*LANG_PL*/
 
 //@{
 
@@ -46,16 +51,16 @@ uint8_t rs485Receive(uint8_t *c, uint8_t timeout) __attribute__ ((weak));
 uint8_t flushRs485RecBuffer(void)                 __attribute__ ((weak));
 
 
-uint8_t rollersMemInit(void);
+void rollersMemInit(void);
 
-#ifdef LANG_EN | LANG_PL
+#ifdef PRINT_RS485_DEVICE
 /**
  * Prints list of Rs485 devices
  * @param stream - outpuf stream
  * @return number of printed devices
  */
 uint8_t printRs485devices(FILE *stream);
-#endif
+#endif /*PRINT_RS485_DEVICE*/
 
 
 /**
@@ -78,7 +83,7 @@ uint8_t rs485rollerHello(uint8_t devAddr);
  * @param devAddr - device address
  * @return 0 - All OK
  */
-uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr);
+uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr, FILE *debStr);
 
 /**
  * Move curtain up

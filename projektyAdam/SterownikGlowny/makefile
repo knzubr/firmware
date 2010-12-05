@@ -45,10 +45,11 @@ OPT = s
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SOURCE_DIR = ../../freeRtos/Source
-LIB_DIR    = ../../freeRtos/Lib
-PORT_DIR   = ../../freeRtos/portable/GCC/ATMega64
-PORT_MEM   = ../../freeRtos/portable/MemMang
+SOURCE_DIR  = ../../freeRtos/Source
+LIB_DIR     = ../../freeRtos/Lib
+LIB_NET_DIR = ../../freeRtos/Lib/net
+PORT_DIR    = ../../freeRtos/portable/GCC/ATMega64
+PORT_MEM    = ../../freeRtos/portable/MemMang
 
 SRC	= \
 main.c \
@@ -57,7 +58,7 @@ serial.c \
 hardware.c \
 sensors_task.c \
 vty.c \
-enc_task.c \
+netstack_task.c \
 $(LIB_DIR)/spi.c \
 $(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/ramdysk.c \
@@ -67,8 +68,14 @@ $(LIB_DIR)/vt100.c \
 $(LIB_DIR)/ds1305.c \
 $(LIB_DIR)/mpc23s17.c \
 $(LIB_DIR)/mcp3008.c \
-$(LIB_DIR)/ip_arp_udp_tcp.c \
 $(LIB_DIR)/enc28j60.c \
+$(LIB_NET_DIR)/nic.c \
+$(LIB_NET_DIR)/net.c \
+$(LIB_NET_DIR)/ip.c \
+$(LIB_NET_DIR)/icmp.c \
+$(LIB_NET_DIR)/arp.c \
+$(LIB_NET_DIR)/tcp.c \
+$(LIB_NET_DIR)/udp.c \
 $(LIB_DIR)/Rs485_prot.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
@@ -117,7 +124,7 @@ DEBUG_LEVEL=-g
 WARNINGS=-Wall -Wextra -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wsign-compare \
 		-Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wunused
 
-CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../freeRtos/Lib/include \
+CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../freeRtos/Lib/include -I../../freeRtos/Lib/net/include \
 $(DEBUG_LEVEL) -O$(OPT) \
 -fsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \
 $(WARNINGS) \
@@ -168,7 +175,8 @@ LDFLAGS = $(EXTMEMOPTS),-Map=$(TARGET).map,--cref
 # Additional libraries
 
 # Minimalistic printf version
-LDFLAGS += -Wl,-u,vfprintf -lprintf_min
+LDFLAGS += -Wl,-u,vfprintf 
+%-lprintf_min
 
 # Floating point printf version (requires -lm below)
 #LDFLAGS += -Wl,-u,vfprintf -lprintf_flt

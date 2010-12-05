@@ -1,16 +1,4 @@
 #include "hardware.h"
-#include "softwareConfig.h"
-#include <stdio.h>
-#include <string.h>
-
-#include "hardwareConfig.h"
-#include "spi.h"
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
-#include "memory_x.h"
-#include "mpc23s17.h"
-#include "mcp3008.h"
 
 #if LANG_EN
 #include "hardware_en.h"

@@ -37,7 +37,7 @@ MCU = atmega168
 FORMAT = ihex
 
 # Target file name (without extension).
-TARGET = rtosdemo
+TARGET = firmware
 
 # Optimization level, can be [0, 1, 2, 3, s]. 0 turns off optimization.
 # (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
@@ -300,7 +300,8 @@ extcoff: $(TARGET).elf
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
-
+bin:	$(TARGET).hex
+	hex2bin $(TARGET).hex
 
 
 # Create final output files (.hex, .eep) from ELF output file.
