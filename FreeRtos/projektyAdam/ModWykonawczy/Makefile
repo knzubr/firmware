@@ -152,8 +152,8 @@ LDFLAGS += -lm
 # Programming support using avrdude.
 AVRDUDE = avrdude
 AVRDUDE_PROGRAMMER = stk500v2
-AVRDUDE_PORT = /dev/avrStk500v2prog	   # Stk500v2 on dedicated PCB
-#AVRDUDE_PORT = /dev/avrMultiTool          # Stk500v2 on multi PCB
+#AVRDUDE_PORT = /dev/avrStk500v2prog	   # Stk500v2 on dedicated PCB
+AVRDUDE_PORT = /dev/avrMultiTool          # Stk500v2 on multi PCB
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -174,7 +174,8 @@ AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 # to submit bug reports.
 #AVRDUDE_FLAGS += -v -v
 
-
+AVR_DUDE_WRITE_FUSES = -U lfuse:w:0xff:m -U hfuse:w:0xdf:m 
+#-U efuse:w:0xf8:m something is not working with fuse extended. Please enable bootloader manualy.
 
 
 # ---------------------------------------------------------------------------
@@ -298,7 +299,7 @@ extcoff: $(TARGET).elf
 
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVR_DUDE_WRITE_FUSES)
 
 bin:	$(TARGET).hex
 	hex2bin $(TARGET).hex

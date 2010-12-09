@@ -176,7 +176,7 @@ LDFLAGS = $(EXTMEMOPTS),-Map=$(TARGET).map,--cref
 
 # Minimalistic printf version
 LDFLAGS += -Wl,-u,vfprintf 
-%-lprintf_min
+#-lprintf_min
 
 # Floating point printf version (requires -lm below)
 #LDFLAGS += -Wl,-u,vfprintf -lprintf_flt
