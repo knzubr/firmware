@@ -412,10 +412,10 @@ static cliExRes_t setIpFunction(cmdState_t *state)
   if (state->argc < 4)
     return SYNTAX_ERROR;
   
-  uint32_t ip = (((uint32_t)(cmdlineGetArgInt(1, state)))<<24) + 
-                (((uint32_t)(cmdlineGetArgInt(2, state)))<<16) + 
-                (((uint32_t)(cmdlineGetArgInt(3, state)))<<8 ) + 
-                (uint8_t)(cmdlineGetArgInt(4, state)); 
+  uint32_t ip = cmdlineGetArgInt(1, state) + 
+                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) + 
+                (((uint32_t)(cmdlineGetArgInt(3, state)))<<16) + 
+                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
   
   ipSetConfigIp(ip);
   return OK_SILENT;
@@ -426,7 +426,7 @@ static cliExRes_t setIpMaskFunction(cmdState_t *state)
   if (state->argc < 1)
     return SYNTAX_ERROR;
   
-  uint32_t mask = ((uint32_t)(0xFFFFFFFF))<<(32-cmdlineGetArgInt(1, state));
+  uint32_t mask = ((uint32_t)(0xFFFFFFFF))>>(32-cmdlineGetArgInt(1, state));
   
   ipSetConfigMask(mask);
   return OK_SILENT;
@@ -438,10 +438,10 @@ static cliExRes_t setIpGwFunction(cmdState_t *state)
   if (state->argc < 4)
     return SYNTAX_ERROR;
   
-  uint32_t gw = (((uint32_t)(cmdlineGetArgInt(1, state)))<<24) + 
-                (((uint32_t)(cmdlineGetArgInt(2, state)))<<16) + 
-                (((uint32_t)(cmdlineGetArgInt(3, state)))<<8)  +
-                (uint8_t)(cmdlineGetArgInt(4, state)); 
+  uint32_t gw = cmdlineGetArgInt(1, state) + 
+                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) + 
+                (((uint32_t)(cmdlineGetArgInt(3, state)))<<16)  +
+                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
   ipSetConfigGw(gw);
   
   return OK_SILENT;

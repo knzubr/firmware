@@ -67,15 +67,18 @@ size: $(TARGET).hex
 # Program the device.
 AVRDUDE             = avrdude
 AVRDUDE_PROGRAMMER  = stk500v2
-AVRDUDE_PORT        = /dev/avrStk500v2prog
+#AVRDUDE_PORT = /dev/avrStk500v2prog	   # Stk500v2 on dedicated PCB
+AVRDUDE_PORT = /dev/avrMultiTool          # Stk500v2 on multi PCB
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex -U lfuse:w:0xff:m -U hfuse:w:0xdf:m 
 #-U efuse:w:0xf8:m 
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
+AVR_DUDE_WRITE_FUSES = -U lfuse:w:0xff:m -U hfuse:w:0xdf:m 
+#-U efuse:w:0xf8:m something is not working with fuse extended. Please enable bootloader manualy.
 
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVR_DUDE_WRITE_FUSES)
 
 ## Clean target
 .PHONY: clean

@@ -117,6 +117,7 @@ xTaskHandle xHandleSensors;
 void initExternalMem(void)
 {
   MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
+  MCUCR |= 0x0E;
 }
 
 cmdState_t *CLIStateSerial1;
