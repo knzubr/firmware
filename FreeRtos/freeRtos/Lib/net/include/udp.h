@@ -4,6 +4,7 @@
 #include <avr/pgmspace.h>
 #include "softwareConfig.h"
 #include "ip.h"
+#include "main.h"
 
 
 #if UDP_DEBUG
@@ -12,6 +13,16 @@
 #endif
 
 extern struct ipConfig IpMyConfig;
+
+
+typedef struct
+{
+  uint16_t port;             //stored in network order
+  //RxQueue
+  //TxQuwue
+} UdpSocket_t;
+
+extern xQueueHandle xVtyRec;
 
 #if UDP_DEBUG
 FILE *udpDbgStream;
