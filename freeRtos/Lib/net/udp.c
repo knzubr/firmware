@@ -1,4 +1,5 @@
 #include "udp.h"
+#include "net.h"
 
 void udpInit(void)
 {
@@ -12,7 +13,7 @@ void udpInit(void)
 void setUdpDebug(FILE *stream, uint8_t level)
 {
   udpDbgStream = stream;
-  udpDbgLevel = 0;
+  udpDbgLevel = level;
 }
 #endif
 
@@ -41,8 +42,27 @@ void udpSend(uint32_t dstIp, uint16_t dstPort, uint16_t len, uint8_t* data)
 
 void netstackUDPIPProcess(unsigned int len, udpip_hdr* packet)
 {
-#if UDP_DEBUG
+  uint8_t len = (uint8_t) htons(packet->udp.udplen);
+  uint8_t i;
+
+  #if UDP_DEBUG
   if(udpDbgStream != NULL)
-    fprintf_P(udpDbgStream, PSTR("Proc UDP packet (length %d)\r\n"), len);
+    if (udpDbgLevel > 3)
+      fprintf_P(udpDbgStream, PSTR("Proc UDP packet len %d\r\n"), len);
 #endif
+
+  if (packet->udp.destport == htons(3000))
+  {
+    uint8_t *tmp = (uint8_t *)(&packet->udp.udpchksum) + 2;
+    for (i=UDP_HEADER_LEN; i<len; i++)
+    {
+      xQueueSend(xVtyRec, tmp, 10);
+#if UDP_DEBUG
+      if(udpDbgStream != NULL)
+        if (udpDbgLevel > 2)
+          fprintf_P(udpDbgStream, PSTR("rec 0x%2x\r\n"), *tmp);
+#endif
+      tmp++;
+    }
+  }
 }
