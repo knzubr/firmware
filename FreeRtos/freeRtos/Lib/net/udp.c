@@ -1,5 +1,11 @@
 #include "udp.h"
 #include "net.h"
+#include "ip.h"
+#include "softwareConfig.h"
+
+static uint32_t udpIpDst_eep   __attribute__((section (".eeprom"))) = ((uint32_t)UDP_DST_IP4   << 24) + ((uint32_t)UDP_DST_IP3   <<16) + ((uint32_t)UDP_DST_IP2   <<8) + UDP_DST_IP1;
+static uint16_t udpPortDstEep  __attribute__((section (".eeprom"))) = HTONS(UDP_DST_PORT);
+static uint16_t udpPortSrcEep  __attribute__((section (".eeprom"))) = HTONS(UDP_SRC_PORT);
 
 void udpInit(void)
 {
@@ -7,6 +13,10 @@ void udpInit(void)
   udpDbgStream = NULL;
   udpDbgLevel = 0;
 #endif
+
+  udpSocket.dstIp   = eeprom_read_dword(&udpIpDst_eep);
+//  udpSocket.dstPort = 
+//  udpSocket.srcPort = 
 }
 
 #if UDP_DEBUG
