@@ -5,7 +5,7 @@
 #include "softwareConfig.h"
 #include "ip.h"
 #include "main.h"
-
+#include "avr/eeprom.h"
 
 #if UDP_DEBUG
 #include <stdio.h>
@@ -17,12 +17,17 @@ extern struct ipConfig IpMyConfig;
 
 typedef struct
 {
-  uint16_t port;             //stored in network order
-  //RxQueue
-  //TxQuwue
+  uint16_t dstPort;             //stored in network order
+  uint16_t srcPort;
+  uint32_t dstIp;  
+  
+  xQueueHandle Rx;
+  xQueueHandle Tx;
 } UdpSocket_t;
 
 extern xQueueHandle xVtyRec;
+
+UdpSocket_t udpSocket;
 
 #if UDP_DEBUG
 FILE *udpDbgStream;
