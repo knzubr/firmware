@@ -31,7 +31,7 @@
 
 
 # MCU name
-MCU = atmega64
+MCU = atmega128
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -199,7 +199,7 @@ LDFLAGS += -lm
 # Programming support using avrdude.
 AVRDUDE             = avrdude
 AVRDUDE_PROGRAMMER  = jtag1
-AVRDUDE_PORT        = /dev/jtag
+AVRDUDE_PORT        = /dev/avrMultiTool
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
