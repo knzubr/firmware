@@ -46,6 +46,11 @@
 FILE *tcpDebugStream;
 uint8_t tcpDebugLevel;
 
+/**
+ * Enables TCP protocol debuging
+ * @param *stream - pointer to output debug stream
+ * @param level   - debug intensity 0 - debug sidabled, 1 - basic short info, 2 - short info about all ewents, 3 - basic detailed info + short info about all ewents, 4 - detailed info about everything
+ */
 void setTcpDebug(FILE *stream, uint8_t level);
 #endif
 
@@ -155,7 +160,13 @@ uint8_t sendTcBuffer(uint8_t socketNo);
 uint8_t closeSocket(uint8_t socketNo);
 
 
-void netstackTCPIPProcess(uint16_t len, tcpip_hdr* packet);
+void netstackTCPIPProcess(tcpip_hdr* packet);
+
+/**
+ * Flush all UDP queues
+ */
+void flushTcpQueues(void);
+
 
 #endif /*SOCKET_H*/
 //@}

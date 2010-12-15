@@ -4,7 +4,7 @@
 #include "softwareConfig.h"
 
 static uint32_t udpIpDst_eep   __attribute__((section (".eeprom"))) = ((uint32_t)UDP_DST_IP4   << 24) + ((uint32_t)UDP_DST_IP3   <<16) + ((uint32_t)UDP_DST_IP2   <<8) + UDP_DST_IP1;
-static uint16_t udpPortDstEep  __attribute__((section (".eeprom"))) = HTONS(UDP_DST_PORT);
+/*static uint16_t udpPortDstEep  __attribute__((section (".eeprom"))) = HTONS(UDP_DST_PORT);*/
 static uint16_t udpPortSrcEep  __attribute__((section (".eeprom"))) = HTONS(UDP_SRC_PORT);
 
 void udpInit(void)
@@ -15,8 +15,8 @@ void udpInit(void)
 #endif
 
   udpSocket.dstIp   = eeprom_read_dword(&udpIpDst_eep);
-//  udpSocket.dstPort = 
-//  udpSocket.srcPort = 
+  udpSocket.dstPort = 0;
+  udpSocket.srcPort = eeprom_read_word(&udpPortSrcEep);
 }
 
 #if UDP_DEBUG
@@ -50,7 +50,7 @@ void udpSend(uint32_t dstIp, uint16_t dstPort, uint16_t len, uint8_t* data)
   ipSend(dstIp, IP_PROTO_UDP, len);
 }
 
-void netstackUDPIPProcess(unsigned int len, udpip_hdr* packet)
+void netstackUDPIPProcess(udpip_hdr* packet)
 {
   uint8_t len = (uint8_t) htons(packet->udp.udplen);
   uint8_t i;
@@ -76,3 +76,9 @@ void netstackUDPIPProcess(unsigned int len, udpip_hdr* packet)
     }
   }
 }
+
+void flushUdpQueues(void)
+{
+  ;
+}
+

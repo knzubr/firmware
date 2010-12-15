@@ -79,9 +79,9 @@ void ipSaveConfig(void);
 
 
 /**
- *
+ * @param *packet - pointer to the begining of Ip Packet (layer 3)
  */
-void netstackIPProcess(uint16_t len, ip_hdr* packet);
+inline void netstackIPProcess(ip_hdr* packet);
 
 
 

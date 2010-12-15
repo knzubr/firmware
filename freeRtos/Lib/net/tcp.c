@@ -120,7 +120,7 @@ uint8_t sendTcBuffer(uint8_t socketNo)
   return 0;
 }
 
-void netstackTCPIPProcess(uint16_t len, tcpip_hdr* packet)
+void netstackTCPIPProcess(tcpip_hdr* packet)
 {
   struct netTcpHeader *tcpPacket = (struct netTcpHeader *)(&packet->tcp);
   if (tcpPacket->destport == htons(80))
@@ -141,8 +141,15 @@ void netstackTCPIPProcess(uint16_t len, tcpip_hdr* packet)
   }
 }
 
+#if TCP_DEBUG
 void setTcpDebug(FILE *stream, uint8_t level)
 {
   tcpDebugStream = stream;
   tcpDebugLevel = 0;
+}
+#endif /* TCP_DEBUG */
+
+void flushTcpQueues()
+{
+  ;
 }
