@@ -144,14 +144,18 @@ void encTask ( void *pvParameters )
     /*plen will ne unequal to zero if there is a valid
     * packet (without crc error) */
     if ( plen==0 )
+    {
+      flushUdpQueues();
+      flushTcpQueues();
       continue;
+    }
 
     ethPacket = (struct netEthHeader *)(nicState.buf);
     
     if(ethPacket->type == htons(ETHTYPE_IP))             // process an IP packet
     {
       arpIpIn((struct netEthIpHeader*)(nicState.buf));
-      netstackIPProcess(plen-ETH_HEADER_LEN, (ip_hdr*)(&nicState.buf[ETH_HEADER_LEN]));
+      netstackIPProcess((ip_hdr*)(&nicState.buf[ETH_HEADER_LEN]));
     }
     else if(ethPacket->type == htons(ETHTYPE_ARP))       // process an ARP packet
     {

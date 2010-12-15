@@ -27,7 +27,7 @@ typedef struct
 
 extern xQueueHandle xVtyRec;
 
-UdpSocket_t udpSocket;
+UdpSocket_t udpSocket[NUMBER_OF_UDP_SOCK];
 
 #if UDP_DEBUG
 FILE *udpDbgStream;
@@ -53,6 +53,8 @@ void udpInit(void);
 void udpSend(uint32_t dstIp, uint16_t dstPort, uint16_t len, uint8_t* data);
 
 
-void netstackUDPIPProcess(uint16_t len, udpip_hdr* packet);
+inline void netstackUDPIPProcess(udpip_hdr* packet);
+
+inline void flushUdpQueues(void);
 
 #endif

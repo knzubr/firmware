@@ -39,7 +39,7 @@ void ipSaveConfig(void)
   eeprom_update_dword(&defGw_eep, IpMyConfig.gateway);
 }
 
-void netstackIPProcess(uint16_t len, ip_hdr* packet)
+void netstackIPProcess(ip_hdr* packet)
 {
 // check IP addressing, stop processing if not for me and not a broadcast
   if( (packet->destipaddr != ipGetConfig()->ip) &&
@@ -70,7 +70,7 @@ void netstackIPProcess(uint16_t len, ip_hdr* packet)
         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: UDP/IP packet\r\n"));
     }
 #endif /*IP_DEBUG*/
-    netstackUDPIPProcess(len, ((udpip_hdr*)packet) );
+    netstackUDPIPProcess(((udpip_hdr*)packet) );
   }
   else if( packet->proto == IP_PROTO_TCP )
   {
@@ -81,7 +81,7 @@ void netstackIPProcess(uint16_t len, ip_hdr* packet)
         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: TCP/IP packet\r\n"));
     }
 #endif /*IP_DEBUG*/
-    netstackTCPIPProcess(len, ((tcpip_hdr*)packet) );
+    netstackTCPIPProcess(((tcpip_hdr*)packet) );
   }
   else
   {
