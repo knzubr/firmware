@@ -41,7 +41,7 @@ void icmpIpIn(icmpip_hdr* packet)
       if (icmpDebug != NULL)
       {
         if (icmpDebugLevel > 0)
-          printf_P(icmpDebug, PSTR("Unknown ICMP typeReceived ICMP request: "));
+          fprintf_P(icmpDebug, PSTR("Unknown ICMP typeReceived ICMP request: "));
       }
 #endif      
       break;
@@ -54,7 +54,7 @@ void icmpEchoRequest(icmpip_hdr* packet)
   if (icmpDebug != NULL)
   {
     if (icmpDebugLevel > 1)
-      printf_P(icmpDebug, PSTR("Received ICMP request: "));
+      fprintf_P(icmpDebug, PSTR("Received ICMP request: "));
   }
 #endif
   uint32_t tempIp;
@@ -82,7 +82,7 @@ void icmpEchoRequest(icmpip_hdr* packet)
   if (icmpDebug != NULL)
   {
     if (icmpDebugLevel > 1)
-      printf_P(icmpDebug, PSTR("Sending ICMP PONG\r\n"));
+      fprintf_P(icmpDebug, PSTR("Sending ICMP PONG\r\n"));
   }
 #endif
 }

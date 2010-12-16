@@ -31,7 +31,7 @@ void setArpDebug(FILE *stream, uint8_t level)
 {
   arpDebug = stream;
   arpDebugLevel = level;
-  if (level = 0)
+  if (level == 0)
     arpDebug = NULL;
 }
 #endif /*ARP_DEBUG*/
@@ -97,7 +97,7 @@ void arpIpIn(struct netEthIpHeader* packet)
       fprintf_P(arpDebug, PSTR("ARP IP in MAC: "));
       netPrintEthAddr(arpDebug, &packet->eth.src);
       fprintf_P(arpDebug, PSTR(" IP: "));
-      netPrintIPAddr(arpDebug, &packet->ip.srcipaddr);
+      netPrintIPAddr(arpDebug, packet->ip.srcipaddr);
       fprintf_P(arpDebug, PSTR("\r\n"));
     }
   }
@@ -153,7 +153,8 @@ void arpIpOut(struct netEthIpHeader* packet, uint32_t phyDstIp)
   {
 // not in table, must send ARP request
     packet->eth.src = nicState.mac;
-// MUST CHANGE, but for now, send this one broadcast
+// TODO MUST CHANGE, but for now, send this one broadcast
+// before sending frame, must copy buffer
     packet->eth.dest.addr[0] = 0xFF;
     packet->eth.dest.addr[1] = 0xFF;
     packet->eth.dest.addr[2] = 0xFF;

@@ -37,7 +37,7 @@ void sensorsTask(void* pvParameters)
 {
   pvParameters = NULL;
   uint8_t addr = 255;
-  uint8_t i;
+//  uint8_t i;
 
   MPC23s17SetDirA(0x00, 0);
   

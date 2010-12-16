@@ -66,12 +66,6 @@ static uint16_t enc28j60PhyReadH(uint8_t address);
  */
 static void     enc28j60PhyWrite(uint8_t address, uint16_t data);
 
-/**
- * Set clock output.
- * @param clk clkout frequency = 6.25 MHz * clk. Clk (0-7)
- */
-static void     enc28j60clkout(uint8_t clk);
-
 
 //void     enc28j60BufferSend(uint16_t len, roundBuffer* buffer);
 
@@ -239,11 +233,6 @@ void enc28j60PhyWrite(uint8_t address, uint16_t data)
   {
     vTaskDelay ( 0 );         //FIXME być może tutaj następuje zakleszczenie
   }
-}
-
-void enc28j60clkout(uint8_t clk)
-{
-  enc28j60Write(ECOCON, clk & 0x7);
 }
 
 void enc28j60Init(uint8_t* macaddr)

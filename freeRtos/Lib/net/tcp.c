@@ -27,7 +27,7 @@ void socketInit(void)
   memset(sockets, 0, NUMBER_OF_SOCKETS * sizeof(struct TcpIpSocket));
   
   uint8_t i;
-  uint8_t *ptr = ETH_SOCK_TX_1_BUF_ADDR;
+  uint8_t *ptr = (uint8_t *)RTOS_TCP_BUF_BASE_ADDR;
   for (i=0; i<NUMBER_OF_SOCKETS; i++)
   {
     sockets[i].Rx = xQueueCreateExternal(255, 1, (void *)(ptr));
@@ -96,8 +96,8 @@ uint8_t sendTcBuffer(uint8_t socketNo)
   if (space < 50)
     return 1;
 
-  uint8_t i;
-  uint8_t tmpPtr;
+//  uint8_t i;
+//  uint8_t tmpPtr;
   
 
   uint8_t result = 0;
@@ -145,7 +145,7 @@ void netstackTCPIPProcess(tcpip_hdr* packet)
 void setTcpDebug(FILE *stream, uint8_t level)
 {
   tcpDebugStream = stream;
-  tcpDebugLevel = 0;
+  tcpDebugLevel = level;
 }
 #endif /* TCP_DEBUG */
 

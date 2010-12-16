@@ -35,8 +35,8 @@ unsigned int nicPoll(void)                                       { return 0; }
 
 static void nicBufferInit(void)
 {
-  nicState.buf         = (uint8_t *)(ENC28J60BUF_ADDR);
-  nicState.bufferSize  = ENC28J60BUF_SIZE;
+  nicState.buf         = (uint8_t *)(NETWORK_STACK_BUF_ADDR);
+  nicState.bufferSize  = NETWORK_STACK_BUF_SIZE;
   memset(nicState.buf, 0, nicState.bufferSize);
   
   eeprom_read_block(&nicState.mac.addr, mymac_eep, 6);

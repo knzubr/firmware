@@ -82,6 +82,7 @@ prog_char cmd_enable[]      = "enable";           prog_char cmd_help_enable[]   
 prog_char cmd_disable[]     = "disable";          prog_char cmd_help_disable[]     = "View mode";
 prog_char cmd_configure[]   = "config";           prog_char cmd_help_configure[]   = "Configure mode";
 prog_char cmd_conf_ip[]     = "ip";               prog_char cmd_help_conf_ip[]     = "[A1] [A2] [A3] [A4] set IP address";
+prog_char cmd_conf_udp[]    = "udp";              prog_char cmd_help_conf_udp[]    = "[A1] [A2] [A3] [A4] [src port] {dst port} set udp client IP address and ports";
 prog_char cmd_conf_ip_mask[]= "mask";             prog_char cmd_conf_ip_mask_help[]= "[mask] set mask";
 prog_char cmd_conf_ip_gw[]  = "gw";               prog_char cmd_conf_ip_gw_help[]  = "[A1] [A2] [A3] [A4] set default gateway";
 prog_char cmd_conf_mac[]    = "mac";              prog_char cmd_help_conf_mac[]    = "[A1] [A2] [A3] [A4] [A5] [A6] set MAC address";

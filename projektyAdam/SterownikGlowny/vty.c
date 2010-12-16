@@ -56,6 +56,7 @@ static cliExRes_t configureModeFunction  (cmdState_t *state);
 static cliExRes_t setIpFunction(cmdState_t *state);
 static cliExRes_t setIpMaskFunction(cmdState_t *state);
 static cliExRes_t setIpGwFunction(cmdState_t *state);
+static cliExRes_t setUdpFunction(cmdState_t *state);
 
 static cliExRes_t setMacAddrFunction     (cmdState_t *state);
 static cliExRes_t setTimeFunction        (cmdState_t *state);
@@ -144,6 +145,7 @@ command_t __ATTR_PROGMEM__ cmdListConfigure[] =
   {cmd_conf_ip,      cmd_help_conf_ip,      setIpFunction},
   {cmd_conf_ip_mask, cmd_conf_ip_mask_help, setIpMaskFunction},
   {cmd_conf_ip_gw,   cmd_conf_ip_gw_help,   setIpGwFunction},
+  {cmd_conf_udp,     cmd_help_conf_udp,     setUdpFunction},
   {cmd_conf_mac,     cmd_help_conf_mac,     setMacAddrFunction},
   {cmd_conf_save,    cmd_help_conf_save,    saveConfigFunction},
   {cmd_enable,       cmd_help_enable,       enableFunction},
@@ -151,16 +153,16 @@ command_t __ATTR_PROGMEM__ cmdListConfigure[] =
   {NULL, NULL, NULL}
 };
 
-void VtyInit(cmdState_t* state)
+void VtyInit(cmdState_t* state, FILE *stream)
 {
-  cmdStateConfigure(state, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, VtyPutChar, &cmdListNormal[0], NR_NORMAL);
+  cmdStateConfigure(state, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, stream, &cmdListNormal[0], NR_NORMAL);
 }
 
 void printErrorInfo(cmdState_t *state)
 {
   if (state->errno != 0)
   {
-    fprintf_P(&state->myStdInOut, (const char*)(pgm_read_word(errorStrings + state->errno)), state->err1, state->err2);
+    fprintf_P(state->myStdInOut, (const char*)(pgm_read_word(errorStrings + state->errno)), state->err1, state->err2);
   }
   state->errno = 0;
   state->err1 = 0;
@@ -249,9 +251,10 @@ void printStatus(FILE *stream)
   uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
-  fprintf_P(&state->myStdInOut, PSTR("%d:%d:%d\r\n"), godzina, minuta, sekunda);*/
+  fprintf_P(state->myStdInOut, PSTR("%d:%d:%d\r\n"), godzina, minuta, sekunda);*/
 
-  arpPrintTable(stream);
+  udpPrintStatus(stream);
+//  arpPrintTable(stream);
 }
 
 
@@ -261,14 +264,14 @@ static cliExRes_t statusFunction(cmdState_t *state)
 {
   if (state->argc < 1)
   {
-    printStatus(&state->myStdInOut);
+    printStatus(state->myStdInOut);
     return OK_SILENT; 
   }
   
   FILE stream;
   if (ramDyskOtworzPlikStdIo(cmdlineGetArgStr(1, state), &fdVty, &stream, __SWR | __SRD) != 0)
   {
-    fprintf_P(&state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
+    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
     return ERROR_INFORM;
   }
 
@@ -279,7 +282,8 @@ static cliExRes_t statusFunction(cmdState_t *state)
 
 static cliExRes_t statusEncFunction(cmdState_t *state)
 {
-  nicRegDump(&state->myStdInOut);
+  nicRegDump(state->myStdInOut);
+  return OK_SILENT;
 }
 
 static cliExRes_t pokazCzasFunction(cmdState_t *state)
@@ -288,7 +292,7 @@ static cliExRes_t pokazCzasFunction(cmdState_t *state)
   uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;  
-  fprintf_P(&state->myStdInOut, PSTR("Aktualny czas %d:%d:%d\r\n"), godzina, minuta, sekunda);
+  fprintf_P(state->myStdInOut, PSTR("Aktualny czas %d:%d:%d\r\n"), godzina, minuta, sekunda);
   return OK_SILENT;
 }
 
@@ -304,35 +308,35 @@ static cliExRes_t debugFunction          (cmdState_t *state)
     if (strncmp_P(str, PSTR("arp"), 3) == 0)
     {
       setArpDebug(NULL, 0);
-      fprintf_P(&state->myStdInOut, debugDisabledInfoStr, str);
+      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
       return OK_SILENT;  
     }    
 
     if (strncmp_P(str, PSTR("ip"), 2) == 0)
     {
       setIpDebug(NULL, 0);
-      fprintf_P(&state->myStdInOut, debugDisabledInfoStr, str);
+      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
       return OK_SILENT;  
     }    
 
     if (strncmp_P(str, PSTR("icmp"), 2) == 0)
     {
       setIcmpDebug(NULL, 0);
-      fprintf_P(&state->myStdInOut, debugDisabledInfoStr, str);
+      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
       return OK_SILENT;  
     }    
 
     if (strncmp_P(str, PSTR("tcp"), 2) == 0)
     {
       setTcpDebug(NULL, 0);
-      fprintf_P(&state->myStdInOut, debugDisabledInfoStr, str);
+      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
       return OK_SILENT;  
     }    
 
     if (strncmp_P(str, PSTR("udp"), 2) == 0)
     {
       setUdpDebug(NULL, 0);
-      fprintf_P(&state->myStdInOut, debugDisabledInfoStr, str);
+      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
       return OK_SILENT;  
     }    
 
@@ -342,36 +346,36 @@ static cliExRes_t debugFunction          (cmdState_t *state)
   {
     if (strncmp_P(str, PSTR("arp"), 3) == 0)
     {
-      setArpDebug(&state->myStdInOut, level);
-      fprintf_P(&state->myStdInOut, debugEnabledInfoStr, str);
+      setArpDebug(state->myStdInOut, level);
+      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
       return OK_SILENT;  
     }   
     
     if (strncmp_P(str, PSTR("ip"), 2) == 0)
     {
-      setIpDebug(&state->myStdInOut, level);
-      fprintf_P(&state->myStdInOut, debugEnabledInfoStr, str);
+      setIpDebug(state->myStdInOut, level);
+      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
       return OK_SILENT;  
     }
 
     if (strncmp_P(str, PSTR("icmp"), 2) == 0)
     {
-      setIcmpDebug(&state->myStdInOut, level);
-      fprintf_P(&state->myStdInOut, debugEnabledInfoStr, str);
+      setIcmpDebug(state->myStdInOut, level);
+      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
       return OK_SILENT;  
     }
 
     if (strncmp_P(str, PSTR("tcp"), 2) == 0)
     {
-      setTcpDebug(&state->myStdInOut, level);
-      fprintf_P(&state->myStdInOut, debugEnabledInfoStr, str);
+      setTcpDebug(state->myStdInOut, level);
+      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
       return OK_SILENT;  
     }
     
     if (strncmp_P(str, PSTR("udp"), 2) == 0)
     {
-      setUdpDebug(&state->myStdInOut, level);
-      fprintf_P(&state->myStdInOut, debugEnabledInfoStr, str);
+      setUdpDebug(state->myStdInOut, level);
+      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
       return OK_SILENT;  
     }
   }
@@ -421,6 +425,31 @@ static cliExRes_t setIpFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
+static cliExRes_t setUdpFunction(cmdState_t *state)
+{
+  if (state->argc < 5)
+    return SYNTAX_ERROR;
+  
+  uint32_t ip = cmdlineGetArgInt(1, state) + 
+                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) + 
+                (((uint32_t)(cmdlineGetArgInt(3, state)))<<16) + 
+                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
+  udpSocket.dstIp = ip;
+  
+  uint16_t port = cmdlineGetArgInt(5, state);
+  udpSocket.srcPort = htons(port);
+  
+  if (state->argc > 5)
+  {
+    port = cmdlineGetArgInt(6, state);
+    udpSocket.dstPort = htons(port);    
+  }
+  
+  ipSetConfigIp(ip);
+  return OK_SILENT;
+}
+
+
 static cliExRes_t setIpMaskFunction(cmdState_t *state)
 {
   if (state->argc < 1)
@@ -466,7 +495,7 @@ static cliExRes_t czytajAC_Function(cmdState_t *state)
 {
   uint8_t nrWejscia = cmdlineGetArgInt(1, state);
   uint16_t wynik = MCP3008_getSampleSingle(nrWejscia);
-  fprintf_P(&state->myStdInOut, PSTR("Wartosc probki na wejsciu %d: %d\r\n"), nrWejscia, wynik);  
+  fprintf_P(state->myStdInOut, PSTR("Wartosc probki na wejsciu %d: %d\r\n"), nrWejscia, wynik);  
   return OK_SILENT;
 }
 
@@ -487,10 +516,10 @@ static cliExRes_t curtainDownFunction(cmdState_t *state)
   nrRolety &= 0x01;
   wartosc = cmdlineGetArgInt(3, state);
 
-  fprintf_P(&state->myStdInOut,movingCurtainDownStr, nrSterownika, nrRolety+1);
+  fprintf_P(state->myStdInOut,movingCurtainDownStr, nrSterownika, nrRolety+1);
 
   if ((wartosc > 0) && (wartosc <=100))
-    fprintf_P(&state->myStdInOut, movingCurtainPosStr, wartosc);
+    fprintf_P(state->myStdInOut, movingCurtainPosStr, wartosc);
 
   uint8_t result = rs485curtainDown(nrSterownika, nrRolety, wartosc);
   
@@ -511,9 +540,9 @@ static cliExRes_t curtainUpFunction(cmdState_t *state)
   if (state->argc > 2)
     wartosc = cmdlineGetArgInt(3, state);
 
-  fprintf_P(&state->myStdInOut,   movingCurtainUpStr, nrSterownika, nrRolety+1);
+  fprintf_P(state->myStdInOut,   movingCurtainUpStr, nrSterownika, nrRolety+1);
   if ((wartosc > 0) && (wartosc <=100))
-    fprintf_P(&state->myStdInOut, movingCurtainPosStr, wartosc);
+    fprintf_P(state->myStdInOut, movingCurtainPosStr, wartosc);
 
   uint8_t result = rs485curtainUp(nrSterownika, nrRolety, wartosc);
   
@@ -591,11 +620,11 @@ static cliExRes_t flashExModuleFunction(cmdState_t *state)
   //Sprawdzanie, czy istnieje odpowiedni plik z firmware
   if (ramDyskOtworzPlik(nazwaPliku, &fdVty) != 0)
   {
-    fprintf_P(&state->myStdInOut, errorOpenFile, nazwaPliku);
+    fprintf_P(state->myStdInOut, errorOpenFile, nazwaPliku);
     return ERROR_INFORM;
   }
   
-  blad = rs485xModemFlash(&fdVty, nrUrzadzenia, &state->myStdInOut);
+  blad = rs485xModemFlash(&fdVty, nrUrzadzenia, state->myStdInOut);
 
   ramDyskZamknijPlik(&fdVty);
   
@@ -607,10 +636,10 @@ static cliExRes_t flashExModuleFunction(cmdState_t *state)
 
 static cliExRes_t goXmodemWyslijFunction(cmdState_t *state) // TODO add code in xModem
 {
-  fprintf_P(&state->myStdInOut, xwyslijStartStr);
+  fprintf_P(state->myStdInOut, xwyslijStartStr);
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
-    fprintf_P(&state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
+    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
     return ERROR_INFORM;
   }
   return OK_SILENT;
@@ -618,10 +647,10 @@ static cliExRes_t goXmodemWyslijFunction(cmdState_t *state) // TODO add code in 
 
 static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmodem
 {
-  fprintf_P(&state->myStdInOut, PSTR("Xmodem: rozpoczynanie odbioru\r\n"));
+  fprintf_P(state->myStdInOut, PSTR("Xmodem: rozpoczynanie odbioru\r\n"));
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
-    fprintf_P(&state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
+    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
     return ERROR_INFORM;
   }
    
@@ -649,7 +678,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
   liczbaProb = 20;
   for ( ; ; )
   {
-    fputc('C'              , &state->myStdInOut);
+    fputc('C'              , state->myStdInOut);
     while(!(UCSR1A & (1 << TXC1)));                              //Czekanie na opróżnienie bufora
 
     if(xQueueReceive(xVtyRec, &c, 100))
@@ -827,7 +856,7 @@ static cliExRes_t dodajRamPlikFunction(cmdState_t *state)
 
 static cliExRes_t writeRamFileFunction(cmdState_t *state)
 {
-  ramDyskDir(&state->myStdInOut);
+  ramDyskDir(state->myStdInOut);
   return OK_SILENT;
 }
 
@@ -835,12 +864,12 @@ static cliExRes_t editRamFileFunction(cmdState_t *state)
 {
   if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
   {
-    fprintf_P(&state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
+    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
     return ERROR_INFORM;
   }
   ramDyskUstawWskaznikNaKoniec(&fdVty);
   uint8_t znak = 0;
-  fprintf_P(&state->myStdInOut, editRamFileIntroStr);
+  fprintf_P(state->myStdInOut, editRamFileIntroStr);
   while(1)
   {
     if(!xQueueReceive( xVtyRec, &znak, portMAX_DELAY))
@@ -862,11 +891,11 @@ static cliExRes_t readRamFIleFunction(cmdState_t *state) //TODO move this code t
   uint8_t znak = ' ';
   if ((rezultat = ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty)) != 0)
   {
-    fprintf_P(&state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
+    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
     return ERROR_INFORM;
   }
   uint16_t rozmiar = fdVty.wpis->rozmiarHi * 256 + fdVty.wpis->rozmiarLo;
-  fprintf_P(&state->myStdInOut, readRamFIleLenStr , rozmiar);
+  fprintf_P(state->myStdInOut, readRamFIleLenStr , rozmiar);
   while (rezultat == 0)
   {
     rezultat = ramDyskCzytajBajtZPliku(&fdVty, &znak);
@@ -875,7 +904,7 @@ static cliExRes_t readRamFIleFunction(cmdState_t *state) //TODO move this code t
     if (znak == '\r')
       uartVtySendByte('\n');
   }
-  fprintf_P(&state->myStdInOut, nlStr);
+  fprintf_P(state->myStdInOut, nlStr);
   ramDyskZamknijPlik(&fdVty);
   return OK_SILENT;
 }

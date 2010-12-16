@@ -39,7 +39,7 @@ void ipSaveConfig(void)
   eeprom_update_dword(&defGw_eep, IpMyConfig.gateway);
 }
 
-void netstackIPProcess(ip_hdr* packet)
+inline void netstackIPProcess(ip_hdr* packet)
 {
 // check IP addressing, stop processing if not for me and not a broadcast
   if( (packet->destipaddr != ipGetConfig()->ip) &&
@@ -60,8 +60,9 @@ void netstackIPProcess(ip_hdr* packet)
     }
 #endif /*IP_DEBUG*/
     icmpIpIn((icmpip_hdr*)packet);
+    return;
   }
-  else if( packet->proto == IP_PROTO_UDP )
+  if( packet->proto == IP_PROTO_UDP )
   {
 #if IP_DEBUG
     if (IpMyConfig.dbgStream != NULL)
@@ -70,9 +71,10 @@ void netstackIPProcess(ip_hdr* packet)
         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: UDP/IP packet\r\n"));
     }
 #endif /*IP_DEBUG*/
-    netstackUDPIPProcess(((udpip_hdr*)packet) );
+    netstackUDPIPProcess();
+    return;
   }
-  else if( packet->proto == IP_PROTO_TCP )
+  if( packet->proto == IP_PROTO_TCP )
   {
 #if IP_DEBUG
     if (IpMyConfig.dbgStream != NULL)
@@ -82,17 +84,15 @@ void netstackIPProcess(ip_hdr* packet)
     }
 #endif /*IP_DEBUG*/
     netstackTCPIPProcess(((tcpip_hdr*)packet) );
+    return;
   }
-  else
-  {
 #if IP_DEBUG
-    if (IpMyConfig.dbgStream != NULL)
-    {
-      if (IpMyConfig.dbgLevel > 0)
-        fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: IP packet\r\n"));
-    }
-#endif /*IP_DEBUG*/
+  if (IpMyConfig.dbgStream != NULL)
+  {
+    if (IpMyConfig.dbgLevel > 0)
+      fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: Unknown IP packet\r\n"));
   }
+#endif /*IP_DEBUG*/
 }
 
 #if IP_DEBUG
@@ -138,15 +138,13 @@ struct ipConfig* ipGetConfig(void)
 void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len)
 {
 // make pointer to ethernet/IP header
-  struct netEthIpHeader* ethIpHeader;
-
-  ethIpHeader = (struct netEthIpHeader*) nicState.buf;
+  struct netEthIpHeader *ethIpHeader = (struct netEthIpHeader*) nicState.buf;
 
 #if IP_DEBUG
   if (IpMyConfig.dbgStream != NULL)
   {  
     if (IpMyConfig.dbgLevel > 2)
-      fprintf_P(IpMyConfig.dbgStream, "debugPrintHexTable(len+ETH_HEADER_LEN+IP_HEADER_LEN, data)");
+      fprintf_P(IpMyConfig.dbgStream, "Sending Ip packet\r\n");
   }
 #endif
 
@@ -194,8 +192,11 @@ void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len)
 #if IP_DEBUG
   if (IpMyConfig.dbgStream != NULL)
   {
-    fprintf_P(IpMyConfig.dbgStream, PSTR("debugPrintHexTable(ETH_HEADER_LEN, &data[0]);"));
-    fprintf_P(IpMyConfig.dbgStream, PSTR("debugPrintHexTable(len-ETH_HEADER_LEN, &data[ETH_HEADER_LEN]);"));
+    if (IpMyConfig.dbgLevel > 3)
+    {
+      fprintf_P(IpMyConfig.dbgStream, PSTR("debugPrintHexTable(ETH_HEADER_LEN, &data[0]);"));
+      fprintf_P(IpMyConfig.dbgStream, PSTR("debugPrintHexTable(len-ETH_HEADER_LEN, &data[ETH_HEADER_LEN]);"));
+    }
   }
 #endif
 // send it

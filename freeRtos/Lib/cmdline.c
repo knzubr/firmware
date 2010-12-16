@@ -55,7 +55,7 @@ static void cmdHistoryCopy            (cmdState_t *state);
 static void cmdHistoryMove            (cmdState_t *state);
 
 
-void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands, enum cliModeState mode)
+void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, FILE *stream, const command_t *commands, enum cliModeState mode)
 {
   memset(state, 0, sizeof(cmdState_t));
   memset(buffPtr, 0, bufferTotalSize);
@@ -73,10 +73,7 @@ void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSi
     state->CmdlineHistory[i] = tmpPtr;
     tmpPtr += state->bufferMaxSize;
   }
-  
-  //cmdStateClear(newCmdState);
-  fdev_setup_stream(&state->myStdInOut, output_func, NULL, _FDEV_SETUP_WRITE);
-  fdev_set_udata(&state->myStdInOut, state);
+  state->myStdInOut = stream;
 }
 
 void cmdStateClear(cmdState_t *state)
@@ -120,14 +117,14 @@ void cmdlineInputFunc(char c, cmdState_t *state)
         // increment the edit position
         state->CmdlineBufferEditPos++;
         // move cursor forward one space (no erase)
-        fputc(ASCII_ESC        , &state->myStdInOut);
-        fputc('['              , &state->myStdInOut);
-        fputc(VT100_ARROWRIGHT , &state->myStdInOut);
+        fputc(ASCII_ESC        , state->myStdInOut);
+        fputc('['              , state->myStdInOut);
+        fputc(VT100_ARROWRIGHT , state->myStdInOut);
       }
       else
       {
         // else, ring the bell
-        fputc(ASCII_BEL        , &state->myStdInOut);
+        fputc(ASCII_BEL        , state->myStdInOut);
       }
       break;
     case VT100_ARROWLEFT:
@@ -140,12 +137,12 @@ void cmdlineInputFunc(char c, cmdState_t *state)
         // decrement the edit position
         state->CmdlineBufferEditPos--;
         // move cursor back one space (no erase)
-        fputc(ASCII_BS         , &state->myStdInOut);
+        fputc(ASCII_BS         , state->myStdInOut);
       }
       else
       {
         // else, ring the bell
-        fputc(ASCII_BEL        , &state->myStdInOut);
+        fputc(ASCII_BEL        , state->myStdInOut);
       }
       break;
     default:
@@ -192,7 +189,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
     if(state->CmdlineBufferEditPos == state->CmdlineBufferLength)
     {
       // echo character to the output
-      fputc(c                , &state->myStdInOut);
+      fputc(c                , state->myStdInOut);
       // add it to the command line buffer
       state->CmdlineBuffer[state->CmdlineBufferEditPos++] = c;
       // update buffer length
@@ -212,7 +209,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
       cmdlineRepaint(state, state->CmdlineBuffer);
       // reposition cursor
       for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
-        fputc(ASCII_BS         , &state->myStdInOut);
+        fputc(ASCII_BS         , state->myStdInOut);
     }
   }
   // handle special characters
@@ -223,8 +220,8 @@ void cmdlineInputFunc(char c, cmdState_t *state)
     
     // user pressed [ENTER]
     // echo CR and LF to terminal
-    fputc(ASCII_CR         , &state->myStdInOut);
-    fputc(ASCII_LF         , &state->myStdInOut);
+    fputc(ASCII_CR         , state->myStdInOut);
+    fputc(ASCII_LF         , state->myStdInOut);
     // add null termination to command
     state->CmdlineBuffer[state->CmdlineBufferLength++] = 0;
     state->CmdlineBufferEditPos++;
@@ -243,9 +240,9 @@ void cmdlineInputFunc(char c, cmdState_t *state)
       {
         // destructive backspace
         // echo backspace-space-backspace
-        fputc(ASCII_BS         , &state->myStdInOut);
-        fputc(' '              , &state->myStdInOut);
-        fputc(ASCII_BS         , &state->myStdInOut);
+        fputc(ASCII_BS         , state->myStdInOut);
+        fputc(' '              , state->myStdInOut);
+        fputc(ASCII_BS         , state->myStdInOut);
         // decrement our buffer length and edit position
         state->CmdlineBufferLength--;
         state->CmdlineBufferEditPos--;
@@ -262,16 +259,16 @@ void cmdlineInputFunc(char c, cmdState_t *state)
         // repaint
         cmdlineRepaint(state, state->CmdlineBuffer);
         // add space to clear leftover characters
-        fputc(' '              , &state->myStdInOut);
+        fputc(' '              , state->myStdInOut);
         // reposition cursor
         for(i=state->CmdlineBufferEditPos; i<(state->CmdlineBufferLength+1); i++)
-          fputc(ASCII_BS       , &state->myStdInOut);
+          fputc(ASCII_BS       , state->myStdInOut);
       }
     }
     else
     {
       // else, ring the bell
-      fputc(ASCII_BEL          , &state->myStdInOut);
+      fputc(ASCII_BEL          , state->myStdInOut);
     }
   }
   else if(c == ASCII_DEL)
@@ -289,19 +286,19 @@ void cmdlineRepaint(cmdState_t *state, char *buf)
   uint8_t i;
 
   // carriage return
-  fputc(ASCII_CR         , &state->myStdInOut);
+  fputc(ASCII_CR         , state->myStdInOut);
   // print fresh prompt
   cmdlinePrintPrompt(state);
   // print the new command line buffer
   i = state->CmdlineBufferLength;
   while(i--) 
-    fputc(*buf++         , &state->myStdInOut);
+    fputc(*buf++         , state->myStdInOut);
   i = state->bufferMaxSize - state->CmdlineBufferLength;
   while (i--)
-    fputc(' ', &state->myStdInOut);
+    fputc(' ', state->myStdInOut);
   i = state->bufferMaxSize - state->CmdlineBufferLength;
   while (i--)
-    fputc(ASCII_BS,  &state->myStdInOut);
+    fputc(ASCII_BS,  state->myStdInOut);
 }
 
 void cmdHistoryCopy(cmdState_t *state)
@@ -445,20 +442,20 @@ void cmdlineMainLoop(cmdState_t *state)
     switch(result)
     {
       case OK_INFORM:
-        fprintf_P(&state->myStdInOut, PSTR("OK\r\n"));
+        fprintf_P(state->myStdInOut, PSTR("OK\r\n"));
         break;
       case SYNTAX_ERROR:
-        fprintf_P(&state->myStdInOut, PSTR("Syntax Error. Use: "));
-        fprintf_P(&state->myStdInOut, state->command_str);
-        fprintf_P(&state->myStdInOut, PSTR(" "));
-        fprintf_P(&state->myStdInOut, state->command_help_str);
-        fprintf_P(&state->myStdInOut, PSTR("\r\n"));
+        fprintf_P(state->myStdInOut, PSTR("Syntax Error. Use: "));
+        fprintf_P(state->myStdInOut, state->command_str);
+        fprintf_P(state->myStdInOut, PSTR(" "));
+        fprintf_P(state->myStdInOut, state->command_help_str);
+        fprintf_P(state->myStdInOut, PSTR("\r\n"));
         break;
       case ERROR_INFORM:
-        fprintf_P(&state->myStdInOut, PSTR("Operation failed\r\n"));
+        fprintf_P(state->myStdInOut, PSTR("Operation failed\r\n"));
         break;
       case ERROR_OPERATION_NOT_ALLOWED:
-        fprintf_P(&state->myStdInOut, PSTR("Operation not allowed\r\n"));
+        fprintf_P(state->myStdInOut, PSTR("Operation not allowed\r\n"));
         break;
       default:
         break;
@@ -490,7 +487,7 @@ void cmdlinePrintPrompt(cmdState_t *state)
       break;      
   }
   while(pgm_read_byte(ptr))
-    fputc(pgm_read_byte(ptr++)    , &state->myStdInOut);
+    fputc(pgm_read_byte(ptr++)    , state->myStdInOut);
 }
 
 void cmdlinePrintError(cmdState_t *state)
@@ -501,24 +498,24 @@ void cmdlinePrintError(cmdState_t *state)
   // (uint8_t*) cast used to avoid compiler warning
   ptr = (char*)CmdlineNotice;
   while(pgm_read_byte(ptr))
-    fputc(pgm_read_byte(ptr++)    , &state->myStdInOut);
+    fputc(pgm_read_byte(ptr++)    , state->myStdInOut);
   
   // print the offending command
   ptr = state->CmdlineBuffer;
   while((*ptr) && (*ptr != ' '))
-    fputc(*ptr++    , &state->myStdInOut);
+    fputc(*ptr++    , state->myStdInOut);
 
-  fputc(':'         , &state->myStdInOut);
-  fputc(' '         , &state->myStdInOut);
+  fputc(':'         , state->myStdInOut);
+  fputc(' '         , state->myStdInOut);
 
   // print the not-found message
   // (uint8_t*) cast used to avoid compiler warning
   ptr = (char*)CmdlineCmdNotFound;
   while(pgm_read_byte(ptr))
-    fputc(pgm_read_byte(ptr++)    , &state->myStdInOut);
+    fputc(pgm_read_byte(ptr++)    , state->myStdInOut);
 
-  fputc('\r'        , &state->myStdInOut);
-  fputc('\n'        , &state->myStdInOut);
+  fputc('\r'        , state->myStdInOut);
+  fputc('\n'        , state->myStdInOut);
 }
 
 
@@ -585,10 +582,10 @@ void cmdPrintHelp(cmdState_t *state)
   memcpy_P(&tmp, tmpPtr, sizeof(command_t));
   do
   {
-    fprintf_P(&state->myStdInOut, tmp.commandStr);
-    fprintf_P(&state->myStdInOut, PSTR("\t"));
-    fprintf_P(&state->myStdInOut, tmp.commandHelpStr);
-    fprintf_P(&state->myStdInOut, PSTR("\r\n"));
+    fprintf_P(state->myStdInOut, tmp.commandStr);
+    fprintf_P(state->myStdInOut, PSTR("\t"));
+    fprintf_P(state->myStdInOut, tmp.commandHelpStr);
+    fprintf_P(state->myStdInOut, PSTR("\r\n"));
 
     tmpPtr++;
     memcpy_P(&tmp, tmpPtr, sizeof(command_t));
