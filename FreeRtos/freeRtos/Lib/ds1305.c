@@ -92,7 +92,7 @@ void ds1305start(void)
   spiDisableDS1305();  
   spiGive();
 
-  return 0;
+  return;
 }
 
 

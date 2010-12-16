@@ -45,11 +45,12 @@
 
 #include "main.h"
 
+xQueueHandle xVtyTx;
 xQueueHandle xVtyRec;
+
+xQueueHandle xRs485Tx;
 xQueueHandle xRs485Rec;
 
-xQueueHandle xVtyTx;
-xQueueHandle xRs485Tx;
 
 volatile uint8_t temperature;
 volatile uint8_t voltage;
@@ -62,55 +63,8 @@ void vApplicationIdleHook( void );
  */
 void vApplicationTickHook( void );
 
-/**
- * Proces odpowiedzialny za obsługę VTY
- * @param pvParameters ignorowane parametry
- */
-void vTaskVTY( void * pvParameters );
-
-/**
- * Proces odpowiedzialny za obsługę komunikacji po magistrali Rs485
- * @param pvParameters ignorowane parametry
- */
-void vTaskMag(void *pvParameters);
-
-/*-----------------------------------------------------------*/
-
-void vTaskVTY( void * pvParameters )
-{
-  cmdState_t *state = (cmdState_t *)(pvParameters);
-  cmdlineInputFunc('\r', state);
-  
-  static char znak;
-  for( ;; )
-  {
-    if( xQueueReceive( xVtyRec, &znak, portMAX_DELAY))
-    {
-      cmdlineInputFunc(znak, state);
-      cmdlineMainLoop(state);
-    }  
-  }
-}
-
-void vTaskMag(void *pvParameters)
-{
-  pvParameters = NULL;
-
-  static uint8_t adr;
-  static char znak;
-  for(;;)
-  {
-    if(xQueueReceive(xRs485Rec, &znak, portMAX_DELAY))
-    {
-      rs485ping(adr);
-      vTaskDelay(10);
-    }
-    adr++;
-  }
-}
-
-xTaskHandle xHandleVTY;
-//xTaskHandle xHandleRs485;
+xTaskHandle xHandleVTY_USB;
+xTaskHandle xHandleVTY_UDP;
 xTaskHandle xHandleEnc;
 xTaskHandle xHandleSensors;
 
@@ -120,7 +74,12 @@ void initExternalMem(void)
   MCUCR |= 0x0E;
 }
 
-cmdState_t *CLIStateSerial1;
+cmdState_t *CLIStateSerialUsb;
+cmdState_t *CLIStateSerialUdp;
+FILE usbStream;
+FILE udpStream;
+
+streamBuffers_t udpBuffers;
 
 portSHORT main( void )
 {
@@ -130,16 +89,26 @@ portSHORT main( void )
 
 // VTY on serial  
   xSerialPortInitMinimal(); 
-  CLIStateSerial1  = xmalloc(sizeof(cmdState_t));
-  VtyInit(CLIStateSerial1);
+  CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
+  CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
+
+
+//  cmdStateClear(newCmdState);
   
   sensorsTaskInit();
-
   loadConfiguration();
+
+  initQueueStreamUSB(&usbStream);
+  VtyInit(CLIStateSerialUsb, &usbStream);
+
+  udpInit();
+  initQueueStream(&udpStream, &udpBuffers, udpSocket.Rx, udpSocket.Tx);
+  VtyInit(CLIStateSerialUdp, &udpStream);
   
-  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     &CLIStateSerial1->myStdInOut, 0, &xHandleEnc);
-  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1),    1, &xHandleVTY);
-  xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                         1, &xHandleSensors);
+  xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)&CLIStateSerialUsb->myStdInOut, 0, &xHandleEnc);
+  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+  xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
+  xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
   vTaskStartScheduler();
   return 0;
 }

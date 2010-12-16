@@ -25,7 +25,7 @@
 #ifndef CMDLINE_H
 #define CMDLINE_H
 
-
+#include <stdio.h>
 #include <avr/io.h>         // editor recognizes now types like uint8_t 
 #include <avr/pgmspace.h>
 
@@ -96,7 +96,7 @@ struct cmdState
   CmdlineFuncPtrType CmdlineExecFunction;    /// Pointer to the funtion that match to the string writen in buffer
   uint8_t   argc;                            /// Index of last argument
   
-  FILE myStdInOut;                           /// Input / output stream descriptor
+  FILE *myStdInOut;                          /// Input / output stream descriptor
   
   uint8_t  errno;                            /// Error number
   uint16_t err1;                             /// Additional error info 1
@@ -171,9 +171,11 @@ void cmdPrintHelp(cmdState_t *state);
  * @param state            - wskaźnik do struktury ze stanem sesji interpretera poleceń
  * @param buffPtr          - wskaźnik do początku bufora. 1/4 bufora przeznaczona jest na buforowanie polecenia, 3/4 na zapamiętanie 3 ostatnich poleceń
  * @param bufferTotalSize  - długość przydzielonego bufora. Min 32 * CMD_STATE_HISTORY bajtów
- * @param output_func      - wskaźnik do funkcji obsługującej strumień wyjściowy
+ * @param *stream          - input/output stream
+ * @param *commands        - pointer to the command table
+ * @param mode             - command line interpreter mode
  */
-void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, int (*output_func)(char c, FILE *stream), const command_t *commands, enum cliModeState mode);
+void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, FILE *stream, const command_t *commands, enum cliModeState mode);
 
 //@}
 #endif

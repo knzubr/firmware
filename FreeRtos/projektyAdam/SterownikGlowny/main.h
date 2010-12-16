@@ -14,6 +14,8 @@
 #include "croutine.h"
 #include "queue.h"
 #include "task.h"
+#include "queueStream.h"
+#include "cli_task.h"
 #include "serial.h"
 
 #include "hardwareConfig.h"
@@ -45,11 +47,12 @@
 #include "tcp.h"
 
 
+
 #define mainCHECK_TASK_PRIORITY 1
 #define mainCHECK_PERIOD 1
 
 #define SYSTEM_NAME "FreeRtos+"
-#define S_VERSION "0.21"
+#define S_VERSION "0.31"
 
 
 
@@ -58,5 +61,6 @@ volatile timeDecoded_t czasRtc;
 
 void initExternalMem(void) __attribute__ ((naked)) __attribute__ ((section (".init4")));
 
+extern UdpSocket_t udpSocket;
 
 #endif

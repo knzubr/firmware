@@ -10,11 +10,25 @@
 
 /*-----------------------------------------------------------*/
 
+void initQueueStreamUSB(FILE *stream)
+{
+  fdev_setup_stream(stream, VtyPutChar, VtyGetChar, _FDEV_SETUP_RW);
+  fdev_set_udata(stream, NULL);
+  return;
+}
+
+int VtyGetChar(FILE *stream)
+{
+  stream = NULL;
+  uint8_t c;
+  if (xQueueReceive(xVtyRec, &c, portMAX_DELAY) == 0)
+    return EOF;
+  return c;
+}
+
 int VtyPutChar(char c, FILE *stream)
 {
   stream = NULL;
-//  if (c == '\n')
-//    VtyPutChar('\r', stream);
   uartVtySendByte(c);
   return 0;
 }
@@ -118,6 +132,14 @@ void    takeRs485(void)
 void    releaseRs485(void)
 {
   xSemaphoreGive(xSemaphoreRs485);
+}
+
+void InterruptVtyOn(void)
+{                                  
+  unsigned portCHAR ucByte;                                       
+  ucByte = UCSR1B;                 
+  ucByte |= serDATA_INT_ENABLE;    
+  UCSR1B = ucByte;                 
 }
 
 /*-----------------------------------------------------------*/

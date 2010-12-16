@@ -259,7 +259,7 @@
 #define RXSTART_INIT     0x0
 // receive buffer end
 #define RXSTOP_INIT      (0x1FFF-0x0600-1)
-// start TX buffer at 0x1FFF-0x0600, pace for one full ethernet frame (~1500 bytes)
+// start TX buffer at 0x1FFF-0x0600, pace for one full ethernet frame (1536 bytes)
 #define TXSTART_INIT     (0x1FFF-0x0600)
 // stp TX buffer at end of mem
 #define TXSTOP_INIT      0x1FFF

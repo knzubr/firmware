@@ -15,60 +15,6 @@
  *********************************************/
 #include "netstack_task.h"
 
-// the password string (only the first 5 char checked), (only a-z,0-9,_ characters):
-//char password[]="secret"; // must not be longer than 9 char
-//char filename[12]="xxx";
-
-// uint8_t verify_password ( char *str )
-// {
-//     // the first characters of the received string are
-//     // a simple password/cookie:
-//     if ( strncmp ( password,str,5 ) ==0 )
-//     {
-//         return ( 1 );
-//     }
-//     return ( 0 );
-// }
-
-
-// urlSource_t analyse_get_url (const char *str, char *fname)
-// {
-//   uint8_t result = URLerror;
-//   if (strncmp_P(str, PSTR("status"), 6) == 0)
-//     return URLstatus;
-//     
-//   if (strncmp_P(str, PSTR("rd/"), 3) == 0)
-//   {
-//     result = URLramDysk;
-//     str += 3;
-//   }
-// 
-//   if (strncmp_P(str, PSTR("sd/"), 3) == 0)
-//   {
-//     result = URLsdDysk;
-//     str += 3;
-//   }
-//    
-//   uint8_t i=0;
-//   while (i < 12)
-//   {
-//     if (((*str >= 'a') && (*str <= 'z')) || ((*str >= 'A') && (*str <= 'Z')) || ((*str >= '0') && (*str <= '9')))
-//     {
-//       fname[i] = *str;
-//     }
-//     else
-//     {
-//       fname[i] = 0;
-//       break;
-//     }
-//     str++;
-//     i++;
-//   }
-//   if (i == 0)
-//     result = URLerror;
-//   
-//   return result;
-// }
 
 /*uint16_t printHTMLstatus(char *buf, uint16_t pos, uint16_t maxPos)
 {*/
@@ -129,6 +75,7 @@ void encTask ( void *pvParameters )
   ipInit();
   arpInit();
   icmpInit();
+
 
   //TODO    init_ip_arp_udp_tcp (mymac, ipGetConfig()->ip, MYWWWPORT);
 

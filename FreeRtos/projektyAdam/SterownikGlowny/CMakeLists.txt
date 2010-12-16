@@ -7,6 +7,7 @@ ADD_EXECUTABLE(sterownikglowny main.c                                  main.h
                                vty.c                                   vty.h  
                                sensors_task.c                          sensors_task.h
                                netstack_task.c                         netstack_task.h
+                               cli_task.c                              cli_task.h
                                )
 add_library(Lang
                                vty_pl.h                                vty_en.h
@@ -33,7 +34,8 @@ add_library(FreeRtos STATIC
                                ../../freeRtos/Source/croutine.c        ../../freeRtos/Source/include/croutine.h  
                                ../../freeRtos/Source/list.c            ../../freeRtos/Source/include/list.h  
                                ../../freeRtos/Source/queue.c           ../../freeRtos/Source/include/queue.h  
-                               ../../freeRtos/Source/tasks.c           ../../freeRtos/Source/include/task.h  
+                               ../../freeRtos/Source/tasks.c           ../../freeRtos/Source/include/task.h
+                               ../../freeRtos/Lib/queueStream.c        ../../freeRtos/Lib/include/queueStream.h          # obsługa strumienia FILE na potrzeby biblioteki libc
                                )
 add_library(Hardware STATIC
                                ../../freeRtos/Lib/spi.c                ../../freeRtos/Lib/include/spi.h                  # Obsługa magistrali SPI

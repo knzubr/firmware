@@ -1,23 +1,27 @@
 #ifndef UDP_H
 #define UDP_H
 
+#include <avr/eeprom.h>
 #include <avr/pgmspace.h>
-#include "softwareConfig.h"
 #include "ip.h"
-#include "main.h"
-#include "avr/eeprom.h"
-
-#if UDP_DEBUG
+#include "nic.h"
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "softwareConfig.h"
+#include "hardwareConfig.h"
 #include <stdio.h>
 #include <avr/pgmspace.h>
+
+#if UDP_DEBUG
 #endif
 
-extern struct ipConfig IpMyConfig;
-
+extern struct ipConfig  IpMyConfig;
+extern nicState_t       nicState;
 
 typedef struct
 {
-  uint16_t dstPort;             //stored in network order
+  uint16_t dstPortDef;           //stored in network order
+  uint16_t dstPort;              //stored in network order
   uint16_t srcPort;
   uint32_t dstIp;  
   
@@ -25,9 +29,8 @@ typedef struct
   xQueueHandle Tx;
 } UdpSocket_t;
 
-extern xQueueHandle xVtyRec;
 
-UdpSocket_t udpSocket[NUMBER_OF_UDP_SOCK];
+UdpSocket_t udpSocket;//[NUMBER_OF_UDP_SOCK];
 
 #if UDP_DEBUG
 FILE *udpDbgStream;
@@ -42,19 +45,23 @@ void setUdpDebug(FILE *stream, uint8_t level);
 #endif
 
 
-
 void udpInit(void);
-
 
 
 /**
  * Send a UDP/IP packet.
+ * Packet data has to be written in Ethernet buffer.
+ * Function fills the IP addresses and ports according to UDP settings
+ * @param len - udp packet length (with header)
  */
-void udpSend(uint32_t dstIp, uint16_t dstPort, uint16_t len, uint8_t* data);
+void udpSend(uint16_t len);
 
 
-inline void netstackUDPIPProcess(udpip_hdr* packet);
+void netstackUDPIPProcess(void);
 
-inline void flushUdpQueues(void);
+void flushUdpQueues(void);
+
+void udpSaveConfig(void);
+void udpPrintStatus(FILE *stream);
 
 #endif

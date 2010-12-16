@@ -82,6 +82,7 @@ prog_char cmd_enable[]      = "admin";            prog_char cmd_help_enable[]   
 prog_char cmd_disable[]     = "normalny";         prog_char cmd_help_disable[]     = "Wyjscie z trybu uprzywilejowanego";
 prog_char cmd_configure[]   = "konfig";           prog_char cmd_help_configure[]   = "Wejscie w tryb konfiguracji";
 prog_char cmd_conf_ip[]     = "ip";               prog_char cmd_help_conf_ip[]     = "[A1] [A2] [A2] [A3] ustaw adres IP";
+prog_char cmd_conf_udp[]    = "udp";              prog_char cmd_help_conf_udp[]    = "[A1] [A2] [A3] [A4] [src port] {dst port} ustaw adres klienta udp oraz porty";
 prog_char cmd_conf_ip_mask[]= "maska";            prog_char cmd_conf_ip_mask_help[]= "[maska] ustaw maske adresu IP";
 prog_char cmd_conf_ip_gw[]  = "brama";            prog_char cmd_conf_ip_gw_help[]  = "[A1] [A2] [A3] [A4] ustaw domyslna brame";
 prog_char cmd_conf_mac[]    = "mac";              prog_char cmd_help_conf_mac[]    = "[A1] [A2] [A3] [A4] set MAC address";

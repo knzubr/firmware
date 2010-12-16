@@ -20,5 +20,5 @@ void saveConfiguration(void)
 {
   saveNic();
   ipSaveConfig();
-  eeprom_update_block(lockSensors, lockerSensorsEEP, 4*sizeof(struct lockerSensor)); 
+  udpSaveConfig();
 }

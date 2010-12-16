@@ -62,7 +62,7 @@ uint8_t wwwport; // 80 is just a default value. Gets overwritten during init
 #define MY_MASK4 0
 
 #define UDP_SRC_PORT 3000
-//#define UDP_DST_PORT 3001
+#define UDP_DST_PORT 0
 
 #define UDP_DST_IP1 192
 #define UDP_DST_IP2 168

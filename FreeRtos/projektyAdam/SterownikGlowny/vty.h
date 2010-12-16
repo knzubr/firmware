@@ -17,6 +17,7 @@
 #include "net.h"
 #include "arp.h"
 #include "cmdline.h"
+#include "udp.h"
 
 
 // Znaki kontrolne w protokole Xmodem
@@ -39,18 +40,17 @@
 #define XMODEM_BUFFER_SIZE		128
 
 
-extern nicState_t nicState;
+extern nicState_t  nicState;
+extern UdpSocket_t udpSocket;
 
-void VtyInit(cmdState_t *state);
+void VtyInit(cmdState_t *state, FILE *stream);
+
 void printErrorInfo(cmdState_t *state);
 
 void printStatus(FILE *stream);
 
 extern volatile uint8_t temperature;
 extern volatile uint8_t voltage;
-
-extern xQueueHandle           xVtyRec;
-extern xQueueHandle           xVtyTx;
 
 extern xQueueHandle           xRs485Rec;
 extern xQueueHandle           xRs485Tx;
