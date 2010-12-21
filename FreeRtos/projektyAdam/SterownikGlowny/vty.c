@@ -444,8 +444,6 @@ static cliExRes_t setUdpFunction(cmdState_t *state)
     port = cmdlineGetArgInt(6, state);
     udpSocket.dstPort = htons(port);    
   }
-  
-  ipSetConfigIp(ip);
   return OK_SILENT;
 }
 
@@ -472,7 +470,6 @@ static cliExRes_t setIpGwFunction(cmdState_t *state)
                 (((uint32_t)(cmdlineGetArgInt(3, state)))<<16)  +
                 (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
   ipSetConfigGw(gw);
-  
   return OK_SILENT;
 }
 
