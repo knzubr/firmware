@@ -43,7 +43,7 @@ void arpInit()
   arpDebug = NULL;
 }
 
-void arpArpIn(unsigned int len, struct netEthArpHeader* packet)
+void arpArpIn(void)
 {
 #ifdef ARP_DEBUG
   if (arpDebug != NULL)
@@ -51,27 +51,27 @@ void arpArpIn(unsigned int len, struct netEthArpHeader* packet)
     if (arpDebugLevel > 1)
       fprintf_P(arpDebug, PSTR("Received ARP Request\r\n"));
     if (arpDebugLevel > 2)
-      arpPrintHeader(arpDebug, &packet->arp );   
+      arpPrintHeader(arpDebug, nicState.layer3.arp);   
   }
 #endif
 
 // for now, we just reply to requests
 // need to add ARP cache
-  if( (packet->arp.dipaddr == IpMyConfig.ip) && (packet->arp.opcode == htons(ARP_OPCODE_REQUEST)) )
+  if((nicState.layer3.arp->dipaddr == IpMyConfig.ip) && (nicState.layer3.arp->opcode == htons(ARP_OPCODE_REQUEST)) )
   {
 // in ARP header
 // copy sender's address info to dest. fields
-    packet->arp.dhwaddr = packet->arp.shwaddr;
-    packet->arp.dipaddr = packet->arp.sipaddr;
+    nicState.layer3.arp->dhwaddr = nicState.layer3.arp->shwaddr;
+    nicState.layer3.arp->dipaddr = nicState.layer3.arp->sipaddr;
 // fill in our information
-    packet->arp.shwaddr =  nicState.mac;
-    packet->arp.sipaddr =  IpMyConfig.ip;
+    nicState.layer3.arp->shwaddr =  nicState.mac;
+    nicState.layer3.arp->sipaddr =  IpMyConfig.ip;
 // change op to reply
-    packet->arp.opcode = htons(ARP_OPCODE_REPLY);
+    nicState.layer3.arp->opcode = htons(ARP_OPCODE_REPLY);
 
 // in ethernet header
-    packet->eth.dest = packet->eth.src;
-    packet->eth.src  = nicState.mac;
+    nicState.layer2.ethHeader->dest = nicState.layer2.ethHeader->src;
+    nicState.layer2.ethHeader->src  = nicState.mac;
 
 #ifdef ARP_DEBUG
     if (arpDebug != NULL)
@@ -79,15 +79,15 @@ void arpArpIn(unsigned int len, struct netEthArpHeader* packet)
       if (arpDebugLevel > 0)
         fprintf_P(arpDebug, PSTR("Sending ARP Reply\r\n"));
       if (arpDebugLevel > 2)
-        arpPrintHeader(arpDebug, &packet->arp );
+        arpPrintHeader(arpDebug, nicState.layer3.arp);
     }
 #endif
 // send reply!
-    nicSend(len);
+    nicSend(sizeof(struct netArpHeader) + ETH_HEADER_LEN);
   }
 }
 
-void arpIpIn(struct netEthIpHeader* packet)
+void arpIpIn(void)
 {
 #ifdef ARP_DEBUG
   if (arpDebug != NULL)
@@ -95,9 +95,9 @@ void arpIpIn(struct netEthIpHeader* packet)
     if (arpDebugLevel > 0)
     {
       fprintf_P(arpDebug, PSTR("ARP IP in MAC: "));
-      netPrintEthAddr(arpDebug, &packet->eth.src);
+      netPrintEthAddr(arpDebug, &nicState.layer2.ethHeader->src);
       fprintf_P(arpDebug, PSTR(" IP: "));
-      netPrintIPAddr(arpDebug, packet->ip.srcipaddr);
+      netPrintIPAddr(arpDebug, nicState.layer3.ip->srcipaddr);
       fprintf_P(arpDebug, PSTR("\r\n"));
     }
   }
@@ -105,11 +105,11 @@ void arpIpIn(struct netEthIpHeader* packet)
   int8_t index;
 
 // check if sender is already present in arp table
-  index = arpMatchIp(packet->ip.srcipaddr);
+  index = arpMatchIp(nicState.layer3.ip->srcipaddr);
   if(index != -1)
   {
 // sender's IP address found, update ARP entry
-    ArpTable[index].ethaddr = packet->eth.src;
+    ArpTable[index].ethaddr = nicState.layer2.ethHeader->src;
     ArpTable[index].time = ARP_CACHE_TIME_TO_LIVE;
 // and we're done
     return;
@@ -122,9 +122,9 @@ void arpIpIn(struct netEthIpHeader* packet)
     if(ArpTable[index].time == 0)
     {
 // write entry
-      ArpTable[index].ethaddr = packet->eth.src;
-      ArpTable[index].ipaddr = packet->ip.srcipaddr;
-      ArpTable[index].time = ARP_CACHE_TIME_TO_LIVE;
+      ArpTable[index].ethaddr = nicState.layer2.ethHeader->src;
+      ArpTable[index].ipaddr  = nicState.layer3.ip->srcipaddr;
+      ArpTable[index].time    = ARP_CACHE_TIME_TO_LIVE;
 // and we're done
       return;
     }
@@ -132,7 +132,7 @@ void arpIpIn(struct netEthIpHeader* packet)
 // no space in table, we give up
 }
 
-void arpIpOut(struct netEthIpHeader* packet, uint32_t phyDstIp)
+void arpIpOut(uint32_t phyDstIp)
 {
   int index;
 // check if destination is already present in arp table
@@ -140,28 +140,23 @@ void arpIpOut(struct netEthIpHeader* packet, uint32_t phyDstIp)
   if(phyDstIp)
     index = arpMatchIp(phyDstIp);
   else
-    index = arpMatchIp(packet->ip.destipaddr);
+    index = arpMatchIp(nicState.layer3.ip->destipaddr);
 // fill in ethernet info
   if(index != -1)
   {
 // ARP entry present, fill eth address(es)
-    packet->eth.src  = nicState.mac;
-    packet->eth.dest = ArpTable[index].ethaddr;
-    packet->eth.type = HTONS(ETHTYPE_IP);
+    nicState.layer2.ethHeader->src      = nicState.mac;
+    nicState.layer2.ethHeader->dest     = ArpTable[index].ethaddr;
+    nicState.layer2.ethHeader->type     = HTONS(ETHTYPE_IP);
   }
   else
   {
 // not in table, must send ARP request
-    packet->eth.src = nicState.mac;
+    nicState.layer2.ethHeader->src      = nicState.mac;
 // TODO MUST CHANGE, but for now, send this one broadcast
 // before sending frame, must copy buffer
-    packet->eth.dest.addr[0] = 0xFF;
-    packet->eth.dest.addr[1] = 0xFF;
-    packet->eth.dest.addr[2] = 0xFF;
-    packet->eth.dest.addr[3] = 0xFF;
-    packet->eth.dest.addr[4] = 0xFF;
-    packet->eth.dest.addr[5] = 0xFF;
-    packet->eth.type = HTONS(ETHTYPE_IP);
+    memset(nicState.layer2.ethHeader->dest.addr, 0xFF, 6);
+    nicState.layer2.ethHeader->type = HTONS(ETHTYPE_IP);
   }
 }
 

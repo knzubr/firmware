@@ -39,16 +39,16 @@ void ipSaveConfig(void)
   eeprom_update_dword(&defGw_eep, IpMyConfig.gateway);
 }
 
-inline void netstackIPProcess(ip_hdr* packet)
+inline void netstackIPv4Process(void)
 {
 // check IP addressing, stop processing if not for me and not a broadcast
-  if( (packet->destipaddr != ipGetConfig()->ip) &&
-      (packet->destipaddr != (ipGetConfig()->ip|ipGetConfig()->netmask)) &&
-      (packet->destipaddr != 0xFFFFFFFF)) 
+  if( (nicState.layer3.ip->destipaddr != ipGetConfig()->ip) &&
+      (nicState.layer3.ip->destipaddr != (ipGetConfig()->ip|ipGetConfig()->netmask)) &&
+      (nicState.layer3.ip->destipaddr != 0xFFFFFFFF)) 
     return;
 
 // handle ICMP packet
-  if( packet->proto == IP_PROTO_ICMP )
+  if(nicState.layer3.ip->proto == IP_PROTO_ICMP)
   {
 #if IP_DEBUG
     if (IpMyConfig.dbgStream != NULL)
@@ -56,13 +56,13 @@ inline void netstackIPProcess(ip_hdr* packet)
       if (IpMyConfig.dbgLevel > 0)
         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: ICMP/IP packet\r\n"));
       if (IpMyConfig.dbgLevel > 2)
-        icmpPrintHeader(IpMyConfig.dbgStream, (icmpip_hdr*)packet);
+        icmpPrintHeader(IpMyConfig.dbgStream, nicState.layer3.ip, nicState.layer4.icmp);
     }
 #endif /*IP_DEBUG*/
-    icmpIpIn((icmpip_hdr*)packet);
+    icmpIpIn();
     return;
   }
-  if( packet->proto == IP_PROTO_UDP )
+  if( nicState.layer3.ip->proto == IP_PROTO_UDP )
   {
 #if IP_DEBUG
     if (IpMyConfig.dbgStream != NULL)
@@ -74,7 +74,7 @@ inline void netstackIPProcess(ip_hdr* packet)
     netstackUDPIPProcess();
     return;
   }
-  if( packet->proto == IP_PROTO_TCP )
+  if( nicState.layer3.ip->proto == IP_PROTO_TCP )
   {
 #if IP_DEBUG
     if (IpMyConfig.dbgStream != NULL)
@@ -83,7 +83,7 @@ inline void netstackIPProcess(ip_hdr* packet)
         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: TCP/IP packet\r\n"));
     }
 #endif /*IP_DEBUG*/
-    netstackTCPIPProcess(((tcpip_hdr*)packet) );
+    netstackTCPIPProcess();
     return;
   }
 #if IP_DEBUG
@@ -138,8 +138,6 @@ struct ipConfig* ipGetConfig(void)
 void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len)
 {
 // make pointer to ethernet/IP header
-  struct netEthIpHeader *ethIpHeader = (struct netEthIpHeader*) nicState.buf;
-
 #if IP_DEBUG
   if (IpMyConfig.dbgStream != NULL)
   {  
@@ -152,26 +150,26 @@ void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len)
   len += IP_HEADER_LEN;
 
 // fill IP header
-  ethIpHeader->ip.destipaddr = dstIp;
-  ethIpHeader->ip.srcipaddr = IpMyConfig.ip;
-  ethIpHeader->ip.proto = protocol;
-  ethIpHeader->ip.len = htons(len);
-  ethIpHeader->ip.vhl = 0x45;
-  ethIpHeader->ip.tos = 0;
-  ethIpHeader->ip.ipid = 0;
-  ethIpHeader->ip.ipoffset = 0;
-  ethIpHeader->ip.ttl = IP_TIME_TO_LIVE;
-  ethIpHeader->ip.ipchksum = 0;
+  nicState.layer3.ip->destipaddr = dstIp;
+  nicState.layer3.ip->srcipaddr  = IpMyConfig.ip;
+  nicState.layer3.ip->proto      = protocol;
+  nicState.layer3.ip->len        = htons(len);
+  nicState.layer3.ip->vhl        = 0x45;
+  nicState.layer3.ip->tos        = 0;
+  nicState.layer3.ip->ipid       = 0;
+  nicState.layer3.ip->ipoffset   = 0;
+  nicState.layer3.ip->ttl        = IP_TIME_TO_LIVE;
+  nicState.layer3.ip->ipchksum   = 0;
 
 // calculate and apply IP checksum
 // DO THIS ONLY AFTER ALL CHANGES HAVE BEEN MADE TO IP HEADER
-  ethIpHeader->ip.ipchksum = netChecksum((uint8_t *)(&ethIpHeader->ip), IP_HEADER_LEN);
+  nicState.layer3.ip->ipchksum   = netChecksum((uint8_t *)(nicState.layer3.ip), IP_HEADER_LEN);
 
 // add ethernet routing
 // check if we need to send to gateway
   if( (dstIp & IpMyConfig.netmask) == (IpMyConfig.ip & IpMyConfig.netmask) )
   {
-    arpIpOut(ethIpHeader,0);  // local send
+    arpIpOut(0);  // local send
 #if IP_DEBUG
     if (IpMyConfig.dbgStream != NULL)
       fprintf_P(IpMyConfig.dbgStream, PSTR("Sending IP packet on local net\r\n"));
@@ -179,7 +177,7 @@ void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len)
   }
   else
   {
-    arpIpOut(ethIpHeader,IpMyConfig.gateway);  // gateway send
+    arpIpOut(IpMyConfig.gateway);  // gateway send
 #if IP_DEBUG
     if (IpMyConfig.dbgStream != NULL)
       fprintf_P(IpMyConfig.dbgStream, PSTR("Sending IP packet to gateway\r\n"));

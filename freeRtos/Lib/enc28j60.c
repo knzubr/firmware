@@ -354,7 +354,7 @@ void nicSend(uint16_t len)
   // write per-packet control byte (0x00 means use macon3 settings)
   enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
   // copy the packet into the transmit buffer
-  enc28j60WriteBuffer(len, nicState.buf);
+  enc28j60WriteBuffer(len, nicState.layer2.buf);
   // send the contents of the transmit buffer onto the network
   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
 }
@@ -411,7 +411,7 @@ uint16_t nicPoll(void)
   else
   {
     // copy the packet from the receive buffer
-    enc28j60ReadBuffer(len, nicState.buf);
+    enc28j60ReadBuffer(len, nicState.layer2.buf);
   }
   // Move the RX read pointer to the start of the next received packet
   // This frees the memory we just read out

@@ -80,7 +80,7 @@ void arpInit(void);
  * over the network.  If the packet type is an ARP request for us,
  * an ARP reply will be generated and sent. 
  */
-void arpArpIn(unsigned int len, struct netEthArpHeader* packet);
+void arpArpIn(void);
 
 /**
  * Process incoming IP packets to harvest IP<->MAC relationships.
@@ -95,7 +95,7 @@ void arpArpIn(unsigned int len, struct netEthArpHeader* packet);
  * @warning On very busy or heavily populated netorks, this can quickly
  * fill the ARP table with unnecessary entries, and/or cause some CPU load.
 */
-void arpIpIn(struct netEthIpHeader* packet);
+void arpIpIn(void);
 
 /**
  * Process outgoing IP packet to fill in ethernet header information.
@@ -118,7 +118,7 @@ void arpIpIn(struct netEthIpHeader* packet);
  * \todo Send the packet broadcast AND send an ARP request, if a mapping
  * is not found.
 */
-void arpIpOut(struct netEthIpHeader* packet, uint32_t phyDstIp);
+void arpIpOut(uint32_t phyDstIp);
 
 /**
  * Periodic ARP cache maintenance.

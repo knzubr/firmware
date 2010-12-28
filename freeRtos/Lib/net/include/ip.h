@@ -79,9 +79,9 @@ void ipSaveConfig(void);
 
 
 /**
- * @param *packet - pointer to the begining of Ip Packet (layer 3)
+ * Process Ip v4 packet
  */
-void netstackIPProcess(ip_hdr* packet);
+void netstackIPv4Process(void);
 
 
 
