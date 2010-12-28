@@ -47,6 +47,7 @@ FILE *tcpDebugStream;
 uint8_t tcpDebugLevel;
 
 extern uint8_t timer100Hz;
+extern nicState_t nicState;
 
 /**
  * Enables TCP protocol debuging
