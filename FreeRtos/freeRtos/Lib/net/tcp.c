@@ -57,7 +57,45 @@ uint8_t processTcpPacket(void)
   struct TcpIpSocket *socket = findConnectedSocket();
   
   if (socket == NULL)
+  {
+#if TCP_DEBUG
+    if (tcpDebugStream != NULL)
+      if (tcpDebugLevel > 1)
+        fprintf_P(tcpDebugStream, PSTR("Can't find TCP socket\r\n"));
+#endif
     return 1;
+  }
+  
+  if (socket->state == LISTEN)
+  {
+#if TCP_DEBUG
+    if (tcpDebugStream != NULL)
+      if (tcpDebugLevel > 2)
+        fprintf_P(tcpDebugStream, PSTR("Opening TCP connection\r\n"));
+#endif    
+    if (nicState.layer4.tcp->flags & TCP_FLAGS_SYN)
+    {
+      nicState.layer4.tcp->flags = TCP_FLAGS_ACK;
+      ipSend(socket->RemoteIpAddr, IP_PROTO_TCP, TCP_HEADER_LEN);
+      socket->state    = SYN_RECEIVED;
+    }
+    return 0;
+  }
+  
+  if (socket->state == SYN_RECEIVED)
+  {
+#if TCP_DEBUG
+    if (tcpDebugStream != NULL)
+      if (tcpDebugLevel > 2)
+        fprintf_P(tcpDebugStream, PSTR("TCP three handshake steap 3\r\n"));
+#endif        
+    if (nicState.layer4.tcp->flags & TCP_FLAGS_ACK)
+    {
+      socket->state    = ESTABILISHED;
+    }
+    return 0;
+  }
+  
   
   if (socket->state == ESTABILISHED)
   {
