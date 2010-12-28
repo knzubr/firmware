@@ -41,7 +41,7 @@
 
 
 extern nicState_t  nicState;
-extern UdpSocket_t udpSocket;
+extern UdpSocket_t *udpSocket;
 
 void VtyInit(cmdState_t *state, FILE *stream);
 

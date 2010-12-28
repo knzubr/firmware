@@ -147,18 +147,15 @@ struct netIpHeader
 #define IP_PROTO_TCP           6
 #define IP_PROTO_UDP           17
 
-// ******* IP *******
-#define IP_HEADER_LEN	20
-// ip.src
-#define IP_SRC_P 0x1a
-#define IP_DST_P 0x1e
-#define IP_HEADER_LEN_VER_P 0xe
-#define IP_CHECKSUM_P 0x18
-#define IP_TTL_P 0x16
-#define IP_FLAGS_P 0x14
-#define IP_P 0xe
-#define IP_TOTLEN_H_P 0x10
-#define IP_TOTLEN_L_P 0x11
+#define IP_SRC_P               0x1a
+#define IP_DST_P               0x1e
+#define IP_HEADER_LEN_VER_P    0xe
+#define IP_CHECKSUM_P          0x18
+#define IP_TTL_P               0x16
+#define IP_FLAGS_P             0x14
+#define IP_P                   0xe
+#define IP_TOTLEN_H_P          0x10
+#define IP_TOTLEN_L_P          0x11
 
 #define IP_PROTO_P 0x17  
 
@@ -202,80 +199,42 @@ struct netTcpHeader
   uint16_t    urgp;
 //uint8_t     optdata[4];
 } GNUC_PACKED;
-#define TCP_HEADER_LEN	20
+#define TCP_HEADER_LEN  20
 
-#define TCP_FLAGS_FIN	0x01
-#define TCP_FLAGS_SYN	0x02
-#define TCP_FLAGS_RST	0x04
-#define TCP_FLAGS_PSH	0x08
-#define TCP_FLAGS_ACK	0x10
-#define TCP_FLAGS_URG	0x20
+#define TCP_FLAGS_FIN   0x01
+#define TCP_FLAGS_SYN   0x02
+#define TCP_FLAGS_RST   0x04
+#define TCP_FLAGS_PSH   0x08
+#define TCP_FLAGS_ACK   0x10
+#define TCP_FLAGS_URG   0x20
+#define TCP_FLAGS_ECE   0x40  //ECN-Echo
+#define TCP_FLAGS_CWR   0x80  //Congestion Window Reduced
 
 
-// ******* TCP *******
-#define TCP_SRC_PORT_H_P 0x22
-#define TCP_SRC_PORT_L_P 0x23
-#define TCP_DST_PORT_H_P 0x24
-#define TCP_DST_PORT_L_P 0x25
 // the tcp seq number is 4 bytes 0x26-0x29
-#define TCP_SEQ_H_P 0x26
-#define TCP_SEQACK_H_P 0x2a
+//#define TCP_SEQ_H_P 0x26
+//#define TCP_SEQACK_H_P 0x2a
 // flags: SYN=2
-#define TCP_FLAGS_P 0x2f
-#define TCP_FLAGS_SYN_V 2
-#define TCP_FLAGS_FIN_V 1
-#define TCP_FLAGS_PUSH_V 8
-#define TCP_FLAGS_SYNACK_V 0x12
-#define TCP_FLAGS_ACK_V 0x10
-#define TCP_FLAGS_PSHACK_V 0x18
-//  plain len without the options:
-#define TCP_HEADER_LEN_PLAIN 20
-#define TCP_HEADER_LEN_P 0x2e
-#define TCP_CHECKSUM_H_P 0x32
-#define TCP_CHECKSUM_L_P 0x33
-#define TCP_OPTIONS_P 0x36
-//
 
+//  plain len without the options:
+//#define TCP_HEADER_LEN_PLAIN 20
+//#define TCP_HEADER_LEN_P 0x2e
+//#define TCP_CHECKSUM_H_P 0x32
+//#define TCP_CHECKSUM_L_P 0x33
+//#define TCP_OPTIONS_P 0x36
+//
 
 
 /**
  * Ethernet/ARP header
  */
-struct netEthArpHeader
-{
-	struct netEthHeader eth;
-	struct netArpHeader arp;
-} GNUC_PACKED;
-
-// Ethernet/IP header
-struct netEthIpHeader
-{
-  struct netEthHeader eth;
-  struct netIpHeader  ip;
-} GNUC_PACKED;
-
-// The IP header
-typedef struct netIpHeader ip_hdr;
-
-// The IP/TCP headers
-typedef struct
-{
-  struct netIpHeader  ip;
-  struct netTcpHeader tcp;
-} tcpip_hdr;
-
-// The IP/ICMP headers
-typedef struct 
-{
-  struct netIpHeader  ip;
-  struct netIcmpHeader icmp;
-} icmpip_hdr;
 
 
 // The UDP and IP headers
-typedef struct {
-	struct netIpHeader  ip;
-	struct netUdpHeader udp;
+typedef struct 
+{
+  struct netIpHeader  ip;
+  struct netUdpHeader udp;
 } udpip_hdr;
 
 //@{

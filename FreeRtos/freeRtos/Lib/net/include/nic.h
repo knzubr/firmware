@@ -37,9 +37,27 @@
 
 typedef struct
 { 
-  uint16_t          bufferSize;                     /// rozmiar tablicy pamięci z buforem
-  uint8_t           *buf;                           /// tablica pamięci do buforowania danych
-  struct netEthAddr mac;
+  uint16_t                bufferSize;          /// rozmiar tablicy pamięci z buforem
+  struct netEthAddr       mac;
+
+  union
+  {    
+    uint8_t               *buf;
+    struct netEthHeader   *ethHeader;
+  } layer2;
+
+  union
+  {
+    struct netArpHeader  *arp;
+    struct netIpHeader   *ip;
+  } layer3;
+  
+  union
+  {
+    struct netIcmpHeader *icmp;
+    struct netTcpHeader  *tcp;
+    struct netUdpHeader  *udp;
+  } layer4;
 }  nicState_t;
 
 nicState_t       nicState;

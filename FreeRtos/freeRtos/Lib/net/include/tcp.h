@@ -46,6 +46,8 @@
 FILE *tcpDebugStream;
 uint8_t tcpDebugLevel;
 
+extern uint8_t timer100Hz;
+
 /**
  * Enables TCP protocol debuging
  * @param *stream - pointer to output debug stream
@@ -54,81 +56,48 @@ uint8_t tcpDebugLevel;
 void setTcpDebug(FILE *stream, uint8_t level);
 #endif
 
-enum socketState
+typedef enum
 {
-  INNACTIVE,
+  CLOSED,
   LISTEN,
-  CONNECTED
-};
-
-#define CONNECTED 0x01
-#define LISTEN    0x02
-#define DO_ACK    0x04
-
-typedef union 
-{
-  void *ptr16;
-  struct
-  {
-    uint8_t L;
-    uint8_t H;
-  } ptr;
-} brutalPtr_t;
-
-typedef struct
-{
-  brutalPtr_t  readIdx;
-  brutalPtr_t  writeIdx;
-  brutalPtr_t  ackIdx; 
-  uint8_t      addrH;
-} roundBuffer;
-
-typedef struct
-{
-  uint8_t sequence;
-  uint8_t memAddrH;
-} outOfSeq;
+  SYN_RECEIVED,
+  ESTABILISHED,
+  CLOSE_WAIT,
+  LAST_ACK,
+  SYN_SENT,
+  FIN_WAIT1,
+  FIN_WAIT2,
+  CLOSING,
+  TIMED_WAIT
+} socket_state_t;
 
 struct TcpIpSocket
 {
-  uint8_t      RemoteMAC[6];           /// Remote Mac Address. We don't use ARP
-  uint32_t     RemoteIpAddr;           ///
-  uint16_t     localPort;              /// Stored in hest order
-  uint16_t     remotePort;             /// Stored in host order 
+  socket_state_t state;
+  uint32_t       RemoteIpAddr;           /// Stored in network order
+  uint16_t       localPort;              /// Stored in network order
+  uint16_t       remotePort;             /// Stored in network order 
   
-  uint32_t     seqNoLastReceived;      /// Sequence number of last received packet
-  uint16_t     noOfNotAckBytes;        /// Number of received bytes without ack
+  uint32_t       seqNoLastReceived;      /// Sequence number of last received packet
+  uint16_t       noOfNotAckBytes;        /// Number of received bytes without ack
   
-  uint16_t     windowSize;
+  uint16_t       windowSize;  
+  uint8_t        timer;
   
-  uint8_t      encBufferAddrHi;        /// Enc Buf address bits (12-8)
-  uint8_t      encBufferWrAddrLo;      /// Enc buffer address for writing
-  
-  uint8_t      droped;                 /// Some packets ware droped, because they came out of sequence and theare was no room in memory to store it
-  outOfSeq     recBuffer[4];           /// Buffer with packets, that came out of sequence 
-  
-  xQueueHandle Rx;
-  xQueueHandle Tx;
-  
-  // Frame buffer size is 256 bytes
-  roundBuffer  EncBuf;
-  
+  xQueueHandle   Rx;
+  xQueueHandle   Tx;
+    
   //struct packetBackup packetBackupBuffer[4];
-  uint8_t  packetBackupBufferNotConfirmedPacketIdx;
-  uint8_t  packetBackupBufferWriteIdx;
-  
-  uint8_t stateFlags;
+  uint8_t        packetBackupBufferNotConfirmedPacketIdx;
+  uint8_t        packetBackupBufferWriteIdx;
 };
 
 struct TcpIpSocket *sockets;
-
-
 
 /**
  * Initialize socket structs
  */
 void socketInit(void);
-
 
 
 /**
@@ -137,10 +106,12 @@ void socketInit(void);
  * @param packet - IP packet
  * @return 0 - OK, 1 - socket is ocupied by another connection
  */
-uint8_t processTcpPacket(uint8_t *packet);
+uint8_t processTcpPacket(void);
 
 /**
  * Reads number of bytes that are queued in Tx buffer
+ * @param socketNo - globals socket descriptor
+ * @return number of bytes in TCP buffer
  */
 uint8_t getTxBufferState(uint8_t socketNo);
 
@@ -150,7 +121,12 @@ uint8_t getTxBufferState(uint8_t socketNo);
  * @param socketNo - socket number
  * @return 0 - all OK
  */
-uint8_t sendTcBuffer(uint8_t socketNo);
+uint8_t sendTcpBuffer(uint8_t socketNo);
+
+/**
+ * Calculates TCP checksum according to data in ENC Tx buffer
+ */
+void calculateTcpChecksun(void);
 
 /**
  * Close TCP socket
@@ -160,13 +136,17 @@ uint8_t sendTcBuffer(uint8_t socketNo);
 uint8_t closeSocket(uint8_t socketNo);
 
 
-void netstackTCPIPProcess(tcpip_hdr* packet);
+void netstackTCPIPProcess(void);
 
 /**
  * Flush all UDP queues
  */
 void flushTcpQueues(void);
 
+
+void startListen(uint8_t sockNo, uint16_t port);
+
+void httpProcess(void);
 
 #endif /*SOCKET_H*/
 //@}

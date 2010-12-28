@@ -434,15 +434,15 @@ static cliExRes_t setUdpFunction(cmdState_t *state)
                 (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) + 
                 (((uint32_t)(cmdlineGetArgInt(3, state)))<<16) + 
                 (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
-  udpSocket.dstIp = ip;
+  udpSocket->dstIp = ip;
   
   uint16_t port = cmdlineGetArgInt(5, state);
-  udpSocket.srcPort = htons(port);
+  udpSocket->srcPort = htons(port);
   
   if (state->argc > 5)
   {
     port = cmdlineGetArgInt(6, state);
-    udpSocket.dstPort = htons(port);    
+    udpSocket->dstPort = htons(port);    
   }
   return OK_SILENT;
 }

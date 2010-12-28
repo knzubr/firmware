@@ -61,6 +61,6 @@ volatile timeDecoded_t czasRtc;
 
 void initExternalMem(void) __attribute__ ((naked)) __attribute__ ((section (".init4")));
 
-extern UdpSocket_t udpSocket;
+extern UdpSocket_t *udpSocket;
 
 #endif

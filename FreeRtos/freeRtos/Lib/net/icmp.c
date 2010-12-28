@@ -28,13 +28,13 @@ void icmpInit(void)
   icmpDebugLevel = 0;
 }
 
-void icmpIpIn(icmpip_hdr* packet)
+void icmpIpIn(void)
 {
   // check ICMP type
-  switch(packet->icmp.type)
+  switch(nicState.layer4.icmp->type)
   {
     case ICMP_TYPE_ECHOREQUEST:
-      icmpEchoRequest(packet);       // echo request
+      icmpEchoRequest();       // echo request
       break;
     default:
 #if ICMP_DEBUG
@@ -48,7 +48,7 @@ void icmpIpIn(icmpip_hdr* packet)
   }
 }
 
-void icmpEchoRequest(icmpip_hdr* packet)
+void icmpEchoRequest(void)
 {
 #if ICMP_DEBUG
   if (icmpDebug != NULL)
@@ -60,24 +60,24 @@ void icmpEchoRequest(icmpip_hdr* packet)
   uint32_t tempIp;
 
   // change type to reply
-  packet->icmp.type = ICMP_TYPE_ECHOREPLY;
+  nicState.layer4.icmp->type = ICMP_TYPE_ECHOREPLY;
   // recalculate checksum
-  packet->icmp.icmpchksum = 0;
-  packet->icmp.icmpchksum = netChecksum((uint8_t*)(&packet->icmp), htons(packet->ip.len)-IP_HEADER_LEN);
+  nicState.layer4.icmp->icmpchksum = 0;
+  nicState.layer4.icmp->icmpchksum = netChecksum((uint8_t*)(nicState.layer4.icmp), htons(nicState.layer3.ip->len)-IP_HEADER_LEN);
   // return to sender
-  tempIp = packet->ip.destipaddr;
-  packet->ip.destipaddr = packet->ip.srcipaddr;
-  packet->ip.srcipaddr = tempIp;
+  tempIp = nicState.layer3.ip->destipaddr;
+  nicState.layer3.ip->destipaddr = nicState.layer3.ip->srcipaddr;
+  nicState.layer3.ip->srcipaddr = tempIp;
   // add ethernet routing
-  arpIpOut((struct netEthIpHeader*)(((uint8_t*)(packet))-ETH_HEADER_LEN), 0);
+  arpIpOut(0);
 
   // debugging
   if (icmpDebug != NULL)
-    icmpPrintHeader(icmpDebug, packet);
+    icmpPrintHeader(icmpDebug, nicState.layer3.ip, nicState.layer4.icmp);
   //debugPrintHexTable(htons(packet->ip.len), (uint8_t*)packet);
 
   // send it (packet->ip.len+ETH_HEADER_LEN
-  nicSend(htons(packet->ip.len)+ETH_HEADER_LEN);
+  nicSend(htons(nicState.layer3.ip->len) + ETH_HEADER_LEN);
 #if ICMP_DEBUG
   if (icmpDebug != NULL)
   {
@@ -95,16 +95,16 @@ void setIcmpDebug(FILE *stream, uint8_t level)
 }
 #endif
 
-void icmpPrintHeader(FILE *stream, icmpip_hdr* packet)
+void icmpPrintHeader(FILE *stream, struct netIpHeader *ipPacket, struct netIcmpHeader *icmpPacket)
 {
   fprintf_P(stream, PSTR("ICMP Packet:\r\n"));
 // print source IP address
-  fprintf_P(stream, PSTR("SrcIpAddr: "));  netPrintIPAddr(stream, packet->ip.srcipaddr);  fprintf_P(stream, PSTR("\r\n"));
+  fprintf_P(stream, PSTR("SrcIpAddr: "));  netPrintIPAddr(stream, ipPacket->srcipaddr);  fprintf_P(stream, PSTR("\r\n"));
 // print dest IP address
-  fprintf_P(stream, PSTR("DstIpAddr: "));  netPrintIPAddr(stream, packet->ip.destipaddr); fprintf_P(stream, PSTR("\r\n"));
+  fprintf_P(stream, PSTR("DstIpAddr: "));  netPrintIPAddr(stream, ipPacket->destipaddr); fprintf_P(stream, PSTR("\r\n"));
 // print type
   fprintf_P(stream, PSTR("Type   : "));
-  switch(packet->icmp.type)
+  switch(icmpPacket->type)
   {
     case ICMP_TYPE_ECHOREQUEST:
       fprintf_P(stream, PSTR("ECHO REQUEST"));
@@ -118,6 +118,6 @@ void icmpPrintHeader(FILE *stream, icmpip_hdr* packet)
   }
   fprintf_P(stream, PSTR("\r\n"));
 // print code
-  fprintf_P(stream, PSTR("Code   : 0x%x\r\n"), packet->icmp.icode);
+  fprintf_P(stream, PSTR("Code   : 0x%x\r\n"), icmpPacket->icode);
 }
 

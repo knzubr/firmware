@@ -14,12 +14,12 @@
 #include "tcp.h"
 
 
-static struct TcpIpSocket* findConnectedSocket(uint8_t *packet);
+static struct TcpIpSocket* findConnectedSocket(void);
 
 /**
  * @param *packet message that initializes connection
  */
-static struct TcpIpSocket* tcpAcceptConn(uint8_t *packet);
+static struct TcpIpSocket* tcpAcceptConn(void);
 
 void socketInit(void)
 {
@@ -32,56 +32,84 @@ void socketInit(void)
   {
     sockets[i].Rx = xQueueCreateExternal(255, 1, (void *)(ptr));
     ptr+=256;
-
     sockets[i].Tx = xQueueCreateExternal(255, 1, (void *)(ptr));
     ptr+=256;
 
-    uint8_t tmp = (uint16_t)(ptr)>>8;
-    sockets[i].EncBuf.addrH          = tmp;
-    sockets[i].EncBuf.ackIdx.ptr.H   = tmp;
-    sockets[i].EncBuf.readIdx.ptr.H  = tmp;
-    sockets[i].EncBuf.writeIdx.ptr.H = tmp;
-    ptr+=256;
-
     if (i < 16)
-      sockets[i].localPort = ((MYTELNETPOERT_H<<8) + MYTELNETPOERT_L+i);
+      startListen(i, MYTELNETPOERT + i);
     else
-      sockets[i].localPort = ((MYTELNETPOERT_H<<8) + MYTELNETPOERT_L+16);      
+      startListen(i, MYTELNETPOERT + 16);      
   }
 }
 
-void startListen(uint8_t sockNo, uint16_t port);
-
-struct TcpIpSocket* tcpAcceptConn(uint8_t *packet)
+void startListen(uint8_t sockNo, uint16_t port)
 {
-  packet = NULL;
+  ;
+}
+
+static struct TcpIpSocket* tcpAcceptConn(void)
+{
   return NULL;
 }
 
-uint8_t processTcpPacket(uint8_t *packet)
+uint8_t processTcpPacket(void)
 {
-  struct TcpIpSocket *socket = findConnectedSocket(packet);
-  if (socket == NULL)
-    socket = tcpAcceptConn(packet);
+  struct TcpIpSocket *socket = findConnectedSocket();
   
   if (socket == NULL)
     return 1;
   
+  if (socket->state == ESTABILISHED)
+  {
+    if (nicState.layer4.tcp->flags & TCP_FLAGS_FIN)  //ESTABILISHED -> CLOSE_WAIT -> closed
+    {
+      socket->timer              = timer100Hz;
+      nicState.layer4.tcp->flags = TCP_FLAGS_ACK;
+      
+      uint8_t dataFromBufLen;
+      uint8_t *dataPtr = (uint8_t *)(nicState.layer4.tcp+1);
+      while (xQueueReceive(socket->Tx, dataPtr, 0) == pdTRUE)
+      {
+        dataFromBufLen++;
+        dataPtr++;
+      }
+      ipSend(socket->RemoteIpAddr, IP_PROTO_TCP, TCP_HEADER_LEN + dataFromBufLen);
+      socket->state    = CLOSE_WAIT;
+      
+      
+      nicState.layer4.tcp->flags = TCP_FLAGS_FIN;
+      ipSend(socket->RemoteIpAddr, IP_PROTO_TCP, TCP_HEADER_LEN);
+      socket->state    = LAST_ACK;
+    }
+    return 0;
+  }
+
   //Read data and put into the queue
   
   return 0;
 }
 
-struct TcpIpSocket* findConnectedSocket(uint8_t *packet)
+void calculateTcpChecksun(void)
+{
+  nicState.layer4.tcp->tcpchksum = 0;
+  nicState.layer4.tcp->tcpchksum = netChecksum(nicState.layer4.tcp, htons(nicState.layer3.ip->len) - IP_HEADER_LEN); //TODO finish it
+}
+
+struct TcpIpSocket* findConnectedSocket(void)
 {
   struct TcpIpSocket *result = sockets;
   uint8_t i;
   for (i=0; i<NUMBER_OF_SOCKETS; i++)
   {
-    if ((result->stateFlags & CONNECTED)
-      && (result->RemoteIpAddr == packet[IP_SRC_P]) 
-      && (result->localPort    == htons(*((uint16_t *)(&packet[TCP_DST_PORT_H_P])))) 
-      && (result->remotePort   == htons(*((uint16_t *)(&packet[TCP_SRC_PORT_H_P])))))
+    if ( ((result->state != LISTEN) || (result->state != CLOSED)) 
+      && (result->RemoteIpAddr == nicState.layer3.ip->srcipaddr) && (result->localPort == nicState.layer4.tcp->destport) && (result->remotePort   == nicState.layer4.tcp->srcport))
+      return result;
+    result++;
+  }
+  
+  for (i=0; i<NUMBER_OF_SOCKETS; i++)
+  {
+    if ((result->state == LISTEN) && (result->localPort == nicState.layer4.tcp->destport))
       return result;
     result++;
   }
@@ -91,39 +119,12 @@ struct TcpIpSocket* findConnectedSocket(uint8_t *packet)
 uint8_t sendTcBuffer(uint8_t socketNo)
 {
   struct TcpIpSocket *sck = &sockets[socketNo];
-  uint8_t space = sck->EncBuf.ackIdx.ptr.L - sck->EncBuf.writeIdx.ptr.L;
-  
-  if (space < 50)
-    return 1;
-
-//  uint8_t i;
-//  uint8_t tmpPtr;
-  
-
-  uint8_t result = 0;
-  uint8_t data;
-  while (space > 0)
-  {
-    if (xQueueReceive( sck->Tx, &data, 0))
-    {
-      *((uint8_t *)(sck->EncBuf.writeIdx.ptr16)) = data;
-      sck->EncBuf.writeIdx.ptr.L++;
-      result++;
-      space--;
-    }
-    else
-      break;
-  }
-  
-  ipSend(sck->RemoteIpAddr, IP_PROTO_TCP, result); //TODO add round buffer support
-
   return 0;
 }
 
-void netstackTCPIPProcess(tcpip_hdr* packet)
+void netstackTCPIPProcess(void)
 {
-  struct netTcpHeader *tcpPacket = (struct netTcpHeader *)(&packet->tcp);
-  if (tcpPacket->destport == htons(80))
+  if (nicState.layer4.tcp->destport == htons(80))
   {
 #if TCP_DEBUG
     if (tcpDebugStream != NULL)
@@ -151,5 +152,118 @@ void setTcpDebug(FILE *stream, uint8_t level)
 
 void flushTcpQueues()
 {
-  ;
+  uint8_t sckNo = 0;
+  struct TcpIpSocket *sck = sockets;
+  for (sckNo = 0; sckNo < NUMBER_OF_SOCKETS; sckNo++)
+  {
+    
+    sck++;
+  }
+}
+
+
+inline void httpProcess()
+{
+#if 0
+    // TCP WWW tcp port www start, compare only the lower byte
+    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYWWWPORT )
+    {
+      if ( Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V )
+      {
+        make_tcp_synack_from_syn (Enc28j60_global.buf );
+        // make_tcp_synack_from_syn does already send the syn,ack
+        continue;
+      }
+      if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
+      {
+        init_len_info (Enc28j60_global.buf ); // init some data structures
+        // we can possibly have no data, just ack:
+        dat_p=get_tcp_data_pointer();
+        if ( dat_p==0 )
+        {
+          if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V )
+          {
+            // finack, answer with ack
+            make_tcp_ack_from_any (Enc28j60_global.buf );
+          }
+          // just an ack with no data, wait for next packet
+          continue;
+        }
+        if ( strncmp ( "GET ", ( char * )(&Enc28j60_global.buf[dat_p]), 4) !=0 )
+        {
+          // head, post and other methods:
+          //
+          // for possible status codes see:
+          // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+          plen=fill_tcp_data_p (Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>200 OK</h1>" ) );
+          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+          continue;
+        }
+        if ( strncmp ( "/ ", ( char * ) & (Enc28j60_global.buf[dat_p+4] ),2 ) ==0)
+        {
+          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Usage: http://host_or_ip/filename or http://host_or_ip/sd/filename</p>\n" ) );
+          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+          continue;
+        }
+
+        cmd = analyse_get_url (( char * )(&Enc28j60_global.buf[dat_p+5]), filename);
+
+        if (cmd == URLramDysk)
+        {
+          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
+  
+          //Open the filen
+          struct ramPlikFd fd;
+          if (ramDyskOtworzPlik(filename, &fd) != 0)
+          {
+            plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Nie mozna otworzyc pliku o nazwie: " ) );
+            plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);
+            plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " umieszczonego w ram dysku</p>\n" ) );
+            make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+            make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+            continue;
+          }
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Zawartosc pliku " ) );
+          plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " zapisanego w ram dysku:<br>" ) );
+
+          char c;
+          while (plen < Enc28j60_global.bufferSize - 30)
+          {
+            if (ramDyskCzytajBajtZPliku(&fd , &c) != 0)
+              break;
+            plen = add_tcp_byte(Enc28j60_global.buf, plen, c);
+          }
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "</p>\n"));
+          ramDyskZamknijPlik(&fd);
+          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+
+          continue;
+        }
+
+        if (cmd == URLsdDysk)
+        {
+          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Do zaimpelentowania wyswietlenie pliku o nazwie " ) );
+          plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);
+          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " z karty SD</p>\n" ) );
+          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+          continue;
+        }
+        if (cmd == URLstatus)
+        {
+          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
+          plen=printHTMLstatus(Enc28j60_global.buf, plen, Enc28j60_global.bufferSize);  
+          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
+          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
+          continue;  
+        }
+      }
+
+#endif
 }

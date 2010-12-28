@@ -57,17 +57,17 @@ void icmpInit(void);
 /**
  * Incoming IP packets of protocol ICMP should be passed to this function.
  */
-void icmpIpIn(icmpip_hdr* packet);
+void icmpIpIn(void);
 
 /**
  * Forms and sends a reply in response to an ICMP ECHO request.
  */
-void icmpEchoRequest(icmpip_hdr* packet);
+void icmpEchoRequest(void);
 
 /**
  * Print ICMP packet information.
  */
-void icmpPrintHeader(FILE *stream, icmpip_hdr* packet);
+void icmpPrintHeader(FILE *stream, struct netIpHeader *ipPacket, struct netIcmpHeader *icmpPacket);
 
 #endif
 //@}

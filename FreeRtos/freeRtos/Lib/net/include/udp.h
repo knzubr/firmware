@@ -9,6 +9,7 @@
 #include "queue.h"
 #include "softwareConfig.h"
 #include "hardwareConfig.h"
+#include "memory_x.h"
 #include <stdio.h>
 #include <avr/pgmspace.h>
 
@@ -29,8 +30,7 @@ typedef struct
   xQueueHandle Tx;
 } UdpSocket_t;
 
-
-UdpSocket_t udpSocket;//[NUMBER_OF_UDP_SOCK];
+UdpSocket_t *udpSocket;//[NUMBER_OF_UDP_SOCK];
 
 #if UDP_DEBUG
 FILE *udpDbgStream;
@@ -45,6 +45,11 @@ void setUdpDebug(FILE *stream, uint8_t level);
 #endif
 
 
+/**
+ * Initialize UDP protocol.
+ * Creates UDP socket
+ * Invoke this function on the very begining
+ */
 void udpInit(void);
 
 

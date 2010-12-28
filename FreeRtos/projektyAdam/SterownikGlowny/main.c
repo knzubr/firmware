@@ -45,6 +45,8 @@
 
 #include "main.h"
 
+uint8_t timer100Hz = 0;
+
 xQueueHandle xVtyTx;
 xQueueHandle xVtyRec;
 
@@ -102,7 +104,7 @@ portSHORT main( void )
   VtyInit(CLIStateSerialUsb, &usbStream);
 
   udpInit();
-  initQueueStream(&udpStream, &udpBuffers, udpSocket.Rx, udpSocket.Tx);
+  initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
   VtyInit(CLIStateSerialUdp, &udpStream);
   
   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)&CLIStateSerialUsb->myStdInOut, 0, &xHandleEnc);

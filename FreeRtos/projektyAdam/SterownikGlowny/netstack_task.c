@@ -78,8 +78,6 @@ void encTask ( void *pvParameters )
 
 
   //TODO    init_ip_arp_udp_tcp (mymac, ipGetConfig()->ip, MYWWWPORT);
-
-  struct netEthHeader* ethPacket;
   
   
   for ( ; ; )
@@ -94,19 +92,18 @@ void encTask ( void *pvParameters )
     {
       flushUdpQueues();
       flushTcpQueues();
+      //flush HTTP long file queue 
       continue;
     }
-
-    ethPacket = (struct netEthHeader *)(nicState.buf);
     
-    if(ethPacket->type == htons(ETHTYPE_IP))             // process an IP packet
+    if(nicState.layer2.ethHeader->type == htons(ETHTYPE_IP))             // process an IP packet
     {
-      arpIpIn((struct netEthIpHeader*)(nicState.buf));
-      netstackIPProcess((ip_hdr*)(&nicState.buf[ETH_HEADER_LEN]));
+      arpIpIn();
+      netstackIPv4Process();
     }
-    else if(ethPacket->type == htons(ETHTYPE_ARP))       // process an ARP packet
+    else if(nicState.layer2.ethHeader->type == htons(ETHTYPE_ARP))       // process an ARP packet
     {
-      arpArpIn(plen, ((struct netEthArpHeader*)(nicState.buf)));
+      arpArpIn();
     }
     else
     {
@@ -150,105 +147,6 @@ void encTask ( void *pvParameters )
       continue;
     }
 
-    // TCP WWW tcp port www start, compare only the lower byte
-    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_L_P]==MYWWWPORT )
-    {
-      if ( Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_SYN_V )
-      {
-        make_tcp_synack_from_syn (Enc28j60_global.buf );
-        // make_tcp_synack_from_syn does already send the syn,ack
-        continue;
-      }
-      if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_ACK_V)
-      {
-        init_len_info (Enc28j60_global.buf ); // init some data structures
-        // we can possibly have no data, just ack:
-        dat_p=get_tcp_data_pointer();
-        if ( dat_p==0 )
-        {
-          if (Enc28j60_global.buf[TCP_FLAGS_P] & TCP_FLAGS_FIN_V )
-          {
-            // finack, answer with ack
-            make_tcp_ack_from_any (Enc28j60_global.buf );
-          }
-          // just an ack with no data, wait for next packet
-          continue;
-        }
-        if ( strncmp ( "GET ", ( char * )(&Enc28j60_global.buf[dat_p]), 4) !=0 )
-        {
-          // head, post and other methods:
-          //
-          // for possible status codes see:
-          // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-          plen=fill_tcp_data_p (Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>200 OK</h1>" ) );
-          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
-          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
-          continue;
-        }
-        if ( strncmp ( "/ ", ( char * ) & (Enc28j60_global.buf[dat_p+4] ),2 ) ==0)
-        {
-          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Usage: http://host_or_ip/filename or http://host_or_ip/sd/filename</p>\n" ) );
-          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
-          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
-          continue;
-        }
-
-        cmd = analyse_get_url (( char * )(&Enc28j60_global.buf[dat_p+5]), filename);
-
-        if (cmd == URLramDysk)
-        {
-          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-  
-          //Open the filen
-          struct ramPlikFd fd;
-          if (ramDyskOtworzPlik(filename, &fd) != 0)
-          {
-            plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Nie mozna otworzyc pliku o nazwie: " ) );
-            plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);
-            plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " umieszczonego w ram dysku</p>\n" ) );
-            make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
-            make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
-            continue;
-          }
-          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Zawartosc pliku " ) );
-          plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);
-          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " zapisanego w ram dysku:<br>" ) );
-
-          char c;
-          while (plen < Enc28j60_global.bufferSize - 30)
-          {
-            if (ramDyskCzytajBajtZPliku(&fd , &c) != 0)
-              break;
-            plen = add_tcp_byte(Enc28j60_global.buf, plen, c);
-          }
-          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "</p>\n"));
-          ramDyskZamknijPlik(&fd);
-          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
-          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
-
-          continue;
-        }
-
-        if (cmd == URLsdDysk)
-        {
-          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( "<p>Do zaimpelentowania wyswietlenie pliku o nazwie " ) );
-          plen=fill_tcp_data(Enc28j60_global.buf, plen, filename);
-          plen=fill_tcp_data_p(Enc28j60_global.buf, plen, PSTR ( " z karty SD</p>\n" ) );
-          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
-          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
-          continue;
-        }
-        if (cmd == URLstatus)
-        {
-          plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-          plen=printHTMLstatus(Enc28j60_global.buf, plen, Enc28j60_global.bufferSize);  
-          make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
-          make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
-          continue;  
-        }
-      }
     }
     if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_H_P]==MYTELNETPOERT_H 
       && (Enc28j60_global.buf[TCP_DST_PORT_L_P]>=MYTELNETPOERT_L || Enc28j60_global.buf[TCP_DST_PORT_L_P]<=MYTELNETPOERT_L + 20))
