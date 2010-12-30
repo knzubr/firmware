@@ -27,7 +27,7 @@
 
 
 /* Telnet */
-#define MYTELNETPOERT 5000
+#define MYTELNETPOERT 25000
 
 
 uint8_t wwwport; // 80 is just a default value. Gets overwritten during init
