@@ -80,6 +80,7 @@ struct TcpIpSocket
   uint16_t       remotePort;             /// Stored in network order 
   
   uint32_t       seqNoLastReceived;      /// Sequence number of last received packet
+  uint32_t       seqNoLastSent;          /// Sequence number of last sent packet
   uint16_t       noOfNotAckBytes;        /// Number of received bytes without ack
   
   uint16_t       windowSize;  
@@ -126,8 +127,9 @@ uint8_t sendTcpBuffer(uint8_t socketNo);
 
 /**
  * Calculates TCP checksum according to data in ENC Tx buffer
+ * @param TCP data length
  */
-void calculateTcpChecksun(void);
+void calculateTcpChecksun(uint16_t tcpLen);
 
 /**
  * Close TCP socket
@@ -143,9 +145,6 @@ void netstackTCPIPProcess(void);
  * Flush all UDP queues
  */
 void flushTcpQueues(void);
-
-
-void startListen(uint8_t sockNo, uint16_t port);
 
 void httpProcess(void);
 

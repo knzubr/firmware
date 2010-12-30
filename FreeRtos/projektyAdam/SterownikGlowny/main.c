@@ -104,6 +104,7 @@ portSHORT main( void )
   VtyInit(CLIStateSerialUsb, &usbStream);
 
   udpInit();
+  socketInit();
   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
   VtyInit(CLIStateSerialUdp, &udpStream);
   
