@@ -92,8 +92,8 @@ static uint8_t wykonajRozkaz(void)
       break;
 
     case rOpuscRolete2:
-      wiadomosc = 0x3F;
-      wysylac = 3;
+//    wiadomosc = 0x3F;
+//    wysylac = 3;
       break;
 
     case rPodniesRolete1:
@@ -102,8 +102,8 @@ static uint8_t wykonajRozkaz(void)
       break;
 
     case rPodniesRolete2:
-      wiadomosc = 0xBF;
-      wysylac = 3;
+//    wiadomosc = 0xBF;
+//    wysylac = 3;
       break;
 
     case rZatrzymajRolete1:
@@ -112,8 +112,8 @@ static uint8_t wykonajRozkaz(void)
       break;
 
     case rZatrzymajRolete2:
-      wiadomosc = 0x40;
-      wysylac = 3;
+//    wiadomosc = 0x40;
+//    wysylac = 3;
       break;
 
     case rPING:
@@ -147,7 +147,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   {
     static uint8_t tmp = 'C';
     crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
-    Led1On();
     TxStart();
     vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
     crDELAY(xHandle, 100);
@@ -191,8 +190,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
     }
     if (stan == s_rozkaz)
     {
-      Led1On();
-      Led2Off();
       crQUEUE_RECEIVE(xHandle, xRxedChars, (void *)(&kodRozkazu), 1, &xResult);
       if (xResult == pdPASS)
       {
@@ -206,16 +203,12 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
     }
     if (stan == s_len)
     {
-      Led1Off();
-      Led2On();
       crQUEUE_RECEIVE(xHandle, xRxedChars, (void *)(&dlDanych), 1, &xResult);
       if (xResult == pdPASS)
       {
         crc = _crc_xmodem_update(crc, dlDanych);
         lOdebrDanych = 0;
         stan = s_dane;
-        Led1On();
-        Led2On();
       }
       else
       {
@@ -230,7 +223,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       }
       else
       {
-        //Led2Off();
         crQUEUE_RECEIVE(xHandle, xRxedChars, &znak, 1, &xResult);
         if (xResult == pdPASS)
         {
@@ -241,7 +233,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         }
         else
         {
-          Led1Off();
           stan = s_sync;
         }
       }
@@ -255,7 +246,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       }
       else
       {
-        Led1Off();
         stan = s_sync;
       }    
     }
@@ -266,7 +256,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       {
         if ((crcHi != (uint8_t)(crc >> 8)) || (crcLo != (uint8_t)(crc & 0xFF)))
         {
-          Led1Off();
           stan = s_sync;
         }
         else
@@ -323,21 +312,16 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         
           if (kodRozkazu == rFLASH)
           {
-            Led1On();
-            Led2On();
-            crDELAY(xHandle, 10);
-            Led1Off();
-            Led2Off();
             (*((void(*)(void))BOOT_START))();            //reboot
           }
         }
         else if (rezultat == 2)
         {
-          crQUEUE_SEND(xHandle, xRoleta[0], (void *)(&wiadomosc), 0, &xResult); 
+          crQUEUE_SEND(xHandle, xRoleta, (void *)(&wiadomosc), 0, &xResult); 
         }
         else if (rezultat == 3)
         {
-          crQUEUE_SEND(xHandle, xRoleta[1], (void *)(&wiadomosc), 0, &xResult); 
+//          crQUEUE_SEND(xHandle, xRoleta[1], (void *)(&wiadomosc), 0, &xResult); 
         }
         else if (rezultat == 4)
         {
@@ -363,8 +347,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
           }
           vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
         }
-        Led1Off();
-        Led2Off();
         stan = s_sync;
       }
       else //Zły adres
@@ -372,13 +354,10 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         if (kodRozkazu == rFLASH)
         {
           DISABLE_RX();
-          Led1On();
-          Led2On();
           //TODO disable RX buffer
           crDELAY(xHandle, 1000);
           ENABLE_RX();
         }
-        Led1Off();
         stan = s_sync;
       }
     }
