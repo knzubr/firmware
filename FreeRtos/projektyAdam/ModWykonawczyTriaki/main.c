@@ -75,13 +75,12 @@ void vApplicationIdleHook( void );
 uint8_t adres;
 char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r', 0, 'v', '0', '.', '5', '1'};
 
-t_stan_klawiszy	roleta1 = {0, 0, 0, 0, bezczynny};
-t_stan_klawiszy	roleta2 = {0, 0, 0, 0, bezczynny};
+t_stan_klawiszy	roleta = {0, 0, 0, 0, bezczynny};
 
 extern xQueueHandle xRxedChars;
 extern xQueueHandle xCharsForTx; 
 
-xQueueHandle xRoleta[2];
+xQueueHandle xRoleta;
 
 portSHORT main( void )
 {
@@ -90,13 +89,11 @@ portSHORT main( void )
   hardwareInit();
   xSerialPortInitMinimal(16);
 
-  xRoleta[0] = xQueueCreate(4, 1);
-  xRoleta[1] = xQueueCreate(4, 1);
+  xRoleta = xQueueCreate(4, 1);
 
   xCoRoutineCreate(vProtocol, 0, 0);
   xCoRoutineCreate(vKlawisze, 0, 0);
   xCoRoutineCreate(vRoleta, 0, 0);
-  xCoRoutineCreate(vRoleta, 0, 1);
 
   vTaskStartScheduler();
   return 0;
@@ -113,15 +110,10 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   {
     crDELAY( xHandle, 1);
     uint8_t wiadomosc;
-    wiadomosc = (uint8_t) (automatStanowKlawiszy(czytKlawiszRol1wGore(), czytKlawiszRol1wDol(), &roleta1));
+    wiadomosc = (uint8_t) (automatStanowKlawiszy(czytKlawiszRolwGore(), czytKlawiszRolwDol(), &roleta));
     if (wiadomosc)
     {
-      crQUEUE_SEND(xHandle, xRoleta[0], &wiadomosc, 10, &xResult);
-    }
-    wiadomosc = (uint8_t)(automatStanowKlawiszy(czytKlawiszRol2wGore(), czytKlawiszRol2wDol(), &roleta2));
-    if (wiadomosc)
-    {
-      crQUEUE_SEND(xHandle, xRoleta[1], &wiadomosc, 10, &xResult);
+      crQUEUE_SEND(xHandle, xRoleta, &wiadomosc, 10, &xResult);
     }
   }
   crEND();
@@ -129,38 +121,39 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 
 static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
-  static uint8_t	rozkaz[2];
-  static uint16_t	czasAkcji[2];
-  czasAkcji[uxIndex]  = portMAX_DELAY;
-  static portBASE_TYPE xResult[2];
+  static uint8_t       rozkaz;
+  static uint16_t      czasAkcji;
+  static portBASE_TYPE xResult;
+  czasAkcji = portMAX_DELAY;
+
   crSTART( xHandle );
   for (;;)
   {
-    crQUEUE_RECEIVE(xHandle, xRoleta[uxIndex], &rozkaz[uxIndex], czasAkcji[uxIndex], &xResult[uxIndex]);
+    crQUEUE_RECEIVE(xHandle, xRoleta, &rozkaz, czasAkcji, &xResult);
 
-    if (xResult[uxIndex] == pdTRUE)
+    if (xResult == pdTRUE)
     {
-      uint8_t tmp = rozkaz[uxIndex] & 0x3F;
+      uint8_t tmp = rozkaz & 0x3F;
       if (tmp == 0)
-        czasAkcji[uxIndex] = portMAX_DELAY;
+        czasAkcji = portMAX_DELAY;
       else
-        czasAkcji[uxIndex] = tmp*20;
-      if (rozkaz[uxIndex] & 0x40)
+        czasAkcji = tmp*20;
+      if (rozkaz & 0x40)
       {
-        roletaStop(uxIndex);
+        roletaStop();
       }
       else
       {
-        if (rozkaz[uxIndex] & 0x80)
-          roletawGore(uxIndex);
+        if (rozkaz & 0x80)
+          roletawGore();
         else
-          roletawDol(uxIndex);
+          roletawDol();
       }
     }
     else
     {
-      czasAkcji[uxIndex] = portMAX_DELAY;
-      roletaStop(uxIndex);
+      czasAkcji = portMAX_DELAY;
+      roletaStop();
     }
   }
   crEND();

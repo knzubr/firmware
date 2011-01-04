@@ -16,112 +16,29 @@ void hardwareInit(void)
   adres |= (PINC & 0x03);
 }
 
-void roletawGore(uint8_t nrRolety)
-{
-  if (nrRolety == 0)
-    roleta1wGore();
-  else
-    roleta2wGore();
-}
-
-void roletawDol(uint8_t nrRolety)
-{
-  if (nrRolety == 0)
-    roleta1wDol();
-  else
-    roleta2wDol();
-}
-
-void roletaStop(uint8_t nrRolety)
-{
-  if (nrRolety == 0)
-    roleta1Stop();
-  else
-    roleta2Stop();
-}
-
-inline void roleta1wGore(void)
+inline void roletawGore(void)
 {
   PORTB &= ~0x02;
   PORTB |=  0x04;
 }
 
-inline void roleta1wDol(void)
+inline void roletawDol(void)
 {
   PORTB &= ~0x04;
   PORTB |=  0x02;	
 }
 
-inline void roleta1Stop(void)
+inline void roletaStop(void)
 {
   PORTB &= ~0x06;
 }
 
-inline void roleta2wGore(void)
-{
-  PORTD &= ~0x80;
-  PORTB |=  0x01;
-}
-
-inline void roleta2wDol(void)
-{
-  PORTB &= ~0x01;
-  PORTD |=  0x80;
-}
-
-inline void roleta2Stop(void)
-{
-  PORTB &= ~0x01;
-  PORTD &= ~0x80;
-}
-
-inline void Led1On(void)
-{
-  PORTD |= 0x20;
-}
-
-inline void Led1Toggle(void)
-{
-  PORTD ^= 0x20;
-}
-
-inline void Led1Off(void)
-{
-  PORTD &= ~0x20;
-}
-
-inline void Led2On(void)
-{
-  PORTD |= 0x40;	
-}
-
-inline void Led2Toggle(void)
-{
-  PORTD ^= 0x40;
-}
-
-inline void Led2Off(void)
-{
-  PORTD &= ~0x40;	
-}
-
-inline char czytKlawiszRol1wGore(void)
+inline char czytKlawiszRolwGore(void)
 {
   return PINC & 0x04;
 }
 
-inline char czytKlawiszRol1wDol(void)
+inline char czytKlawiszRolwDol(void)
 {
   return PINC & 0x08;
 }
-
-inline char czytKlawiszRol2wGore(void)
-{
-  return PINC & 0x10;
-}
-
-inline char czytKlawiszRol2wDol(void)
-{
-  return PINC & 0x20;
-}
-
