@@ -26,6 +26,7 @@
 #endif
 
 
+static cliExRes_t helloWorldFunction     (cmdState_t *state);
 static cliExRes_t helpFunction           (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
 static cliExRes_t statusEncFunction      (cmdState_t *state);
@@ -133,6 +134,7 @@ command_t __ATTR_PROGMEM__ cmdListEnable[] =
   {cmd_ac,        cmd_help_ac,        czytajAC_Function},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {cmd_configure, cmd_help_configure, configureModeFunction},
+  {cmd_hello,     cmd_help_hello,     helloWorldFunction},
   {NULL, NULL, NULL}
 };
 
@@ -283,6 +285,13 @@ static cliExRes_t statusFunction(cmdState_t *state)
 static cliExRes_t statusEncFunction(cmdState_t *state)
 {
   nicRegDump(state->myStdInOut);
+  return OK_SILENT;
+}
+
+static cliExRes_t helloWorldFunction     (cmdState_t *state)
+{
+  fprintf_P(state->myStdInOut, PSTR("Hello World !!!\r\n"));
+  fprintf_P(state->myStdInOut, PSTR("  It is my first function\r\n"));
   return OK_SILENT;
 }
 
