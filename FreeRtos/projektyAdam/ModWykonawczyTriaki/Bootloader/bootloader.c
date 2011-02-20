@@ -17,7 +17,7 @@
   Date:          2010.4
 */
 
-#include "bootldr.h"
+#include "bootloader.h"
 
 uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 7, 0xFF , 0xFF, 'b', '0', '.', '6', '2'};   //rHELLO response
 uint8_t         pingBuf[HDR_LEN+PROT_BUF_LEN] = {SYNC, 0, rPING, 8};                                          //rPING  response
