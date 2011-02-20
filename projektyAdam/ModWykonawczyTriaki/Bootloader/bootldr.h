@@ -64,11 +64,6 @@
 #endif
 
 
-
-
-//Don't modify code below, unless your really konw what to do
-
-
 //certain version compiler missing this in head files
 #ifndef SPM_PAGESIZE
 #error "Not define SPM_PAGESIZE, please define below or update your WinAVR"
@@ -146,8 +141,8 @@
 #define XMODEM_EOF         0x1A
 #define XMODEM_RWC         'C'
 
-#define RS485Enable()      PORTD = 0x0C
-#define RS485Disable()     PORTD = 0x00
+#define RS485Enable()      (PORTD |=  0x08)
+#define RS485Disable()     (PORTD &=  0xF7)
 
 //#define DataInCom()        (UCSRAREG(COMPORTNo) & (1 << RXCBIT(COMPORTNo)))
 #define DataInCom()        (UCSR0A & (1 << RXC0))

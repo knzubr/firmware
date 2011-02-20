@@ -75,12 +75,13 @@ void vApplicationIdleHook( void );
 uint8_t adres;
 char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r', 0, 'v', '0', '.', '5', '1'};
 
-t_stan_klawiszy	roleta = {0, 0, 0, 0, bezczynny};
+t_stan_klawiszy	roleta[2] = {{0, 0, 0, 0, bezczynny}, {0, 0, 0, 0, bezczynny}};
 
 extern xQueueHandle xRxedChars;
-extern xQueueHandle xCharsForTx; 
+extern xQueueHandle xCharsForTx;
+extern struct funkcje sterowanie[2];
 
-xQueueHandle xRoleta;
+xQueueHandle xRoleta[2];
 
 portSHORT main( void )
 {
@@ -89,11 +90,13 @@ portSHORT main( void )
   hardwareInit();
   xSerialPortInitMinimal(16);
 
-  xRoleta = xQueueCreate(4, 1);
+  xRoleta[0] = xQueueCreate(4, 1);
+  xRoleta[1] = xQueueCreate(4, 1);
 
   xCoRoutineCreate(vProtocol, 0, 0);
   xCoRoutineCreate(vKlawisze, 0, 0);
   xCoRoutineCreate(vRoleta, 0, 0);
+  xCoRoutineCreate(vRoleta, 0, 1);
 
   vTaskStartScheduler();
   return 0;
@@ -110,10 +113,16 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   {
     crDELAY( xHandle, 1);
     uint8_t wiadomosc;
-    wiadomosc = (uint8_t) (automatStanowKlawiszy(czytKlawiszRolwGore(), czytKlawiszRolwDol(), &roleta));
+    wiadomosc = (uint8_t) (automatStanowKlawiszy(czytKlawiszRol1wGore(), czytKlawiszRol1wDol(), &roleta[0]));
     if (wiadomosc)
     {
-      crQUEUE_SEND(xHandle, xRoleta, &wiadomosc, 10, &xResult);
+      crQUEUE_SEND(xHandle, xRoleta[0], &wiadomosc, 10, &xResult);
+    }
+
+    wiadomosc = (uint8_t) (automatStanowKlawiszy(czytKlawiszRol2wGore(), czytKlawiszRol2wDol(), &roleta[1]));
+    if (wiadomosc)
+    {
+      crQUEUE_SEND(xHandle, xRoleta[1], &wiadomosc, 10, &xResult);
     }
   }
   crEND();
@@ -129,7 +138,7 @@ static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   crSTART( xHandle );
   for (;;)
   {
-    crQUEUE_RECEIVE(xHandle, xRoleta, &rozkaz, czasAkcji, &xResult);
+    crQUEUE_RECEIVE(xHandle, xRoleta[uxIndex], &rozkaz, czasAkcji, &xResult);
 
     if (xResult == pdTRUE)
     {
@@ -140,20 +149,20 @@ static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         czasAkcji = tmp*20;
       if (rozkaz & 0x40)
       {
-        roletaStop();
+        sterowanie[uxIndex].stop();
       }
       else
       {
         if (rozkaz & 0x80)
-          roletawGore();
+          sterowanie[uxIndex].gora();
         else
-          roletawDol();
+          sterowanie[uxIndex].dol();
       }
     }
     else
     {
       czasAkcji = portMAX_DELAY;
-      roletaStop();
+      sterowanie[uxIndex].stop();
     }
   }
   crEND();
