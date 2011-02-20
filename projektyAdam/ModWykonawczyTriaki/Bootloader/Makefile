@@ -1,5 +1,5 @@
 ###############################################################################
-# Makefile for the project Bootldr
+# Makefile for the project bootloader
 ###############################################################################
 
 ## General Flags
@@ -35,16 +35,16 @@ HEX_EEPROM_FLAGS += --set-section-flags=.eeprom="alloc,load"
 HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 ## Objects that must be built in order to link
-OBJECTS = bootldr.o 
+OBJECTS = bootloader.o 
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
 
 ## Build
-all: $(TARGET).elf Bootldr.hex Bootldr.eep size
+all: $(TARGET).elf bootloader.hex bootloader.eep size
 
 ## Compile
-bootldr.o: bootldr.c
+bootloader.o: bootloader.c
 	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link
@@ -83,7 +83,7 @@ program: $(TARGET).hex $(TARGET).eep
 ## Clean target
 .PHONY: clean
 clean:
-	-rm -rf $(OBJECTS) Bootldr.elf dep/* Bootldr.hex Bootldr.eep
+	-rm -rf $(OBJECTS) bootloader.elf dep/* bootloader.hex bootloader.eep
 
 ## Other dependencies
 -include $(shell mkdir dep 2>/dev/null) $(wildcard dep/*)
