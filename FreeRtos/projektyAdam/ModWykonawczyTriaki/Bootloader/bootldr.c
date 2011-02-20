@@ -173,15 +173,15 @@ int main(void)
   
   resetStateMachine();               // initialize state machine
 
-  DDRB  = 0x00;
-  PORTB = 0x38;
-  DDRC  = 0x00;
+  DDRB  = 0x01;
+  PORTB = 0x3E; //3 - Adr2, 4 - Adr3, 5 - Adr4
+  DDRC  = 0x3C;
   PORTC = 0x03;
-  DDRD  = 0x6C;
+  DDRD  = 0x0A; //0 - RXD, 1 - TXD, 3 - TxEn, 6 -  
   PORTD = 0x00;
 
-  adres  = ((PINB & 0x38)>>1);       //Read address
-  adres |= (PINC & 0x03);
+  adres =  PINC & 0x38;
+  adres |= ((PINB & 0x38)<<1);
 
   //initialize serial port UART0
   UCSR0A = 0;
@@ -202,7 +202,6 @@ int main(void)
       TIFRREG |= (1 << OCF1A);  // Zerowanie
 
       cnt--;                    // Odliczanie w dół. Jak dojdzie do zera to nastąpi wyjście z xModemu
-      PORTD ^= (uint8_t)(0x40); // Miganie diodą
       if(cnt == 0)              // Sprawdzanie czy nie nastąpił timeout
       {
         quit();                 // Opuszczenie bootloadera
@@ -310,7 +309,6 @@ int main(void)
       cl = crc % 256;
       if ((crch == ch) && (crcl == cl))
       {
-        PORTD |= (uint8_t)(0x40);
         packNO++;
         while(bufptr > 0)                                        // receive one frame, write multi pages
         {
@@ -327,7 +325,6 @@ int main(void)
       {
         //ask resend
         WriteCom(XMODEM_NAK);
-        PORTD |= (uint8_t)(0x20);
         cnt++;
       }
     }
@@ -335,13 +332,11 @@ int main(void)
     {
       //ask resend
       WriteCom(XMODEM_NAK);
-      PORTD |= (uint8_t)(0x20);
       cnt++;
     }
     //too much error, update abort
     if(cnt > 3)
     {
-      PORTD |= (uint8_t)(0x20);
       break;
     }
     tmp = ReadCom_withLimitedWaiting();
@@ -365,7 +360,6 @@ void quit(void)
 //! wait 1 minute and jump to user's application
 void waitAndQuit(void)
 {
-//  PORTD = 0x20;                               //LED 1 and 2 on
   cnt=120;
   while(1)
   {

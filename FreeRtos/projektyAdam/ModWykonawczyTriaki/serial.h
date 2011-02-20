@@ -52,7 +52,7 @@
 
 extern uint8_t adres;
 extern char bHelloResp[];
-extern xQueueHandle xRoleta;
+extern xQueueHandle xRoleta[2];
 
 typedef enum
 {
