@@ -115,6 +115,13 @@
 #define MCP3008_SPI_CS_EN_MASK_OR    0x00
 #define MCP3008_SPI_CS_EN_MASK_AND   0xBF
 
+//Konfiguracja rezystora cyfrowego MCP4150
+//CS jest na PORT B.6
+#define MCP4150_SPI_CS_PORT          PORTB
+#define MCP4150_SPI_CS_EN_MASK_OR    0x00
+#define MCP4150_SPI_CS_EN_MASK_AND   0xBF
+
+
 //Konfiguracja Zegara czasu rzeczywistego DS1305
 //CE jest na PORT B.5
 #define DS1305_SPI_CS_PORT           PORTB

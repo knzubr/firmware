@@ -89,4 +89,7 @@ prog_char cmd_conf_mac[]    = "mac";              prog_char cmd_help_conf_mac[] 
 prog_char cmd_conf_save[]   = "save";             prog_char cmd_help_conf_save[]   = "Save configuration";
 prog_char cmd_hello[]       = "hello";            prog_char cmd_help_hello[]       = "Print hello world";
 
+prog_char cmd_ustawR[]      = "setr";             prog_char cmd_help_ustawR[]      = "[value] ser resistance value";
+
+
 #endif

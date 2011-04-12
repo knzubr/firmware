@@ -12,6 +12,7 @@
 #include "ip.h"
 #include "arp.h"
 #include "softwareConfig.h"
+#include "mcp4150.h"
 
 #if LANG_EN
 #include "vty_en.h"
@@ -45,6 +46,7 @@ static cliExRes_t readRamFIleFunction    (cmdState_t *state);
 
 static cliExRes_t ustawPortExtAFunction  (cmdState_t *state);
 static cliExRes_t ustawPortExtBFunction  (cmdState_t *state);
+static cliExRes_t ustawPortRezystor      (cmdState_t *state);
 
 static cliExRes_t pokazCzasFunction      (cmdState_t *state);
 static cliExRes_t debugFunction          (cmdState_t *state);
@@ -130,6 +132,7 @@ command_t __ATTR_PROGMEM__ cmdListEnable[] =
 
   {cmd_spa,       cmd_help_spa,       ustawPortExtAFunction},
   {cmd_spb,       cmd_help_spb,       ustawPortExtBFunction},
+  {cmd_ustawR,    cmd_help_ustawR,    ustawPortRezystor},
   {cmd_settime,   cmd_help_settime,   setTimeFunction},
   {cmd_ac,        cmd_help_ac,        czytajAC_Function},
   {cmd_disable,   cmd_help_disable,   disableFunction},
@@ -571,6 +574,13 @@ static cliExRes_t ustawPortExtBFunction(cmdState_t *state)
   uint8_t wyjscie = cmdlineGetArgInt(1, state);
   MPC23s17SetDirB(0x00, 0);
   MPC23s17SetPortB(wyjscie, 0);
+  return OK_SILENT;
+}
+
+static cliExRes_t ustawPortRezystor(cmdState_t *state)
+{
+  uint8_t wartosc = cmdlineGetArgInt(1, state);
+  MCP4150_setValue(wartosc);
   return OK_SILENT;
 }
 

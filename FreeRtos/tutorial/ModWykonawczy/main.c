@@ -61,13 +61,19 @@ void vApplicationIdleHook( void );
 
 /* Device address on RS 485 bus */
 
+uint8_t tOn[4] = {25, 50, 100, 200};
+uint8_t tOff[4] = {25, 50, 100, 200};
+
 portSHORT main( void )
 {
     hardwareInit();
+    
     xCoRoutineCreate(vDioda, 0, 0);
     xCoRoutineCreate(vDioda, 0, 1);
     xCoRoutineCreate(vDioda, 0, 2);
     xCoRoutineCreate(vDioda, 0, 3);
+
+    xCoRoutineCreate(vKlawisze, 0, 0);
 
     vTaskStartScheduler();
     return 0;
@@ -76,6 +82,12 @@ portSHORT main( void )
 
 static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
+    crSTART( xHandle );
+    for (;;)
+    {
+        crDELAY( xHandle, 100 );
+    }
+    crEND();
 
 }
 
@@ -85,11 +97,10 @@ static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
     for (;;)
     {
         zapal(uxIndex);
-        crDELAY( xHandle, 100 );
+        crDELAY( xHandle, tOn[uxIndex] );
 
         zgas(uxIndex);
-        crDELAY( xHandle, 100 );
-
+        crDELAY( xHandle, tOff[uxIndex]  );
     }
     crEND();
 }
