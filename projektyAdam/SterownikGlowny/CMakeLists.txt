@@ -42,6 +42,7 @@ add_library(Hardware STATIC
                                ../../freeRtos/Lib/memory_x.c           ../../freeRtos/Lib/include/memory_x.h             # Obsługa malloc. Zlicza wolną i zajętą pamięć na stercie.
                                ../../freeRtos/Lib/mpc23s17.c           ../../freeRtos/Lib/include/mpc23s17.h             # Obsługa ekspandera portu
                                ../../freeRtos/Lib/mcp3008.c            ../../freeRtos/Lib/include/mcp3008.h              # Obsługa przetwornika A/C
+                               ../../freeRtos/Lib/mcp4150.c            ../../freeRtos/Lib/include/mcp4150.h              # Obsługa przetwornika A/C
                                ../../freeRtos/Lib/ds1305.c             ../../freeRtos/Lib/include/ds1305.h               # Obsługa zegara RTC
                                ../../freeRtos/Lib/enc28j60.c           ../../freeRtos/Lib/include/enc28j60.h             # Obsługa sterownika ethernetowego
                                ../../freeRtos/Lib/sd_diskio.c          ../../freeRtos/Lib/include/sd_diskio.h            # Obsługa karty SD 

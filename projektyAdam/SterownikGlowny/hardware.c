@@ -299,6 +299,29 @@ void disableSpiMCP3008(void)
 #endif
 }
 
+
+#define MCP4150_SPCR_OR_MASK ((1<<SPR1)|(1<<SPR0))
+void enableSpiMCP4150(void)
+{
+  SPCR |= MCP4150_SPCR_OR_MASK;
+#if MCP4150_SPI_CS_EN_MASK_OR != 0
+  MCP4150_SPI_CS_PORT |= MCP4150_SPI_CS_EN_MASK_OR;
+#endif
+#if MCP4150_SPI_CS_EN_MASK_AND != 0xFF
+  MCP4150_SPI_CS_PORT &= MCP4150_SPI_CS_EN_MASK_AND;
+#endif  
+}
+void disableSpiMCP4150(void) 
+{
+  SPCR &= ~MCP4150_SPCR_OR_MASK;
+  #if MCP4150_SPI_CS_EN_MASK_OR != 0
+  MCP4150_SPI_CS_PORT &= (~MCP4150_SPI_CS_EN_MASK_OR);
+#endif
+#if MCP4150_SPI_CS_EN_MASK_AND != 0xFF
+  MCP4150_SPI_CS_PORT |= (~MCP4150_SPI_CS_EN_MASK_AND);
+#endif  
+}
+
 #define DS_SPCR_OR_MASK ((1<<CPHA)|(1<<SPR0))
 
 void spiEnableDS1305(void)

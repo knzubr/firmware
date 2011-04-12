@@ -9,3 +9,6 @@ CurrentBuildDir=file:///home/adam/akme/FreeRtos/tutorial/ModWykonawczy/build
 CurrentBuildType=Debug
 CurrentInstallDir=
 ProjectRootRelative=./
+
+[Project]
+VersionControlSupport=kdevsubversion
