@@ -27,7 +27,8 @@ void MCP4150_setValue(uint8_t value)
   spiTake();
   enableSpiMCP4150();
   
-  spiSend(0x01);
+  spiSend(0x11);  
+  spiSend(value);
   
   disableSpiMCP4150(); 
   spiGive();

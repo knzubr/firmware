@@ -87,9 +87,7 @@ prog_char cmd_conf_ip_mask[]= "mask";             prog_char cmd_conf_ip_mask_hel
 prog_char cmd_conf_ip_gw[]  = "gw";               prog_char cmd_conf_ip_gw_help[]  = "[A1] [A2] [A3] [A4] set default gateway";
 prog_char cmd_conf_mac[]    = "mac";              prog_char cmd_help_conf_mac[]    = "[A1] [A2] [A3] [A4] [A5] [A6] set MAC address";
 prog_char cmd_conf_save[]   = "save";             prog_char cmd_help_conf_save[]   = "Save configuration";
-prog_char cmd_hello[]       = "hello";            prog_char cmd_help_hello[]       = "Print hello world";
-
-prog_char cmd_ustawR[]      = "setr";             prog_char cmd_help_ustawR[]      = "[value] ser resistance value";
+prog_char cmd_ustawR[]      = "setr";             prog_char cmd_help_ustawR[]      = "[value] set resistance value";
 
 
 #endif
