@@ -53,16 +53,16 @@
 #include "../../freeRtos/Lib/include/protocol1.h"
 
 /**
- * Proces odpowiedzialny za obsługę klawiszy
+ * Coroutine, that is responsible for reading keys
  * @param pvParameters ignorowane parametry
  */
 static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
 
 /**
- * Proces odpowiedzialny za obsługę rolety
+ * Coroutine function, that is responsible for Diode
  * @param pvParameters ignorowane parametry
  */
-static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
+static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
 
 static void prvIncrementResetCount( void );
 
@@ -72,7 +72,7 @@ void vApplicationIdleHook( void );
 /*-----------------------------------------------------------*/
 
 /* Device address on RS 485 bus */
-uint8_t adres;
+uint8_t address;
 char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r', 0, 'v', '0', '.', '5', '1'};
 
 t_stan_klawiszy	roleta1 = {0, 0, 0, 0, bezczynny};
@@ -90,13 +90,12 @@ portSHORT main( void )
   hardwareInit();
   xSerialPortInitMinimal(16);
 
-  xRoleta[0] = xQueueCreate(4, 1);
-  xRoleta[1] = xQueueCreate(4, 1);
+//  xRoleta[0] = xQueueCreate(4, 1);
+//  xRoleta[1] = xQueueCreate(4, 1);
 
-  xCoRoutineCreate(vProtocol, 0, 0);
   xCoRoutineCreate(vKlawisze, 0, 0);
-  xCoRoutineCreate(vRoleta, 0, 0);
-  xCoRoutineCreate(vRoleta, 0, 1);
+  xCoRoutineCreate(vDioda, 0, 0);
+  xCoRoutineCreate(vDioda, 0, 1);
 
   vTaskStartScheduler();
   return 0;
@@ -105,29 +104,17 @@ portSHORT main( void )
 
 static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
-  (void) uxIndex;
-  static portBASE_TYPE xResult;
+  (void) uxIndex;           // get rid compiller worning. Theare is only one such coroutine. We don't need info about its index.
 
   crSTART( xHandle );
   for( ;; )
   {
     crDELAY( xHandle, 1);
-    uint8_t wiadomosc;
-    wiadomosc = (uint8_t) (automatStanowKlawiszy(czytKlawiszRol1wGore(), czytKlawiszRol1wDol(), &roleta1));
-    if (wiadomosc)
-    {
-      crQUEUE_SEND(xHandle, xRoleta[0], &wiadomosc, 10, &xResult);
-    }
-    wiadomosc = (uint8_t)(automatStanowKlawiszy(czytKlawiszRol2wGore(), czytKlawiszRol2wDol(), &roleta2));
-    if (wiadomosc)
-    {
-      crQUEUE_SEND(xHandle, xRoleta[1], &wiadomosc, 10, &xResult);
-    }
   }
   crEND();
 }
 
-static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
+static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
   static uint8_t	rozkaz[2];
   static uint16_t	czasAkcji[2];
@@ -136,32 +123,7 @@ static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   crSTART( xHandle );
   for (;;)
   {
-    crQUEUE_RECEIVE(xHandle, xRoleta[uxIndex], &rozkaz[uxIndex], czasAkcji[uxIndex], &xResult[uxIndex]);
-
-    if (xResult[uxIndex] == pdTRUE)
-    {
-      uint8_t tmp = rozkaz[uxIndex] & 0x3F;
-      if (tmp == 0)
-        czasAkcji[uxIndex] = portMAX_DELAY;
-      else
-        czasAkcji[uxIndex] = tmp*20;
-      if (rozkaz[uxIndex] & 0x40)
-      {
-        roletaStop(uxIndex);
-      }
-      else
-      {
-        if (rozkaz[uxIndex] & 0x80)
-          roletawGore(uxIndex);
-        else
-          roletawDol(uxIndex);
-      }
-    }
-    else
-    {
-      czasAkcji[uxIndex] = portMAX_DELAY;
-      roletaStop(uxIndex);
-    }
+    crDELAY(xHandle, 100);
   }
   crEND();
 }
@@ -173,13 +135,3 @@ void vApplicationIdleHook( void )
     vCoRoutineSchedule();
   }
 }
-
-#if 0
-static void prvIncrementResetCount( void )
-{
-	unsigned portCHAR ucCount;
-	eeprom_read_block( &ucCount, mainRESET_COUNT_ADDRESS, sizeof( ucCount ) );
-	ucCount++;
-	eeprom_write_byte( mainRESET_COUNT_ADDRESS, ucCount );
-}
-#endif

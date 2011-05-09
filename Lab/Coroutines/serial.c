@@ -179,7 +179,7 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       {
         stan = s_rozkaz;
         crc = _crc_xmodem_update(crc, znak);
-        if (znak == adres)
+        if (znak == address)
           dobryAdres = 1;
         else
           dobryAdres = 0;
@@ -191,8 +191,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
     }
     if (stan == s_rozkaz)
     {
-      Led1On();
-      Led2Off();
       crQUEUE_RECEIVE(xHandle, xRxedChars, (void *)(&kodRozkazu), 1, &xResult);
       if (xResult == pdPASS)
       {
@@ -206,16 +204,12 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
     }
     if (stan == s_len)
     {
-      Led1Off();
-      Led2On();
       crQUEUE_RECEIVE(xHandle, xRxedChars, (void *)(&dlDanych), 1, &xResult);
       if (xResult == pdPASS)
       {
         crc = _crc_xmodem_update(crc, dlDanych);
         lOdebrDanych = 0;
         stan = s_dane;
-        Led1On();
-        Led2On();
       }
       else
       {
@@ -241,7 +235,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         }
         else
         {
-          Led1Off();
           stan = s_sync;
         }
       }
@@ -255,7 +248,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       }
       else
       {
-        Led1Off();
         stan = s_sync;
       }    
     }
@@ -266,7 +258,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       {
         if ((crcHi != (uint8_t)(crc >> 8)) || (crcLo != (uint8_t)(crc & 0xFF)))
         {
-          Led1Off();
           stan = s_sync;
         }
         else
@@ -323,11 +314,7 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         
           if (kodRozkazu == rFLASH)
           {
-            Led1On();
-            Led2On();
             crDELAY(xHandle, 10);
-            Led1Off();
-            Led2Off();
             (*((void(*)(void))BOOT_START))();            //reboot
           }
         }
@@ -363,8 +350,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
           }
           vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
         }
-        Led1Off();
-        Led2Off();
         stan = s_sync;
       }
       else //Zły adres
@@ -372,13 +357,10 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         if (kodRozkazu == rFLASH)
         {
           DISABLE_RX();
-          Led1On();
-          Led2On();
           //TODO disable RX buffer
           crDELAY(xHandle, 1000);
           ENABLE_RX();
         }
-        Led1Off();
         stan = s_sync;
       }
     }

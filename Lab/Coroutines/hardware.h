@@ -16,7 +16,7 @@ extern char bHelloResp[];
  */
 void hardwareInit(void);
 
-void ledOn(uint8_t lenNo);
+void ledOn(uint8_t ledNo);
 void ledOff(uint8_t ledNo);
 void ledToggle(uint8_t ledNo);
 char readKey(uint8_t keyNo);
