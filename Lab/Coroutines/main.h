@@ -10,7 +10,7 @@
 #include "croutine.h"
 #include "queue.h"
 #include "task.h"
-#include "serial.h"
+//#include "serial.h"
 #include "hardware.h"
 #include "automat.h"
 #include "../../freeRtos/Lib/include/protocol1.h"

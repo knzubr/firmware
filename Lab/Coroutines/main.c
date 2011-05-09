@@ -42,7 +42,7 @@
 	http://www.FreeRTOS.org - Documentation, latest information, license and
 	contact details.
 
-	http://www.SafeRTOS.com - A version that is certified for use in safety
+	   http://www.SafeRTOS.com - A version that is certified for use in safety
 	critical systems.
 
 	http://www.OpenRTOS.com - Commercial support, development, porting,
@@ -64,8 +64,6 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
  */
 static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
 
-static void prvIncrementResetCount( void );
-
 void vApplicationIdleHook( void );
 
 
@@ -78,15 +76,13 @@ char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r',
 t_stan_klawiszy	roleta1 = {0, 0, 0, 0, bezczynny};
 t_stan_klawiszy	roleta2 = {0, 0, 0, 0, bezczynny};
 
-extern xQueueHandle xRxedChars;
-extern xQueueHandle xCharsForTx; 
+// extern xQueueHandle xRxedChars;
+// extern xQueueHandle xCharsForTx; 
 
-xQueueHandle xRoleta[2];
+//xQueueHandle xRoleta[4];
 
 portSHORT main( void )
 {
-//prvIncrementResetCount();
-
   hardwareInit();
   xSerialPortInitMinimal(16);
 

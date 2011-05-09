@@ -75,14 +75,14 @@ uint8_t automatStanowKlawiszy(uint8_t klGoraOff, uint8_t klDolOff, t_stan_klawis
   }
   
   if (stan->klDol_on == 255)
-	  stan->klDol_on = 254;
+    stan->klDol_on = 254;
   if (stan->klGora_on == 255)
-	  stan->klGora_on = 254;
+    stan->klGora_on = 254;
   
   if (stan->klDol_off == 255)
-	  stan->klDol_off = 254;
+    stan->klDol_off = 254;
   if (stan->klGora_off == 255)
-	  stan->klGora_off = 254;
+    stan->klGora_off = 254;
 
   return wiadomosc;
 }
