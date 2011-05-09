@@ -16,7 +16,7 @@ void hardwareInit(void)
   address |= (PINC & 0x03);
 }
 
-void ledOn(uint8_t lenNo)
+void ledOn(uint8_t ledNo)
 {
   switch(ledNo)
   {
@@ -59,7 +59,7 @@ void ledOff(uint8_t ledNo)
 }
 void ledToggle(uint8_t ledNo)
 {
-  switch (keyNo)
+  switch (ledNo)
   {
     case 0:
       led1toggle();
@@ -86,7 +86,7 @@ char readKey(uint8_t keyNo)
     case 1: return readKey2();
     case 2: return readKey3();
     case 3: return readKey4();
-    default return 0;
+    default: return 0;
   }
 }
 
