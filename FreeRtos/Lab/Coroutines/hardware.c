@@ -86,7 +86,7 @@ char readKey(uint8_t keyNo)
     case 1: return readKey2();
     case 2: return readKey3();
     case 3: return readKey4();
-    default: return 0;
+    default: return 1;
   }
 }
 
