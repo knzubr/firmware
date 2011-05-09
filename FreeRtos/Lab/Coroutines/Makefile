@@ -51,7 +51,6 @@ PORT_MEM   = ../../freeRtos/portable/MemMang
 
 SRC	= \
 main.c \
-serial.c \
 hardware.c\
 automat.c\
 $(SOURCE_DIR)/tasks.c \
@@ -61,7 +60,7 @@ $(SOURCE_DIR)/croutine.c \
 $(PORT_MEM)/heap_avr.c \
 $(PORT_DIR)/port.c 
 
-#regtest.c \
+#serial.c \
 
 # If there is more than one source file, append them above, or modify and
 # uncomment the following:
