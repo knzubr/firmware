@@ -50,7 +50,6 @@
 */
 
 #include "main.h"
-#include "../../freeRtos/Lib/include/protocol1.h"
 
 /**
  * Coroutine, that is responsible for reading keys
@@ -76,18 +75,9 @@ char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r',
 t_stan_klawiszy	roleta1 = {0, 0, 0, 0, bezczynny};
 t_stan_klawiszy	roleta2 = {0, 0, 0, 0, bezczynny};
 
-// extern xQueueHandle xRxedChars;
-// extern xQueueHandle xCharsForTx; 
-
-//xQueueHandle xRoleta[4];
-
 portSHORT main( void )
 {
   hardwareInit();
-  xSerialPortInitMinimal(16);
-
-//  xRoleta[0] = xQueueCreate(4, 1);
-//  xRoleta[1] = xQueueCreate(4, 1);
 
   xCoRoutineCreate(vKlawisze, 0, 0);
   xCoRoutineCreate(vDioda, 0, 0);
@@ -112,10 +102,6 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 
 static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
-  static uint8_t	rozkaz[2];
-  static uint16_t	czasAkcji[2];
-  czasAkcji[uxIndex]  = portMAX_DELAY;
-  static portBASE_TYPE xResult[2];
   crSTART( xHandle );
   for (;;)
   {
