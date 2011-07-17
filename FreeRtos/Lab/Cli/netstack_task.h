@@ -20,28 +20,6 @@
 #include "softwareConfig.h"
 
 
-//TODO add new task: http server
-typedef enum 
-{
-  URLramDysk,
-  URLsdDysk,
-  URLstatus,
-  URLerror
-} urlSource_t;
-
-
-extern struct lockerSensor *lockSensors;
-
-uint8_t verify_password(char *str);
-
-/**
- * takes a string of url address and process it
- * @param str - part of URL string
- * @param [out] - filename or command
- * @return http source (SD, RamDysk, status)
- */
-urlSource_t analyse_get_url (const char *str, char *fname);
-
 /**
  * Enc28j60 task
  */
