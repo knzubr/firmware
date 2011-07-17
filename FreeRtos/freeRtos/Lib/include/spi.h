@@ -24,18 +24,19 @@ void spiSetCPOL(void);
 void spiClearCPOL(void);
 
 /**
- * Wyślij do magistrali SPI. Sotosowana jest blokada wirująca. 
- * Warto stosować gdy SPI działa z dużą szybkością 
- * (czas wysłania jest mniejszy od 2X czas przełączenia wątku)
+ * Wyślij do magistrali SPI. Po rozpoczęciu transmisji przełączany jest wątek.
+ * Warto stosować w przypadku wątków o niskich priorytetach lub wolnej transmisji SPI
  * @param uint8_t bajt do wysłania
  * @return odebrany bajt z magistrali SPI
  */
 uint8_t spiSend(uint8_t data) __attribute__ ((weak));
 
 
+
 /**
- * Wyślij do magistrali SPI. Po rozpoczęciu transmisji przełączany jest wątek.
- * Warto stosować w przypadku wątków o niskich priorytetach lub wolnej transmisji SPI
+ * Wyślij do magistrali SPI. Sotosowana jest blokada wirująca. 
+ * Warto stosować gdy SPI działa z dużą szybkością 
+ * (czas wysłania jest mniejszy od 2X czas przełączenia wątku)
  * @param uint8_t bajt do wysłania
  * @return odebrany bajt z magistrali SPI
  */
