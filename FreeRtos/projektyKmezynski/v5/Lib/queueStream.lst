@@ -1,0 +1,173 @@
+   1               		.file	"queueStream.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 105               	.global	initQueueStream
+ 107               	initQueueStream:
+ 108               		.stabd	46,0,0
+   1:Lib/queueStream.c **** #include "queueStream.h"
+   2:Lib/queueStream.c **** 
+   3:Lib/queueStream.c **** static int streamQueueOutputFun(char c, FILE *ostream);
+   4:Lib/queueStream.c **** static int streamQueueInputFun(FILE *istream);
+   5:Lib/queueStream.c **** 
+   6:Lib/queueStream.c **** void initQueueStream(FILE *stream, streamBuffers_t *buffer, xQueueHandle Rx, xQueueHandle Tx)
+   7:Lib/queueStream.c **** {
+ 110               	.LM0:
+ 111               	.LFBB1:
+ 112               	/* prologue: function */
+ 113               	/* frame size = 0 */
+ 114 0000 FC01      		movw r30,r24
+ 115 0002 DB01      		movw r26,r22
+   8:Lib/queueStream.c ****   fdev_setup_stream(stream, streamQueueOutputFun, streamQueueInputFun, _FDEV_SETUP_RW);
+ 117               	.LM1:
+ 118 0004 80E0      		ldi r24,lo8(gs(streamQueueOutputFun))
+ 119 0006 90E0      		ldi r25,hi8(gs(streamQueueOutputFun))
+ 120 0008 9187      		std Z+9,r25
+ 121 000a 8087      		std Z+8,r24
+ 122 000c 80E0      		ldi r24,lo8(gs(streamQueueInputFun))
+ 123 000e 90E0      		ldi r25,hi8(gs(streamQueueInputFun))
+ 124 0010 9387      		std Z+11,r25
+ 125 0012 8287      		std Z+10,r24
+ 126 0014 83E0      		ldi r24,lo8(3)
+ 127 0016 8383      		std Z+3,r24
+   9:Lib/queueStream.c ****   fdev_set_udata(stream, (void *)buffer);
+ 129               	.LM2:
+ 130 0018 7587      		std Z+13,r23
+ 131 001a 6487      		std Z+12,r22
+  10:Lib/queueStream.c ****   buffer->Rx = Rx;
+ 133               	.LM3:
+ 134 001c 1196      		adiw r26,1
+ 135 001e 5C93      		st X,r21
+ 136 0020 4E93      		st -X,r20
+  11:Lib/queueStream.c ****   buffer->Tx = Tx;
+ 138               	.LM4:
+ 139 0022 1396      		adiw r26,2+1
+ 140 0024 3C93      		st X,r19
+ 141 0026 2E93      		st -X,r18
+ 142 0028 1297      		sbiw r26,2
+ 143               	/* epilogue start */
+  12:Lib/queueStream.c ****   return;
+  13:Lib/queueStream.c **** }
+ 145               	.LM5:
+ 146 002a 0895      		ret
+ 148               	.Lscope1:
+ 150               		.stabd	78,0,0
+ 154               	streamQueueInputFun:
+ 155               		.stabd	46,0,0
+  14:Lib/queueStream.c **** 
+  15:Lib/queueStream.c **** static int streamQueueOutputFun(char c, FILE *ostream)
+  16:Lib/queueStream.c **** {
+  17:Lib/queueStream.c ****   streamBuffers_t *strBuf = (streamBuffers_t *) ostream->udata;
+  18:Lib/queueStream.c **** /*  if (xQueueSend( strBuf->Tx, &c, strBuf->tx_timeout))
+  19:Lib/queueStream.c ****   {
+  20:Lib/queueStream.c ****     return EOF;
+  21:Lib/queueStream.c ****   }
+  22:Lib/queueStream.c ****   else*/
+  23:Lib/queueStream.c ****   xQueueSend( strBuf->Tx, &c, portMAX_DELAY);
+  24:Lib/queueStream.c ****   return 0;
+  25:Lib/queueStream.c **** }
+  26:Lib/queueStream.c **** 
+  27:Lib/queueStream.c **** static int streamQueueInputFun(FILE *istream)
+  28:Lib/queueStream.c **** {
+ 157               	.LM6:
+ 158               	.LFBB2:
+ 159 002c DF93      		push r29
+ 160 002e CF93      		push r28
+ 161 0030 0F92      		push __tmp_reg__
+ 162 0032 CDB7      		in r28,__SP_L__
+ 163 0034 DEB7      		in r29,__SP_H__
+ 164               	/* prologue: function */
+ 165               	/* frame size = 1 */
+  29:Lib/queueStream.c ****   char c;
+  30:Lib/queueStream.c ****   streamBuffers_t *strBuf = (streamBuffers_t *) istream->udata;
+  31:Lib/queueStream.c ****   xQueueReceive(strBuf->Rx, &c, portMAX_DELAY);
+ 167               	.LM7:
+ 168 0036 DC01      		movw r26,r24
+ 169 0038 1C96      		adiw r26,12
+ 170 003a ED91      		ld r30,X+
+ 171 003c FC91      		ld r31,X
+ 172 003e 1D97      		sbiw r26,12+1
+ 173 0040 8081      		ld r24,Z
+ 174 0042 9181      		ldd r25,Z+1
+ 175 0044 BE01      		movw r22,r28
+ 176 0046 6F5F      		subi r22,lo8(-(1))
+ 177 0048 7F4F      		sbci r23,hi8(-(1))
+ 178 004a 4FEF      		ldi r20,lo8(-1)
+ 179 004c 5FEF      		ldi r21,hi8(-1)
+ 180 004e 20E0      		ldi r18,lo8(0)
+ 181 0050 0E94 0000 		call xQueueGenericReceive
+ 182 0054 2981      		ldd r18,Y+1
+ 183 0056 3327      		clr r19
+ 184 0058 27FD      		sbrc r18,7
+ 185 005a 3095      		com r19
+  32:Lib/queueStream.c ****   return c;
+  33:Lib/queueStream.c **** }
+ 187               	.LM8:
+ 188 005c C901      		movw r24,r18
+ 189               	/* epilogue start */
+ 190 005e 0F90      		pop __tmp_reg__
+ 191 0060 CF91      		pop r28
+ 192 0062 DF91      		pop r29
+ 193 0064 0895      		ret
+ 198               	.Lscope2:
+ 200               		.stabd	78,0,0
+ 205               	streamQueueOutputFun:
+ 206               		.stabd	46,0,0
+  16:Lib/queueStream.c **** {
+ 208               	.LM9:
+ 209               	.LFBB3:
+ 210 0066 DF93      		push r29
+ 211 0068 CF93      		push r28
+ 212 006a 0F92      		push __tmp_reg__
+ 213 006c CDB7      		in r28,__SP_L__
+ 214 006e DEB7      		in r29,__SP_H__
+ 215               	/* prologue: function */
+ 216               	/* frame size = 1 */
+ 217 0070 8983      		std Y+1,r24
+ 218 0072 FB01      		movw r30,r22
+  23:Lib/queueStream.c ****   xQueueSend( strBuf->Tx, &c, portMAX_DELAY);
+ 220               	.LM10:
+ 221 0074 0484      		ldd __tmp_reg__,Z+12
+ 222 0076 F585      		ldd r31,Z+13
+ 223 0078 E02D      		mov r30,__tmp_reg__
+ 224 007a 8281      		ldd r24,Z+2
+ 225 007c 9381      		ldd r25,Z+3
+ 226 007e BE01      		movw r22,r28
+ 227 0080 6F5F      		subi r22,lo8(-(1))
+ 228 0082 7F4F      		sbci r23,hi8(-(1))
+ 229 0084 4FEF      		ldi r20,lo8(-1)
+ 230 0086 5FEF      		ldi r21,hi8(-1)
+ 231 0088 20E0      		ldi r18,lo8(0)
+ 232 008a 0E94 0000 		call xQueueGenericSend
+  25:Lib/queueStream.c **** }
+ 234               	.LM11:
+ 235 008e 80E0      		ldi r24,lo8(0)
+ 236 0090 90E0      		ldi r25,hi8(0)
+ 237               	/* epilogue start */
+ 238 0092 0F90      		pop __tmp_reg__
+ 239 0094 CF91      		pop r28
+ 240 0096 DF91      		pop r29
+ 241 0098 0895      		ret
+ 243               	.Lscope3:
+ 245               		.stabd	78,0,0
+ 247               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 queueStream.c
+     /tmp/ccIXHLRJ.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccIXHLRJ.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccIXHLRJ.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccIXHLRJ.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccIXHLRJ.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccIXHLRJ.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccIXHLRJ.s:107    .text:00000000 initQueueStream
+     /tmp/ccIXHLRJ.s:205    .text:00000066 streamQueueOutputFun
+     /tmp/ccIXHLRJ.s:154    .text:0000002c streamQueueInputFun
+
+UNDEFINED SYMBOLS
+xQueueGenericReceive
+xQueueGenericSend

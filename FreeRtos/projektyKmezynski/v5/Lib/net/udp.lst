@@ -1,0 +1,1048 @@
+   1               		.file	"udp.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 163               	.global	setUdpDebug
+ 165               	setUdpDebug:
+ 166               		.stabd	46,0,0
+   1:Lib/net/udp.c **** #include "udp.h"
+   2:Lib/net/udp.c **** #include "net.h"
+   3:Lib/net/udp.c **** #include "ip.h"
+   4:Lib/net/udp.c **** 
+   5:Lib/net/udp.c **** static uint32_t udpIpDst_eep   __attribute__((section (".eeprom"))) = ((uint32_t)UDP_DST_IP4   << 2
+   6:Lib/net/udp.c **** static uint16_t udpPortDstEep  __attribute__((section (".eeprom"))) = HTONS(UDP_DST_PORT);
+   7:Lib/net/udp.c **** static uint16_t udpPortSrcEep  __attribute__((section (".eeprom"))) = HTONS(UDP_SRC_PORT);
+   8:Lib/net/udp.c **** 
+   9:Lib/net/udp.c **** void udpInit(void)
+  10:Lib/net/udp.c **** {
+  11:Lib/net/udp.c **** #if UDP_DEBUG
+  12:Lib/net/udp.c ****   udpDbgStream         = NULL;
+  13:Lib/net/udp.c ****   udpDbgLevel          = 0;
+  14:Lib/net/udp.c **** #endif
+  15:Lib/net/udp.c ****   udpSocket = xmalloc(sizeof(UdpSocket_t));
+  16:Lib/net/udp.c **** 
+  17:Lib/net/udp.c ****   udpSocket->dstIp      = eeprom_read_dword(&udpIpDst_eep);
+  18:Lib/net/udp.c ****   udpSocket->dstPortDef = eeprom_read_word(&udpPortDstEep);;
+  19:Lib/net/udp.c ****   udpSocket->srcPort    = eeprom_read_word(&udpPortSrcEep);
+  20:Lib/net/udp.c ****   
+  21:Lib/net/udp.c ****   udpSocket->Rx         = xQueueCreateExternal(255, 1, (void *)(RTOS_UDP_RX_BUF_ADDR));
+  22:Lib/net/udp.c ****   udpSocket->Tx         = xQueueCreateExternal(255, 1, (void *)(RTOS_UDP_TX_BUF_ADDR));
+  23:Lib/net/udp.c **** }
+  24:Lib/net/udp.c **** 
+  25:Lib/net/udp.c **** #if UDP_DEBUG
+  26:Lib/net/udp.c **** void setUdpDebug(FILE *stream, uint8_t level)
+  27:Lib/net/udp.c **** {
+ 168               	.LM0:
+ 169               	.LFBB1:
+ 170               	/* prologue: function */
+ 171               	/* frame size = 0 */
+  28:Lib/net/udp.c ****   udpDbgStream = stream;
+ 173               	.LM1:
+ 174 0000 9093 0000 		sts (udpDbgStream)+1,r25
+ 175 0004 8093 0000 		sts udpDbgStream,r24
+  29:Lib/net/udp.c ****   udpDbgLevel = level;
+ 177               	.LM2:
+ 178 0008 6093 0000 		sts udpDbgLevel,r22
+ 179               	/* epilogue start */
+  30:Lib/net/udp.c **** }
+ 181               	.LM3:
+ 182 000c 0895      		ret
+ 184               	.Lscope1:
+ 186               		.stabd	78,0,0
+ 189               	.global	udpPrintStatus
+ 191               	udpPrintStatus:
+ 192               		.stabd	46,0,0
+  31:Lib/net/udp.c **** #endif
+  32:Lib/net/udp.c **** 
+  33:Lib/net/udp.c **** inline void udpSend(uint16_t len)
+  34:Lib/net/udp.c **** {
+  35:Lib/net/udp.c **** // make pointer to UDP header
+  36:Lib/net/udp.c ****   nicState.layer4.udp->srcport  = udpSocket->srcPort;
+  37:Lib/net/udp.c ****   nicState.layer4.udp->destport = (udpSocket->dstPortDef == 0)? udpSocket->dstPort : udpSocket->dst
+  38:Lib/net/udp.c ****   
+  39:Lib/net/udp.c ****   nicState.layer4.udp->udplen = htons(len + UDP_HEADER_LEN);
+  40:Lib/net/udp.c ****   nicState.layer4.udp->udpchksum = 0;
+  41:Lib/net/udp.c **** 
+  42:Lib/net/udp.c **** #if UDP_DEBUG
+  43:Lib/net/udp.c ****   if (udpDbgStream != NULL)
+  44:Lib/net/udp.c ****     if (udpDbgLevel > 1)
+  45:Lib/net/udp.c ****       fprintf_P(udpDbgStream, PSTR("Sending UDP packet (data length %d)\r\n"), len);
+  46:Lib/net/udp.c **** #endif
+  47:Lib/net/udp.c ****   ipSend(udpSocket->dstIp, IP_PROTO_UDP, len + UDP_HEADER_LEN);
+  48:Lib/net/udp.c **** }
+  49:Lib/net/udp.c **** 
+  50:Lib/net/udp.c **** inline void netstackUDPIPProcess(void)
+  51:Lib/net/udp.c **** {
+  52:Lib/net/udp.c ****   uint16_t len = (uint16_t) htons(nicState.layer4.udp->udplen);
+  53:Lib/net/udp.c ****   uint8_t i;
+  54:Lib/net/udp.c **** 
+  55:Lib/net/udp.c ****   #if UDP_DEBUG
+  56:Lib/net/udp.c ****   if(udpDbgStream != NULL)
+  57:Lib/net/udp.c ****     if (udpDbgLevel > 3)
+  58:Lib/net/udp.c ****       fprintf_P(udpDbgStream, PSTR("Proc. UDP packet (data length %d)\r\n"), len-UDP_HEADER_LEN);
+  59:Lib/net/udp.c **** #endif
+  60:Lib/net/udp.c **** 
+  61:Lib/net/udp.c ****   if ((nicState.layer4.udp->destport == udpSocket->srcPort) && ((udpSocket->dstPortDef == HTONS(0))
+  62:Lib/net/udp.c ****     || (udpSocket->dstPort == nicState.layer4.udp->srcport)))
+  63:Lib/net/udp.c ****   {
+  64:Lib/net/udp.c ****     if (udpSocket->dstPortDef == HTONS(0))
+  65:Lib/net/udp.c ****       udpSocket->dstPort = nicState.layer4.udp->srcport;
+  66:Lib/net/udp.c ****     uint8_t *tmp = (uint8_t *)(nicState.layer4.udp) + UDP_HEADER_LEN;
+  67:Lib/net/udp.c **** #if UDP_DEBUG
+  68:Lib/net/udp.c ****       if(udpDbgStream != NULL)
+  69:Lib/net/udp.c ****         if (udpDbgLevel > 4)
+  70:Lib/net/udp.c ****           fprintf_P(udpDbgStream, PSTR("Received data: "));
+  71:Lib/net/udp.c **** #endif
+  72:Lib/net/udp.c **** 
+  73:Lib/net/udp.c ****     for (i=UDP_HEADER_LEN; i<len; i++)
+  74:Lib/net/udp.c ****     {
+  75:Lib/net/udp.c **** #if UDP_DEBUG
+  76:Lib/net/udp.c ****       if(udpDbgStream != NULL)
+  77:Lib/net/udp.c ****         if (udpDbgLevel > 4)
+  78:Lib/net/udp.c ****           fprintf_P(udpDbgStream, PSTR("0x%2x\r\n"), *tmp);
+  79:Lib/net/udp.c **** #endif
+  80:Lib/net/udp.c **** #if UDB_DEBUG
+  81:Lib/net/udp.c ****       xQueueSend(udpSocket->Rx, tmp, 10) == 0);
+  82:Lib/net/udp.c **** #else
+  83:Lib/net/udp.c ****       if (xQueueSend(udpSocket->Rx, tmp, 10) == 0)
+  84:Lib/net/udp.c ****         if(udpDbgStream != NULL)
+  85:Lib/net/udp.c ****           if (udpDbgLevel > 0)
+  86:Lib/net/udp.c ****             fprintf_P(udpDbgStream, PSTR("UDP TX buffer busy\r\n"));
+  87:Lib/net/udp.c **** #endif
+  88:Lib/net/udp.c ****       tmp++;
+  89:Lib/net/udp.c ****     }
+  90:Lib/net/udp.c **** #if UDP_DEBUG
+  91:Lib/net/udp.c ****     if(udpDbgStream != NULL)
+  92:Lib/net/udp.c ****       if (udpDbgLevel > 4)
+  93:Lib/net/udp.c ****         fprintf_P(udpDbgStream, PSTR("\r\n"));
+  94:Lib/net/udp.c **** #endif
+  95:Lib/net/udp.c **** 
+  96:Lib/net/udp.c ****   }
+  97:Lib/net/udp.c **** }
+  98:Lib/net/udp.c **** 
+  99:Lib/net/udp.c **** inline void flushUdpQueues(void)
+ 100:Lib/net/udp.c **** {
+ 101:Lib/net/udp.c ****   if (uxQueueMessagesWaiting(udpSocket->Tx) > 0)
+ 102:Lib/net/udp.c ****   {
+ 103:Lib/net/udp.c ****     uint16_t len = 0;
+ 104:Lib/net/udp.c ****     uint8_t *data = (uint8_t *)(nicState.layer4.udp) + UDP_HEADER_LEN;
+ 105:Lib/net/udp.c ****     while (xQueueReceive(udpSocket->Tx, data, 0) == pdTRUE)
+ 106:Lib/net/udp.c ****     {
+ 107:Lib/net/udp.c ****       data++;
+ 108:Lib/net/udp.c ****       len++;
+ 109:Lib/net/udp.c ****     }
+ 110:Lib/net/udp.c ****     udpSend(len);
+ 111:Lib/net/udp.c ****   }
+ 112:Lib/net/udp.c **** }
+ 113:Lib/net/udp.c **** 
+ 114:Lib/net/udp.c **** void udpSaveConfig(void)
+ 115:Lib/net/udp.c **** {
+ 116:Lib/net/udp.c ****   eeprom_update_dword(&udpIpDst_eep, udpSocket->dstIp);
+ 117:Lib/net/udp.c ****   eeprom_update_word(&udpPortDstEep, udpSocket->dstPortDef);
+ 118:Lib/net/udp.c ****   eeprom_update_word(&udpPortSrcEep, udpSocket->srcPort);
+ 119:Lib/net/udp.c **** }
+ 120:Lib/net/udp.c **** 
+ 121:Lib/net/udp.c **** void udpPrintStatus(FILE *stream)
+ 122:Lib/net/udp.c **** {
+ 194               	.LM4:
+ 195               	.LFBB2:
+ 196 000e CF93      		push r28
+ 197 0010 DF93      		push r29
+ 198               	/* prologue: function */
+ 199               	/* frame size = 0 */
+ 200 0012 EC01      		movw r28,r24
+ 123:Lib/net/udp.c ****   fprintf_P(stream, PSTR("UDP config:"));
+ 202               	.LM5:
+ 203 0014 00D0      		rcall .
+ 204 0016 00D0      		rcall .
+ 205 0018 ADB7      		in r26,__SP_L__
+ 206 001a BEB7      		in r27,__SP_H__
+ 207 001c 1296      		adiw r26,1+1
+ 208 001e 9C93      		st X,r25
+ 209 0020 8E93      		st -X,r24
+ 210 0022 1197      		sbiw r26,1
+ 211 0024 80E0      		ldi r24,lo8(__c.2355)
+ 212 0026 90E0      		ldi r25,hi8(__c.2355)
+ 213 0028 1496      		adiw r26,3+1
+ 214 002a 9C93      		st X,r25
+ 215 002c 8E93      		st -X,r24
+ 216 002e 1397      		sbiw r26,3
+ 217 0030 0E94 0000 		call fprintf_P
+ 124:Lib/net/udp.c ****   fprintf_P(stream, PSTR("\r\n  IP          : ")); netPrintIPAddr(stream, udpSocket->dstIp);
+ 219               	.LM6:
+ 220 0034 EDB7      		in r30,__SP_L__
+ 221 0036 FEB7      		in r31,__SP_H__
+ 222 0038 D283      		std Z+2,r29
+ 223 003a C183      		std Z+1,r28
+ 224 003c 80E0      		ldi r24,lo8(__c.2357)
+ 225 003e 90E0      		ldi r25,hi8(__c.2357)
+ 226 0040 9483      		std Z+4,r25
+ 227 0042 8383      		std Z+3,r24
+ 228 0044 0E94 0000 		call fprintf_P
+ 229 0048 0F90      		pop __tmp_reg__
+ 230 004a 0F90      		pop __tmp_reg__
+ 231 004c 0F90      		pop __tmp_reg__
+ 232 004e 0F90      		pop __tmp_reg__
+ 233 0050 E091 0000 		lds r30,udpSocket
+ 234 0054 F091 0000 		lds r31,(udpSocket)+1
+ 235 0058 4681      		ldd r20,Z+6
+ 236 005a 5781      		ldd r21,Z+7
+ 237 005c 6085      		ldd r22,Z+8
+ 238 005e 7185      		ldd r23,Z+9
+ 239 0060 CE01      		movw r24,r28
+ 240 0062 0E94 0000 		call netPrintIPAddr
+ 125:Lib/net/udp.c ****   fprintf_P(stream, PSTR("\r\n  src port    : %d\r\n  dst port    : "), htons(udpSocket->srcPort));
+ 242               	.LM7:
+ 243 0066 E091 0000 		lds r30,udpSocket
+ 244 006a F091 0000 		lds r31,(udpSocket)+1
+ 245 006e 8481      		ldd r24,Z+4
+ 246 0070 9581      		ldd r25,Z+5
+ 247 0072 0E94 0000 		call htons
+ 248 0076 00D0      		rcall .
+ 249 0078 00D0      		rcall .
+ 250 007a 00D0      		rcall .
+ 251 007c EDB7      		in r30,__SP_L__
+ 252 007e FEB7      		in r31,__SP_H__
+ 253 0080 3196      		adiw r30,1
+ 254 0082 ADB7      		in r26,__SP_L__
+ 255 0084 BEB7      		in r27,__SP_H__
+ 256 0086 1296      		adiw r26,1+1
+ 257 0088 DC93      		st X,r29
+ 258 008a CE93      		st -X,r28
+ 259 008c 1197      		sbiw r26,1
+ 260 008e 20E0      		ldi r18,lo8(__c.2359)
+ 261 0090 30E0      		ldi r19,hi8(__c.2359)
+ 262 0092 3383      		std Z+3,r19
+ 263 0094 2283      		std Z+2,r18
+ 264 0096 9583      		std Z+5,r25
+ 265 0098 8483      		std Z+4,r24
+ 266 009a 0E94 0000 		call fprintf_P
+ 126:Lib/net/udp.c ****   if (udpSocket->dstPortDef == HTONS(0))
+ 268               	.LM8:
+ 269 009e E091 0000 		lds r30,udpSocket
+ 270 00a2 F091 0000 		lds r31,(udpSocket)+1
+ 271 00a6 8081      		ld r24,Z
+ 272 00a8 9181      		ldd r25,Z+1
+ 273 00aa EDB7      		in r30,__SP_L__
+ 274 00ac FEB7      		in r31,__SP_H__
+ 275 00ae 3696      		adiw r30,6
+ 276 00b0 0FB6      		in __tmp_reg__,__SREG__
+ 277 00b2 F894      		cli
+ 278 00b4 FEBF      		out __SP_H__,r31
+ 279 00b6 0FBE      		out __SREG__,__tmp_reg__
+ 280 00b8 EDBF      		out __SP_L__,r30
+ 281 00ba 0097      		sbiw r24,0
+ 282 00bc 01F4      		brne .L4
+ 127:Lib/net/udp.c ****     fprintf_P(stream, PSTR("ANY\r\n"));
+ 284               	.LM9:
+ 285 00be 00D0      		rcall .
+ 286 00c0 00D0      		rcall .
+ 287 00c2 ADB7      		in r26,__SP_L__
+ 288 00c4 BEB7      		in r27,__SP_H__
+ 289 00c6 1296      		adiw r26,1+1
+ 290 00c8 DC93      		st X,r29
+ 291 00ca CE93      		st -X,r28
+ 292 00cc 1197      		sbiw r26,1
+ 293 00ce 80E0      		ldi r24,lo8(__c.2361)
+ 294 00d0 90E0      		ldi r25,hi8(__c.2361)
+ 295 00d2 1496      		adiw r26,3+1
+ 296 00d4 9C93      		st X,r25
+ 297 00d6 8E93      		st -X,r24
+ 298 00d8 1397      		sbiw r26,3
+ 299 00da 0E94 0000 		call fprintf_P
+ 300 00de 0F90      		pop __tmp_reg__
+ 301 00e0 0F90      		pop __tmp_reg__
+ 302 00e2 0F90      		pop __tmp_reg__
+ 303 00e4 0F90      		pop __tmp_reg__
+ 304 00e6 00C0      		rjmp .L6
+ 305               	.L4:
+ 128:Lib/net/udp.c ****   else
+ 129:Lib/net/udp.c ****     fprintf_P(stream, PSTR("%d\r\n"), htons(udpSocket->dstPortDef));    
+ 307               	.LM10:
+ 308 00e8 0E94 0000 		call htons
+ 309 00ec 00D0      		rcall .
+ 310 00ee 00D0      		rcall .
+ 311 00f0 00D0      		rcall .
+ 312 00f2 EDB7      		in r30,__SP_L__
+ 313 00f4 FEB7      		in r31,__SP_H__
+ 314 00f6 3196      		adiw r30,1
+ 315 00f8 ADB7      		in r26,__SP_L__
+ 316 00fa BEB7      		in r27,__SP_H__
+ 317 00fc 1296      		adiw r26,1+1
+ 318 00fe DC93      		st X,r29
+ 319 0100 CE93      		st -X,r28
+ 320 0102 1197      		sbiw r26,1
+ 321 0104 20E0      		ldi r18,lo8(__c.2363)
+ 322 0106 30E0      		ldi r19,hi8(__c.2363)
+ 323 0108 3383      		std Z+3,r19
+ 324 010a 2283      		std Z+2,r18
+ 325 010c 9583      		std Z+5,r25
+ 326 010e 8483      		std Z+4,r24
+ 327 0110 0E94 0000 		call fprintf_P
+ 328 0114 EDB7      		in r30,__SP_L__
+ 329 0116 FEB7      		in r31,__SP_H__
+ 330 0118 3696      		adiw r30,6
+ 331 011a 0FB6      		in __tmp_reg__,__SREG__
+ 332 011c F894      		cli
+ 333 011e FEBF      		out __SP_H__,r31
+ 334 0120 0FBE      		out __SREG__,__tmp_reg__
+ 335 0122 EDBF      		out __SP_L__,r30
+ 336               	.L6:
+ 337               	/* epilogue start */
+ 130:Lib/net/udp.c **** }
+ 339               	.LM11:
+ 340 0124 DF91      		pop r29
+ 341 0126 CF91      		pop r28
+ 342 0128 0895      		ret
+ 344               	.Lscope2:
+ 346               		.stabd	78,0,0
+ 348               	.global	udpSaveConfig
+ 350               	udpSaveConfig:
+ 351               		.stabd	46,0,0
+ 115:Lib/net/udp.c **** {
+ 353               	.LM12:
+ 354               	.LFBB3:
+ 355               	/* prologue: function */
+ 356               	/* frame size = 0 */
+ 116:Lib/net/udp.c ****   eeprom_update_dword(&udpIpDst_eep, udpSocket->dstIp);
+ 358               	.LM13:
+ 359 012a E091 0000 		lds r30,udpSocket
+ 360 012e F091 0000 		lds r31,(udpSocket)+1
+ 361 0132 4681      		ldd r20,Z+6
+ 362 0134 5781      		ldd r21,Z+7
+ 363 0136 6085      		ldd r22,Z+8
+ 364 0138 7185      		ldd r23,Z+9
+ 365 013a 80E0      		ldi r24,lo8(udpIpDst_eep)
+ 366 013c 90E0      		ldi r25,hi8(udpIpDst_eep)
+ 367 013e 0E94 0000 		call __eeupd_dword_m128
+ 117:Lib/net/udp.c ****   eeprom_update_word(&udpPortDstEep, udpSocket->dstPortDef);
+ 369               	.LM14:
+ 370 0142 E091 0000 		lds r30,udpSocket
+ 371 0146 F091 0000 		lds r31,(udpSocket)+1
+ 372 014a 6081      		ld r22,Z
+ 373 014c 7181      		ldd r23,Z+1
+ 374 014e 80E0      		ldi r24,lo8(udpPortDstEep)
+ 375 0150 90E0      		ldi r25,hi8(udpPortDstEep)
+ 376 0152 0E94 0000 		call __eeupd_word_m128
+ 118:Lib/net/udp.c ****   eeprom_update_word(&udpPortSrcEep, udpSocket->srcPort);
+ 378               	.LM15:
+ 379 0156 E091 0000 		lds r30,udpSocket
+ 380 015a F091 0000 		lds r31,(udpSocket)+1
+ 381 015e 6481      		ldd r22,Z+4
+ 382 0160 7581      		ldd r23,Z+5
+ 383 0162 80E0      		ldi r24,lo8(udpPortSrcEep)
+ 384 0164 90E0      		ldi r25,hi8(udpPortSrcEep)
+ 385 0166 0E94 0000 		call __eeupd_word_m128
+ 386               	/* epilogue start */
+ 119:Lib/net/udp.c **** }
+ 388               	.LM16:
+ 389 016a 0895      		ret
+ 391               	.Lscope3:
+ 393               		.stabd	78,0,0
+ 395               	.global	netstackUDPIPProcess
+ 397               	netstackUDPIPProcess:
+ 398               		.stabd	46,0,0
+  51:Lib/net/udp.c **** {
+ 400               	.LM17:
+ 401               	.LFBB4:
+ 402 016c AF92      		push r10
+ 403 016e BF92      		push r11
+ 404 0170 CF92      		push r12
+ 405 0172 DF92      		push r13
+ 406 0174 FF92      		push r15
+ 407 0176 0F93      		push r16
+ 408 0178 1F93      		push r17
+ 409 017a CF93      		push r28
+ 410 017c DF93      		push r29
+ 411               	/* prologue: function */
+ 412               	/* frame size = 0 */
+  52:Lib/net/udp.c ****   uint16_t len = (uint16_t) htons(nicState.layer4.udp->udplen);
+ 414               	.LM18:
+ 415 017e E091 0000 		lds r30,nicState+12
+ 416 0182 F091 0000 		lds r31,(nicState+12)+1
+ 417 0186 8481      		ldd r24,Z+4
+ 418 0188 9581      		ldd r25,Z+5
+ 419 018a 0E94 0000 		call htons
+ 420 018e 8C01      		movw r16,r24
+  56:Lib/net/udp.c ****   if(udpDbgStream != NULL)
+ 422               	.LM19:
+ 423 0190 2091 0000 		lds r18,udpDbgStream
+ 424 0194 3091 0000 		lds r19,(udpDbgStream)+1
+ 425 0198 2115      		cp r18,__zero_reg__
+ 426 019a 3105      		cpc r19,__zero_reg__
+ 427 019c 01F0      		breq .L10
+  57:Lib/net/udp.c ****     if (udpDbgLevel > 3)
+ 429               	.LM20:
+ 430 019e 8091 0000 		lds r24,udpDbgLevel
+ 431 01a2 8430      		cpi r24,lo8(4)
+ 432 01a4 00F0      		brlo .L10
+  58:Lib/net/udp.c ****       fprintf_P(udpDbgStream, PSTR("Proc. UDP packet (data length %d)\r\n"), len-UDP_HEADER_LEN);
+ 434               	.LM21:
+ 435 01a6 00D0      		rcall .
+ 436 01a8 00D0      		rcall .
+ 437 01aa 00D0      		rcall .
+ 438 01ac EDB7      		in r30,__SP_L__
+ 439 01ae FEB7      		in r31,__SP_H__
+ 440 01b0 3196      		adiw r30,1
+ 441 01b2 ADB7      		in r26,__SP_L__
+ 442 01b4 BEB7      		in r27,__SP_H__
+ 443 01b6 1296      		adiw r26,1+1
+ 444 01b8 3C93      		st X,r19
+ 445 01ba 2E93      		st -X,r18
+ 446 01bc 1197      		sbiw r26,1
+ 447 01be 80E0      		ldi r24,lo8(__c.2297)
+ 448 01c0 90E0      		ldi r25,hi8(__c.2297)
+ 449 01c2 9383      		std Z+3,r25
+ 450 01c4 8283      		std Z+2,r24
+ 451 01c6 0850      		subi r16,lo8(-(-8))
+ 452 01c8 1040      		sbci r17,hi8(-(-8))
+ 453 01ca 1583      		std Z+5,r17
+ 454 01cc 0483      		std Z+4,r16
+ 455 01ce 085F      		subi r16,lo8(-(8))
+ 456 01d0 1F4F      		sbci r17,hi8(-(8))
+ 457 01d2 0E94 0000 		call fprintf_P
+ 458 01d6 EDB7      		in r30,__SP_L__
+ 459 01d8 FEB7      		in r31,__SP_H__
+ 460 01da 3696      		adiw r30,6
+ 461 01dc 0FB6      		in __tmp_reg__,__SREG__
+ 462 01de F894      		cli
+ 463 01e0 FEBF      		out __SP_H__,r31
+ 464 01e2 0FBE      		out __SREG__,__tmp_reg__
+ 465 01e4 EDBF      		out __SP_L__,r30
+ 466               	.L10:
+  61:Lib/net/udp.c ****   if ((nicState.layer4.udp->destport == udpSocket->srcPort) && ((udpSocket->dstPortDef == HTONS(0))
+ 468               	.LM22:
+ 469 01e6 C091 0000 		lds r28,nicState+12
+ 470 01ea D091 0000 		lds r29,(nicState+12)+1
+ 471 01ee E091 0000 		lds r30,udpSocket
+ 472 01f2 F091 0000 		lds r31,(udpSocket)+1
+ 473 01f6 2A81      		ldd r18,Y+2
+ 474 01f8 3B81      		ldd r19,Y+3
+ 475 01fa 8481      		ldd r24,Z+4
+ 476 01fc 9581      		ldd r25,Z+5
+ 477 01fe 2817      		cp r18,r24
+ 478 0200 3907      		cpc r19,r25
+ 479 0202 01F0      		breq .+2
+ 480 0204 00C0      		rjmp .L19
+ 481 0206 8081      		ld r24,Z
+ 482 0208 9181      		ldd r25,Z+1
+ 483 020a 2881      		ld r18,Y
+ 484 020c 3981      		ldd r19,Y+1
+ 485 020e 892B      		or r24,r25
+ 486 0210 01F0      		breq .L12
+ 487 0212 8281      		ldd r24,Z+2
+ 488 0214 9381      		ldd r25,Z+3
+ 489 0216 8217      		cp r24,r18
+ 490 0218 9307      		cpc r25,r19
+ 491 021a 01F0      		breq .+2
+ 492 021c 00C0      		rjmp .L19
+ 493 021e 00C0      		rjmp .L13
+ 494               	.L12:
+ 495               	.LBB2:
+  65:Lib/net/udp.c ****       udpSocket->dstPort = nicState.layer4.udp->srcport;
+ 497               	.LM23:
+ 498 0220 3383      		std Z+3,r19
+ 499 0222 2283      		std Z+2,r18
+ 500               	.L13:
+  68:Lib/net/udp.c ****       if(udpDbgStream != NULL)
+ 502               	.LM24:
+ 503 0224 2091 0000 		lds r18,udpDbgStream
+ 504 0228 3091 0000 		lds r19,(udpDbgStream)+1
+ 505 022c 2115      		cp r18,__zero_reg__
+ 506 022e 3105      		cpc r19,__zero_reg__
+ 507 0230 01F0      		breq .L14
+  69:Lib/net/udp.c ****         if (udpDbgLevel > 4)
+ 509               	.LM25:
+ 510 0232 8091 0000 		lds r24,udpDbgLevel
+ 511 0236 8530      		cpi r24,lo8(5)
+ 512 0238 00F0      		brlo .L14
+  70:Lib/net/udp.c ****           fprintf_P(udpDbgStream, PSTR("Received data: "));
+ 514               	.LM26:
+ 515 023a 00D0      		rcall .
+ 516 023c 00D0      		rcall .
+ 517 023e ADB7      		in r26,__SP_L__
+ 518 0240 BEB7      		in r27,__SP_H__
+ 519 0242 1296      		adiw r26,1+1
+ 520 0244 3C93      		st X,r19
+ 521 0246 2E93      		st -X,r18
+ 522 0248 1197      		sbiw r26,1
+ 523 024a 80E0      		ldi r24,lo8(__c.2300)
+ 524 024c 90E0      		ldi r25,hi8(__c.2300)
+ 525 024e 1496      		adiw r26,3+1
+ 526 0250 9C93      		st X,r25
+ 527 0252 8E93      		st -X,r24
+ 528 0254 1397      		sbiw r26,3
+ 529 0256 0E94 0000 		call fprintf_P
+ 530 025a 0F90      		pop __tmp_reg__
+ 531 025c 0F90      		pop __tmp_reg__
+ 532 025e 0F90      		pop __tmp_reg__
+ 533 0260 0F90      		pop __tmp_reg__
+ 534               	.L14:
+  66:Lib/net/udp.c ****     uint8_t *tmp = (uint8_t *)(nicState.layer4.udp) + UDP_HEADER_LEN;
+ 536               	.LM27:
+ 537 0262 2896      		adiw r28,8
+ 538 0264 28E0      		ldi r18,lo8(8)
+ 539 0266 F22E      		mov r15,r18
+  78:Lib/net/udp.c ****           fprintf_P(udpDbgStream, PSTR("0x%2x\r\n"), *tmp);
+ 541               	.LM28:
+ 542 0268 90E0      		ldi r25,lo8(__c.2302)
+ 543 026a A92E      		mov r10,r25
+ 544 026c 90E0      		ldi r25,hi8(__c.2302)
+ 545 026e B92E      		mov r11,r25
+  86:Lib/net/udp.c ****             fprintf_P(udpDbgStream, PSTR("UDP TX buffer busy\r\n"));
+ 547               	.LM29:
+ 548 0270 80E0      		ldi r24,lo8(__c.2304)
+ 549 0272 C82E      		mov r12,r24
+ 550 0274 80E0      		ldi r24,hi8(__c.2304)
+ 551 0276 D82E      		mov r13,r24
+ 552 0278 00C0      		rjmp .L15
+ 553               	.L18:
+  76:Lib/net/udp.c ****       if(udpDbgStream != NULL)
+ 555               	.LM30:
+ 556 027a 2115      		cp r18,__zero_reg__
+ 557 027c 3105      		cpc r19,__zero_reg__
+ 558 027e 01F0      		breq .L16
+  77:Lib/net/udp.c ****         if (udpDbgLevel > 4)
+ 560               	.LM31:
+ 561 0280 8091 0000 		lds r24,udpDbgLevel
+ 562 0284 8530      		cpi r24,lo8(5)
+ 563 0286 00F0      		brlo .L16
+  78:Lib/net/udp.c ****           fprintf_P(udpDbgStream, PSTR("0x%2x\r\n"), *tmp);
+ 565               	.LM32:
+ 566 0288 00D0      		rcall .
+ 567 028a 00D0      		rcall .
+ 568 028c 00D0      		rcall .
+ 569 028e EDB7      		in r30,__SP_L__
+ 570 0290 FEB7      		in r31,__SP_H__
+ 571 0292 3196      		adiw r30,1
+ 572 0294 ADB7      		in r26,__SP_L__
+ 573 0296 BEB7      		in r27,__SP_H__
+ 574 0298 1296      		adiw r26,1+1
+ 575 029a 3C93      		st X,r19
+ 576 029c 2E93      		st -X,r18
+ 577 029e 1197      		sbiw r26,1
+ 578 02a0 B382      		std Z+3,r11
+ 579 02a2 A282      		std Z+2,r10
+ 580 02a4 8881      		ld r24,Y
+ 581 02a6 8483      		std Z+4,r24
+ 582 02a8 1582      		std Z+5,__zero_reg__
+ 583 02aa 0E94 0000 		call fprintf_P
+ 584 02ae EDB7      		in r30,__SP_L__
+ 585 02b0 FEB7      		in r31,__SP_H__
+ 586 02b2 3696      		adiw r30,6
+ 587 02b4 0FB6      		in __tmp_reg__,__SREG__
+ 588 02b6 F894      		cli
+ 589 02b8 FEBF      		out __SP_H__,r31
+ 590 02ba 0FBE      		out __SREG__,__tmp_reg__
+ 591 02bc EDBF      		out __SP_L__,r30
+ 592               	.L16:
+  83:Lib/net/udp.c ****       if (xQueueSend(udpSocket->Rx, tmp, 10) == 0)
+ 594               	.LM33:
+ 595 02be E091 0000 		lds r30,udpSocket
+ 596 02c2 F091 0000 		lds r31,(udpSocket)+1
+ 597 02c6 8285      		ldd r24,Z+10
+ 598 02c8 9385      		ldd r25,Z+11
+ 599 02ca BE01      		movw r22,r28
+ 600 02cc 4AE0      		ldi r20,lo8(10)
+ 601 02ce 50E0      		ldi r21,hi8(10)
+ 602 02d0 20E0      		ldi r18,lo8(0)
+ 603 02d2 0E94 0000 		call xQueueGenericSend
+ 604 02d6 8823      		tst r24
+ 605 02d8 01F4      		brne .L17
+  84:Lib/net/udp.c ****         if(udpDbgStream != NULL)
+ 607               	.LM34:
+ 608 02da 2091 0000 		lds r18,udpDbgStream
+ 609 02de 3091 0000 		lds r19,(udpDbgStream)+1
+ 610 02e2 2115      		cp r18,__zero_reg__
+ 611 02e4 3105      		cpc r19,__zero_reg__
+ 612 02e6 01F0      		breq .L17
+  85:Lib/net/udp.c ****           if (udpDbgLevel > 0)
+ 614               	.LM35:
+ 615 02e8 8091 0000 		lds r24,udpDbgLevel
+ 616 02ec 8823      		tst r24
+ 617 02ee 01F0      		breq .L17
+  86:Lib/net/udp.c ****             fprintf_P(udpDbgStream, PSTR("UDP TX buffer busy\r\n"));
+ 619               	.LM36:
+ 620 02f0 00D0      		rcall .
+ 621 02f2 00D0      		rcall .
+ 622 02f4 ADB7      		in r26,__SP_L__
+ 623 02f6 BEB7      		in r27,__SP_H__
+ 624 02f8 1296      		adiw r26,1+1
+ 625 02fa 3C93      		st X,r19
+ 626 02fc 2E93      		st -X,r18
+ 627 02fe 1197      		sbiw r26,1
+ 628 0300 1496      		adiw r26,3+1
+ 629 0302 DC92      		st X,r13
+ 630 0304 CE92      		st -X,r12
+ 631 0306 1397      		sbiw r26,3
+ 632 0308 0E94 0000 		call fprintf_P
+ 633 030c 0F90      		pop __tmp_reg__
+ 634 030e 0F90      		pop __tmp_reg__
+ 635 0310 0F90      		pop __tmp_reg__
+ 636 0312 0F90      		pop __tmp_reg__
+ 637               	.L17:
+  88:Lib/net/udp.c ****       tmp++;
+ 639               	.LM37:
+ 640 0314 2196      		adiw r28,1
+  73:Lib/net/udp.c ****     for (i=UDP_HEADER_LEN; i<len; i++)
+ 642               	.LM38:
+ 643 0316 F394      		inc r15
+ 644               	.L15:
+ 645 0318 8F2D      		mov r24,r15
+ 646 031a 90E0      		ldi r25,lo8(0)
+ 647 031c 2091 0000 		lds r18,udpDbgStream
+ 648 0320 3091 0000 		lds r19,(udpDbgStream)+1
+ 649 0324 8017      		cp r24,r16
+ 650 0326 9107      		cpc r25,r17
+ 651 0328 00F4      		brsh .+2
+ 652 032a 00C0      		rjmp .L18
+  91:Lib/net/udp.c ****     if(udpDbgStream != NULL)
+ 654               	.LM39:
+ 655 032c 2115      		cp r18,__zero_reg__
+ 656 032e 3105      		cpc r19,__zero_reg__
+ 657 0330 01F0      		breq .L19
+  92:Lib/net/udp.c ****       if (udpDbgLevel > 4)
+ 659               	.LM40:
+ 660 0332 8091 0000 		lds r24,udpDbgLevel
+ 661 0336 8530      		cpi r24,lo8(5)
+ 662 0338 00F0      		brlo .L19
+  93:Lib/net/udp.c ****         fprintf_P(udpDbgStream, PSTR("\r\n"));
+ 664               	.LM41:
+ 665 033a 00D0      		rcall .
+ 666 033c 00D0      		rcall .
+ 667 033e EDB7      		in r30,__SP_L__
+ 668 0340 FEB7      		in r31,__SP_H__
+ 669 0342 3283      		std Z+2,r19
+ 670 0344 2183      		std Z+1,r18
+ 671 0346 80E0      		ldi r24,lo8(__c.2309)
+ 672 0348 90E0      		ldi r25,hi8(__c.2309)
+ 673 034a 9483      		std Z+4,r25
+ 674 034c 8383      		std Z+3,r24
+ 675 034e 0E94 0000 		call fprintf_P
+ 676 0352 0F90      		pop __tmp_reg__
+ 677 0354 0F90      		pop __tmp_reg__
+ 678 0356 0F90      		pop __tmp_reg__
+ 679 0358 0F90      		pop __tmp_reg__
+ 680               	.L19:
+ 681               	/* epilogue start */
+ 682               	.LBE2:
+  97:Lib/net/udp.c **** }
+ 684               	.LM42:
+ 685 035a DF91      		pop r29
+ 686 035c CF91      		pop r28
+ 687 035e 1F91      		pop r17
+ 688 0360 0F91      		pop r16
+ 689 0362 FF90      		pop r15
+ 690 0364 DF90      		pop r13
+ 691 0366 CF90      		pop r12
+ 692 0368 BF90      		pop r11
+ 693 036a AF90      		pop r10
+ 694 036c 0895      		ret
+ 703               	.Lscope4:
+ 705               		.stabd	78,0,0
+ 708               	.global	udpSend
+ 710               	udpSend:
+ 711               		.stabd	46,0,0
+  34:Lib/net/udp.c **** {
+ 713               	.LM43:
+ 714               	.LFBB5:
+ 715 036e EF92      		push r14
+ 716 0370 FF92      		push r15
+ 717 0372 0F93      		push r16
+ 718 0374 1F93      		push r17
+ 719 0376 CF93      		push r28
+ 720 0378 DF93      		push r29
+ 721               	/* prologue: function */
+ 722               	/* frame size = 0 */
+ 723 037a 7C01      		movw r14,r24
+  36:Lib/net/udp.c ****   nicState.layer4.udp->srcport  = udpSocket->srcPort;
+ 725               	.LM44:
+ 726 037c C091 0000 		lds r28,nicState+12
+ 727 0380 D091 0000 		lds r29,(nicState+12)+1
+ 728 0384 E091 0000 		lds r30,udpSocket
+ 729 0388 F091 0000 		lds r31,(udpSocket)+1
+ 730 038c 8481      		ldd r24,Z+4
+ 731 038e 9581      		ldd r25,Z+5
+ 732 0390 9983      		std Y+1,r25
+ 733 0392 8883      		st Y,r24
+  37:Lib/net/udp.c ****   nicState.layer4.udp->destport = (udpSocket->dstPortDef == 0)? udpSocket->dstPort : udpSocket->dst
+ 735               	.LM45:
+ 736 0394 8081      		ld r24,Z
+ 737 0396 9181      		ldd r25,Z+1
+ 738 0398 0097      		sbiw r24,0
+ 739 039a 01F4      		brne .L21
+ 740 039c 8281      		ldd r24,Z+2
+ 741 039e 9381      		ldd r25,Z+3
+ 742               	.L21:
+ 743 03a0 9B83      		std Y+3,r25
+ 744 03a2 8A83      		std Y+2,r24
+  39:Lib/net/udp.c ****   nicState.layer4.udp->udplen = htons(len + UDP_HEADER_LEN);
+ 746               	.LM46:
+ 747 03a4 8701      		movw r16,r14
+ 748 03a6 085F      		subi r16,lo8(-(8))
+ 749 03a8 1F4F      		sbci r17,hi8(-(8))
+ 750 03aa C801      		movw r24,r16
+ 751 03ac 0E94 0000 		call htons
+ 752 03b0 9D83      		std Y+5,r25
+ 753 03b2 8C83      		std Y+4,r24
+  40:Lib/net/udp.c ****   nicState.layer4.udp->udpchksum = 0;
+ 755               	.LM47:
+ 756 03b4 E091 0000 		lds r30,nicState+12
+ 757 03b8 F091 0000 		lds r31,(nicState+12)+1
+ 758 03bc 1782      		std Z+7,__zero_reg__
+ 759 03be 1682      		std Z+6,__zero_reg__
+  43:Lib/net/udp.c ****   if (udpDbgStream != NULL)
+ 761               	.LM48:
+ 762 03c0 2091 0000 		lds r18,udpDbgStream
+ 763 03c4 3091 0000 		lds r19,(udpDbgStream)+1
+ 764 03c8 2115      		cp r18,__zero_reg__
+ 765 03ca 3105      		cpc r19,__zero_reg__
+ 766 03cc 01F0      		breq .L22
+  44:Lib/net/udp.c ****     if (udpDbgLevel > 1)
+ 768               	.LM49:
+ 769 03ce 8091 0000 		lds r24,udpDbgLevel
+ 770 03d2 8230      		cpi r24,lo8(2)
+ 771 03d4 00F0      		brlo .L22
+  45:Lib/net/udp.c ****       fprintf_P(udpDbgStream, PSTR("Sending UDP packet (data length %d)\r\n"), len);
+ 773               	.LM50:
+ 774 03d6 00D0      		rcall .
+ 775 03d8 00D0      		rcall .
+ 776 03da 00D0      		rcall .
+ 777 03dc EDB7      		in r30,__SP_L__
+ 778 03de FEB7      		in r31,__SP_H__
+ 779 03e0 3196      		adiw r30,1
+ 780 03e2 ADB7      		in r26,__SP_L__
+ 781 03e4 BEB7      		in r27,__SP_H__
+ 782 03e6 1296      		adiw r26,1+1
+ 783 03e8 3C93      		st X,r19
+ 784 03ea 2E93      		st -X,r18
+ 785 03ec 1197      		sbiw r26,1
+ 786 03ee 80E0      		ldi r24,lo8(__c.2280)
+ 787 03f0 90E0      		ldi r25,hi8(__c.2280)
+ 788 03f2 9383      		std Z+3,r25
+ 789 03f4 8283      		std Z+2,r24
+ 790 03f6 F582      		std Z+5,r15
+ 791 03f8 E482      		std Z+4,r14
+ 792 03fa 0E94 0000 		call fprintf_P
+ 793 03fe 8DB7      		in r24,__SP_L__
+ 794 0400 9EB7      		in r25,__SP_H__
+ 795 0402 0696      		adiw r24,6
+ 796 0404 0FB6      		in __tmp_reg__,__SREG__
+ 797 0406 F894      		cli
+ 798 0408 9EBF      		out __SP_H__,r25
+ 799 040a 0FBE      		out __SREG__,__tmp_reg__
+ 800 040c 8DBF      		out __SP_L__,r24
+ 801               	.L22:
+  47:Lib/net/udp.c ****   ipSend(udpSocket->dstIp, IP_PROTO_UDP, len + UDP_HEADER_LEN);
+ 803               	.LM51:
+ 804 040e E091 0000 		lds r30,udpSocket
+ 805 0412 F091 0000 		lds r31,(udpSocket)+1
+ 806 0416 6681      		ldd r22,Z+6
+ 807 0418 7781      		ldd r23,Z+7
+ 808 041a 8085      		ldd r24,Z+8
+ 809 041c 9185      		ldd r25,Z+9
+ 810 041e 41E1      		ldi r20,lo8(17)
+ 811 0420 9801      		movw r18,r16
+ 812 0422 0E94 0000 		call ipSend
+ 813               	/* epilogue start */
+  48:Lib/net/udp.c **** }
+ 815               	.LM52:
+ 816 0426 DF91      		pop r29
+ 817 0428 CF91      		pop r28
+ 818 042a 1F91      		pop r17
+ 819 042c 0F91      		pop r16
+ 820 042e FF90      		pop r15
+ 821 0430 EF90      		pop r14
+ 822 0432 0895      		ret
+ 824               	.Lscope5:
+ 826               		.stabd	78,0,0
+ 828               	.global	flushUdpQueues
+ 830               	flushUdpQueues:
+ 831               		.stabd	46,0,0
+ 100:Lib/net/udp.c **** {
+ 833               	.LM53:
+ 834               	.LFBB6:
+ 835 0434 0F93      		push r16
+ 836 0436 1F93      		push r17
+ 837 0438 CF93      		push r28
+ 838 043a DF93      		push r29
+ 839               	/* prologue: function */
+ 840               	/* frame size = 0 */
+ 101:Lib/net/udp.c ****   if (uxQueueMessagesWaiting(udpSocket->Tx) > 0)
+ 842               	.LM54:
+ 843 043c E091 0000 		lds r30,udpSocket
+ 844 0440 F091 0000 		lds r31,(udpSocket)+1
+ 845 0444 8485      		ldd r24,Z+12
+ 846 0446 9585      		ldd r25,Z+13
+ 847 0448 0E94 0000 		call uxQueueMessagesWaiting
+ 848 044c 8823      		tst r24
+ 849 044e 01F0      		breq .L28
+ 850               	.LBB3:
+ 104:Lib/net/udp.c ****     uint8_t *data = (uint8_t *)(nicState.layer4.udp) + UDP_HEADER_LEN;
+ 852               	.LM55:
+ 853 0450 C091 0000 		lds r28,nicState+12
+ 854 0454 D091 0000 		lds r29,(nicState+12)+1
+ 855 0458 2896      		adiw r28,8
+ 856 045a 00E0      		ldi r16,lo8(0)
+ 857 045c 10E0      		ldi r17,hi8(0)
+ 858 045e 00C0      		rjmp .L26
+ 859               	.L27:
+ 107:Lib/net/udp.c ****       data++;
+ 861               	.LM56:
+ 862 0460 2196      		adiw r28,1
+ 108:Lib/net/udp.c ****       len++;
+ 864               	.LM57:
+ 865 0462 0F5F      		subi r16,lo8(-(1))
+ 866 0464 1F4F      		sbci r17,hi8(-(1))
+ 867               	.L26:
+ 105:Lib/net/udp.c ****     while (xQueueReceive(udpSocket->Tx, data, 0) == pdTRUE)
+ 869               	.LM58:
+ 870 0466 E091 0000 		lds r30,udpSocket
+ 871 046a F091 0000 		lds r31,(udpSocket)+1
+ 872 046e 8485      		ldd r24,Z+12
+ 873 0470 9585      		ldd r25,Z+13
+ 874 0472 BE01      		movw r22,r28
+ 875 0474 40E0      		ldi r20,lo8(0)
+ 876 0476 50E0      		ldi r21,hi8(0)
+ 877 0478 20E0      		ldi r18,lo8(0)
+ 878 047a 0E94 0000 		call xQueueGenericReceive
+ 879 047e 8130      		cpi r24,lo8(1)
+ 880 0480 01F0      		breq .L27
+ 110:Lib/net/udp.c ****     udpSend(len);
+ 882               	.LM59:
+ 883 0482 C801      		movw r24,r16
+ 884 0484 0E94 0000 		call udpSend
+ 885               	.L28:
+ 886               	/* epilogue start */
+ 887               	.LBE3:
+ 112:Lib/net/udp.c **** }
+ 889               	.LM60:
+ 890 0488 DF91      		pop r29
+ 891 048a CF91      		pop r28
+ 892 048c 1F91      		pop r17
+ 893 048e 0F91      		pop r16
+ 894 0490 0895      		ret
+ 900               	.Lscope6:
+ 902               		.stabd	78,0,0
+ 904               	.global	udpInit
+ 906               	udpInit:
+ 907               		.stabd	46,0,0
+  10:Lib/net/udp.c **** {
+ 909               	.LM61:
+ 910               	.LFBB7:
+ 911 0492 0F93      		push r16
+ 912 0494 1F93      		push r17
+ 913               	/* prologue: function */
+ 914               	/* frame size = 0 */
+  12:Lib/net/udp.c ****   udpDbgStream         = NULL;
+ 916               	.LM62:
+ 917 0496 1092 0000 		sts (udpDbgStream)+1,__zero_reg__
+ 918 049a 1092 0000 		sts udpDbgStream,__zero_reg__
+  13:Lib/net/udp.c ****   udpDbgLevel          = 0;
+ 920               	.LM63:
+ 921 049e 1092 0000 		sts udpDbgLevel,__zero_reg__
+  15:Lib/net/udp.c ****   udpSocket = xmalloc(sizeof(UdpSocket_t));
+ 923               	.LM64:
+ 924 04a2 8EE0      		ldi r24,lo8(14)
+ 925 04a4 90E0      		ldi r25,hi8(14)
+ 926 04a6 0E94 0000 		call xmalloc
+ 927 04aa 8C01      		movw r16,r24
+ 928 04ac 9093 0000 		sts (udpSocket)+1,r25
+ 929 04b0 8093 0000 		sts udpSocket,r24
+  17:Lib/net/udp.c ****   udpSocket->dstIp      = eeprom_read_dword(&udpIpDst_eep);
+ 931               	.LM65:
+ 932 04b4 80E0      		ldi r24,lo8(udpIpDst_eep)
+ 933 04b6 90E0      		ldi r25,hi8(udpIpDst_eep)
+ 934 04b8 0E94 0000 		call __eerd_dword_m128
+ 935 04bc F801      		movw r30,r16
+ 936 04be 6683      		std Z+6,r22
+ 937 04c0 7783      		std Z+7,r23
+ 938 04c2 8087      		std Z+8,r24
+ 939 04c4 9187      		std Z+9,r25
+  18:Lib/net/udp.c ****   udpSocket->dstPortDef = eeprom_read_word(&udpPortDstEep);;
+ 941               	.LM66:
+ 942 04c6 80E0      		ldi r24,lo8(udpPortDstEep)
+ 943 04c8 90E0      		ldi r25,hi8(udpPortDstEep)
+ 944 04ca 0E94 0000 		call __eerd_word_m128
+ 945 04ce F801      		movw r30,r16
+ 946 04d0 9183      		std Z+1,r25
+ 947 04d2 8083      		st Z,r24
+  19:Lib/net/udp.c ****   udpSocket->srcPort    = eeprom_read_word(&udpPortSrcEep);
+ 949               	.LM67:
+ 950 04d4 80E0      		ldi r24,lo8(udpPortSrcEep)
+ 951 04d6 90E0      		ldi r25,hi8(udpPortSrcEep)
+ 952 04d8 0E94 0000 		call __eerd_word_m128
+ 953 04dc F801      		movw r30,r16
+ 954 04de 9583      		std Z+5,r25
+ 955 04e0 8483      		std Z+4,r24
+  21:Lib/net/udp.c ****   udpSocket->Rx         = xQueueCreateExternal(255, 1, (void *)(RTOS_UDP_RX_BUF_ADDR));
+ 957               	.LM68:
+ 958 04e2 8FEF      		ldi r24,lo8(-1)
+ 959 04e4 61E0      		ldi r22,lo8(1)
+ 960 04e6 40E0      		ldi r20,lo8(30976)
+ 961 04e8 59E7      		ldi r21,hi8(30976)
+ 962 04ea 0E94 0000 		call xQueueCreateExternal
+ 963 04ee F801      		movw r30,r16
+ 964 04f0 9387      		std Z+11,r25
+ 965 04f2 8287      		std Z+10,r24
+  22:Lib/net/udp.c ****   udpSocket->Tx         = xQueueCreateExternal(255, 1, (void *)(RTOS_UDP_TX_BUF_ADDR));
+ 967               	.LM69:
+ 968 04f4 0091 0000 		lds r16,udpSocket
+ 969 04f8 1091 0000 		lds r17,(udpSocket)+1
+ 970 04fc 8FEF      		ldi r24,lo8(-1)
+ 971 04fe 61E0      		ldi r22,lo8(1)
+ 972 0500 40E0      		ldi r20,lo8(30720)
+ 973 0502 58E7      		ldi r21,hi8(30720)
+ 974 0504 0E94 0000 		call xQueueCreateExternal
+ 975 0508 F801      		movw r30,r16
+ 976 050a 9587      		std Z+13,r25
+ 977 050c 8487      		std Z+12,r24
+ 978               	/* epilogue start */
+  23:Lib/net/udp.c **** }
+ 980               	.LM70:
+ 981 050e 1F91      		pop r17
+ 982 0510 0F91      		pop r16
+ 983 0512 0895      		ret
+ 985               	.Lscope7:
+ 987               		.stabd	78,0,0
+ 988               		.section	.progmem.data,"a",@progbits
+ 991               	__c.2363:
+ 992 0000 2564 0D0A 		.string	"%d\r\n"
+ 992      00
+ 995               	__c.2361:
+ 996 0005 414E 590D 		.string	"ANY\r\n"
+ 996      0A00 
+ 999               	__c.2359:
+ 1000 000b 0D0A 2020 		.string	"\r\n  src port    : %d\r\n  dst port    : "
+ 1000      7372 6320 
+ 1000      706F 7274 
+ 1000      2020 2020 
+ 1000      3A20 2564 
+ 1003               	__c.2357:
+ 1004 0032 0D0A 2020 		.string	"\r\n  IP          : "
+ 1004      4950 2020 
+ 1004      2020 2020 
+ 1004      2020 2020 
+ 1004      3A20 00
+ 1007               	__c.2355:
+ 1008 0045 5544 5020 		.string	"UDP config:"
+ 1008      636F 6E66 
+ 1008      6967 3A00 
+ 1009               		.section	.eeprom,"aw",@progbits
+ 1012               	udpIpDst_eep:
+ 1013 0000 C0        		.byte	-64
+ 1014 0001 A8        		.byte	-88
+ 1015 0002 00        		.byte	0
+ 1016 0003 01        		.byte	1
+ 1019               	udpPortDstEep:
+ 1020 0004 0000      		.skip 2,0
+ 1023               	udpPortSrcEep:
+ 1024 0006 0BB8      		.word	-18421
+ 1025               		.section	.progmem.data
+ 1028               	__c.2309:
+ 1029 0051 0D0A 00   		.string	"\r\n"
+ 1032               	__c.2304:
+ 1033 0054 5544 5020 		.string	"UDP TX buffer busy\r\n"
+ 1033      5458 2062 
+ 1033      7566 6665 
+ 1033      7220 6275 
+ 1033      7379 0D0A 
+ 1036               	__c.2302:
+ 1037 0069 3078 2532 		.string	"0x%2x\r\n"
+ 1037      780D 0A00 
+ 1040               	__c.2300:
+ 1041 0071 5265 6365 		.string	"Received data: "
+ 1041      6976 6564 
+ 1041      2064 6174 
+ 1041      613A 2000 
+ 1044               	__c.2297:
+ 1045 0081 5072 6F63 		.string	"Proc. UDP packet (data length %d)\r\n"
+ 1045      2E20 5544 
+ 1045      5020 7061 
+ 1045      636B 6574 
+ 1045      2028 6461 
+ 1048               	__c.2280:
+ 1049 00a5 5365 6E64 		.string	"Sending UDP packet (data length %d)\r\n"
+ 1049      696E 6720 
+ 1049      5544 5020 
+ 1049      7061 636B 
+ 1049      6574 2028 
+ 1050               		.comm wwwport,1,1
+ 1051               		.comm nicState,14,1
+ 1052               		.comm IpMyConfig,15,1
+ 1053               		.comm arpDebug,2,1
+ 1054               		.comm arpDebugLevel,1,1
+ 1055               		.comm icmpDebug,2,1
+ 1056               		.comm icmpDebugLevel,1,1
+ 1057               		.comm tcpDebugStream,2,1
+ 1058               		.comm tcpDebugLevel,1,1
+ 1059               		.comm sockets,2,1
+ 1060               		.comm udpSocket,2,1
+ 1061               		.comm udpDbgStream,2,1
+ 1062               		.comm udpDbgLevel,1,1
+ 1090               		.text
+ 1092               	.Letext0:
+ 1093               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 udp.c
+     /tmp/ccZTzq71.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccZTzq71.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccZTzq71.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccZTzq71.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccZTzq71.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccZTzq71.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccZTzq71.s:165    .text:00000000 setUdpDebug
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+     /tmp/ccZTzq71.s:191    .text:0000000e udpPrintStatus
+     /tmp/ccZTzq71.s:1007   .progmem.data:00000045 __c.2355
+     /tmp/ccZTzq71.s:1003   .progmem.data:00000032 __c.2357
+                            *COM*:00000002 udpSocket
+     /tmp/ccZTzq71.s:999    .progmem.data:0000000b __c.2359
+     /tmp/ccZTzq71.s:995    .progmem.data:00000005 __c.2361
+     /tmp/ccZTzq71.s:991    .progmem.data:00000000 __c.2363
+     /tmp/ccZTzq71.s:350    .text:0000012a udpSaveConfig
+     /tmp/ccZTzq71.s:1012   .eeprom:00000000 udpIpDst_eep
+     /tmp/ccZTzq71.s:1019   .eeprom:00000004 udpPortDstEep
+     /tmp/ccZTzq71.s:1023   .eeprom:00000006 udpPortSrcEep
+     /tmp/ccZTzq71.s:397    .text:0000016c netstackUDPIPProcess
+                            *COM*:0000000e nicState
+     /tmp/ccZTzq71.s:1044   .progmem.data:00000081 __c.2297
+     /tmp/ccZTzq71.s:1040   .progmem.data:00000071 __c.2300
+     /tmp/ccZTzq71.s:1036   .progmem.data:00000069 __c.2302
+     /tmp/ccZTzq71.s:1032   .progmem.data:00000054 __c.2304
+     /tmp/ccZTzq71.s:1028   .progmem.data:00000051 __c.2309
+     /tmp/ccZTzq71.s:710    .text:0000036e udpSend
+     /tmp/ccZTzq71.s:1048   .progmem.data:000000a5 __c.2280
+     /tmp/ccZTzq71.s:830    .text:00000434 flushUdpQueues
+     /tmp/ccZTzq71.s:906    .text:00000492 udpInit
+                            *COM*:00000001 wwwport
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+
+UNDEFINED SYMBOLS
+fprintf_P
+netPrintIPAddr
+htons
+__eeupd_dword_m128
+__eeupd_word_m128
+xQueueGenericSend
+ipSend
+uxQueueMessagesWaiting
+xQueueGenericReceive
+xmalloc
+__eerd_dword_m128
+__eerd_word_m128
+xQueueCreateExternal
+__do_clear_bss

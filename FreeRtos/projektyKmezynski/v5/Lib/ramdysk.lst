@@ -1,0 +1,2964 @@
+   1               		.file	"ramdysk.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 252               	.global	ramDyskLiczbaWolnychKlastrow
+ 254               	ramDyskLiczbaWolnychKlastrow:
+ 255               		.stabd	46,0,0
+   1:Lib/ramdysk.c **** #include "ramdysk.h"
+   2:Lib/ramdysk.c **** #include <string.h>
+   3:Lib/ramdysk.c **** 
+   4:Lib/ramdysk.c **** #define systemTime() 0; //Dodać w pliku hardware.h funkcje do odczytu czasu systemowego
+   5:Lib/ramdysk.c **** 
+   6:Lib/ramdysk.c **** static uint8_t         znajdzWolnyKlaster(void);
+   7:Lib/ramdysk.c **** static uint8_t         nastepnyKlaster(uint8_t nrKlastra);
+   8:Lib/ramdysk.c **** static uint8_t         znajdzKlasterN(uint8_t nrPierwszegoKlastra, uint8_t lPrzeskokow);
+   9:Lib/ramdysk.c **** #if ( USUNKLASTER == 1)
+  10:Lib/ramdysk.c **** static uint8_t         usunKlaster(uint8_t nrKlastra);
+  11:Lib/ramdysk.c **** #endif
+  12:Lib/ramdysk.c **** static uint8_t         wObrebiePliku(struct ramPlikFd *fd);
+  13:Lib/ramdysk.c **** static void            uaktualnijRozmiarPliku(struct ramPlikFd *fd);
+  14:Lib/ramdysk.c **** static struct ramPlik* znajdzPlik(const char *nazwa);
+  15:Lib/ramdysk.c **** static struct ramPlik* znajdzMiejsceNaWpis(void);
+  16:Lib/ramdysk.c **** static void            czyscKlaster(uint8_t nrKlastra);
+  17:Lib/ramdysk.c **** 
+  18:Lib/ramdysk.c **** static void            czyscKlaster(uint8_t nrKlastra)
+  19:Lib/ramdysk.c **** {
+  20:Lib/ramdysk.c ****   uint8_t *tmpPtr = dataPtr(nrKlastra, 0);
+  21:Lib/ramdysk.c ****   memset (tmpPtr, 0, 256);
+  22:Lib/ramdysk.c **** }
+  23:Lib/ramdysk.c **** 
+  24:Lib/ramdysk.c **** static uint8_t  wObrebiePliku(struct ramPlikFd *fd)
+  25:Lib/ramdysk.c **** {
+  26:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi > fd->IndHi)
+  27:Lib/ramdysk.c ****     return 0;
+  28:Lib/ramdysk.c ****   
+  29:Lib/ramdysk.c ****   if ((fd->wpis->rozmiarHi == fd->IndHi) && (fd->wpis->rozmiarLo >= fd->IndLo))
+  30:Lib/ramdysk.c ****     return 0;
+  31:Lib/ramdysk.c **** 
+  32:Lib/ramdysk.c ****   return 1;
+  33:Lib/ramdysk.c **** }
+  34:Lib/ramdysk.c **** 
+  35:Lib/ramdysk.c **** static void uaktualnijRozmiarPliku(struct ramPlikFd *fd)
+  36:Lib/ramdysk.c **** {
+  37:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi == fd->IndHi)
+  38:Lib/ramdysk.c ****   {
+  39:Lib/ramdysk.c ****     if (fd->wpis->rozmiarLo < fd->IndLo)
+  40:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = fd->IndLo;
+  41:Lib/ramdysk.c ****   }
+  42:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi < fd->IndHi)
+  43:Lib/ramdysk.c ****   {
+  44:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = fd->IndLo;    
+  45:Lib/ramdysk.c ****       fd->wpis->rozmiarHi = fd->IndHi;    
+  46:Lib/ramdysk.c ****   }
+  47:Lib/ramdysk.c **** }
+  48:Lib/ramdysk.c **** 
+  49:Lib/ramdysk.c **** static uint8_t znajdzWolnyKlaster(void)
+  50:Lib/ramdysk.c **** {
+  51:Lib/ramdysk.c ****   uint8_t i;
+  52:Lib/ramdysk.c ****   for (i=1; i<L_KLASTROW; i++)             //Pomijamy klaster 0, tam jest wpis katalogowy. Jeśli m
+  53:Lib/ramdysk.c ****   {                                        //Może być rozszerzony na inne klastry.
+  54:Lib/ramdysk.c ****     if (klastry[i] == 0)                   //Sprawdzanie, czy klaster jest pusty.
+  55:Lib/ramdysk.c ****     {
+  56:Lib/ramdysk.c ****       klastry[i] = i;                      //Oznaczanie klastra jako ostatniego.
+  57:Lib/ramdysk.c ****       czyscKlaster(i);                     //Czyszczenie zawartości klastra.
+  58:Lib/ramdysk.c ****       return i;
+  59:Lib/ramdysk.c ****     }
+  60:Lib/ramdysk.c ****   }
+  61:Lib/ramdysk.c ****   return 0;
+  62:Lib/ramdysk.c **** }
+  63:Lib/ramdysk.c **** 
+  64:Lib/ramdysk.c **** static uint8_t nastepnyKlaster(uint8_t nrKlastra)
+  65:Lib/ramdysk.c **** {
+  66:Lib/ramdysk.c ****   uint8_t temp = klastry[nrKlastra];       //Temp oznacza na następny klaster.
+  67:Lib/ramdysk.c ****   if (temp == nrKlastra)                   //Jeśli klaster wskazuje na samego siebie, co oznacza, 
+  68:Lib/ramdysk.c ****   {                                        //Należy znaleźć jakiś wolny klaster i go dodać do 
+  69:Lib/ramdysk.c ****     for (temp=1; temp <128; temp++)        //Przekglądamy wszystkie klastry za wyjątkiem klastra 
+  70:Lib/ramdysk.c ****     {                                      //Jeśli temp ma wartość 0 to oznacza, że nie ma woln
+  71:Lib/ramdysk.c ****       if (klastry[temp] == 0)              //Jeśli w tablicy klaster wskazuje na 0, to oznacza, ż
+  72:Lib/ramdysk.c ****         break;                             //Wtedy można przerwać szukanie kolejnych klastrów dl
+  73:Lib/ramdysk.c ****     }                                      //Taka implementacja z założenia powoduje defragmentac
+  74:Lib/ramdysk.c ****     
+  75:Lib/ramdysk.c ****     if (temp != 0)                         //Znaleziono jakiś wolny klaster
+  76:Lib/ramdysk.c ****     {
+  77:Lib/ramdysk.c ****       klastry[nrKlastra] = temp;           //Ustawienie łańcucha z klastrami, dodanie do pliku ko
+  78:Lib/ramdysk.c ****       klastry[temp]=temp;                  //Oznaczenie klastra jako zajętego (ostatniego w danym 
+  79:Lib/ramdysk.c ****       czyscKlaster(temp);                  //Czyszczenie klastra
+  80:Lib/ramdysk.c ****     }
+  81:Lib/ramdysk.c ****   }
+  82:Lib/ramdysk.c ****   return temp;
+  83:Lib/ramdysk.c **** }
+  84:Lib/ramdysk.c **** 
+  85:Lib/ramdysk.c **** static uint8_t znajdzKlasterN(uint8_t nrPierwszegoKlastra, uint8_t lPrzeskokow)
+  86:Lib/ramdysk.c **** {
+  87:Lib/ramdysk.c ****   uint8_t ind;                             //PIerwszy klaster ma indeks 0
+  88:Lib/ramdysk.c ****   uint8_t wynik = nrPierwszegoKlastra;
+  89:Lib/ramdysk.c ****   for (ind=0; ind < lPrzeskokow; ind++)    //Należy wykonać klasterN przeskoków na kolejne klast
+  90:Lib/ramdysk.c ****   {
+  91:Lib/ramdysk.c ****     wynik = nastepnyKlaster(wynik);        //Jeśli nie ma kolejnego klastra, to zostanie automatyc
+  92:Lib/ramdysk.c ****     if (wynik == 0)                        //Sprawdzany, czy znalazł się kolejny klaster
+  93:Lib/ramdysk.c ****       break;                               //Błąd, zwrócony zostanie klaster 0 - zarezerwowany n
+  94:Lib/ramdysk.c ****   }
+  95:Lib/ramdysk.c ****   return wynik;
+  96:Lib/ramdysk.c **** }
+  97:Lib/ramdysk.c **** 
+  98:Lib/ramdysk.c **** #if ( USUNKLASTER == 1)
+  99:Lib/ramdysk.c **** static uint8_t usunKlaster(uint8_t nrKlastra)
+ 100:Lib/ramdysk.c **** {
+ 101:Lib/ramdysk.c ****   if (klastry[nrKlastra] == 0)
+ 102:Lib/ramdysk.c ****     return 1;                              //Klaster nie był zajęty                     
+ 103:Lib/ramdysk.c ****   uint8_t temp;
+ 104:Lib/ramdysk.c ****   for (temp = 0; temp <128; temp++)
+ 105:Lib/ramdysk.c ****     if (klastry[temp] == nrKlastra)        //Znaleziono klaster, który wskazuje na ten usuwany
+ 106:Lib/ramdysk.c ****     {
+ 107:Lib/ramdysk.c ****       if (klastry[nrKlastra] == nrKlastra) //Sprawdzanie, czy usuwany klaster nie jest ostatni.
+ 108:Lib/ramdysk.c **** 	klastry[temp] = temp;              //Jeśli tak, to klaster poprzedni musi być ustawiony jako kla
+ 109:Lib/ramdysk.c ****       else
+ 110:Lib/ramdysk.c **** 	klastry[temp] = klastry[nrKlastra];//Klaster poprzedni wskazuje na klaster następny za tym usuwan
+ 111:Lib/ramdysk.c ****     }
+ 112:Lib/ramdysk.c ****   klastry[nrKlastra] = 0;                  //Oznaczanie klastra jako pusty
+ 113:Lib/ramdysk.c ****   return 0;
+ 114:Lib/ramdysk.c **** }
+ 115:Lib/ramdysk.c **** #endif
+ 116:Lib/ramdysk.c **** 
+ 117:Lib/ramdysk.c **** static struct ramPlik* znajdzPlik(const char *nazwa)
+ 118:Lib/ramdysk.c **** {
+ 119:Lib/ramdysk.c ****   uint8_t dlNazwy = strlen(nazwa);        //Skracanie podanej nazwy do 8 znaków
+ 120:Lib/ramdysk.c ****   if (dlNazwy > 8)
+ 121:Lib/ramdysk.c ****     dlNazwy = 8;
+ 122:Lib/ramdysk.c ****   
+ 123:Lib/ramdysk.c ****   
+ 124:Lib/ramdysk.c ****   if (nazwa[dlNazwy-1] == 0)
+ 125:Lib/ramdysk.c ****     dlNazwy--;                            //Nie sprawdzamy czy string kończy się /0
+ 126:Lib/ramdysk.c ****   struct ramPlik *plik;
+ 127:Lib/ramdysk.c ****   uint8_t temp;
+ 128:Lib/ramdysk.c ****   uint8_t tempKlaster=0;
+ 129:Lib/ramdysk.c ****   uint8_t tempKlaster2;
+ 130:Lib/ramdysk.c **** 
+ 131:Lib/ramdysk.c ****   for (temp=1; temp < dlNazwy; temp ++)
+ 132:Lib/ramdysk.c ****   {
+ 133:Lib/ramdysk.c ****     if (nazwa[temp] == ' ')               //Pozbycie sie spacji
+ 134:Lib/ramdysk.c ****     {
+ 135:Lib/ramdysk.c ****       dlNazwy = temp;
+ 136:Lib/ramdysk.c ****       break; 
+ 137:Lib/ramdysk.c ****     }
+ 138:Lib/ramdysk.c ****   }
+ 139:Lib/ramdysk.c ****   if (dlNazwy == 0)
+ 140:Lib/ramdysk.c ****     return NULL;
+ 141:Lib/ramdysk.c ****   
+ 142:Lib/ramdysk.c ****   do
+ 143:Lib/ramdysk.c ****   {
+ 144:Lib/ramdysk.c ****     plik = (struct ramPlik *)(dataPtr(tempKlaster, 0));  //Odczyt pierwszego nagłówka pliku w kla
+ 145:Lib/ramdysk.c ****     for (temp=0; temp <16; temp++)
+ 146:Lib/ramdysk.c ****     {
+ 147:Lib/ramdysk.c ****       if (strncmp(nazwa, plik->nazwa, dlNazwy) == 0)
+ 148:Lib/ramdysk.c **** 	return plik;
+ 149:Lib/ramdysk.c ****       plik++;                                            //Przejście do kolejnego wpisu (w tym sam
+ 150:Lib/ramdysk.c ****     }   
+ 151:Lib/ramdysk.c ****     tempKlaster2 = tempKlaster;
+ 152:Lib/ramdysk.c ****     tempKlaster = klastry[tempKlaster];
+ 153:Lib/ramdysk.c ****   }
+ 154:Lib/ramdysk.c ****   while (tempKlaster2 != tempKlaster);
+ 155:Lib/ramdysk.c ****   return NULL;
+ 156:Lib/ramdysk.c **** }
+ 157:Lib/ramdysk.c **** 
+ 158:Lib/ramdysk.c **** static struct ramPlik* znajdzMiejsceNaWpis(void)
+ 159:Lib/ramdysk.c **** {
+ 160:Lib/ramdysk.c ****   struct ramPlik *plik;
+ 161:Lib/ramdysk.c ****   uint8_t temp;
+ 162:Lib/ramdysk.c ****   uint8_t tempKlaster=0;                                 //Przeszukiwanie głównego wpisu katalogo
+ 163:Lib/ramdysk.c ****   uint8_t tempKlaster2;                                  //Przeszukiwanie głównego wpisu katalogo
+ 164:Lib/ramdysk.c ****   do
+ 165:Lib/ramdysk.c ****   {
+ 166:Lib/ramdysk.c ****     plik = (struct ramPlik *)(dataPtr(tempKlaster, 0));  //Odczyt pierwszego nagłówka pliku w kla
+ 167:Lib/ramdysk.c ****     for (temp=0; temp <16; temp++)
+ 168:Lib/ramdysk.c ****     {
+ 169:Lib/ramdysk.c ****       if (plik->nazwa[0] == 0)
+ 170:Lib/ramdysk.c **** 	return plik;
+ 171:Lib/ramdysk.c ****       plik++;                                            //Przejście do kolejnego wpisu (w tym sam
+ 172:Lib/ramdysk.c ****     }   
+ 173:Lib/ramdysk.c ****     tempKlaster2 = tempKlaster;
+ 174:Lib/ramdysk.c ****     tempKlaster = klastry[tempKlaster];
+ 175:Lib/ramdysk.c ****   }
+ 176:Lib/ramdysk.c ****   while (tempKlaster2 != tempKlaster);
+ 177:Lib/ramdysk.c ****   
+ 178:Lib/ramdysk.c ****   klastry[tempKlaster] = znajdzWolnyKlaster();
+ 179:Lib/ramdysk.c ****   plik = NULL;
+ 180:Lib/ramdysk.c ****   if (klastry[tempKlaster] != 0)
+ 181:Lib/ramdysk.c ****     plik = (struct ramPlik*) (dataPtr(klastry[tempKlaster], 0));
+ 182:Lib/ramdysk.c **** 
+ 183:Lib/ramdysk.c ****   return plik;
+ 184:Lib/ramdysk.c **** }
+ 185:Lib/ramdysk.c **** 
+ 186:Lib/ramdysk.c **** 
+ 187:Lib/ramdysk.c **** void ramDyskInit(void)
+ 188:Lib/ramdysk.c **** {
+ 189:Lib/ramdysk.c ****   memset (klastry, 0, 128);              //Czyszczenie tablicy klastrów (wszystkie są puste)
+ 190:Lib/ramdysk.c ****   memset (dataPtr(0,0), 0, 256);         //Czyszczenie zerowego klastra z tablicą plików
+ 191:Lib/ramdysk.c **** }
+ 192:Lib/ramdysk.c **** uint8_t ramDyskUtworzPlik(const char *nazwa)
+ 193:Lib/ramdysk.c **** {                                        //Nowo utworzony plik nie zajmuje żadnego klastra
+ 194:Lib/ramdysk.c ****   uint8_t dlNazwy = strlen(nazwa);
+ 195:Lib/ramdysk.c ****   uint8_t i;
+ 196:Lib/ramdysk.c ****   if (dlNazwy > 8)
+ 197:Lib/ramdysk.c ****     dlNazwy = 8;
+ 198:Lib/ramdysk.c ****   
+ 199:Lib/ramdysk.c ****   for (i=0; i<dlNazwy; i++)
+ 200:Lib/ramdysk.c ****   {  if (nazwa[i] == ' ')
+ 201:Lib/ramdysk.c ****      {
+ 202:Lib/ramdysk.c ****        dlNazwy = i;
+ 203:Lib/ramdysk.c ****        break;
+ 204:Lib/ramdysk.c ****      }
+ 205:Lib/ramdysk.c ****   }
+ 206:Lib/ramdysk.c ****   if (dlNazwy == 0)
+ 207:Lib/ramdysk.c ****     return 0;
+ 208:Lib/ramdysk.c ****   
+ 209:Lib/ramdysk.c ****   struct ramPlik *plik;
+ 210:Lib/ramdysk.c ****   if ((plik = znajdzPlik(nazwa)) != NULL)
+ 211:Lib/ramdysk.c ****   {
+ 212:Lib/ramdysk.c ****     return 0;
+ 213:Lib/ramdysk.c ****   }
+ 214:Lib/ramdysk.c ****   
+ 215:Lib/ramdysk.c ****   if ((plik = znajdzMiejsceNaWpis()) != NULL) //Szukanie pustego wpisu (nagłówka) po skasowanym p
+ 216:Lib/ramdysk.c ****   {
+ 217:Lib/ramdysk.c ****     memset(plik, 0, 12);                      //Czyszczenie wpisu (pola: pierwszyKlaster, rozmiarLo
+ 218:Lib/ramdysk.c ****     strncpy(plik->nazwa, nazwa, dlNazwy);     //Ustawianie odpowiedniej nazwy pliku
+ 219:Lib/ramdysk.c ****     plik -> dataMod = systemTime();           //Ustawianie czasu modyfikacji
+ 220:Lib/ramdysk.c ****     return 0;                            
+ 221:Lib/ramdysk.c ****   }
+ 222:Lib/ramdysk.c ****   return 1;
+ 223:Lib/ramdysk.c **** }
+ 224:Lib/ramdysk.c **** 
+ 225:Lib/ramdysk.c **** uint8_t ramDyskOtworzPlik(const char *nazwa, struct ramPlikFd *fd)
+ 226:Lib/ramdysk.c **** {
+ 227:Lib/ramdysk.c ****   uint8_t wynik = 1;
+ 228:Lib/ramdysk.c ****   struct ramPlik *plik;
+ 229:Lib/ramdysk.c ****   if ((plik = znajdzPlik(nazwa)) != NULL)
+ 230:Lib/ramdysk.c ****   {
+ 231:Lib/ramdysk.c ****     memset(fd, 0, 3);                                      //Zerowanie struktury deskryptora pliku
+ 232:Lib/ramdysk.c ****     fd->wpis = plik;                                       //Ustawianie w deskryptorze wskaźnika n
+ 233:Lib/ramdysk.c ****     plik->lAktOtw++;                                       //Uaktualnienie licznika otwarć plików
+ 234:Lib/ramdysk.c ****     wynik = 0;
+ 235:Lib/ramdysk.c ****   }
+ 236:Lib/ramdysk.c ****   return wynik;
+ 237:Lib/ramdysk.c **** }
+ 238:Lib/ramdysk.c **** 
+ 239:Lib/ramdysk.c **** uint8_t ramDyskUsunPlik(const char *nazwa)
+ 240:Lib/ramdysk.c **** {
+ 241:Lib/ramdysk.c ****   struct ramPlik *plik;
+ 242:Lib/ramdysk.c ****   if ((plik = znajdzPlik(nazwa)) == NULL)
+ 243:Lib/ramdysk.c ****     return 1;                                              //Nie znaleziono pliku
+ 244:Lib/ramdysk.c ****   if (plik->lAktOtw != 0)
+ 245:Lib/ramdysk.c ****     return 2;                                              //Plik jest otwarty
+ 246:Lib/ramdysk.c ****   
+ 247:Lib/ramdysk.c ****   uint8_t usuwanyKlaster;
+ 248:Lib/ramdysk.c ****   while(plik->pierwszyKlaster != 0)                        //Już na samym początku może się oka
+ 249:Lib/ramdysk.c ****   {
+ 250:Lib/ramdysk.c ****     usuwanyKlaster = plik->pierwszyKlaster;
+ 251:Lib/ramdysk.c ****     if (klastry[usuwanyKlaster] == usuwanyKlaster)         //Sprawdzanie, czy nie usuwamy ostatnieg
+ 252:Lib/ramdysk.c ****       plik->pierwszyKlaster = 0;                           //Ok można już zakończyć usuwanie pl
+ 253:Lib/ramdysk.c ****     else
+ 254:Lib/ramdysk.c ****       plik->pierwszyKlaster = klastry[usuwanyKlaster];     //Przejście do następnego klastra
+ 255:Lib/ramdysk.c ****     klastry[usuwanyKlaster] = 0;                           //Usunięcie klastra
+ 256:Lib/ramdysk.c ****   }
+ 257:Lib/ramdysk.c ****   
+ 258:Lib/ramdysk.c ****   memset (plik, 0, 16);                                    //Wpis katalogowy zostaje. Jest pusty. I
+ 259:Lib/ramdysk.c **** //relokacjaTablicyWpisow()
+ 260:Lib/ramdysk.c ****   return 0;
+ 261:Lib/ramdysk.c **** }
+ 262:Lib/ramdysk.c **** 
+ 263:Lib/ramdysk.c **** void ramDyskZamknijPlik(struct ramPlikFd *fd)
+ 264:Lib/ramdysk.c **** {
+ 265:Lib/ramdysk.c ****   if (fd -> wpis -> lAktOtw > 0)                           //Sprawdzanie, czy licznik otwarć jest 
+ 266:Lib/ramdysk.c ****   {
+ 267:Lib/ramdysk.c ****     fd->wpis->lAktOtw--;                                   //Zmniejszanie licznika otwarć pliku
+ 268:Lib/ramdysk.c ****     memset(fd, 0, sizeof(struct ramPlikFd));               //CZyszczenie struktury deskryptora plik
+ 269:Lib/ramdysk.c ****   }
+ 270:Lib/ramdysk.c **** }
+ 271:Lib/ramdysk.c **** 
+ 272:Lib/ramdysk.c **** uint8_t ramDyskCzyscPlik(struct ramPlikFd *fd)
+ 273:Lib/ramdysk.c **** {
+ 274:Lib/ramdysk.c ****   uint8_t usuwanyKlaster;
+ 275:Lib/ramdysk.c ****   while(fd->wpis->pierwszyKlaster != 0)                        //Już na samym początku może się
+ 276:Lib/ramdysk.c ****   {
+ 277:Lib/ramdysk.c ****     usuwanyKlaster = fd->wpis->pierwszyKlaster;
+ 278:Lib/ramdysk.c ****     if (klastry[usuwanyKlaster] == usuwanyKlaster)             //Sprawdzanie, czy nie usuwamy ostat
+ 279:Lib/ramdysk.c ****       fd->wpis->pierwszyKlaster = 0;                           //Ok można już zakończyć usuwani
+ 280:Lib/ramdysk.c ****     else
+ 281:Lib/ramdysk.c ****       fd->wpis->pierwszyKlaster = klastry[usuwanyKlaster];     //Przejście do następnego klastra
+ 282:Lib/ramdysk.c ****     klastry[usuwanyKlaster] = 0;                               //Usunięcie klastra
+ 283:Lib/ramdysk.c ****   }
+ 284:Lib/ramdysk.c ****   fd->wpis->rozmiarLo       = 0;
+ 285:Lib/ramdysk.c ****   fd->wpis->rozmiarHi       = 0;
+ 286:Lib/ramdysk.c ****   fd->wpis->dataMod         = systemTime();
+ 287:Lib/ramdysk.c ****   memset (fd, 0, 4);
+ 288:Lib/ramdysk.c ****   return 0;
+ 289:Lib/ramdysk.c **** }
+ 290:Lib/ramdysk.c **** 
+ 291:Lib/ramdysk.c **** uint8_t ramDyskZapiszBajtDoPliku(struct ramPlikFd *fd, uint8_t znak)
+ 292:Lib/ramdysk.c **** {
+ 293:Lib/ramdysk.c ****   uint8_t tmpKlaster;
+ 294:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 295:Lib/ramdysk.c ****   {
+ 296:Lib/ramdysk.c ****     if ((tmpKlaster = znajdzWolnyKlaster()) == 0)
+ 297:Lib/ramdysk.c ****       return 1;                                         //Nie można było przydzielić pierwszego 
+ 298:Lib/ramdysk.c ****     fd->wpis->pierwszyKlaster = tmpKlaster;
+ 299:Lib/ramdysk.c ****   }
+ 300:Lib/ramdysk.c ****   if (fd->IndLo == 0)
+ 301:Lib/ramdysk.c ****   {
+ 302:Lib/ramdysk.c ****     tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->IndHi); //Wyszukanie lub dodanie nas
+ 303:Lib/ramdysk.c ****     if (tmpKlaster == 0)
+ 304:Lib/ramdysk.c ****     {
+ 305:Lib/ramdysk.c ****       return 2;                                       //Nie można było przydzielić kolejnego kla
+ 306:Lib/ramdysk.c ****     }
+ 307:Lib/ramdysk.c ****     fd->Wsk = dataPtr(tmpKlaster, 0);                 //Ustawianie wskaźnika na początek nowego k
+ 308:Lib/ramdysk.c ****   }
+ 309:Lib/ramdysk.c ****   
+ 310:Lib/ramdysk.c ****   *(fd->Wsk) = znak;                                  //Zapis bajtu do pliku
+ 311:Lib/ramdysk.c **** 
+ 312:Lib/ramdysk.c ****   fd->IndLo++;                                        //Zwiększanie indeksu odczytu/zapisu
+ 313:Lib/ramdysk.c ****   if (fd->IndLo == 0)                                 //Jeśli ma on wartość 0, to oznacza to, ż
+ 314:Lib/ramdysk.c ****     fd->IndHi++;                                      //Należy zwiększyć bardziej znaczący bajt
+ 315:Lib/ramdysk.c ****   else                                                //Wziąż działamy na tym samym klastrze.
+ 316:Lib/ramdysk.c ****     fd->Wsk++;                                        //Można uaktualnić wskaźnik
+ 317:Lib/ramdysk.c ****     
+ 318:Lib/ramdysk.c ****   uaktualnijRozmiarPliku(fd);                         //Uaktualnianie rozmiaru
+ 319:Lib/ramdysk.c ****   return 0;
+ 320:Lib/ramdysk.c **** }
+ 321:Lib/ramdysk.c **** 
+ 322:Lib/ramdysk.c **** uint8_t ramDyskCzytajBajtZPliku(struct ramPlikFd *fd, uint8_t *bajt)
+ 323:Lib/ramdysk.c **** {
+ 324:Lib/ramdysk.c ****   if (wObrebiePliku(fd) != 0)                         //Sprawdzanie, czy jesteśmy w obrębie pliku
+ 325:Lib/ramdysk.c ****     return 1;                                         //1 - eof
+ 326:Lib/ramdysk.c **** 
+ 327:Lib/ramdysk.c ****   if (fd->IndLo == 0)                                 //Sprawdzanie, czy działamy na początku now
+ 328:Lib/ramdysk.c ****   {
+ 329:Lib/ramdysk.c ****     uint8_t nrKlastra = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->IndHi);
+ 330:Lib/ramdysk.c ****     fd->Wsk = dataPtr(nrKlastra, 0);                  //Ustawianie wskaźnika na początek nowego k
+ 331:Lib/ramdysk.c ****   }
+ 332:Lib/ramdysk.c ****   
+ 333:Lib/ramdysk.c ****   *bajt = *(fd->Wsk);                                 //Odczyt z pliku
+ 334:Lib/ramdysk.c ****   fd->IndLo++;                                        //Zwiększenie indeksu o 1
+ 335:Lib/ramdysk.c ****   if (fd->IndLo == 0)                                 //Sprawdzamy, czy przeszliśmy do nowego klas
+ 336:Lib/ramdysk.c ****     fd->IndHi++;                                      //Tak: uaktualniamy liczbę przeskokół wzgl
+ 337:Lib/ramdysk.c ****   else                                                //Działamy na tym samym klastrze
+ 338:Lib/ramdysk.c ****     fd->Wsk++;                                        //Uaktualniamy wskaźnik do tego klastra
+ 339:Lib/ramdysk.c ****   return 0;
+ 340:Lib/ramdysk.c **** }
+ 341:Lib/ramdysk.c **** 
+ 342:Lib/ramdysk.c **** uint8_t ramDyskZapiszBlokDoPliku(struct ramPlikFd *fd, uint8_t *znaki, uint16_t *dlugosc)
+ 343:Lib/ramdysk.c **** {
+ 344:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 345:Lib/ramdysk.c ****     fd->wpis->pierwszyKlaster = znajdzWolnyKlaster();
+ 346:Lib/ramdysk.c ****   
+ 347:Lib/ramdysk.c ****   uint16_t dlBloku = 256 - fd->IndLo;             //Obliczanie liczby bajtów, jaką da się zapisa
+ 348:Lib/ramdysk.c ****   uint16_t doZapisu = *dlugosc;
+ 349:Lib/ramdysk.c ****   *dlugosc = 0;                                   //Jak do tąd jeszcze nic nie zapisano
+ 350:Lib/ramdysk.c ****   uint8_t tmpKlaster = 0;
+ 351:Lib/ramdysk.c ****   while (doZapisu > 0)
+ 352:Lib/ramdysk.c ****   {
+ 353:Lib/ramdysk.c ****     if (fd->IndLo == 0)                           //Jeśli indeks pokazuje na początek klastra, to
+ 354:Lib/ramdysk.c ****     {
+ 355:Lib/ramdysk.c ****       if (tmpKlaster == 0)                        //Pierwsza operacja zapisu, nie odczytano jeszcze
+ 356:Lib/ramdysk.c ****         tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->IndHi); //Odczyt numeru klastra 
+ 357:Lib/ramdysk.c ****       else                                        //Znamy poprzedni klaster
+ 358:Lib/ramdysk.c ****         tmpKlaster = nastepnyKlaster(tmpKlaster); //Wystarczy przejść do następnego
+ 359:Lib/ramdysk.c ****       if (tmpKlaster == 0)                        //Sprawdzanie, czy udało się znaleźć klaster
+ 360:Lib/ramdysk.c ****         return 1;                                 //1 - Brak wolnego klastra
+ 361:Lib/ramdysk.c **** 
+ 362:Lib/ramdysk.c ****       fd->Wsk = dataPtr(tmpKlaster, 0);           //Ustawianie wskaźnika na początek klastra. Ter
+ 363:Lib/ramdysk.c ****     }
+ 364:Lib/ramdysk.c ****     if (doZapisu > dlBloku)                       //Sprawdzanie, czy wszystko uda się zapisać w b
+ 365:Lib/ramdysk.c ****     {                                             //Nie uda się, teraz zapiszemy cały klastr do k
+ 366:Lib/ramdysk.c ****       memcpy(fd->Wsk, znaki, dlBloku);            //Zapis do końca aktualnego klastra
+ 367:Lib/ramdysk.c ****       znaki +=dlBloku;                      
+ 368:Lib/ramdysk.c ****       fd->IndLo = 0;                              //Mniej znaczący bajt odczytu wskazuje na począ
+ 369:Lib/ramdysk.c ****       doZapisu -= dlBloku;                        //Uaktualnianie informacji o liczbie bajtów jaka
+ 370:Lib/ramdysk.c ****       *dlugosc += dlBloku;                        //Uaktualnianie informacji o liczbie zapisanych d
+ 371:Lib/ramdysk.c ****       fd->IndHi++;                                //Ustawienie bardziej znaczącego bajtu indeksu. 
+ 372:Lib/ramdysk.c ****       dlBloku = 256;                              //Do następnego klastra możemy zapisać do 256 
+ 373:Lib/ramdysk.c ****     }
+ 374:Lib/ramdysk.c ****     else                                          //Jest to ostatni zapis. Całe dane zostaną skop
+ 375:Lib/ramdysk.c ****     {
+ 376:Lib/ramdysk.c ****       memcpy(fd->Wsk, znaki, doZapisu);           //Ostatnia operacja zapisu do klasrta.
+ 377:Lib/ramdysk.c ****       fd->IndLo += doZapisu;                      //Uaktualnianie indeksu (wystarczy uaktualnić mn
+ 378:Lib/ramdysk.c ****       *dlugosc  += doZapisu;                      //Uaktualnianie informacji o liczbie zapisanych d
+ 379:Lib/ramdysk.c ****       doZapisu  =  0;                             //Równie dobrze można tutaj wstawić break;
+ 380:Lib/ramdysk.c ****       fd->Wsk = dataPtr(tmpKlaster, fd->IndLo);   //Ustawianie wskaźnika w odpowiednie miejsce kla
+ 381:Lib/ramdysk.c ****     }
+ 382:Lib/ramdysk.c ****   }
+ 383:Lib/ramdysk.c ****   uaktualnijRozmiarPliku(fd);                     //Uaktualnianie rozmiaru pliku
+ 384:Lib/ramdysk.c ****   return 0;
+ 385:Lib/ramdysk.c **** }
+ 386:Lib/ramdysk.c **** 
+ 387:Lib/ramdysk.c **** uint8_t ramDyskCzytajBlokZPliku(struct ramPlikFd *fd, uint8_t *znaki, uint16_t *dlugosc)
+ 388:Lib/ramdysk.c **** {
+ 389:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 390:Lib/ramdysk.c ****   {
+ 391:Lib/ramdysk.c ****     *dlugosc = 0;
+ 392:Lib/ramdysk.c ****     return 1;                         //1 - Plik jest pusty
+ 393:Lib/ramdysk.c ****   }
+ 394:Lib/ramdysk.c ****   if (wObrebiePliku(fd) != 0)
+ 395:Lib/ramdysk.c ****   {
+ 396:Lib/ramdysk.c ****     *dlugosc = 0;
+ 397:Lib/ramdysk.c ****     return 2;                         //2 - Źle ustawiony indeks odczytu/zapisu (poza obszarem pli
+ 398:Lib/ramdysk.c ****   }
+ 399:Lib/ramdysk.c ****   
+ 400:Lib/ramdysk.c ****   uint16_t lDanych = (fd->wpis->rozmiarHi - fd->IndHi);
+ 401:Lib/ramdysk.c ****   lDanych +=fd->wpis->rozmiarLo;      //Obliczanie liczby bajtów jaka zostałą zapisana jeszcze z
+ 402:Lib/ramdysk.c ****   lDanych -=fd->IndLo;                //Na podstawie wcześniej sprawdzonych warunków jest to zaws
+ 403:Lib/ramdysk.c ****   
+ 404:Lib/ramdysk.c ****   uint16_t doOdczytania = (lDanych < *dlugosc)?  //Sprawdzenie liczby zapisanych bajtół w pliku i
+ 405:Lib/ramdysk.c ****     lDanych :                          //W pliku jest mniej bajtów do odczytu niż chcemy odczyta�
+ 406:Lib/ramdysk.c ****     *dlugosc;                          //W pliku jest więcej bajtów niż chcemy odczytać
+ 407:Lib/ramdysk.c ****   *dlugosc = 0;                        //Jak do tąd odczytano 0 bajtów
+ 408:Lib/ramdysk.c ****   uint16_t dlBloku = 256 - fd->IndLo;  //Określanie liczby bajtół jaka zostałą do końca aktua
+ 409:Lib/ramdysk.c ****   uint8_t tmpKlaster = 0;
+ 410:Lib/ramdysk.c ****   while (doOdczytania > 0)
+ 411:Lib/ramdysk.c ****   {
+ 412:Lib/ramdysk.c ****     if (fd->IndLo == 0)                //Indeks odczytu wskazuje na początek klastra. Oznacza to, 
+ 413:Lib/ramdysk.c ****     {                                  //Bardziej znaczący bajt indeksu określa o ile klastrów (
+ 414:Lib/ramdysk.c ****       if (tmpKlaster == 0)
+ 415:Lib/ramdysk.c ****         tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->IndHi); 
+ 416:Lib/ramdysk.c ****       else
+ 417:Lib/ramdysk.c ****         tmpKlaster = nastepnyKlaster(tmpKlaster);
+ 418:Lib/ramdysk.c ****       if (tmpKlaster != 0)             //Jeśli znaleziono odpowiedni klaster, to
+ 419:Lib/ramdysk.c ****         fd->Wsk = dataPtr(tmpKlaster, 0); //przestaw wskaźnik na początek tego klastra
+ 420:Lib/ramdysk.c ****       else
+ 421:Lib/ramdysk.c ****         return 3;                      //3 - Nie udało się znaleźć odpowiedniego klastra
+ 422:Lib/ramdysk.c ****     }
+ 423:Lib/ramdysk.c ****     
+ 424:Lib/ramdysk.c ****     if (doOdczytania > dlBloku)        //Odczyt do końca zawartości klastra
+ 425:Lib/ramdysk.c ****     {                                  //dlBloku określa ile zostało jeszcze bajtów do końca kl
+ 426:Lib/ramdysk.c ****       memcpy(znaki, fd->Wsk, dlBloku); //Odczyt zawartości Klastra
+ 427:Lib/ramdysk.c ****       znaki +=dlBloku;                 //Przestawienie wskaźnika do tablicy, w której zapisujemy 
+ 428:Lib/ramdysk.c ****       fd->IndLo = 0;                   //Indeks wskazuje na początek nowego klastra
+ 429:Lib/ramdysk.c ****       fd->IndHi++;                     //Bardziej znaczący bajt określa zmianę klastra. Teraz ni
+ 430:Lib/ramdysk.c ****       doOdczytania -= dlBloku;         //Uaktualnienie liczby bajtół jaką należy odczytać
+ 431:Lib/ramdysk.c ****       *dlugosc += dlBloku;             //Uaktualnienie 
+ 432:Lib/ramdysk.c ****       dlBloku = 256;                   //Kolejny dostępny blok do odczytania, to długość całeg
+ 433:Lib/ramdysk.c ****     }
+ 434:Lib/ramdysk.c ****     else                               //Ostatnia operacja odczytu
+ 435:Lib/ramdysk.c ****     {
+ 436:Lib/ramdysk.c ****       memcpy(znaki, fd->Wsk, doOdczytania);
+ 437:Lib/ramdysk.c ****       fd->Wsk   += doOdczytania;       //Po zakończeniu operacji odczytu nadal działamy w tym sam
+ 438:Lib/ramdysk.c ****       fd->IndLo += doOdczytania;       //Uaktualnianie indeksu. Jesteśmy w tym samym klastrze, zat
+ 439:Lib/ramdysk.c ****       *dlugosc  += doOdczytania;       //Uaktualnianie liczby odczytanych bajtów                  
+ 440:Lib/ramdysk.c ****       doOdczytania = 0;                //Tutaj równie dobrze może być brake
+ 441:Lib/ramdysk.c ****     }
+ 442:Lib/ramdysk.c ****   }
+ 443:Lib/ramdysk.c ****   return 0;
+ 444:Lib/ramdysk.c **** }
+ 445:Lib/ramdysk.c **** 
+ 446:Lib/ramdysk.c **** uint8_t ramDyskUstawWskaznik(struct ramPlikFd *fd, uint16_t indeks)
+ 447:Lib/ramdysk.c **** {
+ 448:Lib/ramdysk.c ****   if (indeks == 0)                                        //Sprawdzanie, czy wskaźnik nie pokazuje
+ 449:Lib/ramdysk.c ****   {                                                       //Jeśli tak, to nie ma potzeby tworzenia
+ 450:Lib/ramdysk.c ****     fd->IndLo = 0;                                        //Ustawianie na 0 indeksów (mniej i bard
+ 451:Lib/ramdysk.c ****     fd->IndHi = 0;
+ 452:Lib/ramdysk.c ****     return 0;
+ 453:Lib/ramdysk.c ****   }
+ 454:Lib/ramdysk.c ****   indeks--;                                               //Zmniejszamy indeks o 1, by odpowiednio 
+ 455:Lib/ramdysk.c ****                                                           //Jeśli indeks jest większy niż rozmia
+ 456:Lib/ramdysk.c ****   
+ 457:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)                     //Sprawdzanie, czy plik ma już przydziel
+ 458:Lib/ramdysk.c ****     fd->wpis->pierwszyKlaster = znajdzWolnyKlaster();     //Przydzielanie pierwszego klastra dla pl
+ 459:Lib/ramdysk.c **** 
+ 460:Lib/ramdysk.c ****   uint8_t klasterN = indeks >> 8;                         //Obliczanie liczby klastrów, jaką nale
+ 461:Lib/ramdysk.c **** 
+ 462:Lib/ramdysk.c ****   fd->IndLo = indeks & 0xFF;                              //Obliczanie na podstawie wartości 16 mn
+ 463:Lib/ramdysk.c ****   fd->IndHi = klasterN;                                   //oraz bardziej znaczącego bajtu indeksu
+ 464:Lib/ramdysk.c ****   
+ 465:Lib/ramdysk.c ****   uint8_t nrKlastra = znajdzKlasterN(fd->wpis->pierwszyKlaster, klasterN);
+ 466:Lib/ramdysk.c ****   if (nrKlastra == 0)
+ 467:Lib/ramdysk.c ****     return 1;                                             //Brak klastrów
+ 468:Lib/ramdysk.c **** 
+ 469:Lib/ramdysk.c ****   uaktualnijRozmiarPliku(fd);                             //Uaktualnianie rozmiaru pliku
+ 470:Lib/ramdysk.c **** 
+ 471:Lib/ramdysk.c ****   fd->IndLo++;                                            //Powrót do zadanej wartości indeksu
+ 472:Lib/ramdysk.c ****   if (fd->IndLo == 0)                                     //Jeśli jesteśmy na początku klastra, 
+ 473:Lib/ramdysk.c ****     fd->IndHi++;                                          //Uaktualniamy tylko bardziej znaczący b
+ 474:Lib/ramdysk.c ****   else                                                    //Jesteśmy w obszarze utworzonego klastr
+ 475:Lib/ramdysk.c ****     fd->Wsk=dataPtr(nrKlastra, fd->IndLo);                //ustawić wskaźnik na odpowiednie miejs
+ 476:Lib/ramdysk.c **** 
+ 477:Lib/ramdysk.c ****   return 0; 
+ 478:Lib/ramdysk.c **** }
+ 479:Lib/ramdysk.c **** 
+ 480:Lib/ramdysk.c **** uint8_t ramDyskUstawWskaznikNaKoniec(struct ramPlikFd *fd)
+ 481:Lib/ramdysk.c **** {
+ 482:Lib/ramdysk.c ****   if (fd == NULL)
+ 483:Lib/ramdysk.c ****     return 1;
+ 484:Lib/ramdysk.c ****   fd->IndLo = fd->wpis->rozmiarLo;
+ 485:Lib/ramdysk.c ****   fd->IndHi = fd->wpis->rozmiarHi;
+ 486:Lib/ramdysk.c **** //  fd->IndLo++;
+ 487:Lib/ramdysk.c ****   uint8_t tmpKlaster = 0;
+ 488:Lib/ramdysk.c ****   if (fd->IndLo != 0)
+ 489:Lib/ramdysk.c ****   {
+ 490:Lib/ramdysk.c ****     tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->wpis->rozmiarHi);
+ 491:Lib/ramdysk.c ****     fd->Wsk=dataPtr(tmpKlaster, fd->IndLo);
+ 492:Lib/ramdysk.c ****   }  
+ 493:Lib/ramdysk.c ****   return 0;
+ 494:Lib/ramdysk.c **** }
+ 495:Lib/ramdysk.c **** 
+ 496:Lib/ramdysk.c **** uint8_t* ramDyskDodajBlokXmodem(struct ramPlikFd *fd, uint16_t nrBloku)
+ 497:Lib/ramdysk.c **** {
+ 498:Lib/ramdysk.c ****   if (nrBloku == 0)
+ 499:Lib/ramdysk.c ****     return NULL;
+ 500:Lib/ramdysk.c ****   nrBloku --;
+ 501:Lib/ramdysk.c ****   
+ 502:Lib/ramdysk.c ****   uint8_t indHi = (uint8_t)(nrBloku / 2);
+ 503:Lib/ramdysk.c ****   uint8_t indLo = 0;
+ 504:Lib/ramdysk.c ****   uint8_t *wynik;
+ 505:Lib/ramdysk.c ****   
+ 506:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 507:Lib/ramdysk.c ****     fd->wpis->pierwszyKlaster = znajdzWolnyKlaster();
+ 508:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 509:Lib/ramdysk.c ****     return NULL;
+ 510:Lib/ramdysk.c ****   
+ 511:Lib/ramdysk.c ****   uint8_t tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster , indHi);
+ 512:Lib/ramdysk.c ****   if (tmpKlaster == 0)
+ 513:Lib/ramdysk.c ****     return NULL;
+ 514:Lib/ramdysk.c ****   if ((nrBloku & 0x0001) == 0x0001)           // Druga część klastra
+ 515:Lib/ramdysk.c ****   {
+ 516:Lib/ramdysk.c ****     indLo = 128;
+ 517:Lib/ramdysk.c ****     if (fd->wpis->rozmiarHi <= indHi)
+ 518:Lib/ramdysk.c ****     {
+ 519:Lib/ramdysk.c ****       fd->wpis->rozmiarHi = indHi+1;
+ 520:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = 0;
+ 521:Lib/ramdysk.c ****     }
+ 522:Lib/ramdysk.c ****     wynik=dataPtr(tmpKlaster, 128);
+ 523:Lib/ramdysk.c ****   }
+ 524:Lib/ramdysk.c ****   else
+ 525:Lib/ramdysk.c ****   {
+ 526:Lib/ramdysk.c ****     if (fd->wpis->rozmiarHi < indHi)
+ 527:Lib/ramdysk.c ****     {
+ 528:Lib/ramdysk.c ****       fd->wpis->rozmiarHi = indHi;
+ 529:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = 128;
+ 530:Lib/ramdysk.c ****     }
+ 531:Lib/ramdysk.c ****     else if ((fd->wpis->rozmiarHi == indHi) && (fd->wpis->rozmiarLo < 128))
+ 532:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = 128;
+ 533:Lib/ramdysk.c ****     
+ 534:Lib/ramdysk.c ****     wynik=dataPtr(tmpKlaster, 0);
+ 535:Lib/ramdysk.c ****   }
+ 536:Lib/ramdysk.c ****   return wynik;
+ 537:Lib/ramdysk.c **** }
+ 538:Lib/ramdysk.c **** 
+ 539:Lib/ramdysk.c **** void ramDyskDir(FILE *ostream)
+ 540:Lib/ramdysk.c **** {
+ 541:Lib/ramdysk.c ****   fprintf(ostream, "nazwa\t\trozmiar\totwarty\r\n");
+ 542:Lib/ramdysk.c ****   struct ramPlik *plik;
+ 543:Lib/ramdysk.c ****   uint8_t tmpKlaster = 0;
+ 544:Lib/ramdysk.c ****   uint8_t tmpKlaster2;
+ 545:Lib/ramdysk.c ****   uint8_t tmp, tmp2, tmp3;
+ 546:Lib/ramdysk.c ****   do 
+ 547:Lib/ramdysk.c ****   {
+ 548:Lib/ramdysk.c ****     plik = (struct ramPlik *)(dataPtr(tmpKlaster, 0));
+ 549:Lib/ramdysk.c ****     for (tmp=0; tmp<16; tmp++)
+ 550:Lib/ramdysk.c ****     {
+ 551:Lib/ramdysk.c ****       tmp3=plik->nazwa[0];
+ 552:Lib/ramdysk.c ****       if (tmp3 == 0)
+ 553:Lib/ramdysk.c ****         break;                                            //Ten wpis jest pusty.
+ 554:Lib/ramdysk.c ****       fputc(tmp3         , ostream);
+ 555:Lib/ramdysk.c ****       for (tmp2=1; tmp2<8; tmp2++)
+ 556:Lib/ramdysk.c ****       {
+ 557:Lib/ramdysk.c ****         if (tmp3 != 0)
+ 558:Lib/ramdysk.c ****           tmp3=plik->nazwa[tmp2];
+ 559:Lib/ramdysk.c **** 
+ 560:Lib/ramdysk.c ****         if (tmp3 != 0)
+ 561:Lib/ramdysk.c ****           fputc(tmp3     , ostream);
+ 562:Lib/ramdysk.c ****         else
+ 563:Lib/ramdysk.c ****           fputc(' '      , ostream);
+ 564:Lib/ramdysk.c ****       }
+ 565:Lib/ramdysk.c ****       fprintf(ostream, "\t%d\t%d\r\n", 256*plik->rozmiarHi+plik->rozmiarLo,  plik->lAktOtw);
+ 566:Lib/ramdysk.c ****       plik++;
+ 567:Lib/ramdysk.c ****     }
+ 568:Lib/ramdysk.c ****     tmpKlaster2 = tmpKlaster;
+ 569:Lib/ramdysk.c ****     tmpKlaster = klastry[tmpKlaster];
+ 570:Lib/ramdysk.c ****   }
+ 571:Lib/ramdysk.c ****   while (tmpKlaster != tmpKlaster2);
+ 572:Lib/ramdysk.c **** }
+ 573:Lib/ramdysk.c **** 
+ 574:Lib/ramdysk.c **** uint8_t ramDyskLiczbaWolnychKlastrow(void)
+ 575:Lib/ramdysk.c **** {
+ 257               	.LM0:
+ 258               	.LFBB1:
+ 259               	/* prologue: function */
+ 260               	/* frame size = 0 */
+ 262               	.LM1:
+ 263 0000 E0E0      		ldi r30,lo8(klastry+127)
+ 264 0002 F0E0      		ldi r31,hi8(klastry+127)
+ 265 0004 90E0      		ldi r25,lo8(0)
+ 266               	.L3:
+ 576:Lib/ramdysk.c ****   uint8_t wynik=0;
+ 577:Lib/ramdysk.c ****   uint8_t temp;
+ 578:Lib/ramdysk.c ****   for (temp = L_KLASTROW-1; temp > 0; temp--)
+ 579:Lib/ramdysk.c ****     if (klastry[temp] == 0)
+ 268               	.LM2:
+ 269 0006 8081      		ld r24,Z
+ 270 0008 8823      		tst r24
+ 271 000a 01F4      		brne .L2
+ 580:Lib/ramdysk.c ****       wynik++;
+ 273               	.LM3:
+ 274 000c 9F5F      		subi r25,lo8(-(1))
+ 275               	.L2:
+ 276 000e 3197      		sbiw r30,1
+ 578:Lib/ramdysk.c ****   for (temp = L_KLASTROW-1; temp > 0; temp--)
+ 278               	.LM4:
+ 279 0010 80E0      		ldi r24,hi8(klastry)
+ 280 0012 E030      		cpi r30,lo8(klastry)
+ 281 0014 F807      		cpc r31,r24
+ 282 0016 01F4      		brne .L3
+ 581:Lib/ramdysk.c ****   return wynik;
+ 582:Lib/ramdysk.c **** }
+ 284               	.LM5:
+ 285 0018 892F      		mov r24,r25
+ 286               	/* epilogue start */
+ 287 001a 0895      		ret
+ 292               	.Lscope1:
+ 294               		.stabd	78,0,0
+ 295               		.data
+ 296               	.LC0:
+ 297 0000 6E61 7A77 		.string	"nazwa\t\trozmiar\totwarty\r\n"
+ 297      6109 0972 
+ 297      6F7A 6D69 
+ 297      6172 096F 
+ 297      7477 6172 
+ 298               	.LC1:
+ 299 0019 0925 6409 		.string	"\t%d\t%d\r\n"
+ 299      2564 0D0A 
+ 299      00
+ 300               		.text
+ 303               	.global	ramDyskDir
+ 305               	ramDyskDir:
+ 306               		.stabd	46,0,0
+ 540:Lib/ramdysk.c **** {
+ 308               	.LM6:
+ 309               	.LFBB2:
+ 310 001c 2F92      		push r2
+ 311 001e 3F92      		push r3
+ 312 0020 4F92      		push r4
+ 313 0022 5F92      		push r5
+ 314 0024 7F92      		push r7
+ 315 0026 8F92      		push r8
+ 316 0028 9F92      		push r9
+ 317 002a AF92      		push r10
+ 318 002c BF92      		push r11
+ 319 002e CF92      		push r12
+ 320 0030 DF92      		push r13
+ 321 0032 EF92      		push r14
+ 322 0034 FF92      		push r15
+ 323 0036 0F93      		push r16
+ 324 0038 1F93      		push r17
+ 325 003a CF93      		push r28
+ 326 003c DF93      		push r29
+ 327               	/* prologue: function */
+ 328               	/* frame size = 0 */
+ 329 003e 4C01      		movw r8,r24
+ 541:Lib/ramdysk.c ****   fprintf(ostream, "nazwa\t\trozmiar\totwarty\r\n");
+ 331               	.LM7:
+ 332 0040 80E0      		ldi r24,lo8(.LC0)
+ 333 0042 90E0      		ldi r25,hi8(.LC0)
+ 334 0044 B401      		movw r22,r8
+ 335 0046 0E94 0000 		call fputs
+ 336 004a 7724      		clr r7
+ 565:Lib/ramdysk.c ****       fprintf(ostream, "\t%d\t%d\r\n", 256*plik->rozmiarHi+plik->rozmiarLo,  plik->lAktOtw);
+ 338               	.LM8:
+ 339 004c 20E0      		ldi r18,lo8(.LC1)
+ 340 004e 222E      		mov r2,r18
+ 341 0050 20E0      		ldi r18,hi8(.LC1)
+ 342 0052 322E      		mov r3,r18
+ 343               	.L13:
+ 548:Lib/ramdysk.c ****     plik = (struct ramPlik *)(dataPtr(tmpKlaster, 0));
+ 345               	.LM9:
+ 346 0054 E72C      		mov r14,r7
+ 347 0056 FF24      		clr r15
+ 348 0058 20E8      		ldi r18,lo8(128)
+ 349 005a 30E0      		ldi r19,hi8(128)
+ 350 005c E20E      		add r14,r18
+ 351 005e F31E      		adc r15,r19
+ 352 0060 DE2D      		mov r29,r14
+ 353 0062 CC27      		clr r28
+ 354 0064 80E8      		ldi r24,lo8(-128)
+ 355 0066 9FEF      		ldi r25,hi8(-128)
+ 356 0068 E80E      		add r14,r24
+ 357 006a F91E      		adc r15,r25
+ 549:Lib/ramdysk.c ****     for (tmp=0; tmp<16; tmp++)
+ 359               	.LM10:
+ 360 006c 80EF      		ldi r24,lo8(240)
+ 361 006e 482E      		mov r4,r24
+ 362 0070 512C      		mov r5,__zero_reg__
+ 363 0072 4C0E      		add r4,r28
+ 364 0074 5D1E      		adc r5,r29
+ 365               	.L11:
+ 551:Lib/ramdysk.c ****       tmp3=plik->nazwa[0];
+ 367               	.LM11:
+ 368 0076 1C81      		ldd r17,Y+4
+ 552:Lib/ramdysk.c ****       if (tmp3 == 0)
+ 370               	.LM12:
+ 371 0078 1123      		tst r17
+ 372 007a 01F4      		brne .+2
+ 373 007c 00C0      		rjmp .L7
+ 554:Lib/ramdysk.c ****       fputc(tmp3         , ostream);
+ 375               	.LM13:
+ 376 007e 812F      		mov r24,r17
+ 377 0080 90E0      		ldi r25,lo8(0)
+ 378 0082 B401      		movw r22,r8
+ 379 0084 0E94 0000 		call fputc
+ 380 0088 6E01      		movw r12,r28
+ 381 008a 01E0      		ldi r16,lo8(1)
+ 382               	.L10:
+ 557:Lib/ramdysk.c ****         if (tmp3 != 0)
+ 384               	.LM14:
+ 385 008c 1123      		tst r17
+ 386 008e 01F0      		breq .L8
+ 558:Lib/ramdysk.c ****           tmp3=plik->nazwa[tmp2];
+ 388               	.LM15:
+ 389 0090 D601      		movw r26,r12
+ 390 0092 1596      		adiw r26,5
+ 391 0094 1C91      		ld r17,X
+ 560:Lib/ramdysk.c ****         if (tmp3 != 0)
+ 393               	.LM16:
+ 394 0096 1123      		tst r17
+ 395 0098 01F0      		breq .L8
+ 561:Lib/ramdysk.c ****           fputc(tmp3     , ostream);
+ 397               	.LM17:
+ 398 009a 812F      		mov r24,r17
+ 399 009c 90E0      		ldi r25,lo8(0)
+ 400 009e B401      		movw r22,r8
+ 401 00a0 0E94 0000 		call fputc
+ 402 00a4 00C0      		rjmp .L9
+ 403               	.L8:
+ 563:Lib/ramdysk.c ****           fputc(' '      , ostream);
+ 405               	.LM18:
+ 406 00a6 80E2      		ldi r24,lo8(32)
+ 407 00a8 90E0      		ldi r25,hi8(32)
+ 408 00aa B401      		movw r22,r8
+ 409 00ac 0E94 0000 		call fputc
+ 410 00b0 10E0      		ldi r17,lo8(0)
+ 411               	.L9:
+ 555:Lib/ramdysk.c ****       for (tmp2=1; tmp2<8; tmp2++)
+ 413               	.LM19:
+ 414 00b2 0F5F      		subi r16,lo8(-(1))
+ 415 00b4 0894      		sec
+ 416 00b6 C11C      		adc r12,__zero_reg__
+ 417 00b8 D11C      		adc r13,__zero_reg__
+ 418 00ba 0830      		cpi r16,lo8(8)
+ 419 00bc 01F4      		brne .L10
+ 565:Lib/ramdysk.c ****       fprintf(ostream, "\t%d\t%d\r\n", 256*plik->rozmiarHi+plik->rozmiarLo,  plik->lAktOtw);
+ 421               	.LM20:
+ 422 00be EDB7      		in r30,__SP_L__
+ 423 00c0 FEB7      		in r31,__SP_H__
+ 424 00c2 3897      		sbiw r30,8
+ 425 00c4 0FB6      		in __tmp_reg__,__SREG__
+ 426 00c6 F894      		cli
+ 427 00c8 FEBF      		out __SP_H__,r31
+ 428 00ca 0FBE      		out __SREG__,__tmp_reg__
+ 429 00cc EDBF      		out __SP_L__,r30
+ 430 00ce 3196      		adiw r30,1
+ 431 00d0 ADB7      		in r26,__SP_L__
+ 432 00d2 BEB7      		in r27,__SP_H__
+ 433 00d4 1296      		adiw r26,1+1
+ 434 00d6 9C92      		st X,r9
+ 435 00d8 8E92      		st -X,r8
+ 436 00da 1197      		sbiw r26,1
+ 437 00dc 3382      		std Z+3,r3
+ 438 00de 2282      		std Z+2,r2
+ 439 00e0 BA80      		ldd r11,Y+2
+ 440 00e2 AA24      		clr r10
+ 441 00e4 8981      		ldd r24,Y+1
+ 442 00e6 9501      		movw r18,r10
+ 443 00e8 280F      		add r18,r24
+ 444 00ea 311D      		adc r19,__zero_reg__
+ 445 00ec 3583      		std Z+5,r19
+ 446 00ee 2483      		std Z+4,r18
+ 447 00f0 8B81      		ldd r24,Y+3
+ 448 00f2 8683      		std Z+6,r24
+ 449 00f4 1782      		std Z+7,__zero_reg__
+ 450 00f6 0E94 0000 		call fprintf
+ 549:Lib/ramdysk.c ****     for (tmp=0; tmp<16; tmp++)
+ 452               	.LM21:
+ 453 00fa 8DB7      		in r24,__SP_L__
+ 454 00fc 9EB7      		in r25,__SP_H__
+ 455 00fe 0896      		adiw r24,8
+ 456 0100 0FB6      		in __tmp_reg__,__SREG__
+ 457 0102 F894      		cli
+ 458 0104 9EBF      		out __SP_H__,r25
+ 459 0106 0FBE      		out __SREG__,__tmp_reg__
+ 460 0108 8DBF      		out __SP_L__,r24
+ 461 010a C415      		cp r28,r4
+ 462 010c D505      		cpc r29,r5
+ 463 010e 01F0      		breq .L7
+ 566:Lib/ramdysk.c ****       plik++;
+ 465               	.LM22:
+ 466 0110 6096      		adiw r28,16
+ 467 0112 00C0      		rjmp .L11
+ 468               	.L7:
+ 569:Lib/ramdysk.c ****     tmpKlaster = klastry[tmpKlaster];
+ 470               	.LM23:
+ 471 0114 A0E0      		ldi r26,lo8(klastry)
+ 472 0116 B0E0      		ldi r27,hi8(klastry)
+ 473 0118 EA0E      		add r14,r26
+ 474 011a FB1E      		adc r15,r27
+ 475 011c F701      		movw r30,r14
+ 476 011e 8081      		ld r24,Z
+ 571:Lib/ramdysk.c ****   while (tmpKlaster != tmpKlaster2);
+ 478               	.LM24:
+ 479 0120 8715      		cp r24,r7
+ 480 0122 01F0      		breq .L14
+ 481 0124 782E      		mov r7,r24
+ 482 0126 00C0      		rjmp .L13
+ 483               	.L14:
+ 484               	/* epilogue start */
+ 572:Lib/ramdysk.c **** }
+ 486               	.LM25:
+ 487 0128 DF91      		pop r29
+ 488 012a CF91      		pop r28
+ 489 012c 1F91      		pop r17
+ 490 012e 0F91      		pop r16
+ 491 0130 FF90      		pop r15
+ 492 0132 EF90      		pop r14
+ 493 0134 DF90      		pop r13
+ 494 0136 CF90      		pop r12
+ 495 0138 BF90      		pop r11
+ 496 013a AF90      		pop r10
+ 497 013c 9F90      		pop r9
+ 498 013e 8F90      		pop r8
+ 499 0140 7F90      		pop r7
+ 500 0142 5F90      		pop r5
+ 501 0144 4F90      		pop r4
+ 502 0146 3F90      		pop r3
+ 503 0148 2F90      		pop r2
+ 504 014a 0895      		ret
+ 512               	.Lscope2:
+ 514               		.stabd	78,0,0
+ 517               	znajdzWolnyKlaster:
+ 518               		.stabd	46,0,0
+  50:Lib/ramdysk.c **** {
+ 520               	.LM26:
+ 521               	.LFBB3:
+ 522               	/* prologue: function */
+ 523               	/* frame size = 0 */
+  50:Lib/ramdysk.c **** {
+ 525               	.LM27:
+ 526 014c 21E0      		ldi r18,lo8(1)
+ 527               	.L19:
+  54:Lib/ramdysk.c ****     if (klastry[i] == 0)                   //Sprawdzanie, czy klaster jest pusty.
+ 529               	.LM28:
+ 530 014e 422F      		mov r20,r18
+ 531 0150 50E0      		ldi r21,lo8(0)
+ 532 0152 FA01      		movw r30,r20
+ 533 0154 E050      		subi r30,lo8(-(klastry))
+ 534 0156 F040      		sbci r31,hi8(-(klastry))
+ 535 0158 8081      		ld r24,Z
+ 536 015a 8823      		tst r24
+ 537 015c 01F4      		brne .L17
+  56:Lib/ramdysk.c ****       klastry[i] = i;                      //Oznaczanie klastra jako ostatniego.
+ 539               	.LM29:
+ 540 015e 2083      		st Z,r18
+ 541               	.LBB19:
+ 542               	.LBB20:
+  21:Lib/ramdysk.c ****   memset (tmpPtr, 0, 256);
+ 544               	.LM30:
+ 545 0160 E0E0      		ldi r30,lo8(0)
+ 546 0162 F22F      		mov r31,r18
+ 547 0164 F058      		subi r31,lo8(-(-128))
+ 548 0166 80E0      		ldi r24,lo8(256)
+ 549 0168 91E0      		ldi r25,hi8(256)
+ 550 016a DF01      		movw r26,r30
+ 551 016c AC01      		movw r20,r24
+ 552 016e 1D92      		st X+,__zero_reg__
+ 553 0170 4150      		subi r20,1
+ 554 0172 5040      		sbci r21,0
+ 555 0174 01F4      		brne .-8
+ 556 0176 00C0      		rjmp .L18
+ 557               	.L17:
+ 558               	.LBE20:
+ 559               	.LBE19:
+  52:Lib/ramdysk.c ****   for (i=1; i<L_KLASTROW; i++)             //Pomijamy klaster 0, tam jest wpis katalogowy. Jeśli m
+ 561               	.LM31:
+ 562 0178 2F5F      		subi r18,lo8(-(1))
+ 563 017a 2038      		cpi r18,lo8(-128)
+ 564 017c 01F4      		brne .L19
+ 565 017e 20E0      		ldi r18,lo8(0)
+ 566               	.L18:
+  62:Lib/ramdysk.c **** }
+ 568               	.LM32:
+ 569 0180 822F      		mov r24,r18
+ 570               	/* epilogue start */
+ 571 0182 0895      		ret
+ 576               	.Lscope3:
+ 578               		.stabd	78,0,0
+ 582               	nastepnyKlaster:
+ 583               		.stabd	46,0,0
+  65:Lib/ramdysk.c **** {
+ 585               	.LM33:
+ 586               	.LFBB4:
+ 587               	/* prologue: function */
+ 588               	/* frame size = 0 */
+  66:Lib/ramdysk.c ****   uint8_t temp = klastry[nrKlastra];       //Temp oznacza na następny klaster.
+ 590               	.LM34:
+ 591 0184 A82F      		mov r26,r24
+ 592 0186 B0E0      		ldi r27,lo8(0)
+ 593 0188 FD01      		movw r30,r26
+ 594 018a E050      		subi r30,lo8(-(klastry))
+ 595 018c F040      		sbci r31,hi8(-(klastry))
+ 596 018e 2081      		ld r18,Z
+  67:Lib/ramdysk.c ****   if (temp == nrKlastra)                   //Jeśli klaster wskazuje na samego siebie, co oznacza, 
+ 598               	.LM35:
+ 599 0190 2817      		cp r18,r24
+ 600 0192 01F4      		brne .L23
+ 601 0194 21E0      		ldi r18,lo8(1)
+ 602               	.L25:
+  71:Lib/ramdysk.c ****       if (klastry[temp] == 0)              //Jeśli w tablicy klaster wskazuje na 0, to oznacza, ż
+ 604               	.LM36:
+ 605 0196 E22F      		mov r30,r18
+ 606 0198 F0E0      		ldi r31,lo8(0)
+ 607 019a E050      		subi r30,lo8(-(klastry))
+ 608 019c F040      		sbci r31,hi8(-(klastry))
+ 609 019e 8081      		ld r24,Z
+ 610 01a0 8823      		tst r24
+ 611 01a2 01F0      		breq .L24
+  69:Lib/ramdysk.c ****     for (temp=1; temp <128; temp++)        //Przekglądamy wszystkie klastry za wyjątkiem klastra 
+ 613               	.LM37:
+ 614 01a4 2F5F      		subi r18,lo8(-(1))
+ 615 01a6 2038      		cpi r18,lo8(-128)
+ 616 01a8 01F4      		brne .L25
+ 617               	.L24:
+  77:Lib/ramdysk.c ****       klastry[nrKlastra] = temp;           //Ustawienie łańcucha z klastrami, dodanie do pliku ko
+ 619               	.LM38:
+ 620 01aa A050      		subi r26,lo8(-(klastry))
+ 621 01ac B040      		sbci r27,hi8(-(klastry))
+ 622 01ae 2C93      		st X,r18
+  78:Lib/ramdysk.c ****       klastry[temp]=temp;                  //Oznaczenie klastra jako zajętego (ostatniego w danym 
+ 624               	.LM39:
+ 625 01b0 822F      		mov r24,r18
+ 626 01b2 90E0      		ldi r25,lo8(0)
+ 627 01b4 FC01      		movw r30,r24
+ 628 01b6 E050      		subi r30,lo8(-(klastry))
+ 629 01b8 F040      		sbci r31,hi8(-(klastry))
+ 630 01ba 2083      		st Z,r18
+ 631               	.LBB21:
+ 632               	.LBB22:
+  21:Lib/ramdysk.c ****   memset (tmpPtr, 0, 256);
+ 634               	.LM40:
+ 635 01bc E0E0      		ldi r30,lo8(0)
+ 636 01be F22F      		mov r31,r18
+ 637 01c0 F058      		subi r31,lo8(-(-128))
+ 638 01c2 80E0      		ldi r24,lo8(256)
+ 639 01c4 91E0      		ldi r25,hi8(256)
+ 640 01c6 DF01      		movw r26,r30
+ 641 01c8 AC01      		movw r20,r24
+ 642 01ca 1D92      		st X+,__zero_reg__
+ 643 01cc 4150      		subi r20,1
+ 644 01ce 5040      		sbci r21,0
+ 645 01d0 01F4      		brne .-8
+ 646               	.L23:
+ 647               	.LBE22:
+ 648               	.LBE21:
+  83:Lib/ramdysk.c **** }
+ 650               	.LM41:
+ 651 01d2 822F      		mov r24,r18
+ 652               	/* epilogue start */
+ 653 01d4 0895      		ret
+ 658               	.Lscope4:
+ 660               		.stabd	78,0,0
+ 665               	znajdzKlasterN:
+ 666               		.stabd	46,0,0
+  86:Lib/ramdysk.c **** {
+ 668               	.LM42:
+ 669               	.LFBB5:
+ 670 01d6 0F93      		push r16
+ 671 01d8 1F93      		push r17
+ 672               	/* prologue: function */
+ 673               	/* frame size = 0 */
+ 674 01da 062F      		mov r16,r22
+  86:Lib/ramdysk.c **** {
+ 676               	.LM43:
+ 677 01dc 10E0      		ldi r17,lo8(0)
+ 678 01de 00C0      		rjmp .L29
+ 679               	.L31:
+  91:Lib/ramdysk.c ****     wynik = nastepnyKlaster(wynik);        //Jeśli nie ma kolejnego klastra, to zostanie automatyc
+ 681               	.LM44:
+ 682 01e0 0E94 0000 		call nastepnyKlaster
+  92:Lib/ramdysk.c ****     if (wynik == 0)                        //Sprawdzany, czy znalazł się kolejny klaster
+ 684               	.LM45:
+ 685 01e4 8823      		tst r24
+ 686 01e6 01F0      		breq .L30
+  89:Lib/ramdysk.c ****   for (ind=0; ind < lPrzeskokow; ind++)    //Należy wykonać klasterN przeskoków na kolejne klast
+ 688               	.LM46:
+ 689 01e8 1F5F      		subi r17,lo8(-(1))
+ 690               	.L29:
+ 691 01ea 1017      		cp r17,r16
+ 692 01ec 00F0      		brlo .L31
+ 693               	.L30:
+ 694               	/* epilogue start */
+  96:Lib/ramdysk.c **** }
+ 696               	.LM47:
+ 697 01ee 1F91      		pop r17
+ 698 01f0 0F91      		pop r16
+ 699 01f2 0895      		ret
+ 705               	.Lscope5:
+ 707               		.stabd	78,0,0
+ 711               	.global	ramDyskDodajBlokXmodem
+ 713               	ramDyskDodajBlokXmodem:
+ 714               		.stabd	46,0,0
+ 497:Lib/ramdysk.c **** {
+ 716               	.LM48:
+ 717               	.LFBB6:
+ 718 01f4 CF92      		push r12
+ 719 01f6 DF92      		push r13
+ 720 01f8 EF92      		push r14
+ 721 01fa FF92      		push r15
+ 722 01fc 1F93      		push r17
+ 723 01fe CF93      		push r28
+ 724 0200 DF93      		push r29
+ 725               	/* prologue: function */
+ 726               	/* frame size = 0 */
+ 727 0202 7C01      		movw r14,r24
+ 728 0204 6B01      		movw r12,r22
+ 498:Lib/ramdysk.c ****   if (nrBloku == 0)
+ 730               	.LM49:
+ 731 0206 6115      		cp r22,__zero_reg__
+ 732 0208 7105      		cpc r23,__zero_reg__
+ 733 020a 01F4      		brne .+2
+ 734 020c 00C0      		rjmp .L34
+ 506:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 736               	.LM50:
+ 737 020e DC01      		movw r26,r24
+ 738 0210 1496      		adiw r26,4
+ 739 0212 CD91      		ld r28,X+
+ 740 0214 DC91      		ld r29,X
+ 741 0216 1597      		sbiw r26,4+1
+ 742 0218 8881      		ld r24,Y
+ 743 021a 8823      		tst r24
+ 744 021c 01F4      		brne .L35
+ 507:Lib/ramdysk.c ****     fd->wpis->pierwszyKlaster = znajdzWolnyKlaster();
+ 746               	.LM51:
+ 747 021e 0E94 0000 		call znajdzWolnyKlaster
+ 748 0222 8883      		st Y,r24
+ 749               	.L35:
+ 508:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 751               	.LM52:
+ 752 0224 D701      		movw r26,r14
+ 753 0226 1496      		adiw r26,4
+ 754 0228 ED91      		ld r30,X+
+ 755 022a FC91      		ld r31,X
+ 756 022c 1597      		sbiw r26,4+1
+ 757 022e 8081      		ld r24,Z
+ 758 0230 8823      		tst r24
+ 759 0232 01F0      		breq .L34
+ 500:Lib/ramdysk.c ****   nrBloku --;
+ 761               	.LM53:
+ 762 0234 0894      		sec
+ 763 0236 C108      		sbc r12,__zero_reg__
+ 764 0238 D108      		sbc r13,__zero_reg__
+ 502:Lib/ramdysk.c ****   uint8_t indHi = (uint8_t)(nrBloku / 2);
+ 766               	.LM54:
+ 767 023a E601      		movw r28,r12
+ 768 023c D695      		lsr r29
+ 769 023e C795      		ror r28
+ 770 0240 1C2F      		mov r17,r28
+ 511:Lib/ramdysk.c ****   uint8_t tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster , indHi);
+ 772               	.LM55:
+ 773 0242 6C2F      		mov r22,r28
+ 774 0244 0E94 0000 		call znajdzKlasterN
+ 775 0248 982F      		mov r25,r24
+ 512:Lib/ramdysk.c ****   if (tmpKlaster == 0)
+ 777               	.LM56:
+ 778 024a 8823      		tst r24
+ 779 024c 01F0      		breq .L34
+ 780 024e D701      		movw r26,r14
+ 781 0250 1496      		adiw r26,4
+ 782 0252 ED91      		ld r30,X+
+ 783 0254 FC91      		ld r31,X
+ 784 0256 1597      		sbiw r26,4+1
+ 514:Lib/ramdysk.c ****   if ((nrBloku & 0x0001) == 0x0001)           // Druga część klastra
+ 786               	.LM57:
+ 787 0258 C0FE      		sbrs r12,0
+ 788 025a 00C0      		rjmp .L36
+ 517:Lib/ramdysk.c ****     if (fd->wpis->rozmiarHi <= indHi)
+ 790               	.LM58:
+ 791 025c 8281      		ldd r24,Z+2
+ 792 025e C817      		cp r28,r24
+ 793 0260 00F0      		brlo .L37
+ 519:Lib/ramdysk.c ****       fd->wpis->rozmiarHi = indHi+1;
+ 795               	.LM59:
+ 796 0262 1F5F      		subi r17,lo8(-(1))
+ 797 0264 1283      		std Z+2,r17
+ 520:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = 0;
+ 799               	.LM60:
+ 800 0266 1496      		adiw r26,4
+ 801 0268 ED91      		ld r30,X+
+ 802 026a FC91      		ld r31,X
+ 803 026c 1597      		sbiw r26,4+1
+ 804 026e 1182      		std Z+1,__zero_reg__
+ 805               	.L37:
+ 522:Lib/ramdysk.c ****     wynik=dataPtr(tmpKlaster, 128);
+ 807               	.LM61:
+ 808 0270 392F      		mov r19,r25
+ 809 0272 20E0      		ldi r18,lo8(0)
+ 810 0274 2058      		subi r18,lo8(-(-32640))
+ 811 0276 3F47      		sbci r19,hi8(-(-32640))
+ 812 0278 00C0      		rjmp .L38
+ 813               	.L36:
+ 526:Lib/ramdysk.c ****     if (fd->wpis->rozmiarHi < indHi)
+ 815               	.LM62:
+ 816 027a 8281      		ldd r24,Z+2
+ 817 027c 8C17      		cp r24,r28
+ 818 027e 00F4      		brsh .L39
+ 528:Lib/ramdysk.c ****       fd->wpis->rozmiarHi = indHi;
+ 820               	.LM63:
+ 821 0280 C283      		std Z+2,r28
+ 529:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = 128;
+ 823               	.LM64:
+ 824 0282 D701      		movw r26,r14
+ 825 0284 1496      		adiw r26,4
+ 826 0286 ED91      		ld r30,X+
+ 827 0288 FC91      		ld r31,X
+ 828 028a 1597      		sbiw r26,4+1
+ 829 028c 00C0      		rjmp .L42
+ 830               	.L39:
+ 531:Lib/ramdysk.c ****     else if ((fd->wpis->rozmiarHi == indHi) && (fd->wpis->rozmiarLo < 128))
+ 832               	.LM65:
+ 833 028e 8C17      		cp r24,r28
+ 834 0290 01F4      		brne .L40
+ 835 0292 8181      		ldd r24,Z+1
+ 836 0294 87FD      		sbrc r24,7
+ 837 0296 00C0      		rjmp .L40
+ 838               	.L42:
+ 532:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = 128;
+ 840               	.LM66:
+ 841 0298 80E8      		ldi r24,lo8(-128)
+ 842 029a 8183      		std Z+1,r24
+ 843               	.L40:
+ 534:Lib/ramdysk.c ****     wynik=dataPtr(tmpKlaster, 0);
+ 845               	.LM67:
+ 846 029c 892F      		mov r24,r25
+ 847 029e 90E0      		ldi r25,lo8(0)
+ 848 02a0 8058      		subi r24,lo8(-(128))
+ 849 02a2 9F4F      		sbci r25,hi8(-(128))
+ 850 02a4 382F      		mov r19,r24
+ 851 02a6 2227      		clr r18
+ 852 02a8 00C0      		rjmp .L38
+ 853               	.L34:
+ 854 02aa 20E0      		ldi r18,lo8(0)
+ 855 02ac 30E0      		ldi r19,hi8(0)
+ 856               	.L38:
+ 537:Lib/ramdysk.c **** }
+ 858               	.LM68:
+ 859 02ae C901      		movw r24,r18
+ 860               	/* epilogue start */
+ 861 02b0 DF91      		pop r29
+ 862 02b2 CF91      		pop r28
+ 863 02b4 1F91      		pop r17
+ 864 02b6 FF90      		pop r15
+ 865 02b8 EF90      		pop r14
+ 866 02ba DF90      		pop r13
+ 867 02bc CF90      		pop r12
+ 868 02be 0895      		ret
+ 875               	.Lscope6:
+ 877               		.stabd	78,0,0
+ 880               	.global	ramDyskUstawWskaznikNaKoniec
+ 882               	ramDyskUstawWskaznikNaKoniec:
+ 883               		.stabd	46,0,0
+ 481:Lib/ramdysk.c **** {
+ 885               	.LM69:
+ 886               	.LFBB7:
+ 887 02c0 CF93      		push r28
+ 888 02c2 DF93      		push r29
+ 889               	/* prologue: function */
+ 890               	/* frame size = 0 */
+ 891 02c4 EC01      		movw r28,r24
+ 482:Lib/ramdysk.c ****   if (fd == NULL)
+ 893               	.LM70:
+ 894 02c6 0097      		sbiw r24,0
+ 895 02c8 01F4      		brne .L44
+ 896 02ca 81E0      		ldi r24,lo8(1)
+ 897 02cc 00C0      		rjmp .L45
+ 898               	.L44:
+ 484:Lib/ramdysk.c ****   fd->IndLo = fd->wpis->rozmiarLo;
+ 900               	.LM71:
+ 901 02ce EC81      		ldd r30,Y+4
+ 902 02d0 FD81      		ldd r31,Y+5
+ 903 02d2 9181      		ldd r25,Z+1
+ 904 02d4 9A83      		std Y+2,r25
+ 485:Lib/ramdysk.c ****   fd->IndHi = fd->wpis->rozmiarHi;
+ 906               	.LM72:
+ 907 02d6 8281      		ldd r24,Z+2
+ 908 02d8 8B83      		std Y+3,r24
+ 488:Lib/ramdysk.c ****   if (fd->IndLo != 0)
+ 910               	.LM73:
+ 911 02da 9923      		tst r25
+ 912 02dc 01F0      		breq .L48
+ 913               	.L46:
+ 490:Lib/ramdysk.c ****     tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->wpis->rozmiarHi);
+ 915               	.LM74:
+ 916 02de 8081      		ld r24,Z
+ 917 02e0 6281      		ldd r22,Z+2
+ 918 02e2 0E94 0000 		call znajdzKlasterN
+ 491:Lib/ramdysk.c ****     fd->Wsk=dataPtr(tmpKlaster, fd->IndLo);
+ 920               	.LM75:
+ 921 02e6 90E0      		ldi r25,lo8(0)
+ 922 02e8 8058      		subi r24,lo8(-(128))
+ 923 02ea 9F4F      		sbci r25,hi8(-(128))
+ 924 02ec 982F      		mov r25,r24
+ 925 02ee 8827      		clr r24
+ 926 02f0 2A81      		ldd r18,Y+2
+ 927 02f2 820F      		add r24,r18
+ 928 02f4 911D      		adc r25,__zero_reg__
+ 929 02f6 9983      		std Y+1,r25
+ 930 02f8 8883      		st Y,r24
+ 931               	.L48:
+ 932 02fa 80E0      		ldi r24,lo8(0)
+ 933               	.L45:
+ 934               	/* epilogue start */
+ 494:Lib/ramdysk.c **** }
+ 936               	.LM76:
+ 937 02fc DF91      		pop r29
+ 938 02fe CF91      		pop r28
+ 939 0300 0895      		ret
+ 941               	.Lscope7:
+ 943               		.stabd	78,0,0
+ 947               	.global	ramDyskUstawWskaznik
+ 949               	ramDyskUstawWskaznik:
+ 950               		.stabd	46,0,0
+ 447:Lib/ramdysk.c **** {
+ 952               	.LM77:
+ 953               	.LFBB8:
+ 954 0302 EF92      		push r14
+ 955 0304 FF92      		push r15
+ 956 0306 0F93      		push r16
+ 957 0308 1F93      		push r17
+ 958 030a CF93      		push r28
+ 959 030c DF93      		push r29
+ 960               	/* prologue: function */
+ 961               	/* frame size = 0 */
+ 962 030e EC01      		movw r28,r24
+ 448:Lib/ramdysk.c ****   if (indeks == 0)                                        //Sprawdzanie, czy wskaźnik nie pokazuje
+ 964               	.LM78:
+ 965 0310 6115      		cp r22,__zero_reg__
+ 966 0312 7105      		cpc r23,__zero_reg__
+ 967 0314 01F4      		brne .L50
+ 450:Lib/ramdysk.c ****     fd->IndLo = 0;                                        //Ustawianie na 0 indeksów (mniej i bard
+ 969               	.LM79:
+ 970 0316 1A82      		std Y+2,__zero_reg__
+ 451:Lib/ramdysk.c ****     fd->IndHi = 0;
+ 972               	.LM80:
+ 973 0318 1B82      		std Y+3,__zero_reg__
+ 974 031a 00C0      		rjmp .L58
+ 975               	.L50:
+ 454:Lib/ramdysk.c ****   indeks--;                                               //Zmniejszamy indeks o 1, by odpowiednio 
+ 977               	.LM81:
+ 978 031c 8B01      		movw r16,r22
+ 979 031e 0150      		subi r16,lo8(-(-1))
+ 980 0320 1040      		sbci r17,hi8(-(-1))
+ 457:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)                     //Sprawdzanie, czy plik ma już przydziel
+ 982               	.LM82:
+ 983 0322 EC80      		ldd r14,Y+4
+ 984 0324 FD80      		ldd r15,Y+5
+ 985 0326 F701      		movw r30,r14
+ 986 0328 8081      		ld r24,Z
+ 987 032a 8823      		tst r24
+ 988 032c 01F4      		brne .L52
+ 458:Lib/ramdysk.c ****     fd->wpis->pierwszyKlaster = znajdzWolnyKlaster();     //Przydzielanie pierwszego klastra dla pl
+ 990               	.LM83:
+ 991 032e 0E94 0000 		call znajdzWolnyKlaster
+ 992 0332 F701      		movw r30,r14
+ 993 0334 8083      		st Z,r24
+ 994               	.L52:
+ 462:Lib/ramdysk.c ****   fd->IndLo = indeks & 0xFF;                              //Obliczanie na podstawie wartości 16 mn
+ 996               	.LM84:
+ 997 0336 0A83      		std Y+2,r16
+ 463:Lib/ramdysk.c ****   fd->IndHi = klasterN;                                   //oraz bardziej znaczącego bajtu indeksu
+ 999               	.LM85:
+ 1000 0338 1B83      		std Y+3,r17
+ 465:Lib/ramdysk.c ****   uint8_t nrKlastra = znajdzKlasterN(fd->wpis->pierwszyKlaster, klasterN);
+ 1002               	.LM86:
+ 1003 033a EC81      		ldd r30,Y+4
+ 1004 033c FD81      		ldd r31,Y+5
+ 1005 033e 8081      		ld r24,Z
+ 1006 0340 612F      		mov r22,r17
+ 1007 0342 0E94 0000 		call znajdzKlasterN
+ 1008 0346 382F      		mov r19,r24
+ 466:Lib/ramdysk.c ****   if (nrKlastra == 0)
+ 1010               	.LM87:
+ 1011 0348 8823      		tst r24
+ 1012 034a 01F4      		brne .L53
+ 1013 034c 81E0      		ldi r24,lo8(1)
+ 1014 034e 00C0      		rjmp .L51
+ 1015               	.L53:
+ 1016               	.LBB23:
+ 1017               	.LBB24:
+  37:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi == fd->IndHi)
+ 1019               	.LM88:
+ 1020 0350 EC81      		ldd r30,Y+4
+ 1021 0352 FD81      		ldd r31,Y+5
+ 1022 0354 9281      		ldd r25,Z+2
+ 1023 0356 8B81      		ldd r24,Y+3
+ 1024 0358 9817      		cp r25,r24
+ 1025 035a 01F4      		brne .L54
+  39:Lib/ramdysk.c ****     if (fd->wpis->rozmiarLo < fd->IndLo)
+ 1027               	.LM89:
+ 1028 035c 9A81      		ldd r25,Y+2
+ 1029 035e 8181      		ldd r24,Z+1
+ 1030 0360 8917      		cp r24,r25
+ 1031 0362 00F4      		brsh .L54
+  40:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = fd->IndLo;
+ 1033               	.LM90:
+ 1034 0364 9183      		std Z+1,r25
+ 1035               	.L54:
+  42:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi < fd->IndHi)
+ 1037               	.LM91:
+ 1038 0366 EC81      		ldd r30,Y+4
+ 1039 0368 FD81      		ldd r31,Y+5
+ 1040 036a 9281      		ldd r25,Z+2
+ 1041 036c 8B81      		ldd r24,Y+3
+ 1042 036e 9817      		cp r25,r24
+ 1043 0370 00F4      		brsh .L55
+  44:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = fd->IndLo;    
+ 1045               	.LM92:
+ 1046 0372 8A81      		ldd r24,Y+2
+ 1047 0374 8183      		std Z+1,r24
+  45:Lib/ramdysk.c ****       fd->wpis->rozmiarHi = fd->IndHi;    
+ 1049               	.LM93:
+ 1050 0376 EC81      		ldd r30,Y+4
+ 1051 0378 FD81      		ldd r31,Y+5
+ 1052 037a 8B81      		ldd r24,Y+3
+ 1053 037c 8283      		std Z+2,r24
+ 1054               	.L55:
+ 1055               	.LBE24:
+ 1056               	.LBE23:
+ 471:Lib/ramdysk.c ****   fd->IndLo++;                                            //Powrót do zadanej wartości indeksu
+ 1058               	.LM94:
+ 1059 037e 2A81      		ldd r18,Y+2
+ 1060 0380 2F5F      		subi r18,lo8(-(1))
+ 1061 0382 2A83      		std Y+2,r18
+ 472:Lib/ramdysk.c ****   if (fd->IndLo == 0)                                     //Jeśli jesteśmy na początku klastra, 
+ 1063               	.LM95:
+ 1064 0384 2223      		tst r18
+ 1065 0386 01F4      		brne .L56
+ 473:Lib/ramdysk.c ****     fd->IndHi++;                                          //Uaktualniamy tylko bardziej znaczący b
+ 1067               	.LM96:
+ 1068 0388 8B81      		ldd r24,Y+3
+ 1069 038a 8F5F      		subi r24,lo8(-(1))
+ 1070 038c 8B83      		std Y+3,r24
+ 1071 038e 00C0      		rjmp .L58
+ 1072               	.L56:
+ 475:Lib/ramdysk.c ****     fd->Wsk=dataPtr(nrKlastra, fd->IndLo);                //ustawić wskaźnik na odpowiednie miejs
+ 1074               	.LM97:
+ 1075 0390 832F      		mov r24,r19
+ 1076 0392 90E0      		ldi r25,lo8(0)
+ 1077 0394 8058      		subi r24,lo8(-(128))
+ 1078 0396 9F4F      		sbci r25,hi8(-(128))
+ 1079 0398 982F      		mov r25,r24
+ 1080 039a 8827      		clr r24
+ 1081 039c 820F      		add r24,r18
+ 1082 039e 911D      		adc r25,__zero_reg__
+ 1083 03a0 9983      		std Y+1,r25
+ 1084 03a2 8883      		st Y,r24
+ 1085               	.L58:
+ 1086 03a4 80E0      		ldi r24,lo8(0)
+ 1087               	.L51:
+ 1088               	/* epilogue start */
+ 478:Lib/ramdysk.c **** }
+ 1090               	.LM98:
+ 1091 03a6 DF91      		pop r29
+ 1092 03a8 CF91      		pop r28
+ 1093 03aa 1F91      		pop r17
+ 1094 03ac 0F91      		pop r16
+ 1095 03ae FF90      		pop r15
+ 1096 03b0 EF90      		pop r14
+ 1097 03b2 0895      		ret
+ 1102               	.Lscope8:
+ 1104               		.stabd	78,0,0
+ 1108               	.global	ramDyskCzytajBajtZPliku
+ 1110               	ramDyskCzytajBajtZPliku:
+ 1111               		.stabd	46,0,0
+ 323:Lib/ramdysk.c **** {
+ 1113               	.LM99:
+ 1114               	.LFBB9:
+ 1115 03b4 0F93      		push r16
+ 1116 03b6 1F93      		push r17
+ 1117 03b8 CF93      		push r28
+ 1118 03ba DF93      		push r29
+ 1119               	/* prologue: function */
+ 1120               	/* frame size = 0 */
+ 1121 03bc EC01      		movw r28,r24
+ 1122 03be 8B01      		movw r16,r22
+ 1123               	.LBB25:
+ 1124               	.LBB26:
+  26:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi > fd->IndHi)
+ 1126               	.LM100:
+ 1127 03c0 EC81      		ldd r30,Y+4
+ 1128 03c2 FD81      		ldd r31,Y+5
+ 1129 03c4 8281      		ldd r24,Z+2
+ 1130 03c6 6B81      		ldd r22,Y+3
+ 1131 03c8 6817      		cp r22,r24
+ 1132 03ca 00F0      		brlo .L60
+  29:Lib/ramdysk.c ****   if ((fd->wpis->rozmiarHi == fd->IndHi) && (fd->wpis->rozmiarLo >= fd->IndLo))
+ 1134               	.LM101:
+ 1135 03cc 8617      		cp r24,r22
+ 1136 03ce 01F4      		brne .L61
+ 1137 03d0 9181      		ldd r25,Z+1
+ 1138 03d2 8A81      		ldd r24,Y+2
+ 1139 03d4 9817      		cp r25,r24
+ 1140 03d6 00F0      		brlo .L61
+ 1141               	.L60:
+ 1142               	.LBE26:
+ 1143               	.LBE25:
+ 327:Lib/ramdysk.c ****   if (fd->IndLo == 0)                                 //Sprawdzanie, czy działamy na początku now
+ 1145               	.LM102:
+ 1146 03d8 8A81      		ldd r24,Y+2
+ 1147 03da 8823      		tst r24
+ 1148 03dc 01F4      		brne .L62
+ 1149               	.LBB27:
+ 329:Lib/ramdysk.c ****     uint8_t nrKlastra = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->IndHi);
+ 1151               	.LM103:
+ 1152 03de 8081      		ld r24,Z
+ 1153 03e0 0E94 0000 		call znajdzKlasterN
+ 330:Lib/ramdysk.c ****     fd->Wsk = dataPtr(nrKlastra, 0);                  //Ustawianie wskaźnika na początek nowego k
+ 1155               	.LM104:
+ 1156 03e4 90E0      		ldi r25,lo8(0)
+ 1157 03e6 8058      		subi r24,lo8(-(128))
+ 1158 03e8 9F4F      		sbci r25,hi8(-(128))
+ 1159 03ea 1882      		st Y,__zero_reg__
+ 1160 03ec 8983      		std Y+1,r24
+ 1161               	.L62:
+ 1162               	.LBE27:
+ 333:Lib/ramdysk.c ****   *bajt = *(fd->Wsk);                                 //Odczyt z pliku
+ 1164               	.LM105:
+ 1165 03ee E881      		ld r30,Y
+ 1166 03f0 F981      		ldd r31,Y+1
+ 1167 03f2 8081      		ld r24,Z
+ 1168 03f4 F801      		movw r30,r16
+ 1169 03f6 8083      		st Z,r24
+ 334:Lib/ramdysk.c ****   fd->IndLo++;                                        //Zwiększenie indeksu o 1
+ 1171               	.LM106:
+ 1172 03f8 8A81      		ldd r24,Y+2
+ 1173 03fa 8F5F      		subi r24,lo8(-(1))
+ 1174 03fc 8A83      		std Y+2,r24
+ 335:Lib/ramdysk.c ****   if (fd->IndLo == 0)                                 //Sprawdzamy, czy przeszliśmy do nowego klas
+ 1176               	.LM107:
+ 1177 03fe 8823      		tst r24
+ 1178 0400 01F4      		brne .L63
+ 336:Lib/ramdysk.c ****     fd->IndHi++;                                      //Tak: uaktualniamy liczbę przeskokół wzgl
+ 1180               	.LM108:
+ 1181 0402 8B81      		ldd r24,Y+3
+ 1182 0404 8F5F      		subi r24,lo8(-(1))
+ 1183 0406 8B83      		std Y+3,r24
+ 1184 0408 00C0      		rjmp .L66
+ 1185               	.L63:
+ 338:Lib/ramdysk.c ****     fd->Wsk++;                                        //Uaktualniamy wskaźnik do tego klastra
+ 1187               	.LM109:
+ 1188 040a 8881      		ld r24,Y
+ 1189 040c 9981      		ldd r25,Y+1
+ 1190 040e 0196      		adiw r24,1
+ 1191 0410 9983      		std Y+1,r25
+ 1192 0412 8883      		st Y,r24
+ 1193               	.L66:
+ 1194 0414 80E0      		ldi r24,lo8(0)
+ 1195 0416 00C0      		rjmp .L64
+ 1196               	.L61:
+ 1197 0418 81E0      		ldi r24,lo8(1)
+ 1198               	.L64:
+ 1199               	/* epilogue start */
+ 340:Lib/ramdysk.c **** }
+ 1201               	.LM110:
+ 1202 041a DF91      		pop r29
+ 1203 041c CF91      		pop r28
+ 1204 041e 1F91      		pop r17
+ 1205 0420 0F91      		pop r16
+ 1206 0422 0895      		ret
+ 1208               	.Lscope9:
+ 1210               		.stabd	78,0,0
+ 1214               	getSTD:
+ 1215               		.stabd	46,0,0
+ 583:Lib/ramdysk.c **** 
+ 584:Lib/ramdysk.c **** 
+ 585:Lib/ramdysk.c **** static int getSTD(FILE *stream)
+ 586:Lib/ramdysk.c **** {
+ 1217               	.LM111:
+ 1218               	.LFBB10:
+ 1219 0424 DF93      		push r29
+ 1220 0426 CF93      		push r28
+ 1221 0428 0F92      		push __tmp_reg__
+ 1222 042a CDB7      		in r28,__SP_L__
+ 1223 042c DEB7      		in r29,__SP_H__
+ 1224               	/* prologue: function */
+ 1225               	/* frame size = 1 */
+ 587:Lib/ramdysk.c ****   uint8_t wynik;
+ 588:Lib/ramdysk.c ****   struct ramPlikFd *fd = (struct ramPlikFd *)(fdev_get_udata(stream));
+ 589:Lib/ramdysk.c ****   
+ 590:Lib/ramdysk.c ****   if (ramDyskCzytajBajtZPliku(fd, &wynik) == 0)
+ 1227               	.LM112:
+ 1228 042e FC01      		movw r30,r24
+ 1229 0430 8485      		ldd r24,Z+12
+ 1230 0432 9585      		ldd r25,Z+13
+ 1231 0434 BE01      		movw r22,r28
+ 1232 0436 6F5F      		subi r22,lo8(-(1))
+ 1233 0438 7F4F      		sbci r23,hi8(-(1))
+ 1234 043a 0E94 0000 		call ramDyskCzytajBajtZPliku
+ 1235 043e 8823      		tst r24
+ 1236 0440 01F0      		breq .L68
+ 1237 0442 2FEF      		ldi r18,lo8(-1)
+ 1238 0444 3FEF      		ldi r19,hi8(-1)
+ 1239 0446 00C0      		rjmp .L69
+ 1240               	.L68:
+ 591:Lib/ramdysk.c ****     return wynik;
+ 1242               	.LM113:
+ 1243 0448 8981      		ldd r24,Y+1
+ 1244 044a 282F      		mov r18,r24
+ 1245 044c 30E0      		ldi r19,lo8(0)
+ 1246               	.L69:
+ 592:Lib/ramdysk.c ****   return EOF;
+ 593:Lib/ramdysk.c **** }
+ 1248               	.LM114:
+ 1249 044e C901      		movw r24,r18
+ 1250               	/* epilogue start */
+ 1251 0450 0F90      		pop __tmp_reg__
+ 1252 0452 CF91      		pop r28
+ 1253 0454 DF91      		pop r29
+ 1254 0456 0895      		ret
+ 1259               	.Lscope10:
+ 1261               		.stabd	78,0,0
+ 1265               	.global	ramDyskZapiszBajtDoPliku
+ 1267               	ramDyskZapiszBajtDoPliku:
+ 1268               		.stabd	46,0,0
+ 292:Lib/ramdysk.c **** {
+ 1270               	.LM115:
+ 1271               	.LFBB11:
+ 1272 0458 1F93      		push r17
+ 1273 045a CF93      		push r28
+ 1274 045c DF93      		push r29
+ 1275               	/* prologue: function */
+ 1276               	/* frame size = 0 */
+ 1277 045e EC01      		movw r28,r24
+ 1278 0460 162F      		mov r17,r22
+ 294:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 1280               	.LM116:
+ 1281 0462 EC81      		ldd r30,Y+4
+ 1282 0464 FD81      		ldd r31,Y+5
+ 1283 0466 8081      		ld r24,Z
+ 1284 0468 8823      		tst r24
+ 1285 046a 01F4      		brne .L72
+ 296:Lib/ramdysk.c ****     if ((tmpKlaster = znajdzWolnyKlaster()) == 0)
+ 1287               	.LM117:
+ 1288 046c 0E94 0000 		call znajdzWolnyKlaster
+ 1289 0470 8823      		tst r24
+ 1290 0472 01F4      		brne .L73
+ 1291 0474 81E0      		ldi r24,lo8(1)
+ 1292 0476 00C0      		rjmp .L74
+ 1293               	.L73:
+ 298:Lib/ramdysk.c ****     fd->wpis->pierwszyKlaster = tmpKlaster;
+ 1295               	.LM118:
+ 1296 0478 EC81      		ldd r30,Y+4
+ 1297 047a FD81      		ldd r31,Y+5
+ 1298 047c 8083      		st Z,r24
+ 1299               	.L72:
+ 300:Lib/ramdysk.c ****   if (fd->IndLo == 0)
+ 1301               	.LM119:
+ 1302 047e 8A81      		ldd r24,Y+2
+ 1303 0480 8823      		tst r24
+ 1304 0482 01F4      		brne .L75
+ 302:Lib/ramdysk.c ****     tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->IndHi); //Wyszukanie lub dodanie nas
+ 1306               	.LM120:
+ 1307 0484 EC81      		ldd r30,Y+4
+ 1308 0486 FD81      		ldd r31,Y+5
+ 1309 0488 8081      		ld r24,Z
+ 1310 048a 6B81      		ldd r22,Y+3
+ 1311 048c 0E94 0000 		call znajdzKlasterN
+ 303:Lib/ramdysk.c ****     if (tmpKlaster == 0)
+ 1313               	.LM121:
+ 1314 0490 8823      		tst r24
+ 1315 0492 01F4      		brne .L76
+ 1316 0494 82E0      		ldi r24,lo8(2)
+ 1317 0496 00C0      		rjmp .L74
+ 1318               	.L76:
+ 307:Lib/ramdysk.c ****     fd->Wsk = dataPtr(tmpKlaster, 0);                 //Ustawianie wskaźnika na początek nowego k
+ 1320               	.LM122:
+ 1321 0498 90E0      		ldi r25,lo8(0)
+ 1322 049a 8058      		subi r24,lo8(-(128))
+ 1323 049c 9F4F      		sbci r25,hi8(-(128))
+ 1324 049e 1882      		st Y,__zero_reg__
+ 1325 04a0 8983      		std Y+1,r24
+ 1326               	.L75:
+ 310:Lib/ramdysk.c ****   *(fd->Wsk) = znak;                                  //Zapis bajtu do pliku
+ 1328               	.LM123:
+ 1329 04a2 E881      		ld r30,Y
+ 1330 04a4 F981      		ldd r31,Y+1
+ 1331 04a6 1083      		st Z,r17
+ 312:Lib/ramdysk.c ****   fd->IndLo++;                                        //Zwiększanie indeksu odczytu/zapisu
+ 1333               	.LM124:
+ 1334 04a8 8A81      		ldd r24,Y+2
+ 1335 04aa 8F5F      		subi r24,lo8(-(1))
+ 1336 04ac 8A83      		std Y+2,r24
+ 313:Lib/ramdysk.c ****   if (fd->IndLo == 0)                                 //Jeśli ma on wartość 0, to oznacza to, ż
+ 1338               	.LM125:
+ 1339 04ae 8823      		tst r24
+ 1340 04b0 01F4      		brne .L77
+ 314:Lib/ramdysk.c ****     fd->IndHi++;                                      //Należy zwiększyć bardziej znaczący bajt
+ 1342               	.LM126:
+ 1343 04b2 8B81      		ldd r24,Y+3
+ 1344 04b4 8F5F      		subi r24,lo8(-(1))
+ 1345 04b6 8B83      		std Y+3,r24
+ 1346 04b8 00C0      		rjmp .L78
+ 1347               	.L77:
+ 316:Lib/ramdysk.c ****     fd->Wsk++;                                        //Można uaktualnić wskaźnik
+ 1349               	.LM127:
+ 1350 04ba 8881      		ld r24,Y
+ 1351 04bc 9981      		ldd r25,Y+1
+ 1352 04be 0196      		adiw r24,1
+ 1353 04c0 9983      		std Y+1,r25
+ 1354 04c2 8883      		st Y,r24
+ 1355               	.L78:
+ 1356               	.LBB28:
+ 1357               	.LBB29:
+  37:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi == fd->IndHi)
+ 1359               	.LM128:
+ 1360 04c4 EC81      		ldd r30,Y+4
+ 1361 04c6 FD81      		ldd r31,Y+5
+ 1362 04c8 9281      		ldd r25,Z+2
+ 1363 04ca 8B81      		ldd r24,Y+3
+ 1364 04cc 9817      		cp r25,r24
+ 1365 04ce 01F4      		brne .L79
+  39:Lib/ramdysk.c ****     if (fd->wpis->rozmiarLo < fd->IndLo)
+ 1367               	.LM129:
+ 1368 04d0 9A81      		ldd r25,Y+2
+ 1369 04d2 8181      		ldd r24,Z+1
+ 1370 04d4 8917      		cp r24,r25
+ 1371 04d6 00F4      		brsh .L79
+  40:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = fd->IndLo;
+ 1373               	.LM130:
+ 1374 04d8 9183      		std Z+1,r25
+ 1375               	.L79:
+  42:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi < fd->IndHi)
+ 1377               	.LM131:
+ 1378 04da EC81      		ldd r30,Y+4
+ 1379 04dc FD81      		ldd r31,Y+5
+ 1380 04de 9281      		ldd r25,Z+2
+ 1381 04e0 8B81      		ldd r24,Y+3
+ 1382 04e2 9817      		cp r25,r24
+ 1383 04e4 00F4      		brsh .L82
+ 1384               	.L80:
+  44:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = fd->IndLo;    
+ 1386               	.LM132:
+ 1387 04e6 8A81      		ldd r24,Y+2
+ 1388 04e8 8183      		std Z+1,r24
+  45:Lib/ramdysk.c ****       fd->wpis->rozmiarHi = fd->IndHi;    
+ 1390               	.LM133:
+ 1391 04ea EC81      		ldd r30,Y+4
+ 1392 04ec FD81      		ldd r31,Y+5
+ 1393 04ee 8B81      		ldd r24,Y+3
+ 1394 04f0 8283      		std Z+2,r24
+ 1395               	.L82:
+ 1396 04f2 80E0      		ldi r24,lo8(0)
+ 1397               	.L74:
+ 1398               	/* epilogue start */
+ 1399               	.LBE29:
+ 1400               	.LBE28:
+ 320:Lib/ramdysk.c **** }
+ 1402               	.LM134:
+ 1403 04f4 DF91      		pop r29
+ 1404 04f6 CF91      		pop r28
+ 1405 04f8 1F91      		pop r17
+ 1406 04fa 0895      		ret
+ 1411               	.Lscope11:
+ 1413               		.stabd	78,0,0
+ 1418               	putSTD:
+ 1419               		.stabd	46,0,0
+ 594:Lib/ramdysk.c **** 
+ 595:Lib/ramdysk.c **** static int putSTD(char c, FILE *stream)
+ 596:Lib/ramdysk.c **** {
+ 1421               	.LM135:
+ 1422               	.LFBB12:
+ 1423               	/* prologue: function */
+ 1424               	/* frame size = 0 */
+ 1425 04fc 282F      		mov r18,r24
+ 1426 04fe FB01      		movw r30,r22
+ 597:Lib/ramdysk.c ****   struct ramPlikFd *fd = (struct ramPlikFd *)(fdev_get_udata(stream));
+ 598:Lib/ramdysk.c ****   return ramDyskZapiszBajtDoPliku(fd, c);  
+ 1428               	.LM136:
+ 1429 0500 8485      		ldd r24,Z+12
+ 1430 0502 9585      		ldd r25,Z+13
+ 1431 0504 622F      		mov r22,r18
+ 1432 0506 0E94 0000 		call ramDyskZapiszBajtDoPliku
+ 599:Lib/ramdysk.c **** }
+ 1434               	.LM137:
+ 1435 050a 90E0      		ldi r25,lo8(0)
+ 1436               	/* epilogue start */
+ 1437 050c 0895      		ret
+ 1439               	.Lscope12:
+ 1441               		.stabd	78,0,0
+ 1444               	.global	ramDyskCzyscPlik
+ 1446               	ramDyskCzyscPlik:
+ 1447               		.stabd	46,0,0
+ 273:Lib/ramdysk.c **** {
+ 1449               	.LM138:
+ 1450               	.LFBB13:
+ 1451 050e CF93      		push r28
+ 1452 0510 DF93      		push r29
+ 1453               	/* prologue: function */
+ 1454               	/* frame size = 0 */
+ 1455 0512 9C01      		movw r18,r24
+ 1456 0514 00C0      		rjmp .L86
+ 1457               	.L89:
+ 278:Lib/ramdysk.c ****     if (klastry[usuwanyKlaster] == usuwanyKlaster)             //Sprawdzanie, czy nie usuwamy ostat
+ 1459               	.LM139:
+ 1460 0516 A82F      		mov r26,r24
+ 1461 0518 B0E0      		ldi r27,lo8(0)
+ 1462 051a FD01      		movw r30,r26
+ 1463 051c E050      		subi r30,lo8(-(klastry))
+ 1464 051e F040      		sbci r31,hi8(-(klastry))
+ 1465 0520 E081      		ld r30,Z
+ 1466 0522 E817      		cp r30,r24
+ 1467 0524 01F4      		brne .L87
+ 279:Lib/ramdysk.c ****       fd->wpis->pierwszyKlaster = 0;                           //Ok można już zakończyć usuwani
+ 1469               	.LM140:
+ 1470 0526 1882      		st Y,__zero_reg__
+ 1471 0528 00C0      		rjmp .L88
+ 1472               	.L87:
+ 281:Lib/ramdysk.c ****       fd->wpis->pierwszyKlaster = klastry[usuwanyKlaster];     //Przejście do następnego klastra
+ 1474               	.LM141:
+ 1475 052a E883      		st Y,r30
+ 1476               	.L88:
+ 282:Lib/ramdysk.c ****     klastry[usuwanyKlaster] = 0;                               //Usunięcie klastra
+ 1478               	.LM142:
+ 1479 052c A050      		subi r26,lo8(-(klastry))
+ 1480 052e B040      		sbci r27,hi8(-(klastry))
+ 1481 0530 1C92      		st X,__zero_reg__
+ 1482               	.L86:
+ 275:Lib/ramdysk.c ****   while(fd->wpis->pierwszyKlaster != 0)                        //Już na samym początku może się
+ 1484               	.LM143:
+ 1485 0532 D901      		movw r26,r18
+ 1486 0534 1496      		adiw r26,4
+ 1487 0536 CD91      		ld r28,X+
+ 1488 0538 DC91      		ld r29,X
+ 1489 053a 1597      		sbiw r26,4+1
+ 1490 053c 8881      		ld r24,Y
+ 1491 053e 8823      		tst r24
+ 1492 0540 01F4      		brne .L89
+ 284:Lib/ramdysk.c ****   fd->wpis->rozmiarLo       = 0;
+ 1494               	.LM144:
+ 1495 0542 1982      		std Y+1,__zero_reg__
+ 285:Lib/ramdysk.c ****   fd->wpis->rozmiarHi       = 0;
+ 1497               	.LM145:
+ 1498 0544 1496      		adiw r26,4
+ 1499 0546 ED91      		ld r30,X+
+ 1500 0548 FC91      		ld r31,X
+ 1501 054a 1597      		sbiw r26,4+1
+ 1502 054c 1282      		std Z+2,__zero_reg__
+ 286:Lib/ramdysk.c ****   fd->wpis->dataMod         = systemTime();
+ 1504               	.LM146:
+ 1505 054e 1496      		adiw r26,4
+ 1506 0550 ED91      		ld r30,X+
+ 1507 0552 FC91      		ld r31,X
+ 1508 0554 1597      		sbiw r26,4+1
+ 1509 0556 1486      		std Z+12,__zero_reg__
+ 1510 0558 1586      		std Z+13,__zero_reg__
+ 1511 055a 1686      		std Z+14,__zero_reg__
+ 1512 055c 1786      		std Z+15,__zero_reg__
+ 287:Lib/ramdysk.c ****   memset (fd, 0, 4);
+ 1514               	.LM147:
+ 1515 055e F901      		movw r30,r18
+ 1516 0560 1082      		st Z,__zero_reg__
+ 1517 0562 1182      		std Z+1,__zero_reg__
+ 1518 0564 1282      		std Z+2,__zero_reg__
+ 1519 0566 1382      		std Z+3,__zero_reg__
+ 1520               	/* epilogue start */
+ 289:Lib/ramdysk.c **** }
+ 1522               	.LM148:
+ 1523 0568 DF91      		pop r29
+ 1524 056a CF91      		pop r28
+ 1525 056c 0895      		ret
+ 1527               	.Lscope13:
+ 1529               		.stabd	78,0,0
+ 1532               	.global	ramDyskZamknijPlik
+ 1534               	ramDyskZamknijPlik:
+ 1535               		.stabd	46,0,0
+ 264:Lib/ramdysk.c **** {
+ 1537               	.LM149:
+ 1538               	.LFBB14:
+ 1539               	/* prologue: function */
+ 1540               	/* frame size = 0 */
+ 1541 056e DC01      		movw r26,r24
+ 265:Lib/ramdysk.c ****   if (fd -> wpis -> lAktOtw > 0)                           //Sprawdzanie, czy licznik otwarć jest 
+ 1543               	.LM150:
+ 1544 0570 1496      		adiw r26,4
+ 1545 0572 ED91      		ld r30,X+
+ 1546 0574 FC91      		ld r31,X
+ 1547 0576 1597      		sbiw r26,4+1
+ 1548 0578 8381      		ldd r24,Z+3
+ 1549 057a 8823      		tst r24
+ 1550 057c 01F0      		breq .L93
+ 267:Lib/ramdysk.c ****     fd->wpis->lAktOtw--;                                   //Zmniejszanie licznika otwarć pliku
+ 1552               	.LM151:
+ 1553 057e 8150      		subi r24,lo8(-(-1))
+ 1554 0580 8383      		std Z+3,r24
+ 268:Lib/ramdysk.c ****     memset(fd, 0, sizeof(struct ramPlikFd));               //CZyszczenie struktury deskryptora plik
+ 1556               	.LM152:
+ 1557 0582 86E0      		ldi r24,lo8(6)
+ 1558 0584 FD01      		movw r30,r26
+ 1559 0586 1192      		st Z+,__zero_reg__
+ 1560 0588 8A95      	        dec r24
+ 1561 058a 01F4      		brne .-6
+ 1562               	.L93:
+ 1563 058c 0895      		ret
+ 1565               	.Lscope14:
+ 1567               		.stabd	78,0,0
+ 1570               	.global	ramDyskZamknijPlikStdIo
+ 1572               	ramDyskZamknijPlikStdIo:
+ 1573               		.stabd	46,0,0
+ 600:Lib/ramdysk.c **** 
+ 601:Lib/ramdysk.c **** uint8_t ramDyskOtworzPlikStdIo(const char *nazwa, struct ramPlikFd *fd, FILE *stream, uint8_t flags
+ 602:Lib/ramdysk.c **** {
+ 603:Lib/ramdysk.c ****   uint8_t wynik = ramDyskOtworzPlik(nazwa, fd);
+ 604:Lib/ramdysk.c ****   if (wynik != 0)
+ 605:Lib/ramdysk.c ****     return wynik;
+ 606:Lib/ramdysk.c ****   
+ 607:Lib/ramdysk.c ****   fdev_setup_stream(stream, putSTD, getSTD, flags);
+ 608:Lib/ramdysk.c ****   fdev_set_udata(stream, fd);
+ 609:Lib/ramdysk.c ****   return 0;
+ 610:Lib/ramdysk.c **** }
+ 611:Lib/ramdysk.c **** 
+ 612:Lib/ramdysk.c **** uint8_t ramDyskZamknijPlikStdIo(FILE *stream)
+ 613:Lib/ramdysk.c **** {
+ 1575               	.LM153:
+ 1576               	.LFBB15:
+ 1577 058e EF92      		push r14
+ 1578 0590 FF92      		push r15
+ 1579 0592 0F93      		push r16
+ 1580 0594 1F93      		push r17
+ 1581               	/* prologue: function */
+ 1582               	/* frame size = 0 */
+ 1583 0596 8C01      		movw r16,r24
+ 614:Lib/ramdysk.c ****   struct ramPlikFd *fd = (struct ramPlikFd *)(fdev_get_udata(stream));
+ 1585               	.LM154:
+ 1586 0598 DC01      		movw r26,r24
+ 1587 059a 1C96      		adiw r26,12
+ 1588 059c ED90      		ld r14,X+
+ 1589 059e FC90      		ld r15,X
+ 1590 05a0 1D97      		sbiw r26,12+1
+ 615:Lib/ramdysk.c ****   ramDyskZamknijPlik(fd);
+ 1592               	.LM155:
+ 1593 05a2 C701      		movw r24,r14
+ 1594 05a4 0E94 0000 		call ramDyskZamknijPlik
+ 616:Lib/ramdysk.c ****   fclose(stream);
+ 1596               	.LM156:
+ 1597 05a8 C801      		movw r24,r16
+ 1598 05aa 0E94 0000 		call fclose
+ 1599 05ae D701      		movw r26,r14
+ 1600 05b0 1496      		adiw r26,4
+ 1601 05b2 ED91      		ld r30,X+
+ 1602 05b4 FC91      		ld r31,X
+ 1603 05b6 1597      		sbiw r26,4+1
+ 617:Lib/ramdysk.c ****   return fd->wpis->lAktOtw;
+ 618:Lib/ramdysk.c **** }
+ 1605               	.LM157:
+ 1606 05b8 8381      		ldd r24,Z+3
+ 1607               	/* epilogue start */
+ 1608 05ba 1F91      		pop r17
+ 1609 05bc 0F91      		pop r16
+ 1610 05be FF90      		pop r15
+ 1611 05c0 EF90      		pop r14
+ 1612 05c2 0895      		ret
+ 1617               	.Lscope15:
+ 1619               		.stabd	78,0,0
+ 1621               	.global	ramDyskInit
+ 1623               	ramDyskInit:
+ 1624               		.stabd	46,0,0
+ 188:Lib/ramdysk.c **** {
+ 1626               	.LM158:
+ 1627               	.LFBB16:
+ 1628               	/* prologue: function */
+ 1629               	/* frame size = 0 */
+ 189:Lib/ramdysk.c ****   memset (klastry, 0, 128);              //Czyszczenie tablicy klastrów (wszystkie są puste)
+ 1631               	.LM159:
+ 1632 05c4 80E8      		ldi r24,lo8(-128)
+ 1633 05c6 E0E0      		ldi r30,lo8(klastry)
+ 1634 05c8 F0E0      		ldi r31,hi8(klastry)
+ 1635 05ca DF01      		movw r26,r30
+ 1636 05cc 1D92      		st X+,__zero_reg__
+ 1637 05ce 8A95      	        dec r24
+ 1638 05d0 01F4      		brne .-6
+ 190:Lib/ramdysk.c ****   memset (dataPtr(0,0), 0, 256);         //Czyszczenie zerowego klastra z tablicą plików
+ 1640               	.LM160:
+ 1641 05d2 80E0      		ldi r24,lo8(256)
+ 1642 05d4 91E0      		ldi r25,hi8(256)
+ 1643 05d6 E0E0      		ldi r30,lo8(-32768)
+ 1644 05d8 F0E8      		ldi r31,hi8(-32768)
+ 1645 05da DF01      		movw r26,r30
+ 1646 05dc 9C01      		movw r18,r24
+ 1647 05de 1D92      		st X+,__zero_reg__
+ 1648 05e0 2150      		subi r18,1
+ 1649 05e2 3040      		sbci r19,0
+ 1650 05e4 01F4      		brne .-8
+ 1651               	/* epilogue start */
+ 191:Lib/ramdysk.c **** }
+ 1653               	.LM161:
+ 1654 05e6 0895      		ret
+ 1656               	.Lscope16:
+ 1658               		.stabd	78,0,0
+ 1663               	.global	ramDyskCzytajBlokZPliku
+ 1665               	ramDyskCzytajBlokZPliku:
+ 1666               		.stabd	46,0,0
+ 388:Lib/ramdysk.c **** {
+ 1668               	.LM162:
+ 1669               	.LFBB17:
+ 1670 05e8 9F92      		push r9
+ 1671 05ea AF92      		push r10
+ 1672 05ec BF92      		push r11
+ 1673 05ee CF92      		push r12
+ 1674 05f0 DF92      		push r13
+ 1675 05f2 EF92      		push r14
+ 1676 05f4 FF92      		push r15
+ 1677 05f6 0F93      		push r16
+ 1678 05f8 1F93      		push r17
+ 1679 05fa CF93      		push r28
+ 1680 05fc DF93      		push r29
+ 1681               	/* prologue: function */
+ 1682               	/* frame size = 0 */
+ 1683 05fe EC01      		movw r28,r24
+ 1684 0600 5B01      		movw r10,r22
+ 1685 0602 6A01      		movw r12,r20
+ 389:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 1687               	.LM163:
+ 1688 0604 EC81      		ldd r30,Y+4
+ 1689 0606 FD81      		ldd r31,Y+5
+ 1690 0608 8081      		ld r24,Z
+ 1691 060a 8823      		tst r24
+ 1692 060c 01F4      		brne .L99
+ 391:Lib/ramdysk.c ****     *dlugosc = 0;
+ 1694               	.LM164:
+ 1695 060e FA01      		movw r30,r20
+ 1696 0610 1182      		std Z+1,__zero_reg__
+ 1697 0612 1082      		st Z,__zero_reg__
+ 1698 0614 81E0      		ldi r24,lo8(1)
+ 1699 0616 00C0      		rjmp .L100
+ 1700               	.L99:
+ 1701               	.LBB30:
+ 1702               	.LBB31:
+  26:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi > fd->IndHi)
+ 1704               	.LM165:
+ 1705 0618 2281      		ldd r18,Z+2
+ 1706 061a 3B81      		ldd r19,Y+3
+ 1707 061c 3217      		cp r19,r18
+ 1708 061e 00F0      		brlo .L101
+  29:Lib/ramdysk.c ****   if ((fd->wpis->rozmiarHi == fd->IndHi) && (fd->wpis->rozmiarLo >= fd->IndLo))
+ 1710               	.LM166:
+ 1711 0620 2317      		cp r18,r19
+ 1712 0622 01F0      		breq .+2
+ 1713 0624 00C0      		rjmp .L102
+ 1714 0626 9181      		ldd r25,Z+1
+ 1715 0628 8A81      		ldd r24,Y+2
+ 1716 062a 9817      		cp r25,r24
+ 1717 062c 00F4      		brsh .+2
+ 1718 062e 00C0      		rjmp .L102
+ 1719               	.L101:
+ 1720               	.LBE31:
+ 1721               	.LBE30:
+ 400:Lib/ramdysk.c ****   uint16_t lDanych = (fd->wpis->rozmiarHi - fd->IndHi);
+ 1723               	.LM167:
+ 1724 0630 822F      		mov r24,r18
+ 1725 0632 90E0      		ldi r25,lo8(0)
+ 1726 0634 831B      		sub r24,r19
+ 1727 0636 9109      		sbc r25,__zero_reg__
+ 401:Lib/ramdysk.c ****   lDanych +=fd->wpis->rozmiarLo;      //Obliczanie liczby bajtów jaka zostałą zapisana jeszcze z
+ 1729               	.LM168:
+ 1730 0638 2181      		ldd r18,Z+1
+ 1731 063a 422F      		mov r20,r18
+ 1732 063c 50E0      		ldi r21,lo8(0)
+ 1733 063e 2A81      		ldd r18,Y+2
+ 1734 0640 421B      		sub r20,r18
+ 1735 0642 5109      		sbc r21,__zero_reg__
+ 406:Lib/ramdysk.c ****     *dlugosc;                          //W pliku jest więcej bajtów niż chcemy odczytać
+ 1737               	.LM169:
+ 1738 0644 480F      		add r20,r24
+ 1739 0646 591F      		adc r21,r25
+ 1740 0648 F601      		movw r30,r12
+ 1741 064a E080      		ld r14,Z
+ 1742 064c F180      		ldd r15,Z+1
+ 1743 064e 4E15      		cp r20,r14
+ 1744 0650 5F05      		cpc r21,r15
+ 1745 0652 00F4      		brsh .L103
+ 1746 0654 7A01      		movw r14,r20
+ 1747               	.L103:
+ 407:Lib/ramdysk.c ****   *dlugosc = 0;                        //Jak do tąd odczytano 0 bajtów
+ 1749               	.LM170:
+ 1750 0656 F601      		movw r30,r12
+ 1751 0658 1182      		std Z+1,__zero_reg__
+ 1752 065a 1082      		st Z,__zero_reg__
+ 408:Lib/ramdysk.c ****   uint16_t dlBloku = 256 - fd->IndLo;  //Określanie liczby bajtół jaka zostałą do końca aktua
+ 1754               	.LM171:
+ 1755 065c 8A81      		ldd r24,Y+2
+ 1756 065e 00E0      		ldi r16,lo8(256)
+ 1757 0660 11E0      		ldi r17,hi8(256)
+ 1758 0662 081B      		sub r16,r24
+ 1759 0664 1109      		sbc r17,__zero_reg__
+ 1760 0666 9924      		clr r9
+ 1761 0668 00C0      		rjmp .L114
+ 1762               	.L112:
+ 412:Lib/ramdysk.c ****     if (fd->IndLo == 0)                //Indeks odczytu wskazuje na początek klastra. Oznacza to, 
+ 1764               	.LM172:
+ 1765 066a 8A81      		ldd r24,Y+2
+ 1766 066c 8823      		tst r24
+ 1767 066e 01F4      		brne .L105
+ 414:Lib/ramdysk.c ****       if (tmpKlaster == 0)
+ 1769               	.LM173:
+ 1770 0670 9920      		tst r9
+ 1771 0672 01F4      		brne .L106
+ 415:Lib/ramdysk.c ****         tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->IndHi); 
+ 1773               	.LM174:
+ 1774 0674 EC81      		ldd r30,Y+4
+ 1775 0676 FD81      		ldd r31,Y+5
+ 1776 0678 8081      		ld r24,Z
+ 1777 067a 6B81      		ldd r22,Y+3
+ 1778 067c 0E94 0000 		call znajdzKlasterN
+ 1779 0680 00C0      		rjmp .L116
+ 1780               	.L106:
+ 417:Lib/ramdysk.c ****         tmpKlaster = nastepnyKlaster(tmpKlaster);
+ 1782               	.LM175:
+ 1783 0682 892D      		mov r24,r9
+ 1784 0684 0E94 0000 		call nastepnyKlaster
+ 1785               	.L116:
+ 1786 0688 982E      		mov r9,r24
+ 418:Lib/ramdysk.c ****       if (tmpKlaster != 0)             //Jeśli znaleziono odpowiedni klaster, to
+ 1788               	.LM176:
+ 1789 068a 8823      		tst r24
+ 1790 068c 01F4      		brne .L108
+ 1791 068e 83E0      		ldi r24,lo8(3)
+ 1792 0690 00C0      		rjmp .L100
+ 1793               	.L108:
+ 419:Lib/ramdysk.c ****         fd->Wsk = dataPtr(tmpKlaster, 0); //przestaw wskaźnik na początek tego klastra
+ 1795               	.LM177:
+ 1796 0692 90E0      		ldi r25,lo8(0)
+ 1797 0694 8058      		subi r24,lo8(-(128))
+ 1798 0696 9F4F      		sbci r25,hi8(-(128))
+ 1799 0698 1882      		st Y,__zero_reg__
+ 1800 069a 8983      		std Y+1,r24
+ 1801               	.L105:
+ 1802 069c 6881      		ld r22,Y
+ 1803 069e 7981      		ldd r23,Y+1
+ 424:Lib/ramdysk.c ****     if (doOdczytania > dlBloku)        //Odczyt do końca zawartości klastra
+ 1805               	.LM178:
+ 1806 06a0 0E15      		cp r16,r14
+ 1807 06a2 1F05      		cpc r17,r15
+ 1808 06a4 00F4      		brsh .L109
+ 426:Lib/ramdysk.c ****       memcpy(znaki, fd->Wsk, dlBloku); //Odczyt zawartości Klastra
+ 1810               	.LM179:
+ 1811 06a6 C501      		movw r24,r10
+ 1812 06a8 A801      		movw r20,r16
+ 1813 06aa 0E94 0000 		call memcpy
+ 427:Lib/ramdysk.c ****       znaki +=dlBloku;                 //Przestawienie wskaźnika do tablicy, w której zapisujemy 
+ 1815               	.LM180:
+ 1816 06ae A00E      		add r10,r16
+ 1817 06b0 B11E      		adc r11,r17
+ 428:Lib/ramdysk.c ****       fd->IndLo = 0;                   //Indeks wskazuje na początek nowego klastra
+ 1819               	.LM181:
+ 1820 06b2 1A82      		std Y+2,__zero_reg__
+ 429:Lib/ramdysk.c ****       fd->IndHi++;                     //Bardziej znaczący bajt określa zmianę klastra. Teraz ni
+ 1822               	.LM182:
+ 1823 06b4 8B81      		ldd r24,Y+3
+ 1824 06b6 8F5F      		subi r24,lo8(-(1))
+ 1825 06b8 8B83      		std Y+3,r24
+ 430:Lib/ramdysk.c ****       doOdczytania -= dlBloku;         //Uaktualnienie liczby bajtół jaką należy odczytać
+ 1827               	.LM183:
+ 1828 06ba E01A      		sub r14,r16
+ 1829 06bc F10A      		sbc r15,r17
+ 431:Lib/ramdysk.c ****       *dlugosc += dlBloku;             //Uaktualnienie 
+ 1831               	.LM184:
+ 1832 06be F601      		movw r30,r12
+ 1833 06c0 8081      		ld r24,Z
+ 1834 06c2 9181      		ldd r25,Z+1
+ 1835 06c4 800F      		add r24,r16
+ 1836 06c6 911F      		adc r25,r17
+ 1837 06c8 9183      		std Z+1,r25
+ 1838 06ca 8083      		st Z,r24
+ 1839 06cc 00E0      		ldi r16,lo8(256)
+ 1840 06ce 11E0      		ldi r17,hi8(256)
+ 1841 06d0 00C0      		rjmp .L114
+ 1842               	.L109:
+ 436:Lib/ramdysk.c ****       memcpy(znaki, fd->Wsk, doOdczytania);
+ 1844               	.LM185:
+ 1845 06d2 C501      		movw r24,r10
+ 1846 06d4 A701      		movw r20,r14
+ 1847 06d6 0E94 0000 		call memcpy
+ 437:Lib/ramdysk.c ****       fd->Wsk   += doOdczytania;       //Po zakończeniu operacji odczytu nadal działamy w tym sam
+ 1849               	.LM186:
+ 1850 06da 8881      		ld r24,Y
+ 1851 06dc 9981      		ldd r25,Y+1
+ 1852 06de 8E0D      		add r24,r14
+ 1853 06e0 9F1D      		adc r25,r15
+ 1854 06e2 9983      		std Y+1,r25
+ 1855 06e4 8883      		st Y,r24
+ 438:Lib/ramdysk.c ****       fd->IndLo += doOdczytania;       //Uaktualnianie indeksu. Jesteśmy w tym samym klastrze, zat
+ 1857               	.LM187:
+ 1858 06e6 8A81      		ldd r24,Y+2
+ 1859 06e8 8E0D      		add r24,r14
+ 1860 06ea 8A83      		std Y+2,r24
+ 439:Lib/ramdysk.c ****       *dlugosc  += doOdczytania;       //Uaktualnianie liczby odczytanych bajtów                  
+ 1862               	.LM188:
+ 1863 06ec F601      		movw r30,r12
+ 1864 06ee 8081      		ld r24,Z
+ 1865 06f0 9181      		ldd r25,Z+1
+ 1866 06f2 8E0D      		add r24,r14
+ 1867 06f4 9F1D      		adc r25,r15
+ 1868 06f6 9183      		std Z+1,r25
+ 1869 06f8 8083      		st Z,r24
+ 1870 06fa 00C0      		rjmp .L115
+ 1871               	.L114:
+ 410:Lib/ramdysk.c ****   while (doOdczytania > 0)
+ 1873               	.LM189:
+ 1874 06fc E114      		cp r14,__zero_reg__
+ 1875 06fe F104      		cpc r15,__zero_reg__
+ 1876 0700 01F0      		breq .+2
+ 1877 0702 00C0      		rjmp .L112
+ 1878               	.L115:
+ 1879 0704 80E0      		ldi r24,lo8(0)
+ 1880               	.L100:
+ 1881               	/* epilogue start */
+ 444:Lib/ramdysk.c **** }
+ 1883               	.LM190:
+ 1884 0706 DF91      		pop r29
+ 1885 0708 CF91      		pop r28
+ 1886 070a 1F91      		pop r17
+ 1887 070c 0F91      		pop r16
+ 1888 070e FF90      		pop r15
+ 1889 0710 EF90      		pop r14
+ 1890 0712 DF90      		pop r13
+ 1891 0714 CF90      		pop r12
+ 1892 0716 BF90      		pop r11
+ 1893 0718 AF90      		pop r10
+ 1894 071a 9F90      		pop r9
+ 1895 071c 0895      		ret
+ 1896               	.L102:
+ 396:Lib/ramdysk.c ****     *dlugosc = 0;
+ 1898               	.LM191:
+ 1899 071e F601      		movw r30,r12
+ 1900 0720 1182      		std Z+1,__zero_reg__
+ 1901 0722 1082      		st Z,__zero_reg__
+ 1902 0724 82E0      		ldi r24,lo8(2)
+ 1903 0726 00C0      		rjmp .L100
+ 1910               	.Lscope17:
+ 1912               		.stabd	78,0,0
+ 1917               	.global	ramDyskZapiszBlokDoPliku
+ 1919               	ramDyskZapiszBlokDoPliku:
+ 1920               		.stabd	46,0,0
+ 343:Lib/ramdysk.c **** {
+ 1922               	.LM192:
+ 1923               	.LFBB18:
+ 1924 0728 8F92      		push r8
+ 1925 072a 9F92      		push r9
+ 1926 072c BF92      		push r11
+ 1927 072e CF92      		push r12
+ 1928 0730 DF92      		push r13
+ 1929 0732 EF92      		push r14
+ 1930 0734 FF92      		push r15
+ 1931 0736 0F93      		push r16
+ 1932 0738 1F93      		push r17
+ 1933 073a CF93      		push r28
+ 1934 073c DF93      		push r29
+ 1935               	/* prologue: function */
+ 1936               	/* frame size = 0 */
+ 1937 073e EC01      		movw r28,r24
+ 1938 0740 6B01      		movw r12,r22
+ 1939 0742 4A01      		movw r8,r20
+ 344:Lib/ramdysk.c ****   if (fd->wpis->pierwszyKlaster == 0)
+ 1941               	.LM193:
+ 1942 0744 0C81      		ldd r16,Y+4
+ 1943 0746 1D81      		ldd r17,Y+5
+ 1944 0748 F801      		movw r30,r16
+ 1945 074a 8081      		ld r24,Z
+ 1946 074c 8823      		tst r24
+ 1947 074e 01F4      		brne .L118
+ 345:Lib/ramdysk.c ****     fd->wpis->pierwszyKlaster = znajdzWolnyKlaster();
+ 1949               	.LM194:
+ 1950 0750 0E94 0000 		call znajdzWolnyKlaster
+ 1951 0754 F801      		movw r30,r16
+ 1952 0756 8083      		st Z,r24
+ 1953               	.L118:
+ 347:Lib/ramdysk.c ****   uint16_t dlBloku = 256 - fd->IndLo;             //Obliczanie liczby bajtów, jaką da się zapisa
+ 1955               	.LM195:
+ 1956 0758 8A81      		ldd r24,Y+2
+ 1957 075a 00E0      		ldi r16,lo8(256)
+ 1958 075c 11E0      		ldi r17,hi8(256)
+ 1959 075e 081B      		sub r16,r24
+ 1960 0760 1109      		sbc r17,__zero_reg__
+ 348:Lib/ramdysk.c ****   uint16_t doZapisu = *dlugosc;
+ 1962               	.LM196:
+ 1963 0762 F401      		movw r30,r8
+ 1964 0764 E080      		ld r14,Z
+ 1965 0766 F180      		ldd r15,Z+1
+ 349:Lib/ramdysk.c ****   *dlugosc = 0;                                   //Jak do tąd jeszcze nic nie zapisano
+ 1967               	.LM197:
+ 1968 0768 1182      		std Z+1,__zero_reg__
+ 1969 076a 1082      		st Z,__zero_reg__
+ 1970 076c BB24      		clr r11
+ 1971 076e 00C0      		rjmp .L132
+ 1972               	.L128:
+ 353:Lib/ramdysk.c ****     if (fd->IndLo == 0)                           //Jeśli indeks pokazuje na początek klastra, to
+ 1974               	.LM198:
+ 1975 0770 8A81      		ldd r24,Y+2
+ 1976 0772 8823      		tst r24
+ 1977 0774 01F4      		brne .L120
+ 355:Lib/ramdysk.c ****       if (tmpKlaster == 0)                        //Pierwsza operacja zapisu, nie odczytano jeszcze
+ 1979               	.LM199:
+ 1980 0776 BB20      		tst r11
+ 1981 0778 01F4      		brne .L121
+ 356:Lib/ramdysk.c ****         tmpKlaster = znajdzKlasterN(fd->wpis->pierwszyKlaster, fd->IndHi); //Odczyt numeru klastra 
+ 1983               	.LM200:
+ 1984 077a EC81      		ldd r30,Y+4
+ 1985 077c FD81      		ldd r31,Y+5
+ 1986 077e 8081      		ld r24,Z
+ 1987 0780 6B81      		ldd r22,Y+3
+ 1988 0782 0E94 0000 		call znajdzKlasterN
+ 1989 0786 00C0      		rjmp .L134
+ 1990               	.L121:
+ 358:Lib/ramdysk.c ****         tmpKlaster = nastepnyKlaster(tmpKlaster); //Wystarczy przejść do następnego
+ 1992               	.LM201:
+ 1993 0788 8B2D      		mov r24,r11
+ 1994 078a 0E94 0000 		call nastepnyKlaster
+ 1995               	.L134:
+ 1996 078e B82E      		mov r11,r24
+ 359:Lib/ramdysk.c ****       if (tmpKlaster == 0)                        //Sprawdzanie, czy udało się znaleźć klaster
+ 1998               	.LM202:
+ 1999 0790 8823      		tst r24
+ 2000 0792 01F4      		brne .L123
+ 2001 0794 81E0      		ldi r24,lo8(1)
+ 2002 0796 00C0      		rjmp .L124
+ 2003               	.L123:
+ 362:Lib/ramdysk.c ****       fd->Wsk = dataPtr(tmpKlaster, 0);           //Ustawianie wskaźnika na początek klastra. Ter
+ 2005               	.LM203:
+ 2006 0798 90E0      		ldi r25,lo8(0)
+ 2007 079a 8058      		subi r24,lo8(-(128))
+ 2008 079c 9F4F      		sbci r25,hi8(-(128))
+ 2009 079e 1882      		st Y,__zero_reg__
+ 2010 07a0 8983      		std Y+1,r24
+ 2011               	.L120:
+ 2012 07a2 8881      		ld r24,Y
+ 2013 07a4 9981      		ldd r25,Y+1
+ 364:Lib/ramdysk.c ****     if (doZapisu > dlBloku)                       //Sprawdzanie, czy wszystko uda się zapisać w b
+ 2015               	.LM204:
+ 2016 07a6 0E15      		cp r16,r14
+ 2017 07a8 1F05      		cpc r17,r15
+ 2018 07aa 00F4      		brsh .L125
+ 366:Lib/ramdysk.c ****       memcpy(fd->Wsk, znaki, dlBloku);            //Zapis do końca aktualnego klastra
+ 2020               	.LM205:
+ 2021 07ac B601      		movw r22,r12
+ 2022 07ae A801      		movw r20,r16
+ 2023 07b0 0E94 0000 		call memcpy
+ 367:Lib/ramdysk.c ****       znaki +=dlBloku;                      
+ 2025               	.LM206:
+ 2026 07b4 C00E      		add r12,r16
+ 2027 07b6 D11E      		adc r13,r17
+ 368:Lib/ramdysk.c ****       fd->IndLo = 0;                              //Mniej znaczący bajt odczytu wskazuje na począ
+ 2029               	.LM207:
+ 2030 07b8 1A82      		std Y+2,__zero_reg__
+ 369:Lib/ramdysk.c ****       doZapisu -= dlBloku;                        //Uaktualnianie informacji o liczbie bajtów jaka
+ 2032               	.LM208:
+ 2033 07ba E01A      		sub r14,r16
+ 2034 07bc F10A      		sbc r15,r17
+ 370:Lib/ramdysk.c ****       *dlugosc += dlBloku;                        //Uaktualnianie informacji o liczbie zapisanych d
+ 2036               	.LM209:
+ 2037 07be F401      		movw r30,r8
+ 2038 07c0 8081      		ld r24,Z
+ 2039 07c2 9181      		ldd r25,Z+1
+ 2040 07c4 800F      		add r24,r16
+ 2041 07c6 911F      		adc r25,r17
+ 2042 07c8 9183      		std Z+1,r25
+ 2043 07ca 8083      		st Z,r24
+ 371:Lib/ramdysk.c ****       fd->IndHi++;                                //Ustawienie bardziej znaczącego bajtu indeksu. 
+ 2045               	.LM210:
+ 2046 07cc 8B81      		ldd r24,Y+3
+ 2047 07ce 8F5F      		subi r24,lo8(-(1))
+ 2048 07d0 8B83      		std Y+3,r24
+ 2049 07d2 00E0      		ldi r16,lo8(256)
+ 2050 07d4 11E0      		ldi r17,hi8(256)
+ 2051 07d6 00C0      		rjmp .L132
+ 2052               	.L125:
+ 376:Lib/ramdysk.c ****       memcpy(fd->Wsk, znaki, doZapisu);           //Ostatnia operacja zapisu do klasrta.
+ 2054               	.LM211:
+ 2055 07d8 B601      		movw r22,r12
+ 2056 07da A701      		movw r20,r14
+ 2057 07dc 0E94 0000 		call memcpy
+ 377:Lib/ramdysk.c ****       fd->IndLo += doZapisu;                      //Uaktualnianie indeksu (wystarczy uaktualnić mn
+ 2059               	.LM212:
+ 2060 07e0 8A81      		ldd r24,Y+2
+ 2061 07e2 8E0D      		add r24,r14
+ 2062 07e4 8A83      		std Y+2,r24
+ 378:Lib/ramdysk.c ****       *dlugosc  += doZapisu;                      //Uaktualnianie informacji o liczbie zapisanych d
+ 2064               	.LM213:
+ 2065 07e6 F401      		movw r30,r8
+ 2066 07e8 8081      		ld r24,Z
+ 2067 07ea 9181      		ldd r25,Z+1
+ 2068 07ec 8E0D      		add r24,r14
+ 2069 07ee 9F1D      		adc r25,r15
+ 2070 07f0 9183      		std Z+1,r25
+ 2071 07f2 8083      		st Z,r24
+ 380:Lib/ramdysk.c ****       fd->Wsk = dataPtr(tmpKlaster, fd->IndLo);   //Ustawianie wskaźnika w odpowiednie miejsce kla
+ 2073               	.LM214:
+ 2074 07f4 8B2D      		mov r24,r11
+ 2075 07f6 90E0      		ldi r25,lo8(0)
+ 2076 07f8 8058      		subi r24,lo8(-(128))
+ 2077 07fa 9F4F      		sbci r25,hi8(-(128))
+ 2078 07fc 982F      		mov r25,r24
+ 2079 07fe 8827      		clr r24
+ 2080 0800 2A81      		ldd r18,Y+2
+ 2081 0802 820F      		add r24,r18
+ 2082 0804 911D      		adc r25,__zero_reg__
+ 2083 0806 9983      		std Y+1,r25
+ 2084 0808 8883      		st Y,r24
+ 2085 080a 00C0      		rjmp .L133
+ 2086               	.L132:
+ 351:Lib/ramdysk.c ****   while (doZapisu > 0)
+ 2088               	.LM215:
+ 2089 080c E114      		cp r14,__zero_reg__
+ 2090 080e F104      		cpc r15,__zero_reg__
+ 2091 0810 01F0      		breq .+2
+ 2092 0812 00C0      		rjmp .L128
+ 2093               	.L133:
+ 2094               	.LBB32:
+ 2095               	.LBB33:
+  37:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi == fd->IndHi)
+ 2097               	.LM216:
+ 2098 0814 EC81      		ldd r30,Y+4
+ 2099 0816 FD81      		ldd r31,Y+5
+ 2100 0818 9281      		ldd r25,Z+2
+ 2101 081a 8B81      		ldd r24,Y+3
+ 2102 081c 9817      		cp r25,r24
+ 2103 081e 01F4      		brne .L129
+  39:Lib/ramdysk.c ****     if (fd->wpis->rozmiarLo < fd->IndLo)
+ 2105               	.LM217:
+ 2106 0820 9A81      		ldd r25,Y+2
+ 2107 0822 8181      		ldd r24,Z+1
+ 2108 0824 8917      		cp r24,r25
+ 2109 0826 00F4      		brsh .L129
+  40:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = fd->IndLo;
+ 2111               	.LM218:
+ 2112 0828 9183      		std Z+1,r25
+ 2113               	.L129:
+  42:Lib/ramdysk.c ****   if (fd->wpis->rozmiarHi < fd->IndHi)
+ 2115               	.LM219:
+ 2116 082a EC81      		ldd r30,Y+4
+ 2117 082c FD81      		ldd r31,Y+5
+ 2118 082e 9281      		ldd r25,Z+2
+ 2119 0830 8B81      		ldd r24,Y+3
+ 2120 0832 9817      		cp r25,r24
+ 2121 0834 00F4      		brsh .L135
+ 2122               	.L130:
+  44:Lib/ramdysk.c ****       fd->wpis->rozmiarLo = fd->IndLo;    
+ 2124               	.LM220:
+ 2125 0836 8A81      		ldd r24,Y+2
+ 2126 0838 8183      		std Z+1,r24
+  45:Lib/ramdysk.c ****       fd->wpis->rozmiarHi = fd->IndHi;    
+ 2128               	.LM221:
+ 2129 083a EC81      		ldd r30,Y+4
+ 2130 083c FD81      		ldd r31,Y+5
+ 2131 083e 8B81      		ldd r24,Y+3
+ 2132 0840 8283      		std Z+2,r24
+ 2133               	.L135:
+ 2134 0842 80E0      		ldi r24,lo8(0)
+ 2135               	.L124:
+ 2136               	/* epilogue start */
+ 2137               	.LBE33:
+ 2138               	.LBE32:
+ 385:Lib/ramdysk.c **** }
+ 2140               	.LM222:
+ 2141 0844 DF91      		pop r29
+ 2142 0846 CF91      		pop r28
+ 2143 0848 1F91      		pop r17
+ 2144 084a 0F91      		pop r16
+ 2145 084c FF90      		pop r15
+ 2146 084e EF90      		pop r14
+ 2147 0850 DF90      		pop r13
+ 2148 0852 CF90      		pop r12
+ 2149 0854 BF90      		pop r11
+ 2150 0856 9F90      		pop r9
+ 2151 0858 8F90      		pop r8
+ 2152 085a 0895      		ret
+ 2159               	.Lscope18:
+ 2161               		.stabd	78,0,0
+ 2165               	znajdzPlik:
+ 2166               		.stabd	46,0,0
+ 118:Lib/ramdysk.c **** {
+ 2168               	.LM223:
+ 2169               	.LFBB19:
+ 2170 085c AF92      		push r10
+ 2171 085e BF92      		push r11
+ 2172 0860 CF92      		push r12
+ 2173 0862 DF92      		push r13
+ 2174 0864 EF92      		push r14
+ 2175 0866 FF92      		push r15
+ 2176 0868 0F93      		push r16
+ 2177 086a 1F93      		push r17
+ 2178 086c CF93      		push r28
+ 2179 086e DF93      		push r29
+ 2180               	/* prologue: function */
+ 2181               	/* frame size = 0 */
+ 2182 0870 6C01      		movw r12,r24
+ 119:Lib/ramdysk.c ****   uint8_t dlNazwy = strlen(nazwa);        //Skracanie podanej nazwy do 8 znaków
+ 2184               	.LM224:
+ 2185 0872 FC01      		movw r30,r24
+ 2186 0874 0190      		ld __tmp_reg__,Z+
+ 2187 0876 0020      		tst __tmp_reg__
+ 2188 0878 01F4      		brne .-6
+ 2189 087a 3197      		sbiw r30,1
+ 2190 087c FE2E      		mov r15,r30
+ 2191 087e F81A      		sub r15,r24
+ 2192 0880 88E0      		ldi r24,lo8(8)
+ 2193 0882 8F15      		cp r24,r15
+ 2194 0884 00F4      		brsh .L137
+ 2195 0886 A8E0      		ldi r26,lo8(8)
+ 2196 0888 FA2E      		mov r15,r26
+ 2197               	.L137:
+ 124:Lib/ramdysk.c ****   if (nazwa[dlNazwy-1] == 0)
+ 2199               	.LM225:
+ 2200 088a F601      		movw r30,r12
+ 2201 088c EF0D      		add r30,r15
+ 2202 088e F11D      		adc r31,__zero_reg__
+ 2203 0890 3197      		sbiw r30,1
+ 2204 0892 8081      		ld r24,Z
+ 2205 0894 8823      		tst r24
+ 2206 0896 01F4      		brne .L138
+ 125:Lib/ramdysk.c ****     dlNazwy--;                            //Nie sprawdzamy czy string kończy się /0
+ 2208               	.LM226:
+ 2209 0898 FA94      		dec r15
+ 2210               	.L138:
+ 2211 089a F601      		movw r30,r12
+ 2212 089c 91E0      		ldi r25,lo8(1)
+ 2213 089e 00C0      		rjmp .L139
+ 2214               	.L142:
+ 133:Lib/ramdysk.c ****     if (nazwa[temp] == ' ')               //Pozbycie sie spacji
+ 2216               	.LM227:
+ 2217 08a0 8181      		ldd r24,Z+1
+ 2218 08a2 3196      		adiw r30,1
+ 2219 08a4 8032      		cpi r24,lo8(32)
+ 2220 08a6 01F4      		brne .L140
+ 2221 08a8 F92E      		mov r15,r25
+ 2222 08aa 00C0      		rjmp .L141
+ 2223               	.L140:
+ 131:Lib/ramdysk.c ****   for (temp=1; temp < dlNazwy; temp ++)
+ 2225               	.LM228:
+ 2226 08ac 9F5F      		subi r25,lo8(-(1))
+ 2227               	.L139:
+ 2228 08ae 9F15      		cp r25,r15
+ 2229 08b0 00F0      		brlo .L142
+ 139:Lib/ramdysk.c ****   if (dlNazwy == 0)
+ 2231               	.LM229:
+ 2232 08b2 FF20      		tst r15
+ 2233 08b4 01F0      		breq .L143
+ 2234               	.L141:
+ 2235 08b6 EE24      		clr r14
+ 2236               	.L147:
+ 144:Lib/ramdysk.c ****     plik = (struct ramPlik *)(dataPtr(tempKlaster, 0));  //Odczyt pierwszego nagłówka pliku w kla
+ 2238               	.LM230:
+ 2239 08b8 0E2D      		mov r16,r14
+ 2240 08ba 10E0      		ldi r17,lo8(0)
+ 2241 08bc 0058      		subi r16,lo8(-(128))
+ 2242 08be 1F4F      		sbci r17,hi8(-(128))
+ 2243 08c0 D02F      		mov r29,r16
+ 2244 08c2 CC27      		clr r28
+ 2245 08c4 0058      		subi r16,lo8(-(-128))
+ 2246 08c6 1040      		sbci r17,hi8(-(-128))
+ 145:Lib/ramdysk.c ****     for (temp=0; temp <16; temp++)
+ 2248               	.LM231:
+ 2249 08c8 E0EF      		ldi r30,lo8(240)
+ 2250 08ca AE2E      		mov r10,r30
+ 2251 08cc B12C      		mov r11,__zero_reg__
+ 2252 08ce AC0E      		add r10,r28
+ 2253 08d0 BD1E      		adc r11,r29
+ 2254               	.L146:
+ 147:Lib/ramdysk.c ****       if (strncmp(nazwa, plik->nazwa, dlNazwy) == 0)
+ 2256               	.LM232:
+ 2257 08d2 BE01      		movw r22,r28
+ 2258 08d4 6C5F      		subi r22,lo8(-(4))
+ 2259 08d6 7F4F      		sbci r23,hi8(-(4))
+ 2260 08d8 C601      		movw r24,r12
+ 2261 08da 4F2D      		mov r20,r15
+ 2262 08dc 50E0      		ldi r21,lo8(0)
+ 2263 08de 0E94 0000 		call strncmp
+ 2264 08e2 0097      		sbiw r24,0
+ 2265 08e4 01F0      		breq .L144
+ 145:Lib/ramdysk.c ****     for (temp=0; temp <16; temp++)
+ 2267               	.LM233:
+ 2268 08e6 CA15      		cp r28,r10
+ 2269 08e8 DB05      		cpc r29,r11
+ 2270 08ea 01F0      		breq .L145
+ 149:Lib/ramdysk.c ****       plik++;                                            //Przejście do kolejnego wpisu (w tym sam
+ 2272               	.LM234:
+ 2273 08ec 6096      		adiw r28,16
+ 2274 08ee 00C0      		rjmp .L146
+ 2275               	.L145:
+ 152:Lib/ramdysk.c ****     tempKlaster = klastry[tempKlaster];
+ 2277               	.LM235:
+ 2278 08f0 0050      		subi r16,lo8(-(klastry))
+ 2279 08f2 1040      		sbci r17,hi8(-(klastry))
+ 2280 08f4 F801      		movw r30,r16
+ 2281 08f6 8081      		ld r24,Z
+ 154:Lib/ramdysk.c ****   while (tempKlaster2 != tempKlaster);
+ 2283               	.LM236:
+ 2284 08f8 E816      		cp r14,r24
+ 2285 08fa 01F0      		breq .L143
+ 2286 08fc E82E      		mov r14,r24
+ 2287 08fe 00C0      		rjmp .L147
+ 2288               	.L143:
+ 2289 0900 C0E0      		ldi r28,lo8(0)
+ 2290 0902 D0E0      		ldi r29,hi8(0)
+ 2291               	.L144:
+ 156:Lib/ramdysk.c **** }
+ 2293               	.LM237:
+ 2294 0904 CE01      		movw r24,r28
+ 2295               	/* epilogue start */
+ 2296 0906 DF91      		pop r29
+ 2297 0908 CF91      		pop r28
+ 2298 090a 1F91      		pop r17
+ 2299 090c 0F91      		pop r16
+ 2300 090e FF90      		pop r15
+ 2301 0910 EF90      		pop r14
+ 2302 0912 DF90      		pop r13
+ 2303 0914 CF90      		pop r12
+ 2304 0916 BF90      		pop r11
+ 2305 0918 AF90      		pop r10
+ 2306 091a 0895      		ret
+ 2314               	.Lscope19:
+ 2316               		.stabd	78,0,0
+ 2319               	.global	ramDyskUsunPlik
+ 2321               	ramDyskUsunPlik:
+ 2322               		.stabd	46,0,0
+ 240:Lib/ramdysk.c **** {
+ 2324               	.LM238:
+ 2325               	.LFBB20:
+ 2326 091c CF93      		push r28
+ 2327 091e DF93      		push r29
+ 2328               	/* prologue: function */
+ 2329               	/* frame size = 0 */
+ 242:Lib/ramdysk.c ****   if ((plik = znajdzPlik(nazwa)) == NULL)
+ 2331               	.LM239:
+ 2332 0920 0E94 0000 		call znajdzPlik
+ 2333 0924 EC01      		movw r28,r24
+ 2334 0926 0097      		sbiw r24,0
+ 2335 0928 01F4      		brne .L150
+ 2336 092a 81E0      		ldi r24,lo8(1)
+ 2337 092c 00C0      		rjmp .L151
+ 2338               	.L150:
+ 244:Lib/ramdysk.c ****   if (plik->lAktOtw != 0)
+ 2340               	.LM240:
+ 2341 092e 8B81      		ldd r24,Y+3
+ 2342 0930 8823      		tst r24
+ 2343 0932 01F0      		breq .L157
+ 2344 0934 82E0      		ldi r24,lo8(2)
+ 2345 0936 00C0      		rjmp .L151
+ 2346               	.L155:
+ 251:Lib/ramdysk.c ****     if (klastry[usuwanyKlaster] == usuwanyKlaster)         //Sprawdzanie, czy nie usuwamy ostatnieg
+ 2348               	.LM241:
+ 2349 0938 A82F      		mov r26,r24
+ 2350 093a B0E0      		ldi r27,lo8(0)
+ 2351 093c FD01      		movw r30,r26
+ 2352 093e E050      		subi r30,lo8(-(klastry))
+ 2353 0940 F040      		sbci r31,hi8(-(klastry))
+ 2354 0942 E081      		ld r30,Z
+ 2355 0944 E817      		cp r30,r24
+ 2356 0946 01F4      		brne .L153
+ 252:Lib/ramdysk.c ****       plik->pierwszyKlaster = 0;                           //Ok można już zakończyć usuwanie pl
+ 2358               	.LM242:
+ 2359 0948 1882      		st Y,__zero_reg__
+ 2360 094a 00C0      		rjmp .L154
+ 2361               	.L153:
+ 254:Lib/ramdysk.c ****       plik->pierwszyKlaster = klastry[usuwanyKlaster];     //Przejście do następnego klastra
+ 2363               	.LM243:
+ 2364 094c E883      		st Y,r30
+ 2365               	.L154:
+ 255:Lib/ramdysk.c ****     klastry[usuwanyKlaster] = 0;                           //Usunięcie klastra
+ 2367               	.LM244:
+ 2368 094e A050      		subi r26,lo8(-(klastry))
+ 2369 0950 B040      		sbci r27,hi8(-(klastry))
+ 2370 0952 1C92      		st X,__zero_reg__
+ 2371               	.L157:
+ 248:Lib/ramdysk.c ****   while(plik->pierwszyKlaster != 0)                        //Już na samym początku może się oka
+ 2373               	.LM245:
+ 2374 0954 8881      		ld r24,Y
+ 2375 0956 8823      		tst r24
+ 2376 0958 01F4      		brne .L155
+ 258:Lib/ramdysk.c ****   memset (plik, 0, 16);                                    //Wpis katalogowy zostaje. Jest pusty. I
+ 2378               	.LM246:
+ 2379 095a 80E1      		ldi r24,lo8(16)
+ 2380 095c FE01      		movw r30,r28
+ 2381 095e 1192      		st Z+,__zero_reg__
+ 2382 0960 8A95      	        dec r24
+ 2383 0962 01F4      		brne .-6
+ 2384 0964 80E0      		ldi r24,lo8(0)
+ 2385               	.L151:
+ 2386               	/* epilogue start */
+ 261:Lib/ramdysk.c **** }
+ 2388               	.LM247:
+ 2389 0966 DF91      		pop r29
+ 2390 0968 CF91      		pop r28
+ 2391 096a 0895      		ret
+ 2396               	.Lscope20:
+ 2398               		.stabd	78,0,0
+ 2402               	.global	ramDyskOtworzPlik
+ 2404               	ramDyskOtworzPlik:
+ 2405               		.stabd	46,0,0
+ 226:Lib/ramdysk.c **** {
+ 2407               	.LM248:
+ 2408               	.LFBB21:
+ 2409 096c CF93      		push r28
+ 2410 096e DF93      		push r29
+ 2411               	/* prologue: function */
+ 2412               	/* frame size = 0 */
+ 2413 0970 EB01      		movw r28,r22
+ 229:Lib/ramdysk.c ****   if ((plik = znajdzPlik(nazwa)) != NULL)
+ 2415               	.LM249:
+ 2416 0972 0E94 0000 		call znajdzPlik
+ 2417 0976 FC01      		movw r30,r24
+ 2418 0978 0097      		sbiw r24,0
+ 2419 097a 01F4      		brne .L159
+ 2420 097c 81E0      		ldi r24,lo8(1)
+ 2421 097e 00C0      		rjmp .L160
+ 2422               	.L159:
+ 231:Lib/ramdysk.c ****     memset(fd, 0, 3);                                      //Zerowanie struktury deskryptora pliku
+ 2424               	.LM250:
+ 2425 0980 83E0      		ldi r24,lo8(3)
+ 2426 0982 DE01      		movw r26,r28
+ 2427 0984 1D92      		st X+,__zero_reg__
+ 2428 0986 8A95      	        dec r24
+ 2429 0988 01F4      		brne .-6
+ 232:Lib/ramdysk.c ****     fd->wpis = plik;                                       //Ustawianie w deskryptorze wskaźnika n
+ 2431               	.LM251:
+ 2432 098a FD83      		std Y+5,r31
+ 2433 098c EC83      		std Y+4,r30
+ 233:Lib/ramdysk.c ****     plik->lAktOtw++;                                       //Uaktualnienie licznika otwarć plików
+ 2435               	.LM252:
+ 2436 098e 8381      		ldd r24,Z+3
+ 2437 0990 8F5F      		subi r24,lo8(-(1))
+ 2438 0992 8383      		std Z+3,r24
+ 2439 0994 80E0      		ldi r24,lo8(0)
+ 2440               	.L160:
+ 2441               	/* epilogue start */
+ 237:Lib/ramdysk.c **** }
+ 2443               	.LM253:
+ 2444 0996 DF91      		pop r29
+ 2445 0998 CF91      		pop r28
+ 2446 099a 0895      		ret
+ 2452               	.Lscope21:
+ 2454               		.stabd	78,0,0
+ 2460               	.global	ramDyskOtworzPlikStdIo
+ 2462               	ramDyskOtworzPlikStdIo:
+ 2463               		.stabd	46,0,0
+ 602:Lib/ramdysk.c **** {
+ 2465               	.LM254:
+ 2466               	.LFBB22:
+ 2467 099c FF92      		push r15
+ 2468 099e 0F93      		push r16
+ 2469 09a0 1F93      		push r17
+ 2470 09a2 CF93      		push r28
+ 2471 09a4 DF93      		push r29
+ 2472               	/* prologue: function */
+ 2473               	/* frame size = 0 */
+ 2474 09a6 8B01      		movw r16,r22
+ 2475 09a8 EA01      		movw r28,r20
+ 2476 09aa F22E      		mov r15,r18
+ 603:Lib/ramdysk.c ****   uint8_t wynik = ramDyskOtworzPlik(nazwa, fd);
+ 2478               	.LM255:
+ 2479 09ac 0E94 0000 		call ramDyskOtworzPlik
+ 2480 09b0 282F      		mov r18,r24
+ 604:Lib/ramdysk.c ****   if (wynik != 0)
+ 2482               	.LM256:
+ 2483 09b2 8823      		tst r24
+ 2484 09b4 01F4      		brne .L163
+ 607:Lib/ramdysk.c ****   fdev_setup_stream(stream, putSTD, getSTD, flags);
+ 2486               	.LM257:
+ 2487 09b6 80E0      		ldi r24,lo8(gs(putSTD))
+ 2488 09b8 90E0      		ldi r25,hi8(gs(putSTD))
+ 2489 09ba 9987      		std Y+9,r25
+ 2490 09bc 8887      		std Y+8,r24
+ 2491 09be 80E0      		ldi r24,lo8(gs(getSTD))
+ 2492 09c0 90E0      		ldi r25,hi8(gs(getSTD))
+ 2493 09c2 9B87      		std Y+11,r25
+ 2494 09c4 8A87      		std Y+10,r24
+ 2495 09c6 FB82      		std Y+3,r15
+ 608:Lib/ramdysk.c ****   fdev_set_udata(stream, fd);
+ 2497               	.LM258:
+ 2498 09c8 1D87      		std Y+13,r17
+ 2499 09ca 0C87      		std Y+12,r16
+ 2500               	.L163:
+ 610:Lib/ramdysk.c **** }
+ 2502               	.LM259:
+ 2503 09cc 822F      		mov r24,r18
+ 2504               	/* epilogue start */
+ 2505 09ce DF91      		pop r29
+ 2506 09d0 CF91      		pop r28
+ 2507 09d2 1F91      		pop r17
+ 2508 09d4 0F91      		pop r16
+ 2509 09d6 FF90      		pop r15
+ 2510 09d8 0895      		ret
+ 2515               	.Lscope22:
+ 2517               		.stabd	78,0,0
+ 2519               	.global	ramDyskUtworzPlik
+ 2521               	ramDyskUtworzPlik:
+ 2522               		.stabd	46,0,0
+ 193:Lib/ramdysk.c **** {                                        //Nowo utworzony plik nie zajmuje żadnego klastra
+ 2524               	.LM260:
+ 2525               	.LFBB23:
+ 2526 09da FF92      		push r15
+ 2527 09dc 0F93      		push r16
+ 2528 09de 1F93      		push r17
+ 2529 09e0 CF93      		push r28
+ 2530 09e2 DF93      		push r29
+ 2531               	/* prologue: function */
+ 2532               	/* frame size = 0 */
+ 2533 09e4 082F      		mov r16,r24
+ 2534 09e6 F92E      		mov r15,r25
+ 194:Lib/ramdysk.c ****   uint8_t dlNazwy = strlen(nazwa);
+ 2536               	.LM261:
+ 2537 09e8 A82F      		mov r26,r24
+ 2538 09ea B92F      		mov r27,r25
+ 2539 09ec FD01      		movw r30,r26
+ 2540 09ee 0190      		ld __tmp_reg__,Z+
+ 2541 09f0 0020      		tst __tmp_reg__
+ 2542 09f2 01F4      		brne .-6
+ 2543 09f4 3197      		sbiw r30,1
+ 2544 09f6 1E2F      		mov r17,r30
+ 2545 09f8 181B      		sub r17,r24
+ 2546 09fa 1930      		cpi r17,lo8(9)
+ 2547 09fc 00F0      		brlo .L166
+ 2548 09fe 18E0      		ldi r17,lo8(8)
+ 2549               	.L166:
+ 2550 0a00 802F      		mov r24,r16
+ 2551 0a02 9F2D      		mov r25,r15
+ 2552 0a04 9C01      		movw r18,r24
+ 2553 0a06 F901      		movw r30,r18
+ 2554 0a08 90E0      		ldi r25,lo8(0)
+ 2555 0a0a 00C0      		rjmp .L167
+ 2556               	.L170:
+ 200:Lib/ramdysk.c ****   {  if (nazwa[i] == ' ')
+ 2558               	.LM262:
+ 2559 0a0c 8191      		ld r24,Z+
+ 2560 0a0e 8032      		cpi r24,lo8(32)
+ 2561 0a10 01F4      		brne .L168
+ 2562 0a12 192F      		mov r17,r25
+ 2563 0a14 00C0      		rjmp .L169
+ 2564               	.L168:
+ 199:Lib/ramdysk.c ****   for (i=0; i<dlNazwy; i++)
+ 2566               	.LM263:
+ 2567 0a16 9F5F      		subi r25,lo8(-(1))
+ 2568               	.L167:
+ 2569 0a18 9117      		cp r25,r17
+ 2570 0a1a 00F0      		brlo .L170
+ 2571               	.L169:
+ 206:Lib/ramdysk.c ****   if (dlNazwy == 0)
+ 2573               	.LM264:
+ 2574 0a1c 1123      		tst r17
+ 2575 0a1e 01F4      		brne .+2
+ 2576 0a20 00C0      		rjmp .L171
+ 210:Lib/ramdysk.c ****   if ((plik = znajdzPlik(nazwa)) != NULL)
+ 2578               	.LM265:
+ 2579 0a22 802F      		mov r24,r16
+ 2580 0a24 9F2D      		mov r25,r15
+ 2581 0a26 0E94 0000 		call znajdzPlik
+ 2582 0a2a 892B      		or r24,r25
+ 2583 0a2c 01F4      		brne .L171
+ 2584 0a2e 90E0      		ldi r25,lo8(0)
+ 2585               	.L176:
+ 2586               	.LBB34:
+ 2587               	.LBB35:
+ 166:Lib/ramdysk.c ****     plik = (struct ramPlik *)(dataPtr(tempKlaster, 0));  //Odczyt pierwszego nagłówka pliku w kla
+ 2589               	.LM266:
+ 2590 0a30 292F      		mov r18,r25
+ 2591 0a32 30E0      		ldi r19,lo8(0)
+ 2592 0a34 2058      		subi r18,lo8(-(128))
+ 2593 0a36 3F4F      		sbci r19,hi8(-(128))
+ 2594 0a38 D22F      		mov r29,r18
+ 2595 0a3a CC27      		clr r28
+ 2596 0a3c 2058      		subi r18,lo8(-(-128))
+ 2597 0a3e 3040      		sbci r19,hi8(-(-128))
+ 167:Lib/ramdysk.c ****     for (temp=0; temp <16; temp++)
+ 2599               	.LM267:
+ 2600 0a40 AE01      		movw r20,r28
+ 2601 0a42 4051      		subi r20,lo8(-(240))
+ 2602 0a44 5F4F      		sbci r21,hi8(-(240))
+ 2603               	.L174:
+ 169:Lib/ramdysk.c ****       if (plik->nazwa[0] == 0)
+ 2605               	.LM268:
+ 2606 0a46 8C81      		ldd r24,Y+4
+ 2607 0a48 8823      		tst r24
+ 2608 0a4a 01F0      		breq .L172
+ 167:Lib/ramdysk.c ****     for (temp=0; temp <16; temp++)
+ 2610               	.LM269:
+ 2611 0a4c C417      		cp r28,r20
+ 2612 0a4e D507      		cpc r29,r21
+ 2613 0a50 01F0      		breq .L173
+ 171:Lib/ramdysk.c ****       plik++;                                            //Przejście do kolejnego wpisu (w tym sam
+ 2615               	.LM270:
+ 2616 0a52 6096      		adiw r28,16
+ 2617 0a54 00C0      		rjmp .L174
+ 2618               	.L173:
+ 174:Lib/ramdysk.c ****     tempKlaster = klastry[tempKlaster];
+ 2620               	.LM271:
+ 2621 0a56 E901      		movw r28,r18
+ 2622 0a58 C050      		subi r28,lo8(-(klastry))
+ 2623 0a5a D040      		sbci r29,hi8(-(klastry))
+ 2624 0a5c 8881      		ld r24,Y
+ 176:Lib/ramdysk.c ****   while (tempKlaster2 != tempKlaster);
+ 2626               	.LM272:
+ 2627 0a5e 9817      		cp r25,r24
+ 2628 0a60 01F0      		breq .L175
+ 2629 0a62 982F      		mov r25,r24
+ 2630 0a64 00C0      		rjmp .L176
+ 2631               	.L175:
+ 2632               	.LBE35:
+ 178:Lib/ramdysk.c ****   klastry[tempKlaster] = znajdzWolnyKlaster();
+ 2634               	.LM273:
+ 2635 0a66 0E94 0000 		call znajdzWolnyKlaster
+ 2636               	.LBB36:
+ 2637 0a6a 8883      		st Y,r24
+ 180:Lib/ramdysk.c ****   if (klastry[tempKlaster] != 0)
+ 2639               	.LM274:
+ 2640 0a6c 8823      		tst r24
+ 2641 0a6e 01F0      		breq .L177
+ 181:Lib/ramdysk.c ****     plik = (struct ramPlik*) (dataPtr(klastry[tempKlaster], 0));
+ 2643               	.LM275:
+ 2644 0a70 90E0      		ldi r25,lo8(0)
+ 2645 0a72 8058      		subi r24,lo8(-(128))
+ 2646 0a74 9F4F      		sbci r25,hi8(-(128))
+ 2647 0a76 D82F      		mov r29,r24
+ 2648 0a78 CC27      		clr r28
+ 2649               	.L172:
+ 2650               	.LBE36:
+ 2651               	.LBE34:
+ 215:Lib/ramdysk.c ****   if ((plik = znajdzMiejsceNaWpis()) != NULL) //Szukanie pustego wpisu (nagłówka) po skasowanym p
+ 2653               	.LM276:
+ 2654 0a7a 2097      		sbiw r28,0
+ 2655 0a7c 01F0      		breq .L177
+ 217:Lib/ramdysk.c ****     memset(plik, 0, 12);                      //Czyszczenie wpisu (pola: pierwszyKlaster, rozmiarLo
+ 2657               	.LM277:
+ 2658 0a7e 8CE0      		ldi r24,lo8(12)
+ 2659 0a80 FE01      		movw r30,r28
+ 2660 0a82 1192      		st Z+,__zero_reg__
+ 2661 0a84 8A95      	        dec r24
+ 2662 0a86 01F4      		brne .-6
+ 218:Lib/ramdysk.c ****     strncpy(plik->nazwa, nazwa, dlNazwy);     //Ustawianie odpowiedniej nazwy pliku
+ 2664               	.LM278:
+ 2665 0a88 CE01      		movw r24,r28
+ 2666 0a8a 0496      		adiw r24,4
+ 2667 0a8c 602F      		mov r22,r16
+ 2668 0a8e 7F2D      		mov r23,r15
+ 2669 0a90 412F      		mov r20,r17
+ 2670 0a92 50E0      		ldi r21,lo8(0)
+ 2671 0a94 0E94 0000 		call strncpy
+ 219:Lib/ramdysk.c ****     plik -> dataMod = systemTime();           //Ustawianie czasu modyfikacji
+ 2673               	.LM279:
+ 2674 0a98 1C86      		std Y+12,__zero_reg__
+ 2675 0a9a 1D86      		std Y+13,__zero_reg__
+ 2676 0a9c 1E86      		std Y+14,__zero_reg__
+ 2677 0a9e 1F86      		std Y+15,__zero_reg__
+ 2678               	.L171:
+ 220:Lib/ramdysk.c ****     return 0;                            
+ 2680               	.LM280:
+ 2681 0aa0 80E0      		ldi r24,lo8(0)
+ 2682 0aa2 00C0      		rjmp .L178
+ 2683               	.L177:
+ 2684 0aa4 81E0      		ldi r24,lo8(1)
+ 2685               	.L178:
+ 2686               	/* epilogue start */
+ 223:Lib/ramdysk.c **** }
+ 2688               	.LM281:
+ 2689 0aa6 DF91      		pop r29
+ 2690 0aa8 CF91      		pop r28
+ 2691 0aaa 1F91      		pop r17
+ 2692 0aac 0F91      		pop r16
+ 2693 0aae FF90      		pop r15
+ 2694 0ab0 0895      		ret
+ 2706               	.Lscope23:
+ 2708               		.stabd	78,0,0
+ 2709               		.comm wwwport,1,1
+ 2710               		.comm rollers,2,1
+ 2711               		.comm xSemaphoreSpiSS,2,1
+ 2712               		.comm portA,1,1
+ 2713               		.comm portB,1,1
+ 2714               		.comm lockSensors,2,1
+ 2715               		.comm xSemaphoreRs485,2,1
+ 2716               		.comm nicState,14,1
+ 2717               		.comm IpMyConfig,15,1
+ 2718               		.comm arpDebug,2,1
+ 2719               		.comm arpDebugLevel,1,1
+ 2720               		.comm icmpDebug,2,1
+ 2721               		.comm icmpDebugLevel,1,1
+ 2722               		.comm udpSocket,2,1
+ 2723               		.comm udpDbgStream,2,1
+ 2724               		.comm udpDbgLevel,1,1
+ 2725               		.comm tcpDebugStream,2,1
+ 2726               		.comm tcpDebugLevel,1,1
+ 2727               		.comm sockets,2,1
+ 2728               		.comm czasRtc,7,1
+ 2729               		.comm klastry,128,1
+ 2752               	.Letext0:
+ 2753               	.global __do_copy_data
+ 2754               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 ramdysk.c
+     /tmp/ccULlnoc.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccULlnoc.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccULlnoc.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccULlnoc.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccULlnoc.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccULlnoc.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccULlnoc.s:254    .text:00000000 ramDyskLiczbaWolnychKlastrow
+                            *COM*:00000080 klastry
+     /tmp/ccULlnoc.s:305    .text:0000001c ramDyskDir
+     /tmp/ccULlnoc.s:517    .text:0000014c znajdzWolnyKlaster
+     /tmp/ccULlnoc.s:582    .text:00000184 nastepnyKlaster
+     /tmp/ccULlnoc.s:665    .text:000001d6 znajdzKlasterN
+     /tmp/ccULlnoc.s:713    .text:000001f4 ramDyskDodajBlokXmodem
+     /tmp/ccULlnoc.s:882    .text:000002c0 ramDyskUstawWskaznikNaKoniec
+     /tmp/ccULlnoc.s:949    .text:00000302 ramDyskUstawWskaznik
+     /tmp/ccULlnoc.s:1110   .text:000003b4 ramDyskCzytajBajtZPliku
+     /tmp/ccULlnoc.s:1214   .text:00000424 getSTD
+     /tmp/ccULlnoc.s:1267   .text:00000458 ramDyskZapiszBajtDoPliku
+     /tmp/ccULlnoc.s:1418   .text:000004fc putSTD
+     /tmp/ccULlnoc.s:1446   .text:0000050e ramDyskCzyscPlik
+     /tmp/ccULlnoc.s:1534   .text:0000056e ramDyskZamknijPlik
+     /tmp/ccULlnoc.s:1572   .text:0000058e ramDyskZamknijPlikStdIo
+     /tmp/ccULlnoc.s:1623   .text:000005c4 ramDyskInit
+     /tmp/ccULlnoc.s:1665   .text:000005e8 ramDyskCzytajBlokZPliku
+     /tmp/ccULlnoc.s:1919   .text:00000728 ramDyskZapiszBlokDoPliku
+     /tmp/ccULlnoc.s:2165   .text:0000085c znajdzPlik
+     /tmp/ccULlnoc.s:2321   .text:0000091c ramDyskUsunPlik
+     /tmp/ccULlnoc.s:2404   .text:0000096c ramDyskOtworzPlik
+     /tmp/ccULlnoc.s:2462   .text:0000099c ramDyskOtworzPlikStdIo
+     /tmp/ccULlnoc.s:2521   .text:000009da ramDyskUtworzPlik
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 lockSensors
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+
+UNDEFINED SYMBOLS
+fputs
+fputc
+fprintf
+fclose
+memcpy
+strncmp
+strncpy
+__do_copy_data
+__do_clear_bss

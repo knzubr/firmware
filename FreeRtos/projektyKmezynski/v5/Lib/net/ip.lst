@@ -1,0 +1,1218 @@
+   1               		.file	"ip.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 163               	.global	setIpDebug
+ 165               	setIpDebug:
+ 166               		.stabd	46,0,0
+   1:Lib/net/ip.c  **** /**
+   2:Lib/net/ip.c  ****  * @file ip.c 
+   3:Lib/net/ip.c  ****  * @brief IP (Internet Protocol) Library. 
+   4:Lib/net/ip.c  ****  */
+   5:Lib/net/ip.c  **** //*****************************************************************************
+   6:Lib/net/ip.c  **** //
+   7:Lib/net/ip.c  **** // File Name	: 'ip.c'
+   8:Lib/net/ip.c  **** // Title		: IP (Internet Protocol) Library
+   9:Lib/net/ip.c  **** // Author		: Pascal Stang
+  10:Lib/net/ip.c  **** // Created		: 8/30/2004
+  11:Lib/net/ip.c  **** // Revised		: 7/3/2005
+  12:Lib/net/ip.c  **** // Version		: 0.1
+  13:Lib/net/ip.c  **** // Target MCU	: Atmel AVR series
+  14:Lib/net/ip.c  **** // Editor Tabs	: 2
+  15:Lib/net/ip.c  **** //
+  16:Lib/net/ip.c  **** //*****************************************************************************
+  17:Lib/net/ip.c  **** 
+  18:Lib/net/ip.c  **** #include "ip.h"
+  19:Lib/net/ip.c  **** 
+  20:Lib/net/ip.c  **** static uint32_t myip_eep    __attribute__((section (".eeprom"))) = ((uint32_t)MY_IP4   << 24) + ((u
+  21:Lib/net/ip.c  **** static uint32_t mask_eep    __attribute__((section (".eeprom"))) = ((uint32_t)MY_MASK4 << 24) + ((u
+  22:Lib/net/ip.c  **** static uint32_t defGw_eep   __attribute__((section (".eeprom"))) = ((uint32_t)MY_GW4   << 24) + ((u
+  23:Lib/net/ip.c  **** 
+  24:Lib/net/ip.c  **** void ipInit(void)
+  25:Lib/net/ip.c  **** {
+  26:Lib/net/ip.c  ****   IpMyConfig.ip      = eeprom_read_dword(&myip_eep);
+  27:Lib/net/ip.c  ****   IpMyConfig.netmask = eeprom_read_dword(&mask_eep);
+  28:Lib/net/ip.c  ****   IpMyConfig.gateway = eeprom_read_dword(&defGw_eep);
+  29:Lib/net/ip.c  **** #if IP_DEBUG
+  30:Lib/net/ip.c  ****   IpMyConfig.dbgLevel = 0;
+  31:Lib/net/ip.c  ****   IpMyConfig.dbgStream = NULL;
+  32:Lib/net/ip.c  **** #endif
+  33:Lib/net/ip.c  **** }
+  34:Lib/net/ip.c  **** 
+  35:Lib/net/ip.c  **** void ipSaveConfig(void)
+  36:Lib/net/ip.c  **** {
+  37:Lib/net/ip.c  ****   eeprom_update_dword(&myip_eep,  IpMyConfig.ip);
+  38:Lib/net/ip.c  ****   eeprom_update_dword(&mask_eep,  IpMyConfig.netmask);
+  39:Lib/net/ip.c  ****   eeprom_update_dword(&defGw_eep, IpMyConfig.gateway);
+  40:Lib/net/ip.c  **** }
+  41:Lib/net/ip.c  **** 
+  42:Lib/net/ip.c  **** inline void netstackIPv4Process(void)
+  43:Lib/net/ip.c  **** {
+  44:Lib/net/ip.c  **** // check IP addressing, stop processing if not for me and not a broadcast
+  45:Lib/net/ip.c  ****   if( (nicState.layer3.ip->destipaddr != ipGetConfig()->ip) &&
+  46:Lib/net/ip.c  ****       (nicState.layer3.ip->destipaddr != (ipGetConfig()->ip|ipGetConfig()->netmask)) &&
+  47:Lib/net/ip.c  ****       (nicState.layer3.ip->destipaddr != 0xFFFFFFFF)) 
+  48:Lib/net/ip.c  ****     return;
+  49:Lib/net/ip.c  **** 
+  50:Lib/net/ip.c  **** // handle ICMP packet
+  51:Lib/net/ip.c  ****   if(nicState.layer3.ip->proto == IP_PROTO_ICMP)
+  52:Lib/net/ip.c  ****   {
+  53:Lib/net/ip.c  **** #if IP_DEBUG
+  54:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+  55:Lib/net/ip.c  ****     {
+  56:Lib/net/ip.c  ****       if (IpMyConfig.dbgLevel > 0)
+  57:Lib/net/ip.c  ****         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: ICMP/IP packet\r\n"));
+  58:Lib/net/ip.c  ****       if (IpMyConfig.dbgLevel > 2)
+  59:Lib/net/ip.c  ****         icmpPrintHeader(IpMyConfig.dbgStream, nicState.layer3.ip, nicState.layer4.icmp);
+  60:Lib/net/ip.c  ****     }
+  61:Lib/net/ip.c  **** #endif /*IP_DEBUG*/
+  62:Lib/net/ip.c  ****     icmpIpIn();
+  63:Lib/net/ip.c  ****     return;
+  64:Lib/net/ip.c  ****   }
+  65:Lib/net/ip.c  ****   if( nicState.layer3.ip->proto == IP_PROTO_UDP )
+  66:Lib/net/ip.c  ****   {
+  67:Lib/net/ip.c  **** #if IP_DEBUG
+  68:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+  69:Lib/net/ip.c  ****     {
+  70:Lib/net/ip.c  ****       if (IpMyConfig.dbgLevel > 0)
+  71:Lib/net/ip.c  ****         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: UDP/IP packet\r\n"));
+  72:Lib/net/ip.c  ****     }
+  73:Lib/net/ip.c  **** #endif /*IP_DEBUG*/
+  74:Lib/net/ip.c  ****     netstackUDPIPProcess();
+  75:Lib/net/ip.c  ****     return;
+  76:Lib/net/ip.c  ****   }
+  77:Lib/net/ip.c  ****   if( nicState.layer3.ip->proto == IP_PROTO_TCP )
+  78:Lib/net/ip.c  ****   {
+  79:Lib/net/ip.c  **** #if IP_DEBUG
+  80:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+  81:Lib/net/ip.c  ****     {
+  82:Lib/net/ip.c  ****       if (IpMyConfig.dbgLevel > 0)
+  83:Lib/net/ip.c  ****         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: TCP/IP packet\r\n"));
+  84:Lib/net/ip.c  ****     }
+  85:Lib/net/ip.c  **** #endif /*IP_DEBUG*/
+  86:Lib/net/ip.c  ****     netstackTCPIPProcess();
+  87:Lib/net/ip.c  ****     return;
+  88:Lib/net/ip.c  ****   }
+  89:Lib/net/ip.c  **** #if IP_DEBUG
+  90:Lib/net/ip.c  ****   if (IpMyConfig.dbgStream != NULL)
+  91:Lib/net/ip.c  ****   {
+  92:Lib/net/ip.c  ****     if (IpMyConfig.dbgLevel > 0)
+  93:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: Unknown IP packet\r\n"));
+  94:Lib/net/ip.c  ****   }
+  95:Lib/net/ip.c  **** #endif /*IP_DEBUG*/
+  96:Lib/net/ip.c  **** }
+  97:Lib/net/ip.c  **** 
+  98:Lib/net/ip.c  **** #if IP_DEBUG
+  99:Lib/net/ip.c  **** void setIpDebug(FILE *stream, uint8_t level)
+ 100:Lib/net/ip.c  **** {
+ 168               	.LM0:
+ 169               	.LFBB1:
+ 170               	/* prologue: function */
+ 171               	/* frame size = 0 */
+ 101:Lib/net/ip.c  ****   IpMyConfig.dbgStream = stream;
+ 173               	.LM1:
+ 174 0000 9093 0000 		sts (IpMyConfig+12)+1,r25
+ 175 0004 8093 0000 		sts IpMyConfig+12,r24
+ 102:Lib/net/ip.c  ****   IpMyConfig.dbgLevel = level;
+ 177               	.LM2:
+ 178 0008 6093 0000 		sts IpMyConfig+14,r22
+ 103:Lib/net/ip.c  ****   if (level == 0)
+ 180               	.LM3:
+ 181 000c 6623      		tst r22
+ 182 000e 01F4      		brne .L3
+ 104:Lib/net/ip.c  ****     IpMyConfig.dbgStream = NULL;
+ 184               	.LM4:
+ 185 0010 1092 0000 		sts (IpMyConfig+12)+1,__zero_reg__
+ 186 0014 1092 0000 		sts IpMyConfig+12,__zero_reg__
+ 187               	.L3:
+ 188 0018 0895      		ret
+ 190               	.Lscope1:
+ 192               		.stabd	78,0,0
+ 197               	.global	ipSetConfig
+ 199               	ipSetConfig:
+ 200               		.stabd	46,0,0
+ 105:Lib/net/ip.c  **** }
+ 106:Lib/net/ip.c  **** #endif
+ 107:Lib/net/ip.c  **** 
+ 108:Lib/net/ip.c  **** void ipSetConfig(uint32_t myIp, uint32_t netmask, uint32_t gatewayIp)
+ 109:Lib/net/ip.c  **** {
+ 202               	.LM5:
+ 203               	.LFBB2:
+ 204 001a EF92      		push r14
+ 205 001c FF92      		push r15
+ 206 001e 0F93      		push r16
+ 207 0020 1F93      		push r17
+ 208               	/* prologue: function */
+ 209               	/* frame size = 0 */
+ 110:Lib/net/ip.c  ****   // set local addressing
+ 111:Lib/net/ip.c  ****   IpMyConfig.ip = myIp;
+ 211               	.LM6:
+ 212 0022 6093 0000 		sts IpMyConfig,r22
+ 213 0026 7093 0000 		sts (IpMyConfig)+1,r23
+ 214 002a 8093 0000 		sts (IpMyConfig)+2,r24
+ 215 002e 9093 0000 		sts (IpMyConfig)+3,r25
+ 112:Lib/net/ip.c  ****   IpMyConfig.netmask = netmask;
+ 217               	.LM7:
+ 218 0032 2093 0000 		sts IpMyConfig+4,r18
+ 219 0036 3093 0000 		sts (IpMyConfig+4)+1,r19
+ 220 003a 4093 0000 		sts (IpMyConfig+4)+2,r20
+ 221 003e 5093 0000 		sts (IpMyConfig+4)+3,r21
+ 113:Lib/net/ip.c  ****   IpMyConfig.gateway = gatewayIp;
+ 223               	.LM8:
+ 224 0042 E092 0000 		sts IpMyConfig+8,r14
+ 225 0046 F092 0000 		sts (IpMyConfig+8)+1,r15
+ 226 004a 0093 0000 		sts (IpMyConfig+8)+2,r16
+ 227 004e 1093 0000 		sts (IpMyConfig+8)+3,r17
+ 228               	/* epilogue start */
+ 114:Lib/net/ip.c  **** }
+ 230               	.LM9:
+ 231 0052 1F91      		pop r17
+ 232 0054 0F91      		pop r16
+ 233 0056 FF90      		pop r15
+ 234 0058 EF90      		pop r14
+ 235 005a 0895      		ret
+ 237               	.Lscope2:
+ 239               		.stabd	78,0,0
+ 242               	.global	ipSetConfigIp
+ 244               	ipSetConfigIp:
+ 245               		.stabd	46,0,0
+ 115:Lib/net/ip.c  **** 
+ 116:Lib/net/ip.c  **** void ipSetConfigIp(uint32_t myIp)
+ 117:Lib/net/ip.c  **** {
+ 247               	.LM10:
+ 248               	.LFBB3:
+ 249               	/* prologue: function */
+ 250               	/* frame size = 0 */
+ 118:Lib/net/ip.c  ****   // set local addressing
+ 119:Lib/net/ip.c  ****   IpMyConfig.ip = myIp; 
+ 252               	.LM11:
+ 253 005c 6093 0000 		sts IpMyConfig,r22
+ 254 0060 7093 0000 		sts (IpMyConfig)+1,r23
+ 255 0064 8093 0000 		sts (IpMyConfig)+2,r24
+ 256 0068 9093 0000 		sts (IpMyConfig)+3,r25
+ 257               	/* epilogue start */
+ 120:Lib/net/ip.c  **** }
+ 259               	.LM12:
+ 260 006c 0895      		ret
+ 262               	.Lscope3:
+ 264               		.stabd	78,0,0
+ 267               	.global	ipSetConfigMask
+ 269               	ipSetConfigMask:
+ 270               		.stabd	46,0,0
+ 121:Lib/net/ip.c  **** 
+ 122:Lib/net/ip.c  **** void ipSetConfigMask(uint32_t netmask)
+ 123:Lib/net/ip.c  **** {
+ 272               	.LM13:
+ 273               	.LFBB4:
+ 274               	/* prologue: function */
+ 275               	/* frame size = 0 */
+ 124:Lib/net/ip.c  ****   IpMyConfig.netmask = netmask;
+ 277               	.LM14:
+ 278 006e 6093 0000 		sts IpMyConfig+4,r22
+ 279 0072 7093 0000 		sts (IpMyConfig+4)+1,r23
+ 280 0076 8093 0000 		sts (IpMyConfig+4)+2,r24
+ 281 007a 9093 0000 		sts (IpMyConfig+4)+3,r25
+ 282               	/* epilogue start */
+ 125:Lib/net/ip.c  **** }
+ 284               	.LM15:
+ 285 007e 0895      		ret
+ 287               	.Lscope4:
+ 289               		.stabd	78,0,0
+ 292               	.global	ipSetConfigGw
+ 294               	ipSetConfigGw:
+ 295               		.stabd	46,0,0
+ 126:Lib/net/ip.c  **** 
+ 127:Lib/net/ip.c  **** void ipSetConfigGw(uint32_t gatewayIp)
+ 128:Lib/net/ip.c  **** {
+ 297               	.LM16:
+ 298               	.LFBB5:
+ 299               	/* prologue: function */
+ 300               	/* frame size = 0 */
+ 129:Lib/net/ip.c  ****   IpMyConfig.gateway = gatewayIp;
+ 302               	.LM17:
+ 303 0080 6093 0000 		sts IpMyConfig+8,r22
+ 304 0084 7093 0000 		sts (IpMyConfig+8)+1,r23
+ 305 0088 8093 0000 		sts (IpMyConfig+8)+2,r24
+ 306 008c 9093 0000 		sts (IpMyConfig+8)+3,r25
+ 307               	/* epilogue start */
+ 130:Lib/net/ip.c  **** }
+ 309               	.LM18:
+ 310 0090 0895      		ret
+ 312               	.Lscope5:
+ 314               		.stabd	78,0,0
+ 316               	.global	ipGetConfig
+ 318               	ipGetConfig:
+ 319               		.stabd	46,0,0
+ 131:Lib/net/ip.c  **** 
+ 132:Lib/net/ip.c  **** 
+ 133:Lib/net/ip.c  **** struct ipConfig* ipGetConfig(void)
+ 134:Lib/net/ip.c  **** {
+ 321               	.LM19:
+ 322               	.LFBB6:
+ 323               	/* prologue: function */
+ 324               	/* frame size = 0 */
+ 135:Lib/net/ip.c  ****   return &IpMyConfig;
+ 136:Lib/net/ip.c  **** }
+ 326               	.LM20:
+ 327 0092 80E0      		ldi r24,lo8(IpMyConfig)
+ 328 0094 90E0      		ldi r25,hi8(IpMyConfig)
+ 329               	/* epilogue start */
+ 330 0096 0895      		ret
+ 332               	.Lscope6:
+ 334               		.stabd	78,0,0
+ 338               	.global	ipPrintConfig
+ 340               	ipPrintConfig:
+ 341               		.stabd	46,0,0
+ 137:Lib/net/ip.c  **** 
+ 138:Lib/net/ip.c  **** void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len)
+ 139:Lib/net/ip.c  **** {
+ 140:Lib/net/ip.c  **** // make pointer to ethernet/IP header
+ 141:Lib/net/ip.c  **** #if IP_DEBUG
+ 142:Lib/net/ip.c  ****   if (IpMyConfig.dbgStream != NULL)
+ 143:Lib/net/ip.c  ****   {  
+ 144:Lib/net/ip.c  ****     if (IpMyConfig.dbgLevel > 2)
+ 145:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, "Sending Ip packet\r\n");
+ 146:Lib/net/ip.c  ****   }
+ 147:Lib/net/ip.c  **** #endif
+ 148:Lib/net/ip.c  **** 
+ 149:Lib/net/ip.c  **** // adjust length to add IP header
+ 150:Lib/net/ip.c  ****   len += IP_HEADER_LEN;
+ 151:Lib/net/ip.c  **** 
+ 152:Lib/net/ip.c  **** // fill IP header
+ 153:Lib/net/ip.c  ****   nicState.layer3.ip->destipaddr = dstIp;
+ 154:Lib/net/ip.c  ****   nicState.layer3.ip->srcipaddr  = IpMyConfig.ip;
+ 155:Lib/net/ip.c  ****   nicState.layer3.ip->proto      = protocol;
+ 156:Lib/net/ip.c  ****   nicState.layer3.ip->len        = htons(len);
+ 157:Lib/net/ip.c  ****   nicState.layer3.ip->vhl        = 0x45;
+ 158:Lib/net/ip.c  ****   nicState.layer3.ip->tos        = 0;
+ 159:Lib/net/ip.c  ****   nicState.layer3.ip->ipid       = 0;
+ 160:Lib/net/ip.c  ****   nicState.layer3.ip->ipoffset   = 0;
+ 161:Lib/net/ip.c  ****   nicState.layer3.ip->ttl        = IP_TIME_TO_LIVE;
+ 162:Lib/net/ip.c  ****   nicState.layer3.ip->ipchksum   = 0;
+ 163:Lib/net/ip.c  **** 
+ 164:Lib/net/ip.c  **** // calculate and apply IP checksum
+ 165:Lib/net/ip.c  **** // DO THIS ONLY AFTER ALL CHANGES HAVE BEEN MADE TO IP HEADER
+ 166:Lib/net/ip.c  ****   nicState.layer3.ip->ipchksum   = netChecksum((uint8_t *)(nicState.layer3.ip), IP_HEADER_LEN);
+ 167:Lib/net/ip.c  **** 
+ 168:Lib/net/ip.c  **** // add ethernet routing
+ 169:Lib/net/ip.c  **** // check if we need to send to gateway
+ 170:Lib/net/ip.c  ****   if( (dstIp & IpMyConfig.netmask) == (IpMyConfig.ip & IpMyConfig.netmask) )
+ 171:Lib/net/ip.c  ****   {
+ 172:Lib/net/ip.c  ****     arpIpOut(0);  // local send
+ 173:Lib/net/ip.c  **** #if IP_DEBUG
+ 174:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+ 175:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("Sending IP packet on local net\r\n"));
+ 176:Lib/net/ip.c  **** #endif
+ 177:Lib/net/ip.c  ****   }
+ 178:Lib/net/ip.c  ****   else
+ 179:Lib/net/ip.c  ****   {
+ 180:Lib/net/ip.c  ****     arpIpOut(IpMyConfig.gateway);  // gateway send
+ 181:Lib/net/ip.c  **** #if IP_DEBUG
+ 182:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+ 183:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("Sending IP packet to gateway\r\n"));
+ 184:Lib/net/ip.c  **** #endif
+ 185:Lib/net/ip.c  ****   }
+ 186:Lib/net/ip.c  **** 
+ 187:Lib/net/ip.c  **** // adjust length to add ethernet header
+ 188:Lib/net/ip.c  ****   len += ETH_HEADER_LEN;
+ 189:Lib/net/ip.c  **** 
+ 190:Lib/net/ip.c  **** #if IP_DEBUG
+ 191:Lib/net/ip.c  ****   if (IpMyConfig.dbgStream != NULL)
+ 192:Lib/net/ip.c  ****   {
+ 193:Lib/net/ip.c  ****     if (IpMyConfig.dbgLevel > 3)
+ 194:Lib/net/ip.c  ****     {
+ 195:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("debugPrintHexTable(ETH_HEADER_LEN, &data[0]);"));
+ 196:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("debugPrintHexTable(len-ETH_HEADER_LEN, &data[ETH_HEADER
+ 197:Lib/net/ip.c  ****     }
+ 198:Lib/net/ip.c  ****   }
+ 199:Lib/net/ip.c  **** #endif
+ 200:Lib/net/ip.c  **** // send it
+ 201:Lib/net/ip.c  ****   nicSend(len);
+ 202:Lib/net/ip.c  **** }
+ 203:Lib/net/ip.c  **** 
+ 204:Lib/net/ip.c  **** void ipPrintConfig(FILE *stream, struct ipConfig* config)
+ 205:Lib/net/ip.c  **** {
+ 343               	.LM21:
+ 344               	.LFBB7:
+ 345 0098 EF92      		push r14
+ 346 009a FF92      		push r15
+ 347 009c 0F93      		push r16
+ 348 009e 1F93      		push r17
+ 349               	/* prologue: function */
+ 350               	/* frame size = 0 */
+ 351 00a0 8C01      		movw r16,r24
+ 352 00a2 7B01      		movw r14,r22
+ 206:Lib/net/ip.c  ****   fprintf_P(stream, PSTR("IP Addr : ")); netPrintIPAddr(stream, config->ip);        fprintf_P(strea
+ 354               	.LM22:
+ 355 00a4 00D0      		rcall .
+ 356 00a6 00D0      		rcall .
+ 357 00a8 EDB7      		in r30,__SP_L__
+ 358 00aa FEB7      		in r31,__SP_H__
+ 359 00ac 9283      		std Z+2,r25
+ 360 00ae 8183      		std Z+1,r24
+ 361 00b0 80E0      		ldi r24,lo8(__c.2348)
+ 362 00b2 90E0      		ldi r25,hi8(__c.2348)
+ 363 00b4 9483      		std Z+4,r25
+ 364 00b6 8383      		std Z+3,r24
+ 365 00b8 0E94 0000 		call fprintf_P
+ 366 00bc 0F90      		pop __tmp_reg__
+ 367 00be 0F90      		pop __tmp_reg__
+ 368 00c0 0F90      		pop __tmp_reg__
+ 369 00c2 0F90      		pop __tmp_reg__
+ 370 00c4 F701      		movw r30,r14
+ 371 00c6 4081      		ld r20,Z
+ 372 00c8 5181      		ldd r21,Z+1
+ 373 00ca 6281      		ldd r22,Z+2
+ 374 00cc 7381      		ldd r23,Z+3
+ 375 00ce C801      		movw r24,r16
+ 376 00d0 0E94 0000 		call netPrintIPAddr
+ 377 00d4 00D0      		rcall .
+ 378 00d6 00D0      		rcall .
+ 379 00d8 EDB7      		in r30,__SP_L__
+ 380 00da FEB7      		in r31,__SP_H__
+ 381 00dc 1283      		std Z+2,r17
+ 382 00de 0183      		std Z+1,r16
+ 383 00e0 80E0      		ldi r24,lo8(__c.2350)
+ 384 00e2 90E0      		ldi r25,hi8(__c.2350)
+ 385 00e4 9483      		std Z+4,r25
+ 386 00e6 8383      		std Z+3,r24
+ 387 00e8 0E94 0000 		call fprintf_P
+ 207:Lib/net/ip.c  ****   fprintf_P(stream, PSTR("Netmask : ")); netPrintIPAddr(stream, config->netmask);   fprintf_P(strea
+ 389               	.LM23:
+ 390 00ec EDB7      		in r30,__SP_L__
+ 391 00ee FEB7      		in r31,__SP_H__
+ 392 00f0 1283      		std Z+2,r17
+ 393 00f2 0183      		std Z+1,r16
+ 394 00f4 80E0      		ldi r24,lo8(__c.2352)
+ 395 00f6 90E0      		ldi r25,hi8(__c.2352)
+ 396 00f8 9483      		std Z+4,r25
+ 397 00fa 8383      		std Z+3,r24
+ 398 00fc 0E94 0000 		call fprintf_P
+ 399 0100 0F90      		pop __tmp_reg__
+ 400 0102 0F90      		pop __tmp_reg__
+ 401 0104 0F90      		pop __tmp_reg__
+ 402 0106 0F90      		pop __tmp_reg__
+ 403 0108 F701      		movw r30,r14
+ 404 010a 4481      		ldd r20,Z+4
+ 405 010c 5581      		ldd r21,Z+5
+ 406 010e 6681      		ldd r22,Z+6
+ 407 0110 7781      		ldd r23,Z+7
+ 408 0112 C801      		movw r24,r16
+ 409 0114 0E94 0000 		call netPrintIPAddr
+ 410 0118 00D0      		rcall .
+ 411 011a 00D0      		rcall .
+ 412 011c EDB7      		in r30,__SP_L__
+ 413 011e FEB7      		in r31,__SP_H__
+ 414 0120 1283      		std Z+2,r17
+ 415 0122 0183      		std Z+1,r16
+ 416 0124 80E0      		ldi r24,lo8(__c.2354)
+ 417 0126 90E0      		ldi r25,hi8(__c.2354)
+ 418 0128 9483      		std Z+4,r25
+ 419 012a 8383      		std Z+3,r24
+ 420 012c 0E94 0000 		call fprintf_P
+ 208:Lib/net/ip.c  ****   fprintf_P(stream, PSTR("Gateway : ")); netPrintIPAddr(stream, config->gateway);   fprintf_P(strea
+ 422               	.LM24:
+ 423 0130 EDB7      		in r30,__SP_L__
+ 424 0132 FEB7      		in r31,__SP_H__
+ 425 0134 1283      		std Z+2,r17
+ 426 0136 0183      		std Z+1,r16
+ 427 0138 80E0      		ldi r24,lo8(__c.2356)
+ 428 013a 90E0      		ldi r25,hi8(__c.2356)
+ 429 013c 9483      		std Z+4,r25
+ 430 013e 8383      		std Z+3,r24
+ 431 0140 0E94 0000 		call fprintf_P
+ 432 0144 0F90      		pop __tmp_reg__
+ 433 0146 0F90      		pop __tmp_reg__
+ 434 0148 0F90      		pop __tmp_reg__
+ 435 014a 0F90      		pop __tmp_reg__
+ 436 014c F701      		movw r30,r14
+ 437 014e 4085      		ldd r20,Z+8
+ 438 0150 5185      		ldd r21,Z+9
+ 439 0152 6285      		ldd r22,Z+10
+ 440 0154 7385      		ldd r23,Z+11
+ 441 0156 C801      		movw r24,r16
+ 442 0158 0E94 0000 		call netPrintIPAddr
+ 443 015c 00D0      		rcall .
+ 444 015e 00D0      		rcall .
+ 445 0160 EDB7      		in r30,__SP_L__
+ 446 0162 FEB7      		in r31,__SP_H__
+ 447 0164 1283      		std Z+2,r17
+ 448 0166 0183      		std Z+1,r16
+ 449 0168 80E0      		ldi r24,lo8(__c.2358)
+ 450 016a 90E0      		ldi r25,hi8(__c.2358)
+ 451 016c 9483      		std Z+4,r25
+ 452 016e 8383      		std Z+3,r24
+ 453 0170 0E94 0000 		call fprintf_P
+ 454 0174 0F90      		pop __tmp_reg__
+ 455 0176 0F90      		pop __tmp_reg__
+ 456 0178 0F90      		pop __tmp_reg__
+ 457 017a 0F90      		pop __tmp_reg__
+ 458               	/* epilogue start */
+ 209:Lib/net/ip.c  **** }
+ 460               	.LM25:
+ 461 017c 1F91      		pop r17
+ 462 017e 0F91      		pop r16
+ 463 0180 FF90      		pop r15
+ 464 0182 EF90      		pop r14
+ 465 0184 0895      		ret
+ 467               	.Lscope7:
+ 469               		.stabd	78,0,0
+ 470               		.data
+ 471               	.LC0:
+ 472 0000 5365 6E64 		.string	"Sending Ip packet\r\n"
+ 472      696E 6720 
+ 472      4970 2070 
+ 472      6163 6B65 
+ 472      740D 0A00 
+ 473               		.text
+ 478               	.global	ipSend
+ 480               	ipSend:
+ 481               		.stabd	46,0,0
+ 139:Lib/net/ip.c  **** {
+ 483               	.LM26:
+ 484               	.LFBB8:
+ 485 0186 BF92      		push r11
+ 486 0188 CF92      		push r12
+ 487 018a DF92      		push r13
+ 488 018c EF92      		push r14
+ 489 018e FF92      		push r15
+ 490 0190 0F93      		push r16
+ 491 0192 1F93      		push r17
+ 492 0194 CF93      		push r28
+ 493 0196 DF93      		push r29
+ 494               	/* prologue: function */
+ 495               	/* frame size = 0 */
+ 496 0198 6B01      		movw r12,r22
+ 497 019a 7C01      		movw r14,r24
+ 498 019c B42E      		mov r11,r20
+ 499 019e E901      		movw r28,r18
+ 142:Lib/net/ip.c  ****   if (IpMyConfig.dbgStream != NULL)
+ 501               	.LM27:
+ 502 01a0 2091 0000 		lds r18,IpMyConfig+12
+ 503 01a4 3091 0000 		lds r19,(IpMyConfig+12)+1
+ 504 01a8 2115      		cp r18,__zero_reg__
+ 505 01aa 3105      		cpc r19,__zero_reg__
+ 506 01ac 01F0      		breq .L17
+ 144:Lib/net/ip.c  ****     if (IpMyConfig.dbgLevel > 2)
+ 508               	.LM28:
+ 509 01ae 8091 0000 		lds r24,IpMyConfig+14
+ 510 01b2 8330      		cpi r24,lo8(3)
+ 511 01b4 00F0      		brlo .L17
+ 145:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, "Sending Ip packet\r\n");
+ 513               	.LM29:
+ 514 01b6 00D0      		rcall .
+ 515 01b8 00D0      		rcall .
+ 516 01ba EDB7      		in r30,__SP_L__
+ 517 01bc FEB7      		in r31,__SP_H__
+ 518 01be 3283      		std Z+2,r19
+ 519 01c0 2183      		std Z+1,r18
+ 520 01c2 80E0      		ldi r24,lo8(.LC0)
+ 521 01c4 90E0      		ldi r25,hi8(.LC0)
+ 522 01c6 9483      		std Z+4,r25
+ 523 01c8 8383      		std Z+3,r24
+ 524 01ca 0E94 0000 		call fprintf_P
+ 525 01ce 0F90      		pop __tmp_reg__
+ 526 01d0 0F90      		pop __tmp_reg__
+ 527 01d2 0F90      		pop __tmp_reg__
+ 528 01d4 0F90      		pop __tmp_reg__
+ 529               	.L17:
+ 150:Lib/net/ip.c  ****   len += IP_HEADER_LEN;
+ 531               	.LM30:
+ 532 01d6 6496      		adiw r28,20
+ 153:Lib/net/ip.c  ****   nicState.layer3.ip->destipaddr = dstIp;
+ 534               	.LM31:
+ 535 01d8 0091 0000 		lds r16,nicState+10
+ 536 01dc 1091 0000 		lds r17,(nicState+10)+1
+ 537 01e0 F801      		movw r30,r16
+ 538 01e2 C08A      		std Z+16,r12
+ 539 01e4 D18A      		std Z+17,r13
+ 540 01e6 E28A      		std Z+18,r14
+ 541 01e8 F38A      		std Z+19,r15
+ 154:Lib/net/ip.c  ****   nicState.layer3.ip->srcipaddr  = IpMyConfig.ip;
+ 543               	.LM32:
+ 544 01ea 8091 0000 		lds r24,IpMyConfig
+ 545 01ee 9091 0000 		lds r25,(IpMyConfig)+1
+ 546 01f2 A091 0000 		lds r26,(IpMyConfig)+2
+ 547 01f6 B091 0000 		lds r27,(IpMyConfig)+3
+ 548 01fa 8487      		std Z+12,r24
+ 549 01fc 9587      		std Z+13,r25
+ 550 01fe A687      		std Z+14,r26
+ 551 0200 B787      		std Z+15,r27
+ 155:Lib/net/ip.c  ****   nicState.layer3.ip->proto      = protocol;
+ 553               	.LM33:
+ 554 0202 B186      		std Z+9,r11
+ 156:Lib/net/ip.c  ****   nicState.layer3.ip->len        = htons(len);
+ 556               	.LM34:
+ 557 0204 CE01      		movw r24,r28
+ 558 0206 0E94 0000 		call htons
+ 559 020a F801      		movw r30,r16
+ 560 020c 9383      		std Z+3,r25
+ 561 020e 8283      		std Z+2,r24
+ 157:Lib/net/ip.c  ****   nicState.layer3.ip->vhl        = 0x45;
+ 563               	.LM35:
+ 564 0210 E091 0000 		lds r30,nicState+10
+ 565 0214 F091 0000 		lds r31,(nicState+10)+1
+ 566 0218 85E4      		ldi r24,lo8(69)
+ 567 021a 8083      		st Z,r24
+ 158:Lib/net/ip.c  ****   nicState.layer3.ip->tos        = 0;
+ 569               	.LM36:
+ 570 021c E091 0000 		lds r30,nicState+10
+ 571 0220 F091 0000 		lds r31,(nicState+10)+1
+ 572 0224 1182      		std Z+1,__zero_reg__
+ 159:Lib/net/ip.c  ****   nicState.layer3.ip->ipid       = 0;
+ 574               	.LM37:
+ 575 0226 E091 0000 		lds r30,nicState+10
+ 576 022a F091 0000 		lds r31,(nicState+10)+1
+ 577 022e 1582      		std Z+5,__zero_reg__
+ 578 0230 1482      		std Z+4,__zero_reg__
+ 160:Lib/net/ip.c  ****   nicState.layer3.ip->ipoffset   = 0;
+ 580               	.LM38:
+ 581 0232 1782      		std Z+7,__zero_reg__
+ 582 0234 1682      		std Z+6,__zero_reg__
+ 161:Lib/net/ip.c  ****   nicState.layer3.ip->ttl        = IP_TIME_TO_LIVE;
+ 584               	.LM39:
+ 585 0236 80E8      		ldi r24,lo8(-128)
+ 586 0238 8087      		std Z+8,r24
+ 162:Lib/net/ip.c  ****   nicState.layer3.ip->ipchksum   = 0;
+ 588               	.LM40:
+ 589 023a 1386      		std Z+11,__zero_reg__
+ 590 023c 1286      		std Z+10,__zero_reg__
+ 166:Lib/net/ip.c  ****   nicState.layer3.ip->ipchksum   = netChecksum((uint8_t *)(nicState.layer3.ip), IP_HEADER_LEN);
+ 592               	.LM41:
+ 593 023e 0091 0000 		lds r16,nicState+10
+ 594 0242 1091 0000 		lds r17,(nicState+10)+1
+ 595 0246 C801      		movw r24,r16
+ 596 0248 64E1      		ldi r22,lo8(20)
+ 597 024a 70E0      		ldi r23,hi8(20)
+ 598 024c 0E94 0000 		call netChecksum
+ 599 0250 F801      		movw r30,r16
+ 600 0252 9387      		std Z+11,r25
+ 601 0254 8287      		std Z+10,r24
+ 170:Lib/net/ip.c  ****   if( (dstIp & IpMyConfig.netmask) == (IpMyConfig.ip & IpMyConfig.netmask) )
+ 603               	.LM42:
+ 604 0256 2091 0000 		lds r18,IpMyConfig
+ 605 025a 3091 0000 		lds r19,(IpMyConfig)+1
+ 606 025e 4091 0000 		lds r20,(IpMyConfig)+2
+ 607 0262 5091 0000 		lds r21,(IpMyConfig)+3
+ 608 0266 2C25      		eor r18,r12
+ 609 0268 3D25      		eor r19,r13
+ 610 026a 4E25      		eor r20,r14
+ 611 026c 5F25      		eor r21,r15
+ 612 026e 8091 0000 		lds r24,IpMyConfig+4
+ 613 0272 9091 0000 		lds r25,(IpMyConfig+4)+1
+ 614 0276 A091 0000 		lds r26,(IpMyConfig+4)+2
+ 615 027a B091 0000 		lds r27,(IpMyConfig+4)+3
+ 616 027e 8223      		and r24,r18
+ 617 0280 9323      		and r25,r19
+ 618 0282 A423      		and r26,r20
+ 619 0284 B523      		and r27,r21
+ 620 0286 0097      		sbiw r24,0
+ 621 0288 A105      		cpc r26,__zero_reg__
+ 622 028a B105      		cpc r27,__zero_reg__
+ 623 028c 01F4      		brne .L18
+ 172:Lib/net/ip.c  ****     arpIpOut(0);  // local send
+ 625               	.LM43:
+ 626 028e 60E0      		ldi r22,lo8(0)
+ 627 0290 70E0      		ldi r23,hi8(0)
+ 628 0292 80E0      		ldi r24,hlo8(0)
+ 629 0294 90E0      		ldi r25,hhi8(0)
+ 630 0296 0E94 0000 		call arpIpOut
+ 174:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+ 632               	.LM44:
+ 633 029a 8091 0000 		lds r24,IpMyConfig+12
+ 634 029e 9091 0000 		lds r25,(IpMyConfig+12)+1
+ 635 02a2 0097      		sbiw r24,0
+ 636 02a4 01F0      		breq .L19
+ 175:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("Sending IP packet on local net\r\n"));
+ 638               	.LM45:
+ 639 02a6 00D0      		rcall .
+ 640 02a8 00D0      		rcall .
+ 641 02aa EDB7      		in r30,__SP_L__
+ 642 02ac FEB7      		in r31,__SP_H__
+ 643 02ae 9283      		std Z+2,r25
+ 644 02b0 8183      		std Z+1,r24
+ 645 02b2 80E0      		ldi r24,lo8(__c.2325)
+ 646 02b4 90E0      		ldi r25,hi8(__c.2325)
+ 647 02b6 00C0      		rjmp .L22
+ 648               	.L18:
+ 180:Lib/net/ip.c  ****     arpIpOut(IpMyConfig.gateway);  // gateway send
+ 650               	.LM46:
+ 651 02b8 6091 0000 		lds r22,IpMyConfig+8
+ 652 02bc 7091 0000 		lds r23,(IpMyConfig+8)+1
+ 653 02c0 8091 0000 		lds r24,(IpMyConfig+8)+2
+ 654 02c4 9091 0000 		lds r25,(IpMyConfig+8)+3
+ 655 02c8 0E94 0000 		call arpIpOut
+ 182:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+ 657               	.LM47:
+ 658 02cc 8091 0000 		lds r24,IpMyConfig+12
+ 659 02d0 9091 0000 		lds r25,(IpMyConfig+12)+1
+ 660 02d4 0097      		sbiw r24,0
+ 661 02d6 01F0      		breq .L19
+ 183:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("Sending IP packet to gateway\r\n"));
+ 663               	.LM48:
+ 664 02d8 00D0      		rcall .
+ 665 02da 00D0      		rcall .
+ 666 02dc EDB7      		in r30,__SP_L__
+ 667 02de FEB7      		in r31,__SP_H__
+ 668 02e0 9283      		std Z+2,r25
+ 669 02e2 8183      		std Z+1,r24
+ 670 02e4 80E0      		ldi r24,lo8(__c.2327)
+ 671 02e6 90E0      		ldi r25,hi8(__c.2327)
+ 672               	.L22:
+ 673 02e8 9483      		std Z+4,r25
+ 674 02ea 8383      		std Z+3,r24
+ 675 02ec 0E94 0000 		call fprintf_P
+ 676 02f0 0F90      		pop __tmp_reg__
+ 677 02f2 0F90      		pop __tmp_reg__
+ 678 02f4 0F90      		pop __tmp_reg__
+ 679 02f6 0F90      		pop __tmp_reg__
+ 680               	.L19:
+ 191:Lib/net/ip.c  ****   if (IpMyConfig.dbgStream != NULL)
+ 682               	.LM49:
+ 683 02f8 2091 0000 		lds r18,IpMyConfig+12
+ 684 02fc 3091 0000 		lds r19,(IpMyConfig+12)+1
+ 685 0300 2115      		cp r18,__zero_reg__
+ 686 0302 3105      		cpc r19,__zero_reg__
+ 687 0304 01F0      		breq .L20
+ 193:Lib/net/ip.c  ****     if (IpMyConfig.dbgLevel > 3)
+ 689               	.LM50:
+ 690 0306 8091 0000 		lds r24,IpMyConfig+14
+ 691 030a 8430      		cpi r24,lo8(4)
+ 692 030c 00F0      		brlo .L20
+ 195:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("debugPrintHexTable(ETH_HEADER_LEN, &data[0]);"));
+ 694               	.LM51:
+ 695 030e 00D0      		rcall .
+ 696 0310 00D0      		rcall .
+ 697 0312 EDB7      		in r30,__SP_L__
+ 698 0314 FEB7      		in r31,__SP_H__
+ 699 0316 3283      		std Z+2,r19
+ 700 0318 2183      		std Z+1,r18
+ 701 031a 80E0      		ldi r24,lo8(__c.2329)
+ 702 031c 90E0      		ldi r25,hi8(__c.2329)
+ 703 031e 9483      		std Z+4,r25
+ 704 0320 8383      		std Z+3,r24
+ 705 0322 0E94 0000 		call fprintf_P
+ 196:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("debugPrintHexTable(len-ETH_HEADER_LEN, &data[ETH_HEADER
+ 707               	.LM52:
+ 708 0326 8091 0000 		lds r24,IpMyConfig+12
+ 709 032a 9091 0000 		lds r25,(IpMyConfig+12)+1
+ 710 032e EDB7      		in r30,__SP_L__
+ 711 0330 FEB7      		in r31,__SP_H__
+ 712 0332 9283      		std Z+2,r25
+ 713 0334 8183      		std Z+1,r24
+ 714 0336 80E0      		ldi r24,lo8(__c.2331)
+ 715 0338 90E0      		ldi r25,hi8(__c.2331)
+ 716 033a 9483      		std Z+4,r25
+ 717 033c 8383      		std Z+3,r24
+ 718 033e 0E94 0000 		call fprintf_P
+ 719 0342 0F90      		pop __tmp_reg__
+ 720 0344 0F90      		pop __tmp_reg__
+ 721 0346 0F90      		pop __tmp_reg__
+ 722 0348 0F90      		pop __tmp_reg__
+ 723               	.L20:
+ 201:Lib/net/ip.c  ****   nicSend(len);
+ 725               	.LM53:
+ 726 034a CE01      		movw r24,r28
+ 727 034c 0E96      		adiw r24,14
+ 728 034e 0E94 0000 		call nicSend
+ 729               	/* epilogue start */
+ 202:Lib/net/ip.c  **** }
+ 731               	.LM54:
+ 732 0352 DF91      		pop r29
+ 733 0354 CF91      		pop r28
+ 734 0356 1F91      		pop r17
+ 735 0358 0F91      		pop r16
+ 736 035a FF90      		pop r15
+ 737 035c EF90      		pop r14
+ 738 035e DF90      		pop r13
+ 739 0360 CF90      		pop r12
+ 740 0362 BF90      		pop r11
+ 741 0364 0895      		ret
+ 743               	.Lscope8:
+ 745               		.stabd	78,0,0
+ 747               	.global	netstackIPv4Process
+ 749               	netstackIPv4Process:
+ 750               		.stabd	46,0,0
+  43:Lib/net/ip.c  **** {
+ 752               	.LM55:
+ 753               	.LFBB9:
+ 754 0366 EF92      		push r14
+ 755 0368 FF92      		push r15
+ 756 036a 0F93      		push r16
+ 757 036c 1F93      		push r17
+ 758               	/* prologue: function */
+ 759               	/* frame size = 0 */
+  45:Lib/net/ip.c  ****   if( (nicState.layer3.ip->destipaddr != ipGetConfig()->ip) &&
+ 761               	.LM56:
+ 762 036e E091 0000 		lds r30,nicState+10
+ 763 0372 F091 0000 		lds r31,(nicState+10)+1
+ 764 0376 E088      		ldd r14,Z+16
+ 765 0378 F188      		ldd r15,Z+17
+ 766 037a 0289      		ldd r16,Z+18
+ 767 037c 1389      		ldd r17,Z+19
+ 768 037e 2091 0000 		lds r18,IpMyConfig
+ 769 0382 3091 0000 		lds r19,(IpMyConfig)+1
+ 770 0386 4091 0000 		lds r20,(IpMyConfig)+2
+ 771 038a 5091 0000 		lds r21,(IpMyConfig)+3
+ 772 038e E216      		cp r14,r18
+ 773 0390 F306      		cpc r15,r19
+ 774 0392 0407      		cpc r16,r20
+ 775 0394 1507      		cpc r17,r21
+ 776 0396 01F0      		breq .L24
+ 777 0398 8091 0000 		lds r24,IpMyConfig+4
+ 778 039c 9091 0000 		lds r25,(IpMyConfig+4)+1
+ 779 03a0 A091 0000 		lds r26,(IpMyConfig+4)+2
+ 780 03a4 B091 0000 		lds r27,(IpMyConfig+4)+3
+ 781 03a8 282B      		or r18,r24
+ 782 03aa 392B      		or r19,r25
+ 783 03ac 4A2B      		or r20,r26
+ 784 03ae 5B2B      		or r21,r27
+ 785 03b0 E216      		cp r14,r18
+ 786 03b2 F306      		cpc r15,r19
+ 787 03b4 0407      		cpc r16,r20
+ 788 03b6 1507      		cpc r17,r21
+ 789 03b8 01F0      		breq .L24
+ 790 03ba 8FEF      		ldi r24,lo8(-1)
+ 791 03bc E816      		cp r14,r24
+ 792 03be 8FEF      		ldi r24,hi8(-1)
+ 793 03c0 F806      		cpc r15,r24
+ 794 03c2 8FEF      		ldi r24,hlo8(-1)
+ 795 03c4 0807      		cpc r16,r24
+ 796 03c6 8FEF      		ldi r24,hhi8(-1)
+ 797 03c8 1807      		cpc r17,r24
+ 798 03ca 01F0      		breq .+2
+ 799 03cc 00C0      		rjmp .L33
+ 800               	.L24:
+  51:Lib/net/ip.c  ****   if(nicState.layer3.ip->proto == IP_PROTO_ICMP)
+ 802               	.LM57:
+ 803 03ce 8185      		ldd r24,Z+9
+ 804 03d0 8130      		cpi r24,lo8(1)
+ 805 03d2 01F4      		brne .L26
+  54:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+ 807               	.LM58:
+ 808 03d4 2091 0000 		lds r18,IpMyConfig+12
+ 809 03d8 3091 0000 		lds r19,(IpMyConfig+12)+1
+ 810 03dc 2115      		cp r18,__zero_reg__
+ 811 03de 3105      		cpc r19,__zero_reg__
+ 812 03e0 01F0      		breq .L27
+  56:Lib/net/ip.c  ****       if (IpMyConfig.dbgLevel > 0)
+ 814               	.LM59:
+ 815 03e2 8091 0000 		lds r24,IpMyConfig+14
+ 816 03e6 8823      		tst r24
+ 817 03e8 01F0      		breq .L28
+  57:Lib/net/ip.c  ****         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: ICMP/IP packet\r\n"));
+ 819               	.LM60:
+ 820 03ea 00D0      		rcall .
+ 821 03ec 00D0      		rcall .
+ 822 03ee EDB7      		in r30,__SP_L__
+ 823 03f0 FEB7      		in r31,__SP_H__
+ 824 03f2 3283      		std Z+2,r19
+ 825 03f4 2183      		std Z+1,r18
+ 826 03f6 80E0      		ldi r24,lo8(__c.2277)
+ 827 03f8 90E0      		ldi r25,hi8(__c.2277)
+ 828 03fa 9483      		std Z+4,r25
+ 829 03fc 8383      		std Z+3,r24
+ 830 03fe 0E94 0000 		call fprintf_P
+ 831 0402 0F90      		pop __tmp_reg__
+ 832 0404 0F90      		pop __tmp_reg__
+ 833 0406 0F90      		pop __tmp_reg__
+ 834 0408 0F90      		pop __tmp_reg__
+ 835               	.L28:
+  58:Lib/net/ip.c  ****       if (IpMyConfig.dbgLevel > 2)
+ 837               	.LM61:
+ 838 040a 8091 0000 		lds r24,IpMyConfig+14
+ 839 040e 8330      		cpi r24,lo8(3)
+ 840 0410 00F0      		brlo .L27
+  59:Lib/net/ip.c  ****         icmpPrintHeader(IpMyConfig.dbgStream, nicState.layer3.ip, nicState.layer4.icmp);
+ 842               	.LM62:
+ 843 0412 6091 0000 		lds r22,nicState+10
+ 844 0416 7091 0000 		lds r23,(nicState+10)+1
+ 845 041a 4091 0000 		lds r20,nicState+12
+ 846 041e 5091 0000 		lds r21,(nicState+12)+1
+ 847 0422 8091 0000 		lds r24,IpMyConfig+12
+ 848 0426 9091 0000 		lds r25,(IpMyConfig+12)+1
+ 849 042a 0E94 0000 		call icmpPrintHeader
+ 850               	.L27:
+  62:Lib/net/ip.c  ****     icmpIpIn();
+ 852               	.LM63:
+ 853 042e 0E94 0000 		call icmpIpIn
+ 854 0432 00C0      		rjmp .L33
+ 855               	.L26:
+  65:Lib/net/ip.c  ****   if( nicState.layer3.ip->proto == IP_PROTO_UDP )
+ 857               	.LM64:
+ 858 0434 8131      		cpi r24,lo8(17)
+ 859 0436 01F4      		brne .L29
+  68:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+ 861               	.LM65:
+ 862 0438 2091 0000 		lds r18,IpMyConfig+12
+ 863 043c 3091 0000 		lds r19,(IpMyConfig+12)+1
+ 864 0440 2115      		cp r18,__zero_reg__
+ 865 0442 3105      		cpc r19,__zero_reg__
+ 866 0444 01F0      		breq .L30
+  70:Lib/net/ip.c  ****       if (IpMyConfig.dbgLevel > 0)
+ 868               	.LM66:
+ 869 0446 8091 0000 		lds r24,IpMyConfig+14
+ 870 044a 8823      		tst r24
+ 871 044c 01F0      		breq .L30
+  71:Lib/net/ip.c  ****         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: UDP/IP packet\r\n"));
+ 873               	.LM67:
+ 874 044e 00D0      		rcall .
+ 875 0450 00D0      		rcall .
+ 876 0452 EDB7      		in r30,__SP_L__
+ 877 0454 FEB7      		in r31,__SP_H__
+ 878 0456 3283      		std Z+2,r19
+ 879 0458 2183      		std Z+1,r18
+ 880 045a 80E0      		ldi r24,lo8(__c.2279)
+ 881 045c 90E0      		ldi r25,hi8(__c.2279)
+ 882 045e 9483      		std Z+4,r25
+ 883 0460 8383      		std Z+3,r24
+ 884 0462 0E94 0000 		call fprintf_P
+ 885 0466 0F90      		pop __tmp_reg__
+ 886 0468 0F90      		pop __tmp_reg__
+ 887 046a 0F90      		pop __tmp_reg__
+ 888 046c 0F90      		pop __tmp_reg__
+ 889               	.L30:
+  74:Lib/net/ip.c  ****     netstackUDPIPProcess();
+ 891               	.LM68:
+ 892 046e 0E94 0000 		call netstackUDPIPProcess
+ 893 0472 00C0      		rjmp .L33
+ 894               	.L29:
+  77:Lib/net/ip.c  ****   if( nicState.layer3.ip->proto == IP_PROTO_TCP )
+ 896               	.LM69:
+ 897 0474 8630      		cpi r24,lo8(6)
+ 898 0476 01F4      		brne .L31
+  80:Lib/net/ip.c  ****     if (IpMyConfig.dbgStream != NULL)
+ 900               	.LM70:
+ 901 0478 2091 0000 		lds r18,IpMyConfig+12
+ 902 047c 3091 0000 		lds r19,(IpMyConfig+12)+1
+ 903 0480 2115      		cp r18,__zero_reg__
+ 904 0482 3105      		cpc r19,__zero_reg__
+ 905 0484 01F0      		breq .L32
+  82:Lib/net/ip.c  ****       if (IpMyConfig.dbgLevel > 0)
+ 907               	.LM71:
+ 908 0486 8091 0000 		lds r24,IpMyConfig+14
+ 909 048a 8823      		tst r24
+ 910 048c 01F0      		breq .L32
+  83:Lib/net/ip.c  ****         fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: TCP/IP packet\r\n"));
+ 912               	.LM72:
+ 913 048e 00D0      		rcall .
+ 914 0490 00D0      		rcall .
+ 915 0492 EDB7      		in r30,__SP_L__
+ 916 0494 FEB7      		in r31,__SP_H__
+ 917 0496 3283      		std Z+2,r19
+ 918 0498 2183      		std Z+1,r18
+ 919 049a 80E0      		ldi r24,lo8(__c.2281)
+ 920 049c 90E0      		ldi r25,hi8(__c.2281)
+ 921 049e 9483      		std Z+4,r25
+ 922 04a0 8383      		std Z+3,r24
+ 923 04a2 0E94 0000 		call fprintf_P
+ 924 04a6 0F90      		pop __tmp_reg__
+ 925 04a8 0F90      		pop __tmp_reg__
+ 926 04aa 0F90      		pop __tmp_reg__
+ 927 04ac 0F90      		pop __tmp_reg__
+ 928               	.L32:
+  86:Lib/net/ip.c  ****     netstackTCPIPProcess();
+ 930               	.LM73:
+ 931 04ae 0E94 0000 		call netstackTCPIPProcess
+ 932 04b2 00C0      		rjmp .L33
+ 933               	.L31:
+  90:Lib/net/ip.c  ****   if (IpMyConfig.dbgStream != NULL)
+ 935               	.LM74:
+ 936 04b4 2091 0000 		lds r18,IpMyConfig+12
+ 937 04b8 3091 0000 		lds r19,(IpMyConfig+12)+1
+ 938 04bc 2115      		cp r18,__zero_reg__
+ 939 04be 3105      		cpc r19,__zero_reg__
+ 940 04c0 01F0      		breq .L33
+  92:Lib/net/ip.c  ****     if (IpMyConfig.dbgLevel > 0)
+ 942               	.LM75:
+ 943 04c2 8091 0000 		lds r24,IpMyConfig+14
+ 944 04c6 8823      		tst r24
+ 945 04c8 01F0      		breq .L33
+  93:Lib/net/ip.c  ****       fprintf_P(IpMyConfig.dbgStream, PSTR("NET Rx: Unknown IP packet\r\n"));
+ 947               	.LM76:
+ 948 04ca 00D0      		rcall .
+ 949 04cc 00D0      		rcall .
+ 950 04ce EDB7      		in r30,__SP_L__
+ 951 04d0 FEB7      		in r31,__SP_H__
+ 952 04d2 3283      		std Z+2,r19
+ 953 04d4 2183      		std Z+1,r18
+ 954 04d6 80E0      		ldi r24,lo8(__c.2283)
+ 955 04d8 90E0      		ldi r25,hi8(__c.2283)
+ 956 04da 9483      		std Z+4,r25
+ 957 04dc 8383      		std Z+3,r24
+ 958 04de 0E94 0000 		call fprintf_P
+ 959 04e2 0F90      		pop __tmp_reg__
+ 960 04e4 0F90      		pop __tmp_reg__
+ 961 04e6 0F90      		pop __tmp_reg__
+ 962 04e8 0F90      		pop __tmp_reg__
+ 963               	.L33:
+ 964               	/* epilogue start */
+  96:Lib/net/ip.c  **** }
+ 966               	.LM77:
+ 967 04ea 1F91      		pop r17
+ 968 04ec 0F91      		pop r16
+ 969 04ee FF90      		pop r15
+ 970 04f0 EF90      		pop r14
+ 971 04f2 0895      		ret
+ 973               	.Lscope9:
+ 975               		.stabd	78,0,0
+ 977               	.global	ipSaveConfig
+ 979               	ipSaveConfig:
+ 980               		.stabd	46,0,0
+  36:Lib/net/ip.c  **** {
+ 982               	.LM78:
+ 983               	.LFBB10:
+ 984               	/* prologue: function */
+ 985               	/* frame size = 0 */
+  37:Lib/net/ip.c  ****   eeprom_update_dword(&myip_eep,  IpMyConfig.ip);
+ 987               	.LM79:
+ 988 04f4 4091 0000 		lds r20,IpMyConfig
+ 989 04f8 5091 0000 		lds r21,(IpMyConfig)+1
+ 990 04fc 6091 0000 		lds r22,(IpMyConfig)+2
+ 991 0500 7091 0000 		lds r23,(IpMyConfig)+3
+ 992 0504 80E0      		ldi r24,lo8(myip_eep)
+ 993 0506 90E0      		ldi r25,hi8(myip_eep)
+ 994 0508 0E94 0000 		call __eeupd_dword_m128
+  38:Lib/net/ip.c  ****   eeprom_update_dword(&mask_eep,  IpMyConfig.netmask);
+ 996               	.LM80:
+ 997 050c 4091 0000 		lds r20,IpMyConfig+4
+ 998 0510 5091 0000 		lds r21,(IpMyConfig+4)+1
+ 999 0514 6091 0000 		lds r22,(IpMyConfig+4)+2
+ 1000 0518 7091 0000 		lds r23,(IpMyConfig+4)+3
+ 1001 051c 80E0      		ldi r24,lo8(mask_eep)
+ 1002 051e 90E0      		ldi r25,hi8(mask_eep)
+ 1003 0520 0E94 0000 		call __eeupd_dword_m128
+  39:Lib/net/ip.c  ****   eeprom_update_dword(&defGw_eep, IpMyConfig.gateway);
+ 1005               	.LM81:
+ 1006 0524 4091 0000 		lds r20,IpMyConfig+8
+ 1007 0528 5091 0000 		lds r21,(IpMyConfig+8)+1
+ 1008 052c 6091 0000 		lds r22,(IpMyConfig+8)+2
+ 1009 0530 7091 0000 		lds r23,(IpMyConfig+8)+3
+ 1010 0534 80E0      		ldi r24,lo8(defGw_eep)
+ 1011 0536 90E0      		ldi r25,hi8(defGw_eep)
+ 1012 0538 0E94 0000 		call __eeupd_dword_m128
+ 1013               	/* epilogue start */
+  40:Lib/net/ip.c  **** }
+ 1015               	.LM82:
+ 1016 053c 0895      		ret
+ 1018               	.Lscope10:
+ 1020               		.stabd	78,0,0
+ 1022               	.global	ipInit
+ 1024               	ipInit:
+ 1025               		.stabd	46,0,0
+  25:Lib/net/ip.c  **** {
+ 1027               	.LM83:
+ 1028               	.LFBB11:
+ 1029               	/* prologue: function */
+ 1030               	/* frame size = 0 */
+  26:Lib/net/ip.c  ****   IpMyConfig.ip      = eeprom_read_dword(&myip_eep);
+ 1032               	.LM84:
+ 1033 053e 80E0      		ldi r24,lo8(myip_eep)
+ 1034 0540 90E0      		ldi r25,hi8(myip_eep)
+ 1035 0542 0E94 0000 		call __eerd_dword_m128
+ 1036 0546 6093 0000 		sts IpMyConfig,r22
+ 1037 054a 7093 0000 		sts (IpMyConfig)+1,r23
+ 1038 054e 8093 0000 		sts (IpMyConfig)+2,r24
+ 1039 0552 9093 0000 		sts (IpMyConfig)+3,r25
+  27:Lib/net/ip.c  ****   IpMyConfig.netmask = eeprom_read_dword(&mask_eep);
+ 1041               	.LM85:
+ 1042 0556 80E0      		ldi r24,lo8(mask_eep)
+ 1043 0558 90E0      		ldi r25,hi8(mask_eep)
+ 1044 055a 0E94 0000 		call __eerd_dword_m128
+ 1045 055e 6093 0000 		sts IpMyConfig+4,r22
+ 1046 0562 7093 0000 		sts (IpMyConfig+4)+1,r23
+ 1047 0566 8093 0000 		sts (IpMyConfig+4)+2,r24
+ 1048 056a 9093 0000 		sts (IpMyConfig+4)+3,r25
+  28:Lib/net/ip.c  ****   IpMyConfig.gateway = eeprom_read_dword(&defGw_eep);
+ 1050               	.LM86:
+ 1051 056e 80E0      		ldi r24,lo8(defGw_eep)
+ 1052 0570 90E0      		ldi r25,hi8(defGw_eep)
+ 1053 0572 0E94 0000 		call __eerd_dword_m128
+ 1054 0576 6093 0000 		sts IpMyConfig+8,r22
+ 1055 057a 7093 0000 		sts (IpMyConfig+8)+1,r23
+ 1056 057e 8093 0000 		sts (IpMyConfig+8)+2,r24
+ 1057 0582 9093 0000 		sts (IpMyConfig+8)+3,r25
+  30:Lib/net/ip.c  ****   IpMyConfig.dbgLevel = 0;
+ 1059               	.LM87:
+ 1060 0586 1092 0000 		sts IpMyConfig+14,__zero_reg__
+  31:Lib/net/ip.c  ****   IpMyConfig.dbgStream = NULL;
+ 1062               	.LM88:
+ 1063 058a 1092 0000 		sts (IpMyConfig+12)+1,__zero_reg__
+ 1064 058e 1092 0000 		sts IpMyConfig+12,__zero_reg__
+ 1065               	/* epilogue start */
+  33:Lib/net/ip.c  **** }
+ 1067               	.LM89:
+ 1068 0592 0895      		ret
+ 1070               	.Lscope11:
+ 1072               		.stabd	78,0,0
+ 1073               		.section	.progmem.data,"a",@progbits
+ 1076               	__c.2358:
+ 1077 0000 0D0A 00   		.string	"\r\n"
+ 1080               	__c.2356:
+ 1081 0003 4761 7465 		.string	"Gateway : "
+ 1081      7761 7920 
+ 1081      3A20 00
+ 1084               	__c.2354:
+ 1085 000e 0D0A 00   		.string	"\r\n"
+ 1088               	__c.2352:
+ 1089 0011 4E65 746D 		.string	"Netmask : "
+ 1089      6173 6B20 
+ 1089      3A20 00
+ 1092               	__c.2350:
+ 1093 001c 0D0A 00   		.string	"\r\n"
+ 1096               	__c.2348:
+ 1097 001f 4950 2041 		.string	"IP Addr : "
+ 1097      6464 7220 
+ 1097      3A20 00
+ 1100               	__c.2331:
+ 1101 002a 6465 6275 		.string	"debugPrintHexTable(len-ETH_HEADER_LEN, &data[ETH_HEADER_LEN]);"
+ 1101      6750 7269 
+ 1101      6E74 4865 
+ 1101      7854 6162 
+ 1101      6C65 286C 
+ 1104               	__c.2329:
+ 1105 0069 6465 6275 		.string	"debugPrintHexTable(ETH_HEADER_LEN, &data[0]);"
+ 1105      6750 7269 
+ 1105      6E74 4865 
+ 1105      7854 6162 
+ 1105      6C65 2845 
+ 1108               	__c.2327:
+ 1109 0097 5365 6E64 		.string	"Sending IP packet to gateway\r\n"
+ 1109      696E 6720 
+ 1109      4950 2070 
+ 1109      6163 6B65 
+ 1109      7420 746F 
+ 1112               	__c.2325:
+ 1113 00b6 5365 6E64 		.string	"Sending IP packet on local net\r\n"
+ 1113      696E 6720 
+ 1113      4950 2070 
+ 1113      6163 6B65 
+ 1113      7420 6F6E 
+ 1116               	__c.2283:
+ 1117 00d7 4E45 5420 		.string	"NET Rx: Unknown IP packet\r\n"
+ 1117      5278 3A20 
+ 1117      556E 6B6E 
+ 1117      6F77 6E20 
+ 1117      4950 2070 
+ 1120               	__c.2281:
+ 1121 00f3 4E45 5420 		.string	"NET Rx: TCP/IP packet\r\n"
+ 1121      5278 3A20 
+ 1121      5443 502F 
+ 1121      4950 2070 
+ 1121      6163 6B65 
+ 1124               	__c.2279:
+ 1125 010b 4E45 5420 		.string	"NET Rx: UDP/IP packet\r\n"
+ 1125      5278 3A20 
+ 1125      5544 502F 
+ 1125      4950 2070 
+ 1125      6163 6B65 
+ 1128               	__c.2277:
+ 1129 0123 4E45 5420 		.string	"NET Rx: ICMP/IP packet\r\n"
+ 1129      5278 3A20 
+ 1129      4943 4D50 
+ 1129      2F49 5020 
+ 1129      7061 636B 
+ 1130               		.section	.eeprom,"aw",@progbits
+ 1133               	myip_eep:
+ 1134 0000 C0        		.byte	-64
+ 1135 0001 A8        		.byte	-88
+ 1136 0002 00        		.byte	0
+ 1137 0003 02        		.byte	2
+ 1140               	mask_eep:
+ 1141 0004 FF        		.byte	-1
+ 1142 0005 FF        		.byte	-1
+ 1143 0006 FF        		.byte	-1
+ 1144 0007 00        		.byte	0
+ 1147               	defGw_eep:
+ 1148 0008 C0        		.byte	-64
+ 1149 0009 A8        		.byte	-88
+ 1150 000a 00        		.byte	0
+ 1151 000b 01        		.byte	1
+ 1152               		.comm wwwport,1,1
+ 1153               		.comm nicState,14,1
+ 1154               		.comm IpMyConfig,15,1
+ 1155               		.comm arpDebug,2,1
+ 1156               		.comm arpDebugLevel,1,1
+ 1157               		.comm icmpDebug,2,1
+ 1158               		.comm icmpDebugLevel,1,1
+ 1159               		.comm udpSocket,2,1
+ 1160               		.comm udpDbgStream,2,1
+ 1161               		.comm udpDbgLevel,1,1
+ 1162               		.comm tcpDebugStream,2,1
+ 1163               		.comm tcpDebugLevel,1,1
+ 1164               		.comm sockets,2,1
+ 1195               		.weak	nicSend
+ 1196               		.text
+ 1198               	.Letext0:
+ 1199               	.global __do_copy_data
+ 1200               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 ip.c
+     /tmp/ccOdDffb.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccOdDffb.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccOdDffb.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccOdDffb.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccOdDffb.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccOdDffb.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccOdDffb.s:165    .text:00000000 setIpDebug
+                            *COM*:0000000f IpMyConfig
+     /tmp/ccOdDffb.s:199    .text:0000001a ipSetConfig
+     /tmp/ccOdDffb.s:244    .text:0000005c ipSetConfigIp
+     /tmp/ccOdDffb.s:269    .text:0000006e ipSetConfigMask
+     /tmp/ccOdDffb.s:294    .text:00000080 ipSetConfigGw
+     /tmp/ccOdDffb.s:318    .text:00000092 ipGetConfig
+     /tmp/ccOdDffb.s:340    .text:00000098 ipPrintConfig
+     /tmp/ccOdDffb.s:1096   .progmem.data:0000001f __c.2348
+     /tmp/ccOdDffb.s:1092   .progmem.data:0000001c __c.2350
+     /tmp/ccOdDffb.s:1088   .progmem.data:00000011 __c.2352
+     /tmp/ccOdDffb.s:1084   .progmem.data:0000000e __c.2354
+     /tmp/ccOdDffb.s:1080   .progmem.data:00000003 __c.2356
+     /tmp/ccOdDffb.s:1076   .progmem.data:00000000 __c.2358
+     /tmp/ccOdDffb.s:480    .text:00000186 ipSend
+                            *COM*:0000000e nicState
+     /tmp/ccOdDffb.s:1112   .progmem.data:000000b6 __c.2325
+     /tmp/ccOdDffb.s:1108   .progmem.data:00000097 __c.2327
+     /tmp/ccOdDffb.s:1104   .progmem.data:00000069 __c.2329
+     /tmp/ccOdDffb.s:1100   .progmem.data:0000002a __c.2331
+     /tmp/ccOdDffb.s:749    .text:00000366 netstackIPv4Process
+     /tmp/ccOdDffb.s:1128   .progmem.data:00000123 __c.2277
+     /tmp/ccOdDffb.s:1124   .progmem.data:0000010b __c.2279
+     /tmp/ccOdDffb.s:1120   .progmem.data:000000f3 __c.2281
+     /tmp/ccOdDffb.s:1116   .progmem.data:000000d7 __c.2283
+     /tmp/ccOdDffb.s:979    .text:000004f4 ipSaveConfig
+     /tmp/ccOdDffb.s:1133   .eeprom:00000000 myip_eep
+     /tmp/ccOdDffb.s:1140   .eeprom:00000004 mask_eep
+     /tmp/ccOdDffb.s:1147   .eeprom:00000008 defGw_eep
+     /tmp/ccOdDffb.s:1024   .text:0000053e ipInit
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+
+UNDEFINED SYMBOLS
+fprintf_P
+netPrintIPAddr
+htons
+netChecksum
+arpIpOut
+nicSend
+icmpPrintHeader
+icmpIpIn
+netstackUDPIPProcess
+netstackTCPIPProcess
+__eeupd_dword_m128
+__eerd_dword_m128
+__do_copy_data
+__do_clear_bss

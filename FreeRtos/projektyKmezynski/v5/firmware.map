@@ -1,0 +1,2611 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+                              vty.o (__udivmodqi4)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+                              sensors_task.o (__udivmodhi4)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o (exit)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+                              main.o (__do_clear_bss)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                              Lib/memory_x.o (malloc)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                              Lib/cmdline.o (strtol)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o) (isspace)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                              Lib/cmdline.o (memcpy_P)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                              vty.o (strncmp_P)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                              Lib/ramdysk.o (memcpy)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                              Lib/cmdline.o (memset)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                              Source/tasks.o (strcat)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                              Lib/cmdline.o (strcpy)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                              Lib/ramdysk.o (strncmp)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                              Lib/ramdysk.o (strncpy)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                              Lib/ramdysk.o (fclose)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                              cli_task.o (fgetc)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                              Lib/ramdysk.o (fprintf)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                              hardware.o (fprintf_P)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                              vty.o (fputc)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                              Lib/ramdysk.o (fputs)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o) (__iob)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                              Source/tasks.o (sprintf)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                              (vfprintf)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                              configuration.o (__eerd_block_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                              Lib/net/ip.o (__eerd_dword_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                              Lib/net/udp.o (__eerd_word_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                              Lib/net/nic.o (__eeupd_block_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o) (__eeupd_r18_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                              Lib/net/ip.o (__eeupd_dword_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                              Lib/net/udp.o (__eeupd_word_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o) (errno)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o) (__ctype_isfalse)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o) (strnlen_P)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o) (strnlen)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o) (__ultoa_invert)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o) (__mulsi3)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o) (__udivmodsi4)
+
+Allocating common symbols
+Common symbol       size              file
+
+usbStream           0xe               main.o
+portB               0x1               main.o
+wwwport             0x1               main.o
+fdVty               0x6               vty.o
+xVtyTx              0x2               main.o
+udpDbgLevel         0x1               main.o
+ArpTable            0x6e              Lib/net/arp.o
+nicState            0xe               main.o
+errno               0x2               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+arpDebug            0x2               main.o
+udpStream           0xe               main.o
+xRs485Rec           0x2               main.o
+CLIStateSerialUsb   0x2               main.o
+lockSensors         0x2               main.o
+udpSocket           0x2               main.o
+temperature         0x1               main.o
+tcpDebugLevel       0x1               main.o
+__brkval            0x2               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+xHandleSensors      0x2               main.o
+rollers             0x2               main.o
+xSpiRx              0x2               hardware.o
+icmpDebug           0x2               main.o
+voltage             0x1               main.o
+xVtyRec             0x2               main.o
+xSemaphoreRs485     0x2               main.o
+xHandleVTY_UDP      0x2               main.o
+czasRtc             0x7               main.o
+xHandleVTY_USB      0x2               main.o
+sockets             0x2               main.o
+xSemaphoreSpiSS     0x2               main.o
+udpDbgStream        0x2               main.o
+portA               0x1               main.o
+xRs485Tx            0x2               main.o
+udpBuffers          0x4               main.o
+xHandleBlinkLed     0x2               main.o
+klastry             0x80              main.o
+xHandleEnc          0x2               main.o
+icmpDebugLevel      0x1               main.o
+tcpDebugStream      0x2               main.o
+IpMyConfig          0xf               main.o
+__flp               0x2               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__iob               0x6               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+arpDebugLevel       0x1               main.o
+CLIStateSerialUdp   0x2               main.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00020000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+fuse             0x00820000         0x00000400         rw !x
+lock             0x00830000         0x00000400         rw !x
+signature        0x00840000         0x00000400         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+Address of section .data set to 0x800100
+LOAD /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+LOAD main.o
+LOAD configuration.o
+LOAD serial.o
+LOAD hardware.o
+LOAD sensors_task.o
+LOAD vty.o
+LOAD netstack_task.o
+LOAD cli_task.o
+LOAD Lib/spi.o
+LOAD Lib/memory_x.o
+LOAD Lib/ramdysk.o
+LOAD Lib/cmdline.o
+LOAD Lib/xmodem.o
+LOAD Lib/vt100.o
+LOAD Lib/ds1305.o
+LOAD Lib/mpc23s17.o
+LOAD Lib/mcp3008.o
+LOAD Lib/mcp4150.o
+LOAD Lib/enc28j60.o
+LOAD Lib/queueStream.o
+LOAD Lib/net/nic.o
+LOAD Lib/net/net.o
+LOAD Lib/net/ip.o
+LOAD Lib/net/icmp.o
+LOAD Lib/net/arp.o
+LOAD Lib/net/tcp.o
+LOAD Lib/net/udp.o
+LOAD Lib/Rs485_prot.o
+LOAD Source/tasks.o
+LOAD Source/queue.o
+LOAD Source/list.o
+LOAD Source/croutine.o
+LOAD portable/MemMang/heap_avr.o
+LOAD portable/GCC/ATMega64/port.o
+                0x00801100                __heap_start = 0x801100
+                0x008027ff                __heap_end = 0x8027ff
+LOAD /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libm.a
+LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
+LOAD /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a
+LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000     0xbb48
+ *(.vectors)
+ .vectors       0x00000000       0x8c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x00000000                __vectors
+                0x00000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ *(.progmem*)
+ .progmem.data  0x0000008c       0x3c hardware.o
+                0x0000008c                statusLockerSensDescStr
+                0x00000097                statusLockerOpenStr
+                0x000000a0                statusLockerCloseStr
+                0x000000a9                statusLockerSensAdditionalDescStr
+ .progmem.data  0x000000c8      0xa5e vty.o
+                0x000000c8                errorOK
+                0x000000d1                errorNoFile
+                0x000000db                errorxModemFrameStartTimeout
+                0x000000de                errorxModemByteSendTimeout
+                0x000000e1                errorxModemWrongFrameNo
+                0x000000e4                errorxModemFrameFrameNoCorrectionNotMatch
+                0x000000e7                errorxModemFrameCrc
+                0x000000fa                errorxModemRemoteSideCan
+                0x00000121                errorxModemUnknownResponse
+                0x00000140                errorNoRemoteDevice
+                0x00000163                errorBootloaderNotResponding
+                0x00000182                errorOpenFile
+                0x00000197                systemStateStr
+                0x000001a7                statusNumberOfTasksStr
+                0x000001c0                statusStaticHeapStateStr
+                0x000001ea                statusDynamicHeapStateStr
+                0x00000214                statusRamDiskStateStr
+                0x00000241                statusTemperatureStr
+                0x0000025c                statusVoltageStr
+                0x00000277                systemRamConfigStr
+                0x0000028a                statusMacStr
+                0x0000029f                statusIpStr
+                0x000002b4                statusIpMaskStr
+                0x000002c9                statusIpGwStr
+                0x000002de                statusRs485listStr
+                0x000002f9                statusNoRs485Dev
+                0x00000313                statusLockerSensorsStr
+                0x0000032c                statusLockerSensorsDisStr
+                0x00000348                editRamFileIntroStr
+                0x00000370                readRamFIleLenStr
+                0x00000382                xwyslijStartStr
+                0x0000039f                movingCurtainUpStr
+                0x000003d2                movingCurtainDownStr
+                0x00000405                movingCurtainPosStr
+                0x00000415                debugEnabledInfoStr
+                0x00000428                debugDisabledInfoStr
+                0x0000043c                cmd_help
+                0x00000441                cmd_help_help
+                0x00000453                cmd_status
+                0x0000045a                cmd_help_status
+                0x00000491                cmd_enc_stat
+                0x00000499                cmd_help_enc_stat
+                0x000004b3                cmd_time
+                0x000004b8                cmd_help_time
+                0x000004c3                cmd_net_dbg
+                0x000004c9                cmd_help_net_dbg
+                0x00000512                cmd_rping
+                0x00000518                cmd_help_rping
+                0x0000053e                cmd_ping
+                0x00000543                cmd_help_ping
+                0x00000574                cmd_xRec
+                0x00000579                cmd_help_xRec
+                0x0000059f                cmd_xSend
+                0x000005a5                cmd_help_xSend
+                0x000005c8                cmd_xflash
+                0x000005cf                cmd_help_xflash
+                0x00000607                cmd_dir_rf
+                0x0000060d                cmd_help_dir_rf
+                0x00000621                cmd_create_rf
+                0x00000625                cmd_help_create_rf
+                0x00000641                cmd_erase_rf
+                0x00000649                cmd_help_erase_rf
+                0x0000066e                cmd_edit_rf
+                0x00000675                cmd_help_edit_rf
+                0x0000069f                cmd_read_rf
+                0x000006a6                cmd_help_read_rf
+                0x000006d0                cmd_up
+                0x000006d3                cmd_help_up
+                0x000006f9                cmd_down
+                0x000006fe                cmd_help_down
+                0x00000726                cmd_spa
+                0x0000072a                cmd_help_spa
+                0x0000073d                cmd_spb
+                0x00000741                cmd_help_spb
+                0x00000754                cmd_settime
+                0x0000075c                cmd_help_settime
+                0x0000077e                cmd_ac
+                0x00000781                cmd_help_ac
+                0x000007a1                cmd_enable
+                0x000007a8                cmd_help_enable
+                0x000007b4                cmd_disable
+                0x000007bc                cmd_help_disable
+                0x000007c6                cmd_configure
+                0x000007cd                cmd_help_configure
+                0x000007dc                cmd_conf_ip
+                0x000007df                cmd_help_conf_ip
+                0x00000802                cmd_conf_udp
+                0x00000806                cmd_help_conf_udp
+                0x00000854                cmd_conf_ip_mask
+                0x00000859                cmd_conf_ip_mask_help
+                0x00000869                cmd_conf_ip_gw
+                0x0000086c                cmd_conf_ip_gw_help
+                0x00000894                cmd_conf_mac
+                0x00000898                cmd_help_conf_mac
+                0x000008c6                cmd_conf_save
+                0x000008cb                cmd_help_conf_save
+                0x000008de                cmd_ustawR
+                0x000008e3                cmd_help_ustawR
+                0x00000900                okStr
+                0x00000905                nlStr
+                0x00000908                BladBuforaPozostaloBajtowStr
+                0x00000932                errorStrings
+                0x0000094a                cmdListNormal
+                0x00000980                cmdListEnable
+                0x00000a16                cmdListConfigure
+ .progmem.data  0x00000b26       0x11 netstack_task.o
+ .progmem.data  0x00000b37        0xa cli_task.o
+ .progmem.data  0x00000b41       0x72 Lib/cmdline.o
+                0x00000b41                CmdlinePromptNormal
+                0x00000b48                CmdlinePromptEnable
+                0x00000b4f                CmdlinePromptConfigure
+                0x00000b56                CmdlineNotice
+                0x00000b60                CmdlineCmdNotFound
+ .progmem.data  0x00000bb3       0x75 Lib/enc28j60.o
+ .progmem.data  0x00000c28       0x1f Lib/net/nic.o
+ .progmem.data  0x00000c47      0x14a Lib/net/net.o
+ .progmem.data  0x00000d91      0x13c Lib/net/ip.o
+ .progmem.data  0x00000ecd       0xb7 Lib/net/icmp.o
+ .progmem.data  0x00000f84      0x125 Lib/net/arp.o
+ .progmem.data  0x000010a9      0x175 Lib/net/tcp.o
+ .progmem.data  0x0000121e       0xcb Lib/net/udp.o
+ .progmem.data  0x000012e9       0xbd Lib/Rs485_prot.o
+                0x000012e9                statusRollerDescStr
+                0x00001327                statusRollerDescStr2
+                0x000013a6                . = ALIGN (0x2)
+                0x000013a6                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x000013a6        0x0 linker stubs
+ *(.trampolines*)
+                0x000013a6                __trampolines_end = .
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x000013a6                __ctors_start = .
+ *(.ctors)
+                0x000013a6                __ctors_end = .
+                0x000013a6                __dtors_start = .
+ *(.dtors)
+                0x000013a6                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x000013a6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x000013a6                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x000013a6        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x000013b2       0x1a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x000013b2                __do_copy_data
+ .init4         0x000013cc        0xc main.o
+                0x000013cc                initExternalMem
+ .init4         0x000013d8       0x10 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+                0x000013d8                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x000013e8        0x8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ *(.init9)
+ *(.text)
+ .text          0x000013f0        0x4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x000013f0                __vector_22
+                0x000013f0                __vector_28
+                0x000013f0                __vector_1
+                0x000013f0                __vector_32
+                0x000013f0                __vector_34
+                0x000013f0                __vector_24
+                0x000013f0                __bad_interrupt
+                0x000013f0                __vector_6
+                0x000013f0                __vector_3
+                0x000013f0                __vector_23
+                0x000013f0                __vector_25
+                0x000013f0                __vector_11
+                0x000013f0                __vector_13
+                0x000013f0                __vector_7
+                0x000013f0                __vector_27
+                0x000013f0                __vector_5
+                0x000013f0                __vector_33
+                0x000013f0                __vector_4
+                0x000013f0                __vector_9
+                0x000013f0                __vector_2
+                0x000013f0                __vector_21
+                0x000013f0                __vector_15
+                0x000013f0                __vector_29
+                0x000013f0                __vector_8
+                0x000013f0                __vector_26
+                0x000013f0                __vector_14
+                0x000013f0                __vector_10
+                0x000013f0                __vector_16
+ .text          0x000013f4      0x18c main.o
+                0x000013f4                vApplicationTickHook
+                0x0000140e                vApplicationIdleHook
+                0x00001414                vBlinkLed
+                0x0000144c                main
+ .text          0x00001580       0x24 configuration.o
+                0x00001580                saveConfiguration
+                0x0000158e                loadConfiguration
+ .text          0x000015a4      0x43a serial.o
+                0x000015a4                initQueueStreamUSB
+                0x000015c0                __vector_20
+                0x000015e6                InterruptVtyOn
+                0x000015f2                __vector_31
+                0x0000167a                __vector_19
+                0x00001702                uartVtySendByte
+                0x00001738                VtyPutChar
+                0x00001742                releaseRs485
+                0x0000175a                uartRs485SendByte
+                0x00001788                __vector_30
+                0x00001812                __vector_18
+                0x0000189a                takeRs485
+                0x000018b2                flushRs485RecBuffer
+                0x000018f8                rs485Receive
+                0x00001910                VtyGetChar
+                0x0000194c                xSerialPortInitMinimal
+ .text          0x000019de      0x46c hardware.o
+                0x000019de                spiSendSpinBlock
+                0x000019ee                disableAllSpiDevices
+                0x00001a04                spiEnableEnc28j60
+                0x00001a08                spiDisableEnc28j60
+                0x00001a0c                enableSpiSd
+                0x00001a18                disableSpiSd
+                0x00001a24                enableSpiMPC23S17
+                0x00001a28                disableSpiMPC23S17
+                0x00001a2c                enableSpiMCP3008
+                0x00001a36                disableSpiMCP3008
+                0x00001a40                enableSpiMCP4150
+                0x00001a4a                disableSpiMCP4150
+                0x00001a54                spiEnableDS1305
+                0x00001a5e                spiDisableDS1305
+                0x00001a68                __vector_17
+                0x00001adc                spiSend
+                0x00001b0a                checkLockerSensors
+                0x00001c9e                printLockers
+                0x00001dfe                LockersMemInit
+                0x00001e10                hardwareInit
+ .text          0x00001e4a       0x82 sensors_task.o
+                0x00001e4a                sensorsTask
+                0x00001ec2                sensorsTaskInit
+ .text          0x00001ecc     0x178a vty.o
+                0x000022f0                printErrorInfo
+                0x000031b6                printStatus
+                0x00003634                VtyInit
+ .text          0x00003656       0xa6 netstack_task.o
+                0x00003656                encTask
+ .text          0x000036fc       0x9e cli_task.o
+                0x000036fc                vTaskVTYsocket
+                0x00003718                vTaskVTYusb
+ .text          0x0000379a       0x80 Lib/spi.o
+                0x0000379a                spiSetCPHA
+                0x0000379e                spiClearCPHA
+                0x000037a2                spiSetCPOL
+                0x000037a6                spiClearCPOL
+                0x000037b2                spiGive
+                0x000037ca                spiTake
+                0x000037e2                spiInit
+ .text          0x0000381a       0x38 Lib/memory_x.o
+                0x0000381a                xmallocAvailable
+                0x00003836                xmalloc
+ .text          0x00003852      0xab2 Lib/ramdysk.o
+                0x00003852                ramDyskLiczbaWolnychKlastrow
+                0x0000386e                ramDyskDir
+                0x00003a46                ramDyskDodajBlokXmodem
+                0x00003b12                ramDyskUstawWskaznikNaKoniec
+                0x00003b54                ramDyskUstawWskaznik
+                0x00003c06                ramDyskCzytajBajtZPliku
+                0x00003caa                ramDyskZapiszBajtDoPliku
+                0x00003d60                ramDyskCzyscPlik
+                0x00003dc0                ramDyskZamknijPlik
+                0x00003de0                ramDyskZamknijPlikStdIo
+                0x00003e16                ramDyskInit
+                0x00003e3a                ramDyskCzytajBlokZPliku
+                0x00003f7a                ramDyskZapiszBlokDoPliku
+                0x0000416e                ramDyskUsunPlik
+                0x000041be                ramDyskOtworzPlik
+                0x000041ee                ramDyskOtworzPlikStdIo
+                0x0000422c                ramDyskUtworzPlik
+ .text          0x00004304      0xab6 Lib/cmdline.o
+                0x00004304                cmdLineGetLastArgIdx
+                0x0000432e                cmdlineGetArgStr
+                0x0000437c                cmdPrintHelp
+                0x00004482                cmdlineGetArgHex
+                0x000044a8                cmdlineGetArgInt
+                0x0000451e                cmdlineMainLoop
+                0x00004796                cmdStateConfigure
+                0x00004870                cmdlineInputFunc
+ .text          0x00004dba        0x0 Lib/xmodem.o
+ .text          0x00004dba      0x128 Lib/vt100.o
+                0x00004dba                vt100SetCursorPos
+                0x00004e10                vt100SetCursorMode
+                0x00004e4e                vt100SetAttr
+                0x00004e92                vt100ClearScreen
+                0x00004eba                vt100Init
+ .text          0x00004ee2      0x172 Lib/ds1305.o
+                0x00004ee6                ds1305readMem
+                0x00004f40                ds1305writeMem
+                0x00004f98                ds1305start
+                0x00004fb6                setTimeBCD
+                0x00004ff8                setTime
+                0x00004ffe                setTimeDecoded
+                0x00005004                readTimeBCD
+                0x00005048                readTime
+                0x0000504e                readTimeDecoded
+ .text          0x00005054      0x23e Lib/mpc23s17.o
+                0x00005058                MPC23s17ReadPortB
+                0x0000508c                MPC23s17ReadPortA
+                0x000050c0                MPC23s17ClearBitsOnPortB
+                0x000050fe                MPC23s17SetBitsOnPortB
+                0x0000513a                MPC23s17SetPortB
+                0x00005170                MPC23s17ClearBitsOnPortA
+                0x000051ae                MPC23s17SetBitsOnPortA
+                0x000051ea                MPC23s17SetPortA
+                0x00005226                MPC23s17SetDirB
+                0x0000525c                MPC23s17SetDirA
+ .text          0x00005292       0x98 Lib/mcp3008.o
+                0x00005296                MCP3008_getSampleSingle
+                0x000052e0                MCP3008_getSampleDiff
+ .text          0x0000532a       0x28 Lib/mcp4150.o
+                0x0000532e                MCP4150_setValue
+ .text          0x00005352      0x6f0 Lib/enc28j60.o
+                0x000053ee                nicSetMacAddress
+                0x00005488                nicRegDump
+                0x00005630                nicGetMacAddress
+                0x00005678                enc28j60hasRxPkt
+                0x00005684                enc28j60getrev
+                0x0000568c                nicPoll
+                0x000057fa                nicSend
+                0x000058aa                enc28j60linkup
+                0x0000591c                nicMacInit
+ .text          0x00005a42       0x9a Lib/queueStream.o
+                0x00005a42                initQueueStream
+ .text          0x00005adc       0xb0 Lib/net/nic.o
+                0x00005b2a                nicInit
+                0x00005b7a                saveNic
+ .text          0x00005b8c      0x7de Lib/net/net.o
+                0x00005b8c                htons
+                0x00005b94                htonl
+                0x00005bce                netChecksum
+                0x00005c3c                netPrintTcpHeader
+                0x00005ebe                netPrintIPAddr
+                0x00005f4c                netPrintIpHeader
+                0x00006182                netPrintEthAddr
+                0x00006202                netPrintEthHeader
+ .text          0x0000636a      0x594 Lib/net/ip.o
+                0x0000636a                setIpDebug
+                0x00006384                ipSetConfig
+                0x000063c6                ipSetConfigIp
+                0x000063d8                ipSetConfigMask
+                0x000063ea                ipSetConfigGw
+                0x000063fc                ipGetConfig
+                0x00006402                ipPrintConfig
+                0x000064f0                ipSend
+                0x000066d0                netstackIPv4Process
+                0x0000685e                ipSaveConfig
+                0x000068a8                ipInit
+ .text          0x000068fe      0x324 Lib/net/icmp.o
+                0x000068fe                icmpInit
+                0x0000690c                setIcmpDebug
+                0x0000691a                icmpPrintHeader
+                0x00006abc                icmpEchoRequest
+                0x00006bd6                icmpIpIn
+ .text          0x00006c22      0x8a2 Lib/net/arp.o
+                0x00006c22                setArpDebug
+                0x00006c3c                arpTimer
+                0x00006c56                arpMatchIp
+                0x00006c8a                arpPrintTable
+                0x00006e7e                arpIpIn
+                0x0000703e                arpPrintHeader
+                0x00007218                arpIpOut
+                0x00007314                arpInit
+                0x0000732c                arpArpIn
+ .text          0x000074c4      0x588 Lib/net/tcp.o
+                0x000074c4                sendTcBuffer
+                0x000074c8                setTcpDebug
+                0x000074d6                flushTcpQueues
+                0x000074d8                httpProcess
+                0x000074da                calculateTcpChecksun
+                0x00007500                processTcpPacket
+                0x00007954                netstackTCPIPProcess
+                0x000079aa                socketInit
+ .text          0x00007a4c      0x514 Lib/net/udp.o
+                0x00007a4c                setUdpDebug
+                0x00007a5a                udpPrintStatus
+                0x00007b76                udpSaveConfig
+                0x00007bb8                netstackUDPIPProcess
+                0x00007dba                udpSend
+                0x00007e80                flushUdpQueues
+                0x00007ede                udpInit
+ .text          0x00007f60     0x11f6 Lib/Rs485_prot.o
+                0x00007f6e                rs485curtainUp
+                0x000080f6                rs485curtainDown
+                0x0000827e                printRs485devices
+                0x00008360                rs485xModemFlash
+                0x00008a08                rs485ping
+                0x00008d8c                rs485rollerHello
+                0x00009138                rollersMemInit
+ .text          0x00009156      0xde6 Source/tasks.o
+                0x00009156                uxTaskPriorityGet
+                0x00009174                xTaskIsTaskSuspended
+                0x0000919c                vTaskSuspendAll
+                0x000091a8                xTaskGetTickCount
+                0x000091be                uxTaskGetNumberOfTasks
+                0x000091c4                vTaskStartTrace
+                0x000091f6                ulTaskEndTrace
+                0x00009226                vTaskSwitchContext
+                0x0000934a                vTaskSetTimeOutState
+                0x00009360                xTaskCheckForTimeOut
+                0x000093dc                vTaskMissedYield
+                0x000093e4                xTaskRemoveFromEventList
+                0x0000946a                xTaskResumeFromISR
+                0x00009506                vTaskPlaceOnEventList
+                0x00009596                vTaskIncrementTick
+                0x000097e6                xTaskResumeAll
+                0x000098e0                vTaskList
+                0x0000998c                vTaskResume
+                0x00009a1e                vTaskSuspend
+                0x00009a9c                vTaskPrioritySet
+                0x00009b76                vTaskDelay
+                0x00009bf2                vTaskDelayUntil
+                0x00009ca0                vTaskEndScheduler
+                0x00009cac                xTaskGenericCreate
+                0x00009ee6                vTaskStartScheduler
+ .text          0x00009f3c      0x672 Source/queue.o
+                0x00009f3c                uxQueueMessagesWaiting
+                0x00009f4c                uxQueueMessagesWaitingFromISR
+                0x00009f52                xQueueIsQueueEmptyFromISR
+                0x00009f62                xQueueIsQueueFullFromISR
+                0x00009f74                vQueueDelete
+                0x00009f90                xQueueReceiveFromISR
+                0x0000a090                xQueueGenericSendFromISR
+                0x0000a160                xQueueGenericReceive
+                0x0000a2f8                xQueueGenericSend
+                0x0000a440                xQueueCreateExternal
+                0x0000a4e8                xQueueCreate
+ .text          0x0000a5ae      0x134 Source/list.o
+                0x0000a5ae                vListInitialise
+                0x0000a5ce                vListInitialiseItem
+                0x0000a5d6                vListInsertEnd
+                0x0000a628                vListInsert
+                0x0000a692                vListRemove
+ .text          0x0000a6e2      0x378 Source/croutine.o
+                0x0000a6e2                xCoRoutineRemoveFromEventList
+                0x0000a738                vCoRoutineSchedule
+                0x0000a908                vCoRoutineAddToDelayedList
+                0x0000a982                xCoRoutineCreate
+ .text          0x0000aa5a       0x6e portable/MemMang/heap_avr.o
+                0x0000aa5a                vPortFree
+                0x0000aa5c                vPortInitialiseBlocks
+                0x0000aa66                xPortGetFreeHeapSize
+                0x0000aa7a                pvPortMalloc
+ .text          0x0000aac8      0x2b6 portable/GCC/ATMega64/port.o
+                0x0000aac8                pxPortInitialiseStack
+                0x0000ab58                xPortStartScheduler
+                0x0000abc4                vPortEndScheduler
+                0x0000abc6                __vector_12
+                0x0000ac16                vPortYieldFromTick
+                0x0000accc                vPortYield
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+ .text          0x0000ad7e        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                0x0000ad7e                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x0000ad7e       0x18 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+                0x0000ad7e                __udivmodqi4
+ .text.libgcc   0x0000ad96       0x28 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+                0x0000ad96                __udivmodhi4
+ .text.libgcc   0x0000adbe        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .text.libgcc   0x0000adbe        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .text.avr-libc
+                0x0000adbe      0x20a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                0x0000adbe                malloc
+                0x0000af18                free
+ .text.avr-libc
+                0x0000afc8      0x25e /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                0x0000afc8                strtol
+ .text.avr-libc
+                0x0000b226       0x10 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                0x0000b226                isspace
+ .text.avr-libc
+                0x0000b236       0x12 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                0x0000b236                memcpy_P
+ .text.avr-libc
+                0x0000b248       0x1c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                0x0000b248                strncmp_P
+ .text.avr-libc
+                0x0000b264       0x12 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                0x0000b264                memcpy
+ .text.avr-libc
+                0x0000b276        0xe /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                0x0000b276                memset
+ .text.avr-libc
+                0x0000b284       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                0x0000b284                strcat
+ .text.avr-libc
+                0x0000b29a        0xe /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                0x0000b29a                strcpy
+ .text.avr-libc
+                0x0000b2a8       0x1c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                0x0000b2a8                strncmp
+ .text.avr-libc
+                0x0000b2c4       0x1e /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                0x0000b2c4                strncpy
+ .text.avr-libc
+                0x0000b2e2       0x56 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                0x0000b2e2                fclose
+ .text.avr-libc
+                0x0000b338       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                0x0000b338                fgetc
+ .text.avr-libc
+                0x0000b3bc       0x22 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                0x0000b3bc                fprintf
+ .text.avr-libc
+                0x0000b3de       0x3c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                0x0000b3de                fprintf_P
+ .text.avr-libc
+                0x0000b41a       0x58 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                0x0000b41a                fputc
+ .text.avr-libc
+                0x0000b472       0x56 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                0x0000b472                fputs
+ .text.avr-libc
+                0x0000b4c8       0x62 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                0x0000b4c8                sprintf
+ .text.avr-libc
+                0x0000b52a      0x40c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                0x0000b52a                vfprintf
+ .text.avr-libc
+                0x0000b936       0x20 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                0x0000b936                __eerd_block_m128
+                0x0000b93a                __eerd_blraw_m128
+ .text.avr-libc
+                0x0000b956        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                0x0000b956                __eerd_dword_m128
+                0x0000b956                __eerd_float_m128
+ .text.avr-libc
+                0x0000b962        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                0x0000b962                __eerd_word_m128
+ .text.avr-libc
+                0x0000b96e       0x20 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                0x0000b96e                __eeupd_block_m128
+ .text.avr-libc
+                0x0000b98e       0x22 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                0x0000b98e                __eeupd_byte_m128
+                0x0000b990                __eeupd_r18_m128
+ .text.avr-libc
+                0x0000b9b0       0x18 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                0x0000b9b0                __eeupd_dword_m128
+                0x0000b9b0                __eeupd_float_m128
+ .text.avr-libc
+                0x0000b9c8        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                0x0000b9c8                __eeupd_word_m128
+ .text.avr-libc
+                0x0000b9d4        0x6 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                0x0000b9d4                __ctype_isfalse
+                0x0000b9d8                __ctype_istrue
+ .text.avr-libc
+                0x0000b9da       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                0x0000b9da                strnlen_P
+ .text.avr-libc
+                0x0000b9f0       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                0x0000b9f0                strnlen
+ .text.avr-libc
+                0x0000ba06       0xbc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                0x0000ba06                __ultoa_invert
+ .text.libgcc   0x0000bac2       0x3e /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+                0x0000bac2                __mulsi3
+ .text.libgcc   0x0000bb00       0x44 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                0x0000bb00                __udivmodsi4
+                0x0000bb44                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x0000bb44        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+                0x0000bb44                exit
+                0x0000bb44                _exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x0000bb44        0x4 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ *(.fini0)
+                0x0000bb48                _etext = .
+
+.data           0x00800100       0x88 load address 0x0000bb48
+                0x00800100                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x00800100        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .data          0x00800100        0x1 main.o
+ .data          0x00800101        0x0 configuration.o
+ .data          0x00800101        0x1 serial.o
+ .data          0x00800102        0x0 hardware.o
+ .data          0x00800102        0x0 sensors_task.o
+ .data          0x00800102        0x0 vty.o
+ .data          0x00800102        0x0 netstack_task.o
+ .data          0x00800102        0x0 cli_task.o
+ .data          0x00800102        0x0 Lib/spi.o
+ .data          0x00800102        0x2 Lib/memory_x.o
+                0x00800102                heapEnd
+ .data          0x00800104       0x22 Lib/ramdysk.o
+ .data          0x00800126        0x0 Lib/cmdline.o
+ .data          0x00800126        0x0 Lib/xmodem.o
+ .data          0x00800126       0x25 Lib/vt100.o
+ .data          0x0080014b        0x0 Lib/ds1305.o
+ .data          0x0080014b        0x0 Lib/mpc23s17.o
+ .data          0x0080014b        0x0 Lib/mcp3008.o
+ .data          0x0080014b        0x0 Lib/mcp4150.o
+ .data          0x0080014b        0x0 Lib/enc28j60.o
+ .data          0x0080014b        0x0 Lib/queueStream.o
+ .data          0x0080014b        0x0 Lib/net/nic.o
+ .data          0x0080014b        0x0 Lib/net/net.o
+ .data          0x0080014b       0x14 Lib/net/ip.o
+ .data          0x0080015f        0x8 Lib/net/icmp.o
+ .data          0x00800167        0x0 Lib/net/arp.o
+ .data          0x00800167        0x0 Lib/net/tcp.o
+ .data          0x00800167        0x0 Lib/net/udp.o
+ .data          0x00800167        0x0 Lib/Rs485_prot.o
+ .data          0x00800167       0x1b Source/tasks.o
+ .data          0x00800182        0x0 Source/queue.o
+ .data          0x00800182        0x0 Source/list.o
+ .data          0x00800182        0x0 Source/croutine.o
+ .data          0x00800182        0x0 portable/MemMang/heap_avr.o
+ .data          0x00800182        0x0 portable/GCC/ATMega64/port.o
+ .data          0x00800182        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+ .data          0x00800182        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+ .data          0x00800182        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .data          0x00800182        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .data          0x00800182        0x6 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                0x00800182                __malloc_margin
+                0x00800184                __malloc_heap_start
+                0x00800186                __malloc_heap_end
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x00800188                . = ALIGN (0x2)
+                0x00800188                _edata = .
+                0x00800188                PROVIDE (__data_end, .)
+
+.bss            0x00800188      0xe5c
+                0x00800188                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .bss           0x00800188        0x1 main.o
+                0x00800188                timer100Hz
+ .bss           0x00800189        0x0 configuration.o
+ .bss           0x00800189        0x5 serial.o
+ .bss           0x0080018e        0x2 hardware.o
+ .bss           0x00800190        0x0 sensors_task.o
+ .bss           0x00800190        0x0 vty.o
+ .bss           0x00800190        0x0 netstack_task.o
+ .bss           0x00800190        0x0 cli_task.o
+ .bss           0x00800190        0x0 Lib/spi.o
+ .bss           0x00800190        0x0 Lib/memory_x.o
+ .bss           0x00800190        0x0 Lib/ramdysk.o
+ .bss           0x00800190        0x0 Lib/cmdline.o
+ .bss           0x00800190        0x0 Lib/xmodem.o
+ .bss           0x00800190        0x0 Lib/vt100.o
+ .bss           0x00800190        0x0 Lib/ds1305.o
+ .bss           0x00800190        0x0 Lib/mpc23s17.o
+ .bss           0x00800190        0x0 Lib/mcp3008.o
+ .bss           0x00800190        0x0 Lib/mcp4150.o
+ .bss           0x00800190        0x3 Lib/enc28j60.o
+ .bss           0x00800193        0x0 Lib/queueStream.o
+ .bss           0x00800193        0x0 Lib/net/nic.o
+ .bss           0x00800193        0x0 Lib/net/net.o
+ .bss           0x00800193        0x0 Lib/net/ip.o
+ .bss           0x00800193        0x0 Lib/net/icmp.o
+ .bss           0x00800193        0x0 Lib/net/arp.o
+ .bss           0x00800193        0x0 Lib/net/tcp.o
+ .bss           0x00800193        0x0 Lib/net/udp.o
+ .bss           0x00800193        0x0 Lib/Rs485_prot.o
+ .bss           0x00800193       0x89 Source/tasks.o
+                0x00800193                pxCurrentTCB
+ .bss           0x0080021c        0x0 Source/queue.o
+ .bss           0x0080021c        0x0 Source/list.o
+ .bss           0x0080021c       0x31 Source/croutine.o
+                0x0080021c                pxCurrentCoRoutine
+ .bss           0x0080024d      0xc1e portable/MemMang/heap_avr.o
+ .bss           0x00800e6b        0x0 portable/GCC/ATMega64/port.o
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x00800e6b       0xf7 main.o
+                0x00800e6b                usbStream
+                0x00800e79                portB
+                0x00800e7a                wwwport
+                0x00800e7b                xVtyTx
+                0x00800e7d                udpDbgLevel
+                0x00800e7e                nicState
+                0x00800e8c                arpDebug
+                0x00800e8e                udpStream
+                0x00800e9c                xRs485Rec
+                0x00800e9e                CLIStateSerialUsb
+                0x00800ea0                lockSensors
+                0x00800ea2                udpSocket
+                0x00800ea4                temperature
+                0x00800ea5                tcpDebugLevel
+                0x00800ea6                xHandleSensors
+                0x00800ea8                rollers
+                0x00800eaa                icmpDebug
+                0x00800eac                voltage
+                0x00800ead                xVtyRec
+                0x00800eaf                xSemaphoreRs485
+                0x00800eb1                xHandleVTY_UDP
+                0x00800eb3                czasRtc
+                0x00800eba                xHandleVTY_USB
+                0x00800ebc                sockets
+                0x00800ebe                xSemaphoreSpiSS
+                0x00800ec0                udpDbgStream
+                0x00800ec2                portA
+                0x00800ec3                xRs485Tx
+                0x00800ec5                udpBuffers
+                0x00800ec9                xHandleBlinkLed
+                0x00800ecb                klastry
+                0x00800f4b                xHandleEnc
+                0x00800f4d                icmpDebugLevel
+                0x00800f4e                tcpDebugStream
+                0x00800f50                IpMyConfig
+                0x00800f5f                arpDebugLevel
+                0x00800f60                CLIStateSerialUdp
+ COMMON         0x00800f62        0x2 hardware.o
+                0x00800f62                xSpiRx
+ COMMON         0x00800f64        0x6 vty.o
+                0x00800f64                fdVty
+ COMMON         0x00800f6a       0x6e Lib/net/arp.o
+                0x00800f6a                ArpTable
+ COMMON         0x00800fd8        0x4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                0x00800fd8                __brkval
+                0x00800fda                __flp
+ COMMON         0x00800fdc        0x6 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                0x00800fdc                __iob
+ COMMON         0x00800fe2        0x2 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                0x00800fe2                errno
+                0x00800fe4                PROVIDE (__bss_end, .)
+                0x0000bb48                __data_load_start = LOADADDR (.data)
+                0x0000bbd0                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x00800fe4        0x0
+                0x00800fe4                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x00800fe4                PROVIDE (__noinit_end, .)
+                0x00800fe4                _end = .
+                0x00800fe4                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000       0x32
+ *(.eeprom*)
+ .eeprom        0x00810000       0x18 configuration.o
+ .eeprom        0x00810018        0x6 Lib/net/nic.o
+ .eeprom        0x0081001e        0xc Lib/net/ip.o
+ .eeprom        0x0081002a        0x8 Lib/net/udp.o
+                0x00810032                __eeprom_end = .
+
+.fuse
+ *(.fuse)
+ *(.lfuse)
+ *(.hfuse)
+ *(.efuse)
+
+.lock
+ *(.lock*)
+
+.signature
+ *(.signature*)
+
+.stab           0x00000000    0x1b6c0
+ *(.stab)
+ .stab          0x00000000      0x750 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .stab          0x00000750     0x1020 main.o
+                               0x102c (size before relaxing)
+ .stab          0x00001770      0x594 configuration.o
+                                0xd14 (size before relaxing)
+ .stab          0x00001d04     0x1074 serial.o
+                               0x15e4 (size before relaxing)
+ .stab          0x00002d78      0xea0 hardware.o
+                               0x1710 (size before relaxing)
+ .stab          0x00003c18      0x540 sensors_task.o
+                                0xda4 (size before relaxing)
+ .stab          0x00004158     0x2448 vty.o
+                               0x2cc4 (size before relaxing)
+ .stab          0x000065a0      0x51c netstack_task.o
+                                0xd80 (size before relaxing)
+ .stab          0x00006abc      0x39c cli_task.o
+                                0x6a8 (size before relaxing)
+ .stab          0x00006e58      0x714 Lib/spi.o
+                                0xf84 (size before relaxing)
+ .stab          0x0000756c      0x1d4 Lib/memory_x.o
+                                0x240 (size before relaxing)
+ .stab          0x00007740     0x1ac4 Lib/ramdysk.o
+                               0x22d4 (size before relaxing)
+ .stab          0x00009204     0x159c Lib/cmdline.o
+                               0x1e18 (size before relaxing)
+ .stab          0x0000a7a0      0x408 Lib/xmodem.o
+                                0xc84 (size before relaxing)
+ .stab          0x0000aba8      0x5f4 Lib/vt100.o
+                                0xe64 (size before relaxing)
+ .stab          0x0000b19c      0x7c8 Lib/ds1305.o
+                                0xb4c (size before relaxing)
+ .stab          0x0000b964      0xd08 Lib/mpc23s17.o
+                               0x1590 (size before relaxing)
+ .stab          0x0000c66c      0x660 Lib/mcp3008.o
+                                0xedc (size before relaxing)
+ .stab          0x0000cccc      0x528 Lib/mcp4150.o
+                                0xda4 (size before relaxing)
+ .stab          0x0000d1f4     0x10d4 Lib/enc28j60.o
+                               0x1938 (size before relaxing)
+ .stab          0x0000e2c8      0x33c Lib/queueStream.o
+                                0x5e8 (size before relaxing)
+ .stab          0x0000e604      0x528 Lib/net/nic.o
+                                0x7ec (size before relaxing)
+ .stab          0x0000eb2c      0x7ec Lib/net/net.o
+                                0xaec (size before relaxing)
+ .stab          0x0000f318      0xa74 Lib/net/ip.o
+                                0xf6c (size before relaxing)
+ .stab          0x0000fd8c      0x6c0 Lib/net/icmp.o
+                                0xbd0 (size before relaxing)
+ .stab          0x0001044c      0xb7c Lib/net/arp.o
+                               0x108c (size before relaxing)
+ .stab          0x00010fc8      0xa68 Lib/net/tcp.o
+                                0xf18 (size before relaxing)
+ .stab          0x00011a30      0x8ac Lib/net/udp.o
+                                0xdbc (size before relaxing)
+ .stab          0x000122dc     0x204c Lib/Rs485_prot.o
+                               0x2898 (size before relaxing)
+ .stab          0x00014328     0x1a04 Source/tasks.o
+                               0x1d7c (size before relaxing)
+ .stab          0x00015d2c     0x105c Source/queue.o
+                               0x12e4 (size before relaxing)
+ .stab          0x00016d88      0x534 Source/list.o
+                                0x810 (size before relaxing)
+ .stab          0x000172bc      0x738 Source/croutine.o
+                                0xa74 (size before relaxing)
+ .stab          0x000179f4      0x36c portable/MemMang/heap_avr.o
+                                0x6a8 (size before relaxing)
+ .stab          0x00017d60      0x624 portable/GCC/ATMega64/port.o
+                                0x960 (size before relaxing)
+ .stab          0x00018384      0x6cc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                0x6fc (size before relaxing)
+ .stab          0x00018a50      0x3a8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                                0x408 (size before relaxing)
+ .stab          0x00018df8       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x00018e94       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                                 0x90 (size before relaxing)
+ .stab          0x00018f18       0xc0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                                 0xcc (size before relaxing)
+ .stab          0x00018fd8       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                                 0x90 (size before relaxing)
+ .stab          0x0001905c       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                                 0x78 (size before relaxing)
+ .stab          0x000190c8       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x00019164       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                                 0x78 (size before relaxing)
+ .stab          0x000191d0       0xc0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                                 0xcc (size before relaxing)
+ .stab          0x00019290       0xcc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                                 0xd8 (size before relaxing)
+ .stab          0x0001935c      0x204 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                                0x414 (size before relaxing)
+ .stab          0x00019560      0x24c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                                0x42c (size before relaxing)
+ .stab          0x000197ac      0x198 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                                0x378 (size before relaxing)
+ .stab          0x00019944      0x1bc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                                0x39c (size before relaxing)
+ .stab          0x00019b00      0x1d4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                                0x3b4 (size before relaxing)
+ .stab          0x00019cd4      0x1d4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                                0x3b4 (size before relaxing)
+ .stab          0x00019ea8      0x12c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                                0x30c (size before relaxing)
+ .stab          0x00019fd4      0x1f8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                                0x3d8 (size before relaxing)
+ .stab          0x0001a1cc      0x918 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                                0xb58 (size before relaxing)
+ .stab          0x0001aae4      0x108 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                                0x114 (size before relaxing)
+ .stab          0x0001abec       0x78 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                                 0x84 (size before relaxing)
+ .stab          0x0001ac64       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                                 0x78 (size before relaxing)
+ .stab          0x0001acd0       0xe4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                                 0xf0 (size before relaxing)
+ .stab          0x0001adb4      0x108 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                                0x114 (size before relaxing)
+ .stab          0x0001aebc       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x0001af58       0x60 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                                 0x6c (size before relaxing)
+ .stab          0x0001afb8       0xf0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                                 0xfc (size before relaxing)
+ .stab          0x0001b0a8       0x60 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                                 0x6c (size before relaxing)
+ .stab          0x0001b108       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x0001b1a4       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x0001b240      0x480 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                                0x48c (size before relaxing)
+
+.stabstr        0x00000000     0xd790
+ *(.stabstr)
+ .stabstr       0x00000000     0xd790 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(firmware.elf elf32-avr)
+LOAD linker stubs
+
+Cross Reference Table
+
+Symbol                                            File
+ArpTable                                          Lib/net/arp.o
+BladBuforaPozostaloBajtowStr                      vty.o
+CLIStateSerialUdp                                 main.o
+CLIStateSerialUsb                                 main.o
+CmdlineCmdNotFound                                Lib/cmdline.o
+CmdlineNotice                                     Lib/cmdline.o
+CmdlinePromptConfigure                            Lib/cmdline.o
+CmdlinePromptEnable                               Lib/cmdline.o
+CmdlinePromptNormal                               Lib/cmdline.o
+InterruptVtyOn                                    serial.o
+IpMyConfig                                        Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+LockersMemInit                                    hardware.o
+                                                  sensors_task.o
+MCP3008_getSampleDiff                             Lib/mcp3008.o
+MCP3008_getSampleSingle                           Lib/mcp3008.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+MCP4150_setValue                                  Lib/mcp4150.o
+                                                  vty.o
+MPC23s17ClearBitsOnPortA                          Lib/mpc23s17.o
+                                                  hardware.o
+MPC23s17ClearBitsOnPortB                          Lib/mpc23s17.o
+MPC23s17ReadPortA                                 Lib/mpc23s17.o
+MPC23s17ReadPortB                                 Lib/mpc23s17.o
+MPC23s17SetBitsOnPortA                            Lib/mpc23s17.o
+                                                  hardware.o
+MPC23s17SetBitsOnPortB                            Lib/mpc23s17.o
+MPC23s17SetDirA                                   Lib/mpc23s17.o
+                                                  vty.o
+                                                  sensors_task.o
+MPC23s17SetDirB                                   Lib/mpc23s17.o
+                                                  vty.o
+                                                  sensors_task.o
+MPC23s17SetPortA                                  Lib/mpc23s17.o
+                                                  vty.o
+MPC23s17SetPortB                                  Lib/mpc23s17.o
+                                                  vty.o
+VtyGetChar                                        serial.o
+VtyInit                                           vty.o
+                                                  main.o
+VtyPutChar                                        serial.o
+__bad_interrupt                                   /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__brkval                                          /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__bss_end                                         /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+__bss_start                                       /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+__ctype_isfalse                                   /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+__ctype_istrue                                    /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+__data_end                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__data_load_start                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__data_start                                      /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__do_clear_bss                                    /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  portable/MemMang/heap_avr.o
+                                                  Source/croutine.o
+                                                  Source/tasks.o
+                                                  Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/net/nic.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/ds1305.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  cli_task.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+__do_copy_data                                    /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  Source/tasks.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/vt100.o
+                                                  Lib/ramdysk.o
+                                                  Lib/memory_x.o
+                                                  serial.o
+                                                  main.o
+__eerd_block_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                                                  Lib/net/nic.o
+                                                  configuration.o
+__eerd_blraw_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+__eerd_dword_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                                                  Lib/net/udp.o
+                                                  Lib/net/ip.o
+__eerd_float_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+__eerd_word_m128                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                                                  Lib/net/udp.o
+__eeupd_block_m128                                /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                                                  Lib/net/nic.o
+__eeupd_byte_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+__eeupd_dword_m128                                /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                                                  Lib/net/udp.o
+                                                  Lib/net/ip.o
+__eeupd_float_m128                                /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+__eeupd_r18_m128                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+__eeupd_word_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                                                  Lib/net/udp.o
+__flp                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__heap_end                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__heap_start                                      /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__init                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__iob                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+__malloc_heap_end                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  Lib/memory_x.o
+__malloc_heap_start                               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__malloc_margin                                   /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__mulsi3                                          /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+__stack                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__udivmodhi4                                      /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+                                                  sensors_task.o
+__udivmodqi4                                      /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+                                                  vty.o
+__udivmodsi4                                      /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+__ultoa_invert                                    /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+__vector_1                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_10                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_11                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_12                                       portable/GCC/ATMega64/port.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_13                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_14                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_15                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_16                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_17                                       hardware.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_18                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_19                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_2                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_20                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_21                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_22                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_23                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_24                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_25                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_26                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_27                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_28                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_29                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_3                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_30                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_31                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_32                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_33                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_34                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_4                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_5                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_6                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_7                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_8                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_9                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_default                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vectors                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+_exit                                             /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+arpArpIn                                          Lib/net/arp.o
+                                                  netstack_task.o
+arpDebug                                          Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+arpDebugLevel                                     Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+arpInit                                           Lib/net/arp.o
+                                                  netstack_task.o
+arpIpIn                                           Lib/net/arp.o
+                                                  netstack_task.o
+arpIpOut                                          Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+arpMatchIp                                        Lib/net/arp.o
+arpPrintHeader                                    Lib/net/arp.o
+arpPrintTable                                     Lib/net/arp.o
+arpTimer                                          Lib/net/arp.o
+                                                  main.o
+calculateTcpChecksun                              Lib/net/tcp.o
+checkLockerSensors                                hardware.o
+                                                  sensors_task.o
+cmdLineGetLastArgIdx                              Lib/cmdline.o
+cmdListConfigure                                  vty.o
+cmdListEnable                                     vty.o
+cmdListNormal                                     vty.o
+cmdPrintHelp                                      Lib/cmdline.o
+                                                  vty.o
+cmdStateConfigure                                 Lib/cmdline.o
+                                                  vty.o
+cmd_ac                                            vty.o
+cmd_conf_ip                                       vty.o
+cmd_conf_ip_gw                                    vty.o
+cmd_conf_ip_gw_help                               vty.o
+cmd_conf_ip_mask                                  vty.o
+cmd_conf_ip_mask_help                             vty.o
+cmd_conf_mac                                      vty.o
+cmd_conf_save                                     vty.o
+cmd_conf_udp                                      vty.o
+cmd_configure                                     vty.o
+cmd_create_rf                                     vty.o
+cmd_dir_rf                                        vty.o
+cmd_disable                                       vty.o
+cmd_down                                          vty.o
+cmd_edit_rf                                       vty.o
+cmd_enable                                        vty.o
+cmd_enc_stat                                      vty.o
+cmd_erase_rf                                      vty.o
+cmd_help                                          vty.o
+cmd_help_ac                                       vty.o
+cmd_help_conf_ip                                  vty.o
+cmd_help_conf_mac                                 vty.o
+cmd_help_conf_save                                vty.o
+cmd_help_conf_udp                                 vty.o
+cmd_help_configure                                vty.o
+cmd_help_create_rf                                vty.o
+cmd_help_dir_rf                                   vty.o
+cmd_help_disable                                  vty.o
+cmd_help_down                                     vty.o
+cmd_help_edit_rf                                  vty.o
+cmd_help_enable                                   vty.o
+cmd_help_enc_stat                                 vty.o
+cmd_help_erase_rf                                 vty.o
+cmd_help_help                                     vty.o
+cmd_help_net_dbg                                  vty.o
+cmd_help_ping                                     vty.o
+cmd_help_read_rf                                  vty.o
+cmd_help_rping                                    vty.o
+cmd_help_settime                                  vty.o
+cmd_help_spa                                      vty.o
+cmd_help_spb                                      vty.o
+cmd_help_status                                   vty.o
+cmd_help_time                                     vty.o
+cmd_help_up                                       vty.o
+cmd_help_ustawR                                   vty.o
+cmd_help_xRec                                     vty.o
+cmd_help_xSend                                    vty.o
+cmd_help_xflash                                   vty.o
+cmd_net_dbg                                       vty.o
+cmd_ping                                          vty.o
+cmd_read_rf                                       vty.o
+cmd_rping                                         vty.o
+cmd_settime                                       vty.o
+cmd_spa                                           vty.o
+cmd_spb                                           vty.o
+cmd_status                                        vty.o
+cmd_time                                          vty.o
+cmd_up                                            vty.o
+cmd_ustawR                                        vty.o
+cmd_xRec                                          vty.o
+cmd_xSend                                         vty.o
+cmd_xflash                                        vty.o
+cmdlineGetArgHex                                  Lib/cmdline.o
+                                                  vty.o
+cmdlineGetArgInt                                  Lib/cmdline.o
+                                                  vty.o
+cmdlineGetArgStr                                  Lib/cmdline.o
+                                                  vty.o
+cmdlineInputFunc                                  Lib/cmdline.o
+                                                  cli_task.o
+cmdlineMainLoop                                   Lib/cmdline.o
+                                                  cli_task.o
+czasRtc                                           Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+debugDisabledInfoStr                              vty.o
+debugEnabledInfoStr                               vty.o
+disableAllSpiDevices                              hardware.o
+                                                  main.o
+disableSpiMCP3008                                 hardware.o
+disableSpiMCP4150                                 hardware.o
+disableSpiMPC23S17                                hardware.o
+disableSpiSd                                      hardware.o
+ds1305readMem                                     Lib/ds1305.o
+ds1305start                                       Lib/ds1305.o
+                                                  vty.o
+ds1305writeMem                                    Lib/ds1305.o
+editRamFileIntroStr                               vty.o
+enableSpiMCP3008                                  hardware.o
+enableSpiMCP4150                                  hardware.o
+enableSpiMPC23S17                                 hardware.o
+enableSpiSd                                       hardware.o
+enc28j60getrev                                    Lib/enc28j60.o
+enc28j60hasRxPkt                                  Lib/enc28j60.o
+enc28j60linkup                                    Lib/enc28j60.o
+encTask                                           netstack_task.o
+errno                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+errorBootloaderNotResponding                      vty.o
+errorNoFile                                       vty.o
+errorNoRemoteDevice                               vty.o
+errorOK                                           vty.o
+errorOpenFile                                     vty.o
+errorStrings                                      vty.o
+errorxModemByteSendTimeout                        vty.o
+errorxModemFrameCrc                               vty.o
+errorxModemFrameFrameNoCorrectionNotMatch         vty.o
+errorxModemFrameStartTimeout                      vty.o
+errorxModemRemoteSideCan                          vty.o
+errorxModemUnknownResponse                        vty.o
+errorxModemWrongFrameNo                           vty.o
+exit                                              /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+fclose                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                                                  Lib/ramdysk.o
+fdVty                                             vty.o
+fgetc                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                                                  cli_task.o
+flushRs485RecBuffer                               serial.o
+flushTcpQueues                                    Lib/net/tcp.o
+                                                  netstack_task.o
+flushUdpQueues                                    Lib/net/udp.o
+                                                  netstack_task.o
+fprintf                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                                                  Lib/ramdysk.o
+fprintf_P                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                                                  Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/net/net.o
+                                                  Lib/net/nic.o
+                                                  Lib/enc28j60.o
+                                                  Lib/vt100.o
+                                                  Lib/cmdline.o
+                                                  cli_task.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  hardware.o
+fputc                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                                                  Lib/Rs485_prot.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  vty.o
+fputs                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                                                  Lib/ramdysk.o
+free                                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+hardwareInit                                      hardware.o
+                                                  main.o
+heapEnd                                           Lib/memory_x.o
+htonl                                             Lib/net/net.o
+                                                  Lib/net/tcp.o
+htons                                             Lib/net/net.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  netstack_task.o
+                                                  vty.o
+httpProcess                                       Lib/net/tcp.o
+icmpDebug                                         Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+icmpDebugLevel                                    Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+icmpEchoRequest                                   Lib/net/icmp.o
+icmpInit                                          Lib/net/icmp.o
+                                                  netstack_task.o
+icmpIpIn                                          Lib/net/icmp.o
+                                                  Lib/net/ip.o
+icmpPrintHeader                                   Lib/net/icmp.o
+                                                  Lib/net/ip.o
+initExternalMem                                   main.o
+initQueueStream                                   Lib/queueStream.o
+                                                  main.o
+initQueueStreamUSB                                serial.o
+                                                  main.o
+ipGetConfig                                       Lib/net/ip.o
+                                                  vty.o
+ipInit                                            Lib/net/ip.o
+                                                  netstack_task.o
+ipPrintConfig                                     Lib/net/ip.o
+ipSaveConfig                                      Lib/net/ip.o
+                                                  configuration.o
+ipSend                                            Lib/net/ip.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+ipSetConfig                                       Lib/net/ip.o
+ipSetConfigGw                                     Lib/net/ip.o
+                                                  vty.o
+ipSetConfigIp                                     Lib/net/ip.o
+                                                  vty.o
+ipSetConfigMask                                   Lib/net/ip.o
+                                                  vty.o
+isspace                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+klastry                                           Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+loadConfiguration                                 configuration.o
+                                                  main.o
+lockSensors                                       Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+main                                              main.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+malloc                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  Lib/memory_x.o
+memcpy                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                                                  Source/queue.o
+                                                  Lib/ramdysk.o
+memcpy_P                                          /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                                                  Lib/cmdline.o
+memset                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                                                  Source/tasks.o
+                                                  Lib/net/arp.o
+                                                  Lib/cmdline.o
+movingCurtainDownStr                              vty.o
+movingCurtainPosStr                               vty.o
+movingCurtainUpStr                                vty.o
+netChecksum                                       Lib/net/net.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+netPrintEthAddr                                   Lib/net/net.o
+                                                  Lib/net/arp.o
+                                                  vty.o
+netPrintEthHeader                                 Lib/net/net.o
+netPrintIPAddr                                    Lib/net/net.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  vty.o
+netPrintIpHeader                                  Lib/net/net.o
+netPrintTcpHeader                                 Lib/net/net.o
+netstackIPv4Process                               Lib/net/ip.o
+                                                  netstack_task.o
+netstackTCPIPProcess                              Lib/net/tcp.o
+                                                  Lib/net/ip.o
+netstackUDPIPProcess                              Lib/net/udp.o
+                                                  Lib/net/ip.o
+nicGetMacAddress                                  Lib/enc28j60.o
+nicInit                                           Lib/net/nic.o
+                                                  netstack_task.o
+nicMacInit                                        Lib/enc28j60.o
+nicPoll                                           Lib/enc28j60.o
+                                                  netstack_task.o
+nicRegDump                                        Lib/enc28j60.o
+                                                  vty.o
+nicSend                                           Lib/enc28j60.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+nicSetMacAddress                                  Lib/enc28j60.o
+                                                  vty.o
+nicState                                          Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/net/nic.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+nlStr                                             vty.o
+okStr                                             vty.o
+portA                                             Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+portB                                             Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+printErrorInfo                                    vty.o
+printLockers                                      hardware.o
+                                                  vty.o
+printRs485devices                                 Lib/Rs485_prot.o
+                                                  vty.o
+printStatus                                       vty.o
+processTcpPacket                                  Lib/net/tcp.o
+pvPortMalloc                                      portable/MemMang/heap_avr.o
+                                                  Source/croutine.o
+                                                  Source/queue.o
+                                                  Source/tasks.o
+pxCurrentCoRoutine                                Source/croutine.o
+pxCurrentTCB                                      Source/tasks.o
+                                                  portable/GCC/ATMega64/port.o
+pxPortInitialiseStack                             portable/GCC/ATMega64/port.o
+                                                  Source/tasks.o
+ramDyskCzyscPlik                                  Lib/ramdysk.o
+ramDyskCzytajBajtZPliku                           Lib/ramdysk.o
+                                                  Lib/Rs485_prot.o
+                                                  vty.o
+ramDyskCzytajBlokZPliku                           Lib/ramdysk.o
+ramDyskDir                                        Lib/ramdysk.o
+                                                  vty.o
+ramDyskDodajBlokXmodem                            Lib/ramdysk.o
+                                                  vty.o
+ramDyskInit                                       Lib/ramdysk.o
+                                                  main.o
+ramDyskLiczbaWolnychKlastrow                      Lib/ramdysk.o
+                                                  vty.o
+ramDyskOtworzPlik                                 Lib/ramdysk.o
+                                                  vty.o
+ramDyskOtworzPlikStdIo                            Lib/ramdysk.o
+                                                  vty.o
+ramDyskUstawWskaznik                              Lib/ramdysk.o
+ramDyskUstawWskaznikNaKoniec                      Lib/ramdysk.o
+                                                  vty.o
+ramDyskUsunPlik                                   Lib/ramdysk.o
+                                                  vty.o
+ramDyskUtworzPlik                                 Lib/ramdysk.o
+                                                  vty.o
+ramDyskZamknijPlik                                Lib/ramdysk.o
+                                                  vty.o
+ramDyskZamknijPlikStdIo                           Lib/ramdysk.o
+                                                  vty.o
+ramDyskZapiszBajtDoPliku                          Lib/ramdysk.o
+                                                  vty.o
+ramDyskZapiszBlokDoPliku                          Lib/ramdysk.o
+readRamFIleLenStr                                 vty.o
+readTime                                          Lib/ds1305.o
+readTimeBCD                                       Lib/ds1305.o
+readTimeDecoded                                   Lib/ds1305.o
+                                                  vty.o
+releaseRs485                                      serial.o
+rollers                                           Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+rollersMemInit                                    Lib/Rs485_prot.o
+                                                  sensors_task.o
+rs485Receive                                      serial.o
+rs485curtainDown                                  Lib/Rs485_prot.o
+                                                  vty.o
+rs485curtainUp                                    Lib/Rs485_prot.o
+                                                  vty.o
+rs485ping                                         Lib/Rs485_prot.o
+                                                  vty.o
+rs485rollerHello                                  Lib/Rs485_prot.o
+                                                  sensors_task.o
+rs485xModemFlash                                  Lib/Rs485_prot.o
+                                                  vty.o
+saveConfiguration                                 configuration.o
+                                                  vty.o
+saveNic                                           Lib/net/nic.o
+                                                  configuration.o
+sendTcBuffer                                      Lib/net/tcp.o
+sensorsTask                                       sensors_task.o
+                                                  main.o
+sensorsTaskInit                                   sensors_task.o
+                                                  main.o
+setArpDebug                                       Lib/net/arp.o
+                                                  vty.o
+setIcmpDebug                                      Lib/net/icmp.o
+                                                  vty.o
+setIpDebug                                        Lib/net/ip.o
+                                                  vty.o
+setTcpDebug                                       Lib/net/tcp.o
+                                                  vty.o
+setTime                                           Lib/ds1305.o
+setTimeBCD                                        Lib/ds1305.o
+setTimeDecoded                                    Lib/ds1305.o
+                                                  vty.o
+setUdpDebug                                       Lib/net/udp.o
+                                                  vty.o
+socketInit                                        Lib/net/tcp.o
+                                                  main.o
+sockets                                           Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+spiClearCPHA                                      Lib/spi.o
+spiClearCPOL                                      Lib/spi.o
+spiDisableDS1305                                  hardware.o
+spiDisableEnc28j60                                hardware.o
+spiEnableDS1305                                   hardware.o
+spiEnableEnc28j60                                 hardware.o
+spiGive                                           Lib/spi.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/ds1305.o
+spiInit                                           Lib/spi.o
+                                                  main.o
+spiSend                                           hardware.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/ds1305.o
+spiSendSpinBlock                                  hardware.o
+spiSetCPHA                                        Lib/spi.o
+spiSetCPOL                                        Lib/spi.o
+spiTake                                           Lib/spi.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/ds1305.o
+sprintf                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                                                  Source/tasks.o
+statusDynamicHeapStateStr                         vty.o
+statusIpGwStr                                     vty.o
+statusIpMaskStr                                   vty.o
+statusIpStr                                       vty.o
+statusLockerCloseStr                              hardware.o
+statusLockerOpenStr                               hardware.o
+statusLockerSensAdditionalDescStr                 hardware.o
+statusLockerSensDescStr                           hardware.o
+statusLockerSensorsDisStr                         vty.o
+statusLockerSensorsStr                            vty.o
+statusMacStr                                      vty.o
+statusNoRs485Dev                                  vty.o
+statusNumberOfTasksStr                            vty.o
+statusRamDiskStateStr                             vty.o
+statusRollerDescStr                               Lib/Rs485_prot.o
+statusRollerDescStr2                              Lib/Rs485_prot.o
+statusRs485listStr                                vty.o
+statusStaticHeapStateStr                          vty.o
+statusTemperatureStr                              vty.o
+statusVoltageStr                                  vty.o
+strcat                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                                                  Source/tasks.o
+strcpy                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                                                  Lib/cmdline.o
+strncmp                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                                                  Lib/ramdysk.o
+strncmp_P                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                                                  Lib/cmdline.o
+                                                  vty.o
+strncpy                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                                                  Source/tasks.o
+                                                  Lib/net/nic.o
+                                                  Lib/ramdysk.o
+strnlen                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+strnlen_P                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+strtol                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                                                  Lib/cmdline.o
+systemRamConfigStr                                vty.o
+systemStateStr                                    vty.o
+takeRs485                                         serial.o
+tcpDebugLevel                                     Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+tcpDebugStream                                    Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+temperature                                       vty.o
+                                                  sensors_task.o
+                                                  main.o
+timer100Hz                                        main.o
+                                                  Lib/net/tcp.o
+uartRs485SendByte                                 serial.o
+uartVtySendByte                                   serial.o
+                                                  vty.o
+udpBuffers                                        main.o
+udpDbgLevel                                       Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+udpDbgStream                                      Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+udpInit                                           Lib/net/udp.o
+                                                  main.o
+udpPrintStatus                                    Lib/net/udp.o
+                                                  vty.o
+udpSaveConfig                                     Lib/net/udp.o
+                                                  configuration.o
+udpSend                                           Lib/net/udp.o
+udpSocket                                         Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+udpStream                                         main.o
+ulTaskEndTrace                                    Source/tasks.o
+usbStream                                         main.o
+uxQueueMessagesWaiting                            Source/queue.o
+                                                  Lib/net/udp.o
+uxQueueMessagesWaitingFromISR                     Source/queue.o
+uxTaskGetNumberOfTasks                            Source/tasks.o
+                                                  vty.o
+uxTaskPriorityGet                                 Source/tasks.o
+vApplicationIdleHook                              main.o
+vApplicationTickHook                              main.o
+                                                  Source/tasks.o
+vBlinkLed                                         main.o
+vCoRoutineAddToDelayedList                        Source/croutine.o
+vCoRoutineSchedule                                Source/croutine.o
+                                                  main.o
+vListInitialise                                   Source/list.o
+                                                  Source/croutine.o
+                                                  Source/queue.o
+                                                  Source/tasks.o
+vListInitialiseItem                               Source/list.o
+                                                  Source/croutine.o
+                                                  Source/tasks.o
+vListInsert                                       Source/list.o
+                                                  Source/croutine.o
+                                                  Source/tasks.o
+vListInsertEnd                                    Source/list.o
+                                                  Source/croutine.o
+                                                  Source/tasks.o
+vListRemove                                       Source/list.o
+                                                  Source/croutine.o
+                                                  Source/tasks.o
+vPortEndScheduler                                 portable/GCC/ATMega64/port.o
+                                                  Source/tasks.o
+vPortFree                                         portable/MemMang/heap_avr.o
+                                                  Source/queue.o
+                                                  Source/tasks.o
+vPortInitialiseBlocks                             portable/MemMang/heap_avr.o
+vPortYield                                        portable/GCC/ATMega64/port.o
+                                                  Source/queue.o
+                                                  Source/tasks.o
+                                                  hardware.o
+                                                  serial.o
+vPortYieldFromTick                                portable/GCC/ATMega64/port.o
+vQueueDelete                                      Source/queue.o
+vTaskDelay                                        Source/tasks.o
+                                                  Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  netstack_task.o
+                                                  sensors_task.o
+                                                  hardware.o
+vTaskDelayUntil                                   Source/tasks.o
+                                                  main.o
+vTaskEndScheduler                                 Source/tasks.o
+vTaskIncrementTick                                Source/tasks.o
+                                                  portable/GCC/ATMega64/port.o
+vTaskList                                         Source/tasks.o
+vTaskMissedYield                                  Source/tasks.o
+                                                  Source/queue.o
+vTaskPlaceOnEventList                             Source/tasks.o
+                                                  Source/queue.o
+vTaskPrioritySet                                  Source/tasks.o
+vTaskResume                                       Source/tasks.o
+vTaskSetTimeOutState                              Source/tasks.o
+                                                  Source/queue.o
+vTaskStartScheduler                               Source/tasks.o
+                                                  main.o
+vTaskStartTrace                                   Source/tasks.o
+vTaskSuspend                                      Source/tasks.o
+vTaskSuspendAll                                   Source/tasks.o
+                                                  portable/MemMang/heap_avr.o
+                                                  Source/queue.o
+vTaskSwitchContext                                Source/tasks.o
+                                                  portable/GCC/ATMega64/port.o
+vTaskVTYsocket                                    cli_task.o
+                                                  main.o
+vTaskVTYusb                                       cli_task.o
+                                                  main.o
+vfprintf                                          /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+voltage                                           vty.o
+                                                  sensors_task.o
+                                                  main.o
+vt100ClearScreen                                  Lib/vt100.o
+vt100Init                                         Lib/vt100.o
+vt100SetAttr                                      Lib/vt100.o
+vt100SetCursorMode                                Lib/vt100.o
+vt100SetCursorPos                                 Lib/vt100.o
+wwwport                                           Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  Lib/net/arp.o
+                                                  Lib/net/icmp.o
+                                                  Lib/net/ip.o
+                                                  Lib/net/nic.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  cli_task.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+xCoRoutineCreate                                  Source/croutine.o
+xCoRoutineRemoveFromEventList                     Source/croutine.o
+xHandleBlinkLed                                   main.o
+xHandleEnc                                        main.o
+xHandleSensors                                    main.o
+xHandleVTY_UDP                                    main.o
+xHandleVTY_USB                                    main.o
+xPortGetFreeHeapSize                              portable/MemMang/heap_avr.o
+                                                  vty.o
+xPortStartScheduler                               portable/GCC/ATMega64/port.o
+                                                  Source/tasks.o
+xQueueCreate                                      Source/queue.o
+                                                  Lib/spi.o
+                                                  hardware.o
+                                                  serial.o
+xQueueCreateExternal                              Source/queue.o
+                                                  Lib/net/udp.o
+xQueueGenericReceive                              Source/queue.o
+                                                  Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/queueStream.o
+                                                  Lib/spi.o
+                                                  cli_task.o
+                                                  vty.o
+                                                  hardware.o
+                                                  serial.o
+xQueueGenericSend                                 Source/queue.o
+                                                  Lib/net/udp.o
+                                                  Lib/queueStream.o
+                                                  Lib/spi.o
+                                                  serial.o
+xQueueGenericSendFromISR                          Source/queue.o
+                                                  hardware.o
+                                                  serial.o
+xQueueIsQueueEmptyFromISR                         Source/queue.o
+xQueueIsQueueFullFromISR                          Source/queue.o
+xQueueReceiveFromISR                              Source/queue.o
+                                                  serial.o
+xRs485Rec                                         Lib/Rs485_prot.o
+                                                  serial.o
+                                                  main.o
+xRs485Tx                                          serial.o
+                                                  main.o
+xSemaphoreRs485                                   Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+xSemaphoreSpiSS                                   Lib/Rs485_prot.o
+                                                  Lib/enc28j60.o
+                                                  Lib/mcp4150.o
+                                                  Lib/mcp3008.o
+                                                  Lib/mpc23s17.o
+                                                  Lib/ds1305.o
+                                                  Lib/vt100.o
+                                                  Lib/xmodem.o
+                                                  Lib/cmdline.o
+                                                  Lib/ramdysk.o
+                                                  Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+xSerialPortInitMinimal                            serial.o
+                                                  main.o
+xSpiRx                                            hardware.o
+xTaskCheckForTimeOut                              Source/tasks.o
+                                                  Source/queue.o
+xTaskGenericCreate                                Source/tasks.o
+                                                  main.o
+xTaskGetTickCount                                 Source/tasks.o
+                                                  Source/croutine.o
+                                                  main.o
+xTaskIsTaskSuspended                              Source/tasks.o
+xTaskRemoveFromEventList                          Source/tasks.o
+                                                  Source/queue.o
+xTaskResumeAll                                    Source/tasks.o
+                                                  portable/MemMang/heap_avr.o
+                                                  Source/queue.o
+xTaskResumeFromISR                                Source/tasks.o
+xVtyRec                                           cli_task.o
+                                                  vty.o
+                                                  serial.o
+                                                  main.o
+xVtyTx                                            serial.o
+                                                  main.o
+xmalloc                                           Lib/memory_x.o
+                                                  Lib/Rs485_prot.o
+                                                  Lib/net/udp.o
+                                                  Lib/net/tcp.o
+                                                  hardware.o
+                                                  main.o
+xmallocAvailable                                  Lib/memory_x.o
+                                                  vty.o
+xwyslijStartStr                                   vty.o

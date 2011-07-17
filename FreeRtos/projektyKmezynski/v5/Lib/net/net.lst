@@ -1,0 +1,1448 @@
+   1               		.file	"net.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 101               	.global	htons
+ 103               	htons:
+ 104               		.stabd	46,0,0
+   1:Lib/net/net.c **** /**
+   2:Lib/net/net.c ****  * @file          net.c 
+   3:Lib/net/net.c ****  * @author        Pascal Stang, Adam Kaliszan
+   4:Lib/net/net.c ****  * @brief         Network support library. 
+   5:Lib/net/net.c ****  * @version       0.1
+   6:Lib/net/net.c ****  * Created        30.08.2004
+   7:Lib/net/net.c ****  * Revised        25.11.2010
+   8:Lib/net/net.c ****  * Editor Tabs    2
+   9:Lib/net/net.c ****  */
+  10:Lib/net/net.c **** 
+  11:Lib/net/net.c **** #include "net.h"
+  12:Lib/net/net.c **** 
+  13:Lib/net/net.c **** 
+  14:Lib/net/net.c **** uint16_t htons(uint16_t val)
+  15:Lib/net/net.c **** {
+ 106               	.LM0:
+ 107               	.LFBB1:
+ 108               	/* prologue: function */
+ 109               	/* frame size = 0 */
+ 110 0000 282F      		mov r18,r24
+  16:Lib/net/net.c ****   return (val<<8) | (val>>8);
+  17:Lib/net/net.c **** }
+ 112               	.LM1:
+ 113 0002 892F      		mov r24,r25
+ 114 0004 922F      		mov r25,r18
+ 115               	/* epilogue start */
+ 116 0006 0895      		ret
+ 118               	.Lscope1:
+ 120               		.stabd	78,0,0
+ 123               	.global	htonl
+ 125               	htonl:
+ 126               		.stabd	46,0,0
+  18:Lib/net/net.c **** 
+  19:Lib/net/net.c **** uint32_t htonl(uint32_t val)
+  20:Lib/net/net.c **** {
+ 128               	.LM2:
+ 129               	.LFBB2:
+ 130 0008 EF92      		push r14
+ 131 000a FF92      		push r15
+ 132 000c 0F93      		push r16
+ 133 000e 1F93      		push r17
+ 134               	/* prologue: function */
+ 135               	/* frame size = 0 */
+ 137               	.LM3:
+ 138 0010 F62E      		mov r15,r22
+ 139 0012 E72E      		mov r14,r23
+ 140 0014 00E0      		ldi r16,lo8(0)
+ 141 0016 10E0      		ldi r17,hi8(0)
+ 142 0018 8701      		movw r16,r14
+ 143 001a FF24      		clr r15
+ 144 001c EE24      		clr r14
+ 145 001e BC01      		movw r22,r24
+ 146 0020 8827      		clr r24
+ 147 0022 9927      		clr r25
+ 148 0024 362F      		mov r19,r22
+ 149 0026 272F      		mov r18,r23
+ 150 0028 40E0      		ldi r20,lo8(0)
+ 151 002a 50E0      		ldi r21,hi8(0)
+ 152 002c E22A      		or r14,r18
+ 153 002e F32A      		or r15,r19
+ 154 0030 042B      		or r16,r20
+ 155 0032 152B      		or r17,r21
+  21:Lib/net/net.c ****   return (htons(val>>16) | (uint32_t)htons(val&0x0000FFFF)<<16);
+  22:Lib/net/net.c **** }
+ 157               	.LM4:
+ 158 0034 B701      		movw r22,r14
+ 159 0036 C801      		movw r24,r16
+ 160               	/* epilogue start */
+ 161 0038 1F91      		pop r17
+ 162 003a 0F91      		pop r16
+ 163 003c FF90      		pop r15
+ 164 003e EF90      		pop r14
+ 165 0040 0895      		ret
+ 167               	.Lscope2:
+ 169               		.stabd	78,0,0
+ 173               	.global	netChecksum
+ 175               	netChecksum:
+ 176               		.stabd	46,0,0
+  23:Lib/net/net.c **** 
+  24:Lib/net/net.c **** 
+  25:Lib/net/net.c **** uint16_t netChecksum(uint8_t *data, uint16_t len)
+  26:Lib/net/net.c **** {
+ 178               	.LM5:
+ 179               	.LFBB3:
+ 180 0042 0F93      		push r16
+ 181 0044 1F93      		push r17
+ 182 0046 CF93      		push r28
+ 183 0048 DF93      		push r29
+ 184               	/* prologue: function */
+ 185               	/* frame size = 0 */
+ 186 004a 8C01      		movw r16,r24
+ 188               	.LM6:
+ 189 004c EC01      		movw r28,r24
+ 190 004e FB01      		movw r30,r22
+ 191 0050 20E0      		ldi r18,lo8(0)
+ 192 0052 30E0      		ldi r19,hi8(0)
+ 193 0054 40E0      		ldi r20,hlo8(0)
+ 194 0056 50E0      		ldi r21,hhi8(0)
+ 195               	.L7:
+  27:Lib/net/net.c ****   register uint32_t sum = 0;
+  28:Lib/net/net.c **** 
+  29:Lib/net/net.c ****   for (;;) 
+  30:Lib/net/net.c ****   {
+  31:Lib/net/net.c ****     if (len < 2)
+ 197               	.LM7:
+ 198 0058 E230      		cpi r30,2
+ 199 005a F105      		cpc r31,__zero_reg__
+ 200 005c 00F0      		brlo .L6
+  32:Lib/net/net.c ****       break;
+  33:Lib/net/net.c **** //sum += *((uint16_t *)data)++;
+  34:Lib/net/net.c ****     sum += *((uint16_t *)data);
+ 202               	.LM8:
+ 203 005e 8991      		ld r24,Y+
+ 204 0060 9991      		ld r25,Y+
+ 205 0062 A0E0      		ldi r26,lo8(0)
+ 206 0064 B0E0      		ldi r27,hi8(0)
+ 207 0066 280F      		add r18,r24
+ 208 0068 391F      		adc r19,r25
+ 209 006a 4A1F      		adc r20,r26
+ 210 006c 5B1F      		adc r21,r27
+  35:Lib/net/net.c ****     data+=2;
+  36:Lib/net/net.c ****     len -= 2;
+ 212               	.LM9:
+ 213 006e 3297      		sbiw r30,2
+ 214 0070 00C0      		rjmp .L7
+ 215               	.L6:
+  37:Lib/net/net.c ****   }
+ 217               	.LM10:
+ 218 0072 FB01      		movw r30,r22
+ 219 0074 EE7F      		andi r30,lo8(-2)
+ 220 0076 E00F      		add r30,r16
+ 221 0078 F11F      		adc r31,r17
+  38:Lib/net/net.c ****   if (len)
+ 223               	.LM11:
+ 224 007a 60FF      		sbrs r22,0
+ 225 007c 00C0      		rjmp .L11
+  39:Lib/net/net.c ****     sum += *(uint8_t *) data;
+ 227               	.LM12:
+ 228 007e 8081      		ld r24,Z
+ 229 0080 280F      		add r18,r24
+ 230 0082 311D      		adc r19,__zero_reg__
+ 231 0084 411D      		adc r20,__zero_reg__
+ 232 0086 511D      		adc r21,__zero_reg__
+ 233 0088 00C0      		rjmp .L11
+ 234               	.L9:
+  40:Lib/net/net.c **** 
+  41:Lib/net/net.c ****   while ((len = (uint16_t) (sum >> 16)) != 0)
+  42:Lib/net/net.c ****     sum = (uint16_t) sum + len;
+ 236               	.LM13:
+ 237 008a 620F      		add r22,r18
+ 238 008c 731F      		adc r23,r19
+ 239 008e 9B01      		movw r18,r22
+ 240 0090 40E0      		ldi r20,lo8(0)
+ 241 0092 50E0      		ldi r21,hi8(0)
+ 242               	.L11:
+  41:Lib/net/net.c ****   while ((len = (uint16_t) (sum >> 16)) != 0)
+ 244               	.LM14:
+ 245 0094 CA01      		movw r24,r20
+ 246 0096 AA27      		clr r26
+ 247 0098 BB27      		clr r27
+ 248 009a BC01      		movw r22,r24
+ 249 009c 892B      		or r24,r25
+ 250 009e 01F4      		brne .L9
+ 251 00a0 2095      		com r18
+ 252 00a2 3095      		com r19
+  43:Lib/net/net.c **** 
+  44:Lib/net/net.c ****   return (uint16_t) sum ^ 0xFFFF;
+  45:Lib/net/net.c **** }
+ 254               	.LM15:
+ 255 00a4 C901      		movw r24,r18
+ 256               	/* epilogue start */
+ 257 00a6 DF91      		pop r29
+ 258 00a8 CF91      		pop r28
+ 259 00aa 1F91      		pop r17
+ 260 00ac 0F91      		pop r16
+ 261 00ae 0895      		ret
+ 266               	.Lscope3:
+ 268               		.stabd	78,0,0
+ 272               	.global	netPrintTcpHeader
+ 274               	netPrintTcpHeader:
+ 275               		.stabd	46,0,0
+  46:Lib/net/net.c **** 
+  47:Lib/net/net.c **** void netPrintEthAddr(FILE *stream, struct netEthAddr* ethaddr)
+  48:Lib/net/net.c **** {
+  49:Lib/net/net.c ****   fprintf_P(stream, PSTR("%02x:%02x:%02x:%02x:%02x:%02x"), ethaddr->addr[0], ethaddr->addr[1], etha
+  50:Lib/net/net.c **** }
+  51:Lib/net/net.c **** 
+  52:Lib/net/net.c **** void netPrintIPAddr(FILE *stream, uint32_t ipaddr)
+  53:Lib/net/net.c **** {
+  54:Lib/net/net.c ****   fprintf_P(stream, PSTR("%d.%d.%d.%d"), ((unsigned char*)&ipaddr)[0], ((unsigned char*)&ipaddr)[1]
+  55:Lib/net/net.c **** }
+  56:Lib/net/net.c **** 
+  57:Lib/net/net.c **** void netPrintEthHeader(FILE *stream, struct netEthHeader* eth_hdr)
+  58:Lib/net/net.c **** {
+  59:Lib/net/net.c ****   fprintf_P(stream, PSTR("Eth Packet Type: 0x%x"), eth_hdr->type);
+  60:Lib/net/net.c ****   fprintf_P(stream, PSTR(" SRC:"));
+  61:Lib/net/net.c ****   netPrintEthAddr(stream, &eth_hdr->src);
+  62:Lib/net/net.c ****   fprintf_P(stream, PSTR("->DST:"));
+  63:Lib/net/net.c ****   netPrintEthAddr(stream, &eth_hdr->dest);
+  64:Lib/net/net.c **** }
+  65:Lib/net/net.c **** 
+  66:Lib/net/net.c **** void netPrintIpHeader(FILE *stream, struct netIpHeader* ipheader)
+  67:Lib/net/net.c **** {
+  68:Lib/net/net.c ****   fprintf_P(stream, PSTR("IP Header\r\n"));
+  69:Lib/net/net.c ****   fprintf_P(stream, PSTR("Ver     : %d\r\n"), (ipheader->vhl)>>4);
+  70:Lib/net/net.c ****   fprintf_P(stream, PSTR("Length  : %d\r\n"), htons(ipheader->len));
+  71:Lib/net/net.c ****   if(ipheader->proto == IP_PROTO_ICMP)
+  72:Lib/net/net.c ****     fprintf_P(stream, PSTR("Protocol: ICMP\r\n"));
+  73:Lib/net/net.c ****   else if(ipheader->proto == IP_PROTO_TCP)
+  74:Lib/net/net.c ****     fprintf_P(stream, PSTR("Protocol: TCP\r\n"));
+  75:Lib/net/net.c ****   else if(ipheader->proto == IP_PROTO_UDP)
+  76:Lib/net/net.c ****     fprintf_P(stream, PSTR("Protocol: UDP\r\n"));
+  77:Lib/net/net.c ****   else
+  78:Lib/net/net.c ****     fprintf_P(stream, PSTR("Protocol: %d\r\n"), ipheader->proto);
+  79:Lib/net/net.c **** 
+  80:Lib/net/net.c ****   fprintf_P(stream, PSTR("SourceIP: ")); netPrintIPAddr(stream, htonl(ipheader->srcipaddr));   fpri
+  81:Lib/net/net.c ****   fprintf_P(stream, PSTR("Dest  IP: ")); netPrintIPAddr(stream, htonl(ipheader->destipaddr));  fpri
+  82:Lib/net/net.c **** }
+  83:Lib/net/net.c **** 
+  84:Lib/net/net.c **** void netPrintTcpHeader(FILE *stream, struct netTcpHeader* tcpheader)
+  85:Lib/net/net.c **** {
+ 277               	.LM16:
+ 278               	.LFBB4:
+ 279 00b0 CF92      		push r12
+ 280 00b2 DF92      		push r13
+ 281 00b4 EF92      		push r14
+ 282 00b6 FF92      		push r15
+ 283 00b8 0F93      		push r16
+ 284 00ba 1F93      		push r17
+ 285 00bc CF93      		push r28
+ 286 00be DF93      		push r29
+ 287               	/* prologue: function */
+ 288               	/* frame size = 0 */
+ 289 00c0 6C01      		movw r12,r24
+ 290 00c2 EB01      		movw r28,r22
+  86:Lib/net/net.c ****   fprintf_P(stream, PSTR("TCP Header\r\n"));
+ 292               	.LM17:
+ 293 00c4 00D0      		rcall .
+ 294 00c6 00D0      		rcall .
+ 295 00c8 ADB7      		in r26,__SP_L__
+ 296 00ca BEB7      		in r27,__SP_H__
+ 297 00cc 1296      		adiw r26,1+1
+ 298 00ce 9C93      		st X,r25
+ 299 00d0 8E93      		st -X,r24
+ 300 00d2 1197      		sbiw r26,1
+ 301 00d4 80E0      		ldi r24,lo8(__c.1682)
+ 302 00d6 90E0      		ldi r25,hi8(__c.1682)
+ 303 00d8 1496      		adiw r26,3+1
+ 304 00da 9C93      		st X,r25
+ 305 00dc 8E93      		st -X,r24
+ 306 00de 1397      		sbiw r26,3
+ 307 00e0 0E94 0000 		call fprintf_P
+  87:Lib/net/net.c ****   fprintf_P(stream, PSTR("Src Port: %d\r\n"), htons(tcpheader->srcport));
+ 309               	.LM18:
+ 310 00e4 00D0      		rcall .
+ 311 00e6 EDB7      		in r30,__SP_L__
+ 312 00e8 FEB7      		in r31,__SP_H__
+ 313 00ea 3196      		adiw r30,1
+ 314 00ec ADB7      		in r26,__SP_L__
+ 315 00ee BEB7      		in r27,__SP_H__
+ 316 00f0 1296      		adiw r26,1+1
+ 317 00f2 DC92      		st X,r13
+ 318 00f4 CE92      		st -X,r12
+ 319 00f6 1197      		sbiw r26,1
+ 320 00f8 80E0      		ldi r24,lo8(__c.1684)
+ 321 00fa 90E0      		ldi r25,hi8(__c.1684)
+ 322 00fc 9383      		std Z+3,r25
+ 323 00fe 8283      		std Z+2,r24
+ 324 0100 9881      		ld r25,Y
+ 325 0102 8981      		ldd r24,Y+1
+ 326 0104 8483      		std Z+4,r24
+ 327 0106 9583      		std Z+5,r25
+ 328 0108 0E94 0000 		call fprintf_P
+  88:Lib/net/net.c ****   fprintf_P(stream, PSTR("Dst Port: %d\r\n"), htons(tcpheader->destport));
+ 330               	.LM19:
+ 331 010c EDB7      		in r30,__SP_L__
+ 332 010e FEB7      		in r31,__SP_H__
+ 333 0110 3196      		adiw r30,1
+ 334 0112 ADB7      		in r26,__SP_L__
+ 335 0114 BEB7      		in r27,__SP_H__
+ 336 0116 1296      		adiw r26,1+1
+ 337 0118 DC92      		st X,r13
+ 338 011a CE92      		st -X,r12
+ 339 011c 1197      		sbiw r26,1
+ 340 011e 80E0      		ldi r24,lo8(__c.1686)
+ 341 0120 90E0      		ldi r25,hi8(__c.1686)
+ 342 0122 9383      		std Z+3,r25
+ 343 0124 8283      		std Z+2,r24
+ 344 0126 9A81      		ldd r25,Y+2
+ 345 0128 8B81      		ldd r24,Y+3
+ 346 012a 8483      		std Z+4,r24
+ 347 012c 9583      		std Z+5,r25
+ 348 012e 0E94 0000 		call fprintf_P
+  89:Lib/net/net.c ****   fprintf_P(stream, PSTR("Seq Num : 0x%x"), htonl(tcpheader->seqno));
+ 350               	.LM20:
+ 351 0132 EC80      		ldd r14,Y+4
+ 352 0134 FD80      		ldd r15,Y+5
+ 353 0136 0E81      		ldd r16,Y+6
+ 354 0138 1F81      		ldd r17,Y+7
+ 355 013a 00D0      		rcall .
+ 356 013c EDB7      		in r30,__SP_L__
+ 357 013e FEB7      		in r31,__SP_H__
+ 358 0140 3196      		adiw r30,1
+ 359 0142 ADB7      		in r26,__SP_L__
+ 360 0144 BEB7      		in r27,__SP_H__
+ 361 0146 1296      		adiw r26,1+1
+ 362 0148 DC92      		st X,r13
+ 363 014a CE92      		st -X,r12
+ 364 014c 1197      		sbiw r26,1
+ 365 014e 80E0      		ldi r24,lo8(__c.1688)
+ 366 0150 90E0      		ldi r25,hi8(__c.1688)
+ 367 0152 9383      		std Z+3,r25
+ 368 0154 8283      		std Z+2,r24
+ 369 0156 3E2D      		mov r19,r14
+ 370 0158 2F2D      		mov r18,r15
+ 371 015a 40E0      		ldi r20,lo8(0)
+ 372 015c 50E0      		ldi r21,hi8(0)
+ 373 015e A901      		movw r20,r18
+ 374 0160 3327      		clr r19
+ 375 0162 2227      		clr r18
+ 376 0164 7801      		movw r14,r16
+ 377 0166 0027      		clr r16
+ 378 0168 1127      		clr r17
+ 379 016a 9E2D      		mov r25,r14
+ 380 016c 8F2D      		mov r24,r15
+ 381 016e A0E0      		ldi r26,lo8(0)
+ 382 0170 B0E0      		ldi r27,hi8(0)
+ 383 0172 282B      		or r18,r24
+ 384 0174 392B      		or r19,r25
+ 385 0176 4A2B      		or r20,r26
+ 386 0178 5B2B      		or r21,r27
+ 387 017a 2483      		std Z+4,r18
+ 388 017c 3583      		std Z+5,r19
+ 389 017e 4683      		std Z+6,r20
+ 390 0180 5783      		std Z+7,r21
+ 391 0182 0E94 0000 		call fprintf_P
+  90:Lib/net/net.c ****   fprintf_P(stream, PSTR("Ack Num : 0x%x\r\n"), htonl(tcpheader->ackno));
+ 393               	.LM21:
+ 394 0186 E884      		ldd r14,Y+8
+ 395 0188 F984      		ldd r15,Y+9
+ 396 018a 0A85      		ldd r16,Y+10
+ 397 018c 1B85      		ldd r17,Y+11
+ 398 018e EDB7      		in r30,__SP_L__
+ 399 0190 FEB7      		in r31,__SP_H__
+ 400 0192 3196      		adiw r30,1
+ 401 0194 ADB7      		in r26,__SP_L__
+ 402 0196 BEB7      		in r27,__SP_H__
+ 403 0198 1296      		adiw r26,1+1
+ 404 019a DC92      		st X,r13
+ 405 019c CE92      		st -X,r12
+ 406 019e 1197      		sbiw r26,1
+ 407 01a0 80E0      		ldi r24,lo8(__c.1690)
+ 408 01a2 90E0      		ldi r25,hi8(__c.1690)
+ 409 01a4 9383      		std Z+3,r25
+ 410 01a6 8283      		std Z+2,r24
+ 411 01a8 3E2D      		mov r19,r14
+ 412 01aa 2F2D      		mov r18,r15
+ 413 01ac 40E0      		ldi r20,lo8(0)
+ 414 01ae 50E0      		ldi r21,hi8(0)
+ 415 01b0 A901      		movw r20,r18
+ 416 01b2 3327      		clr r19
+ 417 01b4 2227      		clr r18
+ 418 01b6 7801      		movw r14,r16
+ 419 01b8 0027      		clr r16
+ 420 01ba 1127      		clr r17
+ 421 01bc 9E2D      		mov r25,r14
+ 422 01be 8F2D      		mov r24,r15
+ 423 01c0 A0E0      		ldi r26,lo8(0)
+ 424 01c2 B0E0      		ldi r27,hi8(0)
+ 425 01c4 282B      		or r18,r24
+ 426 01c6 392B      		or r19,r25
+ 427 01c8 4A2B      		or r20,r26
+ 428 01ca 5B2B      		or r21,r27
+ 429 01cc 2483      		std Z+4,r18
+ 430 01ce 3583      		std Z+5,r19
+ 431 01d0 4683      		std Z+6,r20
+ 432 01d2 5783      		std Z+7,r21
+ 433 01d4 0E94 0000 		call fprintf_P
+  91:Lib/net/net.c ****   fprintf_P(stream, PSTR("Flags   : "));
+ 435               	.LM22:
+ 436 01d8 0F90      		pop __tmp_reg__
+ 437 01da 0F90      		pop __tmp_reg__
+ 438 01dc 0F90      		pop __tmp_reg__
+ 439 01de 0F90      		pop __tmp_reg__
+ 440 01e0 EDB7      		in r30,__SP_L__
+ 441 01e2 FEB7      		in r31,__SP_H__
+ 442 01e4 D282      		std Z+2,r13
+ 443 01e6 C182      		std Z+1,r12
+ 444 01e8 80E0      		ldi r24,lo8(__c.1692)
+ 445 01ea 90E0      		ldi r25,hi8(__c.1692)
+ 446 01ec 9483      		std Z+4,r25
+ 447 01ee 8383      		std Z+3,r24
+ 448 01f0 0E94 0000 		call fprintf_P
+  92:Lib/net/net.c ****   if(tcpheader->flags & TCP_FLAGS_FIN)
+ 450               	.LM23:
+ 451 01f4 8D85      		ldd r24,Y+13
+ 452 01f6 0F90      		pop __tmp_reg__
+ 453 01f8 0F90      		pop __tmp_reg__
+ 454 01fa 0F90      		pop __tmp_reg__
+ 455 01fc 0F90      		pop __tmp_reg__
+ 456 01fe 80FF      		sbrs r24,0
+ 457 0200 00C0      		rjmp .L13
+  93:Lib/net/net.c ****     fprintf_P(stream, PSTR("FIN "));
+ 459               	.LM24:
+ 460 0202 00D0      		rcall .
+ 461 0204 00D0      		rcall .
+ 462 0206 ADB7      		in r26,__SP_L__
+ 463 0208 BEB7      		in r27,__SP_H__
+ 464 020a 1296      		adiw r26,1+1
+ 465 020c DC92      		st X,r13
+ 466 020e CE92      		st -X,r12
+ 467 0210 1197      		sbiw r26,1
+ 468 0212 80E0      		ldi r24,lo8(__c.1694)
+ 469 0214 90E0      		ldi r25,hi8(__c.1694)
+ 470 0216 1496      		adiw r26,3+1
+ 471 0218 9C93      		st X,r25
+ 472 021a 8E93      		st -X,r24
+ 473 021c 1397      		sbiw r26,3
+ 474 021e 0E94 0000 		call fprintf_P
+ 475 0222 0F90      		pop __tmp_reg__
+ 476 0224 0F90      		pop __tmp_reg__
+ 477 0226 0F90      		pop __tmp_reg__
+ 478 0228 0F90      		pop __tmp_reg__
+ 479               	.L13:
+  94:Lib/net/net.c ****   if(tcpheader->flags & TCP_FLAGS_SYN)
+ 481               	.LM25:
+ 482 022a 8D85      		ldd r24,Y+13
+ 483 022c 81FF      		sbrs r24,1
+ 484 022e 00C0      		rjmp .L14
+  95:Lib/net/net.c ****     fprintf_P(stream, PSTR("SYN "));
+ 486               	.LM26:
+ 487 0230 00D0      		rcall .
+ 488 0232 00D0      		rcall .
+ 489 0234 EDB7      		in r30,__SP_L__
+ 490 0236 FEB7      		in r31,__SP_H__
+ 491 0238 D282      		std Z+2,r13
+ 492 023a C182      		std Z+1,r12
+ 493 023c 80E0      		ldi r24,lo8(__c.1696)
+ 494 023e 90E0      		ldi r25,hi8(__c.1696)
+ 495 0240 9483      		std Z+4,r25
+ 496 0242 8383      		std Z+3,r24
+ 497 0244 0E94 0000 		call fprintf_P
+ 498 0248 0F90      		pop __tmp_reg__
+ 499 024a 0F90      		pop __tmp_reg__
+ 500 024c 0F90      		pop __tmp_reg__
+ 501 024e 0F90      		pop __tmp_reg__
+ 502               	.L14:
+  96:Lib/net/net.c ****   if(tcpheader->flags & TCP_FLAGS_RST)
+ 504               	.LM27:
+ 505 0250 8D85      		ldd r24,Y+13
+ 506 0252 82FF      		sbrs r24,2
+ 507 0254 00C0      		rjmp .L15
+  97:Lib/net/net.c ****     fprintf_P(stream, PSTR("RST "));
+ 509               	.LM28:
+ 510 0256 00D0      		rcall .
+ 511 0258 00D0      		rcall .
+ 512 025a ADB7      		in r26,__SP_L__
+ 513 025c BEB7      		in r27,__SP_H__
+ 514 025e 1296      		adiw r26,1+1
+ 515 0260 DC92      		st X,r13
+ 516 0262 CE92      		st -X,r12
+ 517 0264 1197      		sbiw r26,1
+ 518 0266 80E0      		ldi r24,lo8(__c.1698)
+ 519 0268 90E0      		ldi r25,hi8(__c.1698)
+ 520 026a 1496      		adiw r26,3+1
+ 521 026c 9C93      		st X,r25
+ 522 026e 8E93      		st -X,r24
+ 523 0270 1397      		sbiw r26,3
+ 524 0272 0E94 0000 		call fprintf_P
+ 525 0276 0F90      		pop __tmp_reg__
+ 526 0278 0F90      		pop __tmp_reg__
+ 527 027a 0F90      		pop __tmp_reg__
+ 528 027c 0F90      		pop __tmp_reg__
+ 529               	.L15:
+  98:Lib/net/net.c ****   if(tcpheader->flags & TCP_FLAGS_PSH)
+ 531               	.LM29:
+ 532 027e 8D85      		ldd r24,Y+13
+ 533 0280 83FF      		sbrs r24,3
+ 534 0282 00C0      		rjmp .L16
+  99:Lib/net/net.c ****     fprintf_P(stream, PSTR("PSH "));
+ 536               	.LM30:
+ 537 0284 00D0      		rcall .
+ 538 0286 00D0      		rcall .
+ 539 0288 EDB7      		in r30,__SP_L__
+ 540 028a FEB7      		in r31,__SP_H__
+ 541 028c D282      		std Z+2,r13
+ 542 028e C182      		std Z+1,r12
+ 543 0290 80E0      		ldi r24,lo8(__c.1700)
+ 544 0292 90E0      		ldi r25,hi8(__c.1700)
+ 545 0294 9483      		std Z+4,r25
+ 546 0296 8383      		std Z+3,r24
+ 547 0298 0E94 0000 		call fprintf_P
+ 548 029c 0F90      		pop __tmp_reg__
+ 549 029e 0F90      		pop __tmp_reg__
+ 550 02a0 0F90      		pop __tmp_reg__
+ 551 02a2 0F90      		pop __tmp_reg__
+ 552               	.L16:
+ 100:Lib/net/net.c ****   if(tcpheader->flags & TCP_FLAGS_ACK)
+ 554               	.LM31:
+ 555 02a4 8D85      		ldd r24,Y+13
+ 556 02a6 84FF      		sbrs r24,4
+ 557 02a8 00C0      		rjmp .L17
+ 101:Lib/net/net.c ****     fprintf_P(stream, PSTR("ACK "));
+ 559               	.LM32:
+ 560 02aa 00D0      		rcall .
+ 561 02ac 00D0      		rcall .
+ 562 02ae ADB7      		in r26,__SP_L__
+ 563 02b0 BEB7      		in r27,__SP_H__
+ 564 02b2 1296      		adiw r26,1+1
+ 565 02b4 DC92      		st X,r13
+ 566 02b6 CE92      		st -X,r12
+ 567 02b8 1197      		sbiw r26,1
+ 568 02ba 80E0      		ldi r24,lo8(__c.1702)
+ 569 02bc 90E0      		ldi r25,hi8(__c.1702)
+ 570 02be 1496      		adiw r26,3+1
+ 571 02c0 9C93      		st X,r25
+ 572 02c2 8E93      		st -X,r24
+ 573 02c4 1397      		sbiw r26,3
+ 574 02c6 0E94 0000 		call fprintf_P
+ 575 02ca 0F90      		pop __tmp_reg__
+ 576 02cc 0F90      		pop __tmp_reg__
+ 577 02ce 0F90      		pop __tmp_reg__
+ 578 02d0 0F90      		pop __tmp_reg__
+ 579               	.L17:
+ 102:Lib/net/net.c ****   if(tcpheader->flags & TCP_FLAGS_URG)
+ 581               	.LM33:
+ 582 02d2 8D85      		ldd r24,Y+13
+ 583 02d4 85FF      		sbrs r24,5
+ 584 02d6 00C0      		rjmp .L18
+ 103:Lib/net/net.c ****     fprintf_P(stream, PSTR("URG "));
+ 586               	.LM34:
+ 587 02d8 00D0      		rcall .
+ 588 02da 00D0      		rcall .
+ 589 02dc EDB7      		in r30,__SP_L__
+ 590 02de FEB7      		in r31,__SP_H__
+ 591 02e0 D282      		std Z+2,r13
+ 592 02e2 C182      		std Z+1,r12
+ 593 02e4 80E0      		ldi r24,lo8(__c.1704)
+ 594 02e6 90E0      		ldi r25,hi8(__c.1704)
+ 595 02e8 9483      		std Z+4,r25
+ 596 02ea 8383      		std Z+3,r24
+ 597 02ec 0E94 0000 		call fprintf_P
+ 598 02f0 0F90      		pop __tmp_reg__
+ 599 02f2 0F90      		pop __tmp_reg__
+ 600 02f4 0F90      		pop __tmp_reg__
+ 601 02f6 0F90      		pop __tmp_reg__
+ 602               	.L18:
+ 104:Lib/net/net.c ****   fprintf_P(stream, PSTR("\r\n"));
+ 604               	.LM35:
+ 605 02f8 00D0      		rcall .
+ 606 02fa 00D0      		rcall .
+ 607 02fc ADB7      		in r26,__SP_L__
+ 608 02fe BEB7      		in r27,__SP_H__
+ 609 0300 1296      		adiw r26,1+1
+ 610 0302 DC92      		st X,r13
+ 611 0304 CE92      		st -X,r12
+ 612 0306 1197      		sbiw r26,1
+ 613 0308 80E0      		ldi r24,lo8(__c.1706)
+ 614 030a 90E0      		ldi r25,hi8(__c.1706)
+ 615 030c 1496      		adiw r26,3+1
+ 616 030e 9C93      		st X,r25
+ 617 0310 8E93      		st -X,r24
+ 618 0312 1397      		sbiw r26,3
+ 619 0314 0E94 0000 		call fprintf_P
+ 620 0318 0F90      		pop __tmp_reg__
+ 621 031a 0F90      		pop __tmp_reg__
+ 622 031c 0F90      		pop __tmp_reg__
+ 623 031e 0F90      		pop __tmp_reg__
+ 624               	/* epilogue start */
+ 105:Lib/net/net.c **** }
+ 626               	.LM36:
+ 627 0320 DF91      		pop r29
+ 628 0322 CF91      		pop r28
+ 629 0324 1F91      		pop r17
+ 630 0326 0F91      		pop r16
+ 631 0328 FF90      		pop r15
+ 632 032a EF90      		pop r14
+ 633 032c DF90      		pop r13
+ 634 032e CF90      		pop r12
+ 635 0330 0895      		ret
+ 637               	.Lscope4:
+ 639               		.stabd	78,0,0
+ 643               	.global	netPrintIPAddr
+ 645               	netPrintIPAddr:
+ 646               		.stabd	46,0,0
+  53:Lib/net/net.c **** {
+ 648               	.LM37:
+ 649               	.LFBB5:
+ 650 0332 DF93      		push r29
+ 651 0334 CF93      		push r28
+ 652 0336 00D0      		rcall .
+ 653 0338 00D0      		rcall .
+ 654 033a CDB7      		in r28,__SP_L__
+ 655 033c DEB7      		in r29,__SP_H__
+ 656               	/* prologue: function */
+ 657               	/* frame size = 4 */
+ 658 033e 4983      		std Y+1,r20
+ 659 0340 5A83      		std Y+2,r21
+ 660 0342 6B83      		std Y+3,r22
+ 661 0344 7C83      		std Y+4,r23
+  54:Lib/net/net.c ****   fprintf_P(stream, PSTR("%d.%d.%d.%d"), ((unsigned char*)&ipaddr)[0], ((unsigned char*)&ipaddr)[1]
+ 663               	.LM38:
+ 664 0346 AE01      		movw r20,r28
+ 665 0348 4F5F      		subi r20,lo8(-(1))
+ 666 034a 5F4F      		sbci r21,hi8(-(1))
+ 667 034c 2DB7      		in r18,__SP_L__
+ 668 034e 3EB7      		in r19,__SP_H__
+ 669 0350 2C50      		subi r18,lo8(-(-12))
+ 670 0352 3040      		sbci r19,hi8(-(-12))
+ 671 0354 0FB6      		in __tmp_reg__,__SREG__
+ 672 0356 F894      		cli
+ 673 0358 3EBF      		out __SP_H__,r19
+ 674 035a 0FBE      		out __SREG__,__tmp_reg__
+ 675 035c 2DBF      		out __SP_L__,r18
+ 676 035e EDB7      		in r30,__SP_L__
+ 677 0360 FEB7      		in r31,__SP_H__
+ 678 0362 3196      		adiw r30,1
+ 679 0364 ADB7      		in r26,__SP_L__
+ 680 0366 BEB7      		in r27,__SP_H__
+ 681 0368 1296      		adiw r26,1+1
+ 682 036a 9C93      		st X,r25
+ 683 036c 8E93      		st -X,r24
+ 684 036e 1197      		sbiw r26,1
+ 685 0370 80E0      		ldi r24,lo8(__c.1614)
+ 686 0372 90E0      		ldi r25,hi8(__c.1614)
+ 687 0374 9383      		std Z+3,r25
+ 688 0376 8283      		std Z+2,r24
+ 689 0378 8981      		ldd r24,Y+1
+ 690 037a 8483      		std Z+4,r24
+ 691 037c 1582      		std Z+5,__zero_reg__
+ 692 037e DA01      		movw r26,r20
+ 693 0380 1196      		adiw r26,1
+ 694 0382 8C91      		ld r24,X
+ 695 0384 1197      		sbiw r26,1
+ 696 0386 8683      		std Z+6,r24
+ 697 0388 1782      		std Z+7,__zero_reg__
+ 698 038a 1296      		adiw r26,2
+ 699 038c 8C91      		ld r24,X
+ 700 038e 1297      		sbiw r26,2
+ 701 0390 8087      		std Z+8,r24
+ 702 0392 1186      		std Z+9,__zero_reg__
+ 703 0394 1396      		adiw r26,3
+ 704 0396 8C91      		ld r24,X
+ 705 0398 8287      		std Z+10,r24
+ 706 039a 1386      		std Z+11,__zero_reg__
+ 707 039c 0E94 0000 		call fprintf_P
+ 708 03a0 2DB7      		in r18,__SP_L__
+ 709 03a2 3EB7      		in r19,__SP_H__
+ 710 03a4 245F      		subi r18,lo8(-(12))
+ 711 03a6 3F4F      		sbci r19,hi8(-(12))
+ 712 03a8 0FB6      		in __tmp_reg__,__SREG__
+ 713 03aa F894      		cli
+ 714 03ac 3EBF      		out __SP_H__,r19
+ 715 03ae 0FBE      		out __SREG__,__tmp_reg__
+ 716 03b0 2DBF      		out __SP_L__,r18
+ 717               	/* epilogue start */
+  55:Lib/net/net.c **** }
+ 719               	.LM39:
+ 720 03b2 0F90      		pop __tmp_reg__
+ 721 03b4 0F90      		pop __tmp_reg__
+ 722 03b6 0F90      		pop __tmp_reg__
+ 723 03b8 0F90      		pop __tmp_reg__
+ 724 03ba CF91      		pop r28
+ 725 03bc DF91      		pop r29
+ 726 03be 0895      		ret
+ 728               	.Lscope5:
+ 730               		.stabd	78,0,0
+ 734               	.global	netPrintIpHeader
+ 736               	netPrintIpHeader:
+ 737               		.stabd	46,0,0
+  67:Lib/net/net.c **** {
+ 739               	.LM40:
+ 740               	.LFBB6:
+ 741 03c0 EF92      		push r14
+ 742 03c2 FF92      		push r15
+ 743 03c4 0F93      		push r16
+ 744 03c6 1F93      		push r17
+ 745 03c8 CF93      		push r28
+ 746 03ca DF93      		push r29
+ 747               	/* prologue: function */
+ 748               	/* frame size = 0 */
+ 749 03cc EC01      		movw r28,r24
+ 750 03ce 7B01      		movw r14,r22
+  68:Lib/net/net.c ****   fprintf_P(stream, PSTR("IP Header\r\n"));
+ 752               	.LM41:
+ 753 03d0 00D0      		rcall .
+ 754 03d2 00D0      		rcall .
+ 755 03d4 ADB7      		in r26,__SP_L__
+ 756 03d6 BEB7      		in r27,__SP_H__
+ 757 03d8 1296      		adiw r26,1+1
+ 758 03da 9C93      		st X,r25
+ 759 03dc 8E93      		st -X,r24
+ 760 03de 1197      		sbiw r26,1
+ 761 03e0 80E0      		ldi r24,lo8(__c.1645)
+ 762 03e2 90E0      		ldi r25,hi8(__c.1645)
+ 763 03e4 1496      		adiw r26,3+1
+ 764 03e6 9C93      		st X,r25
+ 765 03e8 8E93      		st -X,r24
+ 766 03ea 1397      		sbiw r26,3
+ 767 03ec 0E94 0000 		call fprintf_P
+  69:Lib/net/net.c ****   fprintf_P(stream, PSTR("Ver     : %d\r\n"), (ipheader->vhl)>>4);
+ 769               	.LM42:
+ 770 03f0 00D0      		rcall .
+ 771 03f2 EDB7      		in r30,__SP_L__
+ 772 03f4 FEB7      		in r31,__SP_H__
+ 773 03f6 3196      		adiw r30,1
+ 774 03f8 ADB7      		in r26,__SP_L__
+ 775 03fa BEB7      		in r27,__SP_H__
+ 776 03fc 1296      		adiw r26,1+1
+ 777 03fe DC93      		st X,r29
+ 778 0400 CE93      		st -X,r28
+ 779 0402 1197      		sbiw r26,1
+ 780 0404 80E0      		ldi r24,lo8(__c.1647)
+ 781 0406 90E0      		ldi r25,hi8(__c.1647)
+ 782 0408 9383      		std Z+3,r25
+ 783 040a 8283      		std Z+2,r24
+ 784 040c D701      		movw r26,r14
+ 785 040e 8C91      		ld r24,X
+ 786 0410 8295      		swap r24
+ 787 0412 8F70      		andi r24,lo8(15)
+ 788 0414 8483      		std Z+4,r24
+ 789 0416 1582      		std Z+5,__zero_reg__
+ 790 0418 0E94 0000 		call fprintf_P
+  70:Lib/net/net.c ****   fprintf_P(stream, PSTR("Length  : %d\r\n"), htons(ipheader->len));
+ 792               	.LM43:
+ 793 041c EDB7      		in r30,__SP_L__
+ 794 041e FEB7      		in r31,__SP_H__
+ 795 0420 3196      		adiw r30,1
+ 796 0422 ADB7      		in r26,__SP_L__
+ 797 0424 BEB7      		in r27,__SP_H__
+ 798 0426 1296      		adiw r26,1+1
+ 799 0428 DC93      		st X,r29
+ 800 042a CE93      		st -X,r28
+ 801 042c 1197      		sbiw r26,1
+ 802 042e 80E0      		ldi r24,lo8(__c.1649)
+ 803 0430 90E0      		ldi r25,hi8(__c.1649)
+ 804 0432 9383      		std Z+3,r25
+ 805 0434 8283      		std Z+2,r24
+ 806 0436 D701      		movw r26,r14
+ 807 0438 1296      		adiw r26,2
+ 808 043a 9C91      		ld r25,X
+ 809 043c 1297      		sbiw r26,2
+ 810 043e 1396      		adiw r26,3
+ 811 0440 8C91      		ld r24,X
+ 812 0442 8483      		std Z+4,r24
+ 813 0444 9583      		std Z+5,r25
+ 814 0446 0E94 0000 		call fprintf_P
+  71:Lib/net/net.c ****   if(ipheader->proto == IP_PROTO_ICMP)
+ 816               	.LM44:
+ 817 044a F701      		movw r30,r14
+ 818 044c 2185      		ldd r18,Z+9
+ 819 044e 8DB7      		in r24,__SP_L__
+ 820 0450 9EB7      		in r25,__SP_H__
+ 821 0452 0696      		adiw r24,6
+ 822 0454 0FB6      		in __tmp_reg__,__SREG__
+ 823 0456 F894      		cli
+ 824 0458 9EBF      		out __SP_H__,r25
+ 825 045a 0FBE      		out __SREG__,__tmp_reg__
+ 826 045c 8DBF      		out __SP_L__,r24
+ 827 045e 2130      		cpi r18,lo8(1)
+ 828 0460 01F4      		brne .L23
+  72:Lib/net/net.c ****     fprintf_P(stream, PSTR("Protocol: ICMP\r\n"));
+ 830               	.LM45:
+ 831 0462 00D0      		rcall .
+ 832 0464 00D0      		rcall .
+ 833 0466 ADB7      		in r26,__SP_L__
+ 834 0468 BEB7      		in r27,__SP_H__
+ 835 046a 1296      		adiw r26,1+1
+ 836 046c DC93      		st X,r29
+ 837 046e CE93      		st -X,r28
+ 838 0470 1197      		sbiw r26,1
+ 839 0472 80E0      		ldi r24,lo8(__c.1651)
+ 840 0474 90E0      		ldi r25,hi8(__c.1651)
+ 841 0476 00C0      		rjmp .L29
+ 842               	.L23:
+  73:Lib/net/net.c ****   else if(ipheader->proto == IP_PROTO_TCP)
+ 844               	.LM46:
+ 845 0478 2630      		cpi r18,lo8(6)
+ 846 047a 01F4      		brne .L25
+  74:Lib/net/net.c ****     fprintf_P(stream, PSTR("Protocol: TCP\r\n"));
+ 848               	.LM47:
+ 849 047c 00D0      		rcall .
+ 850 047e 00D0      		rcall .
+ 851 0480 EDB7      		in r30,__SP_L__
+ 852 0482 FEB7      		in r31,__SP_H__
+ 853 0484 D283      		std Z+2,r29
+ 854 0486 C183      		std Z+1,r28
+ 855 0488 80E0      		ldi r24,lo8(__c.1653)
+ 856 048a 90E0      		ldi r25,hi8(__c.1653)
+ 857 048c 9483      		std Z+4,r25
+ 858 048e 8383      		std Z+3,r24
+ 859               	.L28:
+ 860 0490 0E94 0000 		call fprintf_P
+ 861 0494 0F90      		pop __tmp_reg__
+ 862 0496 0F90      		pop __tmp_reg__
+ 863 0498 0F90      		pop __tmp_reg__
+ 864 049a 0F90      		pop __tmp_reg__
+ 865 049c 00C0      		rjmp .L24
+ 866               	.L25:
+  75:Lib/net/net.c ****   else if(ipheader->proto == IP_PROTO_UDP)
+ 868               	.LM48:
+ 869 049e 2131      		cpi r18,lo8(17)
+ 870 04a0 01F4      		brne .L26
+  76:Lib/net/net.c ****     fprintf_P(stream, PSTR("Protocol: UDP\r\n"));
+ 872               	.LM49:
+ 873 04a2 00D0      		rcall .
+ 874 04a4 00D0      		rcall .
+ 875 04a6 ADB7      		in r26,__SP_L__
+ 876 04a8 BEB7      		in r27,__SP_H__
+ 877 04aa 1296      		adiw r26,1+1
+ 878 04ac DC93      		st X,r29
+ 879 04ae CE93      		st -X,r28
+ 880 04b0 1197      		sbiw r26,1
+ 881 04b2 80E0      		ldi r24,lo8(__c.1655)
+ 882 04b4 90E0      		ldi r25,hi8(__c.1655)
+ 883               	.L29:
+ 884 04b6 1496      		adiw r26,3+1
+ 885 04b8 9C93      		st X,r25
+ 886 04ba 8E93      		st -X,r24
+ 887 04bc 1397      		sbiw r26,3
+ 888 04be 00C0      		rjmp .L28
+ 889               	.L26:
+  78:Lib/net/net.c ****     fprintf_P(stream, PSTR("Protocol: %d\r\n"), ipheader->proto);
+ 891               	.LM50:
+ 892 04c0 00D0      		rcall .
+ 893 04c2 00D0      		rcall .
+ 894 04c4 00D0      		rcall .
+ 895 04c6 EDB7      		in r30,__SP_L__
+ 896 04c8 FEB7      		in r31,__SP_H__
+ 897 04ca 3196      		adiw r30,1
+ 898 04cc ADB7      		in r26,__SP_L__
+ 899 04ce BEB7      		in r27,__SP_H__
+ 900 04d0 1296      		adiw r26,1+1
+ 901 04d2 DC93      		st X,r29
+ 902 04d4 CE93      		st -X,r28
+ 903 04d6 1197      		sbiw r26,1
+ 904 04d8 80E0      		ldi r24,lo8(__c.1657)
+ 905 04da 90E0      		ldi r25,hi8(__c.1657)
+ 906 04dc 9383      		std Z+3,r25
+ 907 04de 8283      		std Z+2,r24
+ 908 04e0 2483      		std Z+4,r18
+ 909 04e2 1582      		std Z+5,__zero_reg__
+ 910 04e4 0E94 0000 		call fprintf_P
+ 911 04e8 EDB7      		in r30,__SP_L__
+ 912 04ea FEB7      		in r31,__SP_H__
+ 913 04ec 3696      		adiw r30,6
+ 914 04ee 0FB6      		in __tmp_reg__,__SREG__
+ 915 04f0 F894      		cli
+ 916 04f2 FEBF      		out __SP_H__,r31
+ 917 04f4 0FBE      		out __SREG__,__tmp_reg__
+ 918 04f6 EDBF      		out __SP_L__,r30
+ 919               	.L24:
+  80:Lib/net/net.c ****   fprintf_P(stream, PSTR("SourceIP: ")); netPrintIPAddr(stream, htonl(ipheader->srcipaddr));   fpri
+ 921               	.LM51:
+ 922 04f8 00D0      		rcall .
+ 923 04fa 00D0      		rcall .
+ 924 04fc ADB7      		in r26,__SP_L__
+ 925 04fe BEB7      		in r27,__SP_H__
+ 926 0500 1296      		adiw r26,1+1
+ 927 0502 DC93      		st X,r29
+ 928 0504 CE93      		st -X,r28
+ 929 0506 1197      		sbiw r26,1
+ 930 0508 80E0      		ldi r24,lo8(__c.1659)
+ 931 050a 90E0      		ldi r25,hi8(__c.1659)
+ 932 050c 1496      		adiw r26,3+1
+ 933 050e 9C93      		st X,r25
+ 934 0510 8E93      		st -X,r24
+ 935 0512 1397      		sbiw r26,3
+ 936 0514 0E94 0000 		call fprintf_P
+ 937 0518 F701      		movw r30,r14
+ 938 051a 0485      		ldd r16,Z+12
+ 939 051c 1585      		ldd r17,Z+13
+ 940 051e 2685      		ldd r18,Z+14
+ 941 0520 3785      		ldd r19,Z+15
+ 942 0522 0F90      		pop __tmp_reg__
+ 943 0524 0F90      		pop __tmp_reg__
+ 944 0526 0F90      		pop __tmp_reg__
+ 945 0528 0F90      		pop __tmp_reg__
+ 946 052a 502F      		mov r21,r16
+ 947 052c 412F      		mov r20,r17
+ 948 052e 60E0      		ldi r22,lo8(0)
+ 949 0530 70E0      		ldi r23,hi8(0)
+ 950 0532 BA01      		movw r22,r20
+ 951 0534 5527      		clr r21
+ 952 0536 4427      		clr r20
+ 953 0538 8901      		movw r16,r18
+ 954 053a 2227      		clr r18
+ 955 053c 3327      		clr r19
+ 956 053e 902F      		mov r25,r16
+ 957 0540 812F      		mov r24,r17
+ 958 0542 A0E0      		ldi r26,lo8(0)
+ 959 0544 B0E0      		ldi r27,hi8(0)
+ 960 0546 482B      		or r20,r24
+ 961 0548 592B      		or r21,r25
+ 962 054a 6A2B      		or r22,r26
+ 963 054c 7B2B      		or r23,r27
+ 964 054e CE01      		movw r24,r28
+ 965 0550 0E94 0000 		call netPrintIPAddr
+ 966 0554 00D0      		rcall .
+ 967 0556 00D0      		rcall .
+ 968 0558 ADB7      		in r26,__SP_L__
+ 969 055a BEB7      		in r27,__SP_H__
+ 970 055c 1296      		adiw r26,1+1
+ 971 055e DC93      		st X,r29
+ 972 0560 CE93      		st -X,r28
+ 973 0562 1197      		sbiw r26,1
+ 974 0564 80E0      		ldi r24,lo8(__c.1661)
+ 975 0566 90E0      		ldi r25,hi8(__c.1661)
+ 976 0568 1496      		adiw r26,3+1
+ 977 056a 9C93      		st X,r25
+ 978 056c 8E93      		st -X,r24
+ 979 056e 1397      		sbiw r26,3
+ 980 0570 0E94 0000 		call fprintf_P
+  81:Lib/net/net.c ****   fprintf_P(stream, PSTR("Dest  IP: ")); netPrintIPAddr(stream, htonl(ipheader->destipaddr));  fpri
+ 982               	.LM52:
+ 983 0574 EDB7      		in r30,__SP_L__
+ 984 0576 FEB7      		in r31,__SP_H__
+ 985 0578 D283      		std Z+2,r29
+ 986 057a C183      		std Z+1,r28
+ 987 057c 80E0      		ldi r24,lo8(__c.1663)
+ 988 057e 90E0      		ldi r25,hi8(__c.1663)
+ 989 0580 9483      		std Z+4,r25
+ 990 0582 8383      		std Z+3,r24
+ 991 0584 0E94 0000 		call fprintf_P
+ 992 0588 D701      		movw r26,r14
+ 993 058a 5096      		adiw r26,16
+ 994 058c 0D91      		ld r16,X+
+ 995 058e 1D91      		ld r17,X+
+ 996 0590 2D91      		ld r18,X+
+ 997 0592 3C91      		ld r19,X
+ 998 0594 5397      		sbiw r26,16+3
+ 999 0596 0F90      		pop __tmp_reg__
+ 1000 0598 0F90      		pop __tmp_reg__
+ 1001 059a 0F90      		pop __tmp_reg__
+ 1002 059c 0F90      		pop __tmp_reg__
+ 1003 059e 502F      		mov r21,r16
+ 1004 05a0 412F      		mov r20,r17
+ 1005 05a2 60E0      		ldi r22,lo8(0)
+ 1006 05a4 70E0      		ldi r23,hi8(0)
+ 1007 05a6 BA01      		movw r22,r20
+ 1008 05a8 5527      		clr r21
+ 1009 05aa 4427      		clr r20
+ 1010 05ac 8901      		movw r16,r18
+ 1011 05ae 2227      		clr r18
+ 1012 05b0 3327      		clr r19
+ 1013 05b2 902F      		mov r25,r16
+ 1014 05b4 812F      		mov r24,r17
+ 1015 05b6 A0E0      		ldi r26,lo8(0)
+ 1016 05b8 B0E0      		ldi r27,hi8(0)
+ 1017 05ba 482B      		or r20,r24
+ 1018 05bc 592B      		or r21,r25
+ 1019 05be 6A2B      		or r22,r26
+ 1020 05c0 7B2B      		or r23,r27
+ 1021 05c2 CE01      		movw r24,r28
+ 1022 05c4 0E94 0000 		call netPrintIPAddr
+ 1023 05c8 00D0      		rcall .
+ 1024 05ca 00D0      		rcall .
+ 1025 05cc EDB7      		in r30,__SP_L__
+ 1026 05ce FEB7      		in r31,__SP_H__
+ 1027 05d0 D283      		std Z+2,r29
+ 1028 05d2 C183      		std Z+1,r28
+ 1029 05d4 80E0      		ldi r24,lo8(__c.1665)
+ 1030 05d6 90E0      		ldi r25,hi8(__c.1665)
+ 1031 05d8 9483      		std Z+4,r25
+ 1032 05da 8383      		std Z+3,r24
+ 1033 05dc 0E94 0000 		call fprintf_P
+ 1034 05e0 0F90      		pop __tmp_reg__
+ 1035 05e2 0F90      		pop __tmp_reg__
+ 1036 05e4 0F90      		pop __tmp_reg__
+ 1037 05e6 0F90      		pop __tmp_reg__
+ 1038               	/* epilogue start */
+  82:Lib/net/net.c **** }
+ 1040               	.LM53:
+ 1041 05e8 DF91      		pop r29
+ 1042 05ea CF91      		pop r28
+ 1043 05ec 1F91      		pop r17
+ 1044 05ee 0F91      		pop r16
+ 1045 05f0 FF90      		pop r15
+ 1046 05f2 EF90      		pop r14
+ 1047 05f4 0895      		ret
+ 1049               	.Lscope6:
+ 1051               		.stabd	78,0,0
+ 1055               	.global	netPrintEthAddr
+ 1057               	netPrintEthAddr:
+ 1058               		.stabd	46,0,0
+  48:Lib/net/net.c **** {
+ 1060               	.LM54:
+ 1061               	.LFBB7:
+ 1062 05f6 CF93      		push r28
+ 1063 05f8 DF93      		push r29
+ 1064               	/* prologue: function */
+ 1065               	/* frame size = 0 */
+ 1066 05fa DB01      		movw r26,r22
+  49:Lib/net/net.c ****   fprintf_P(stream, PSTR("%02x:%02x:%02x:%02x:%02x:%02x"), ethaddr->addr[0], ethaddr->addr[1], etha
+ 1068               	.LM55:
+ 1069 05fc 2DB7      		in r18,__SP_L__
+ 1070 05fe 3EB7      		in r19,__SP_H__
+ 1071 0600 2051      		subi r18,lo8(-(-16))
+ 1072 0602 3040      		sbci r19,hi8(-(-16))
+ 1073 0604 0FB6      		in __tmp_reg__,__SREG__
+ 1074 0606 F894      		cli
+ 1075 0608 3EBF      		out __SP_H__,r19
+ 1076 060a 0FBE      		out __SREG__,__tmp_reg__
+ 1077 060c 2DBF      		out __SP_L__,r18
+ 1078 060e EDB7      		in r30,__SP_L__
+ 1079 0610 FEB7      		in r31,__SP_H__
+ 1080 0612 3196      		adiw r30,1
+ 1081 0614 CDB7      		in r28,__SP_L__
+ 1082 0616 DEB7      		in r29,__SP_H__
+ 1083 0618 9A83      		std Y+2,r25
+ 1084 061a 8983      		std Y+1,r24
+ 1085 061c 80E0      		ldi r24,lo8(__c.1596)
+ 1086 061e 90E0      		ldi r25,hi8(__c.1596)
+ 1087 0620 9383      		std Z+3,r25
+ 1088 0622 8283      		std Z+2,r24
+ 1089 0624 8C91      		ld r24,X
+ 1090 0626 8483      		std Z+4,r24
+ 1091 0628 1582      		std Z+5,__zero_reg__
+ 1092 062a 1196      		adiw r26,1
+ 1093 062c 8C91      		ld r24,X
+ 1094 062e 1197      		sbiw r26,1
+ 1095 0630 8683      		std Z+6,r24
+ 1096 0632 1782      		std Z+7,__zero_reg__
+ 1097 0634 1296      		adiw r26,2
+ 1098 0636 8C91      		ld r24,X
+ 1099 0638 1297      		sbiw r26,2
+ 1100 063a 8087      		std Z+8,r24
+ 1101 063c 1186      		std Z+9,__zero_reg__
+ 1102 063e 1396      		adiw r26,3
+ 1103 0640 8C91      		ld r24,X
+ 1104 0642 1397      		sbiw r26,3
+ 1105 0644 8287      		std Z+10,r24
+ 1106 0646 1386      		std Z+11,__zero_reg__
+ 1107 0648 1496      		adiw r26,4
+ 1108 064a 8C91      		ld r24,X
+ 1109 064c 1497      		sbiw r26,4
+ 1110 064e 8487      		std Z+12,r24
+ 1111 0650 1586      		std Z+13,__zero_reg__
+ 1112 0652 1596      		adiw r26,5
+ 1113 0654 8C91      		ld r24,X
+ 1114 0656 8687      		std Z+14,r24
+ 1115 0658 1786      		std Z+15,__zero_reg__
+ 1116 065a 0E94 0000 		call fprintf_P
+ 1117 065e 2DB7      		in r18,__SP_L__
+ 1118 0660 3EB7      		in r19,__SP_H__
+ 1119 0662 205F      		subi r18,lo8(-(16))
+ 1120 0664 3F4F      		sbci r19,hi8(-(16))
+ 1121 0666 0FB6      		in __tmp_reg__,__SREG__
+ 1122 0668 F894      		cli
+ 1123 066a 3EBF      		out __SP_H__,r19
+ 1124 066c 0FBE      		out __SREG__,__tmp_reg__
+ 1125 066e 2DBF      		out __SP_L__,r18
+ 1126               	/* epilogue start */
+  50:Lib/net/net.c **** }
+ 1128               	.LM56:
+ 1129 0670 DF91      		pop r29
+ 1130 0672 CF91      		pop r28
+ 1131 0674 0895      		ret
+ 1133               	.Lscope7:
+ 1135               		.stabd	78,0,0
+ 1139               	.global	netPrintEthHeader
+ 1141               	netPrintEthHeader:
+ 1142               		.stabd	46,0,0
+  58:Lib/net/net.c **** {
+ 1144               	.LM57:
+ 1145               	.LFBB8:
+ 1146 0676 CF92      		push r12
+ 1147 0678 DF92      		push r13
+ 1148 067a EF92      		push r14
+ 1149 067c FF92      		push r15
+ 1150 067e 0F93      		push r16
+ 1151 0680 1F93      		push r17
+ 1152               	/* prologue: function */
+ 1153               	/* frame size = 0 */
+ 1154 0682 7C01      		movw r14,r24
+ 1155 0684 8B01      		movw r16,r22
+  59:Lib/net/net.c ****   fprintf_P(stream, PSTR("Eth Packet Type: 0x%x"), eth_hdr->type);
+ 1157               	.LM58:
+ 1158 0686 00D0      		rcall .
+ 1159 0688 00D0      		rcall .
+ 1160 068a 00D0      		rcall .
+ 1161 068c EDB7      		in r30,__SP_L__
+ 1162 068e FEB7      		in r31,__SP_H__
+ 1163 0690 3196      		adiw r30,1
+ 1164 0692 ADB7      		in r26,__SP_L__
+ 1165 0694 BEB7      		in r27,__SP_H__
+ 1166 0696 1296      		adiw r26,1+1
+ 1167 0698 9C93      		st X,r25
+ 1168 069a 8E93      		st -X,r24
+ 1169 069c 1197      		sbiw r26,1
+ 1170 069e 80E0      		ldi r24,lo8(__c.1632)
+ 1171 06a0 90E0      		ldi r25,hi8(__c.1632)
+ 1172 06a2 9383      		std Z+3,r25
+ 1173 06a4 8283      		std Z+2,r24
+ 1174 06a6 DB01      		movw r26,r22
+ 1175 06a8 1C96      		adiw r26,12
+ 1176 06aa 8D91      		ld r24,X+
+ 1177 06ac 9C91      		ld r25,X
+ 1178 06ae 1D97      		sbiw r26,12+1
+ 1179 06b0 9583      		std Z+5,r25
+ 1180 06b2 8483      		std Z+4,r24
+ 1181 06b4 0E94 0000 		call fprintf_P
+  60:Lib/net/net.c ****   fprintf_P(stream, PSTR(" SRC:"));
+ 1183               	.LM59:
+ 1184 06b8 0F90      		pop __tmp_reg__
+ 1185 06ba 0F90      		pop __tmp_reg__
+ 1186 06bc EDB7      		in r30,__SP_L__
+ 1187 06be FEB7      		in r31,__SP_H__
+ 1188 06c0 F282      		std Z+2,r15
+ 1189 06c2 E182      		std Z+1,r14
+ 1190 06c4 80E0      		ldi r24,lo8(__c.1634)
+ 1191 06c6 90E0      		ldi r25,hi8(__c.1634)
+ 1192 06c8 9483      		std Z+4,r25
+ 1193 06ca 8383      		std Z+3,r24
+ 1194 06cc 0E94 0000 		call fprintf_P
+ 1195               	.LBB69:
+ 1196               	.LBB70:
+  49:Lib/net/net.c ****   fprintf_P(stream, PSTR("%02x:%02x:%02x:%02x:%02x:%02x"), ethaddr->addr[0], ethaddr->addr[1], etha
+ 1198               	.LM60:
+ 1199 06d0 8DB7      		in r24,__SP_L__
+ 1200 06d2 9EB7      		in r25,__SP_H__
+ 1201 06d4 0C97      		sbiw r24,12
+ 1202 06d6 0FB6      		in __tmp_reg__,__SREG__
+ 1203 06d8 F894      		cli
+ 1204 06da 9EBF      		out __SP_H__,r25
+ 1205 06dc 0FBE      		out __SREG__,__tmp_reg__
+ 1206 06de 8DBF      		out __SP_L__,r24
+ 1207 06e0 EDB7      		in r30,__SP_L__
+ 1208 06e2 FEB7      		in r31,__SP_H__
+ 1209 06e4 3196      		adiw r30,1
+ 1210 06e6 ADB7      		in r26,__SP_L__
+ 1211 06e8 BEB7      		in r27,__SP_H__
+ 1212 06ea 1296      		adiw r26,1+1
+ 1213 06ec FC92      		st X,r15
+ 1214 06ee EE92      		st -X,r14
+ 1215 06f0 1197      		sbiw r26,1
+ 1216               	.LBE70:
+ 1217 06f2 B0E0      		ldi r27,lo8(__c.1596)
+ 1218 06f4 CB2E      		mov r12,r27
+ 1219 06f6 B0E0      		ldi r27,hi8(__c.1596)
+ 1220 06f8 DB2E      		mov r13,r27
+ 1221 06fa D382      		std Z+3,r13
+ 1222 06fc C282      		std Z+2,r12
+ 1223 06fe D801      		movw r26,r16
+ 1224 0700 1696      		adiw r26,6
+ 1225 0702 8C91      		ld r24,X
+ 1226 0704 1697      		sbiw r26,6
+ 1227 0706 8483      		std Z+4,r24
+ 1228 0708 1582      		std Z+5,__zero_reg__
+ 1229 070a 1796      		adiw r26,7
+ 1230 070c 8C91      		ld r24,X
+ 1231 070e 1797      		sbiw r26,7
+ 1232 0710 8683      		std Z+6,r24
+ 1233 0712 1782      		std Z+7,__zero_reg__
+ 1234 0714 1896      		adiw r26,8
+ 1235 0716 8C91      		ld r24,X
+ 1236 0718 1897      		sbiw r26,8
+ 1237 071a 8087      		std Z+8,r24
+ 1238 071c 1186      		std Z+9,__zero_reg__
+ 1239 071e 1996      		adiw r26,9
+ 1240 0720 8C91      		ld r24,X
+ 1241 0722 1997      		sbiw r26,9
+ 1242 0724 8287      		std Z+10,r24
+ 1243 0726 1386      		std Z+11,__zero_reg__
+ 1244 0728 1A96      		adiw r26,10
+ 1245 072a 8C91      		ld r24,X
+ 1246 072c 1A97      		sbiw r26,10
+ 1247 072e 8487      		std Z+12,r24
+ 1248 0730 1586      		std Z+13,__zero_reg__
+ 1249 0732 1B96      		adiw r26,11
+ 1250 0734 8C91      		ld r24,X
+ 1251 0736 8687      		std Z+14,r24
+ 1252 0738 1786      		std Z+15,__zero_reg__
+ 1253 073a 0E94 0000 		call fprintf_P
+ 1254               	.LBE69:
+  62:Lib/net/net.c ****   fprintf_P(stream, PSTR("->DST:"));
+ 1256               	.LM61:
+ 1257 073e EDB7      		in r30,__SP_L__
+ 1258 0740 FEB7      		in r31,__SP_H__
+ 1259 0742 3C96      		adiw r30,12
+ 1260 0744 0FB6      		in __tmp_reg__,__SREG__
+ 1261 0746 F894      		cli
+ 1262 0748 FEBF      		out __SP_H__,r31
+ 1263 074a 0FBE      		out __SREG__,__tmp_reg__
+ 1264 074c EDBF      		out __SP_L__,r30
+ 1265 074e F282      		std Z+2,r15
+ 1266 0750 E182      		std Z+1,r14
+ 1267 0752 80E0      		ldi r24,lo8(__c.1636)
+ 1268 0754 90E0      		ldi r25,hi8(__c.1636)
+ 1269 0756 9483      		std Z+4,r25
+ 1270 0758 8383      		std Z+3,r24
+ 1271 075a 0E94 0000 		call fprintf_P
+ 1272               	.LBB71:
+ 1273               	.LBB72:
+  49:Lib/net/net.c ****   fprintf_P(stream, PSTR("%02x:%02x:%02x:%02x:%02x:%02x"), ethaddr->addr[0], ethaddr->addr[1], etha
+ 1275               	.LM62:
+ 1276 075e 8DB7      		in r24,__SP_L__
+ 1277 0760 9EB7      		in r25,__SP_H__
+ 1278 0762 0C97      		sbiw r24,12
+ 1279 0764 0FB6      		in __tmp_reg__,__SREG__
+ 1280 0766 F894      		cli
+ 1281 0768 9EBF      		out __SP_H__,r25
+ 1282 076a 0FBE      		out __SREG__,__tmp_reg__
+ 1283 076c 8DBF      		out __SP_L__,r24
+ 1284 076e EDB7      		in r30,__SP_L__
+ 1285 0770 FEB7      		in r31,__SP_H__
+ 1286 0772 3196      		adiw r30,1
+ 1287 0774 ADB7      		in r26,__SP_L__
+ 1288 0776 BEB7      		in r27,__SP_H__
+ 1289 0778 1296      		adiw r26,1+1
+ 1290 077a FC92      		st X,r15
+ 1291 077c EE92      		st -X,r14
+ 1292 077e 1197      		sbiw r26,1
+ 1293               	.LBE72:
+ 1294 0780 D382      		std Z+3,r13
+ 1295 0782 C282      		std Z+2,r12
+ 1296 0784 D801      		movw r26,r16
+ 1297 0786 8C91      		ld r24,X
+ 1298 0788 8483      		std Z+4,r24
+ 1299 078a 1582      		std Z+5,__zero_reg__
+ 1300 078c 1196      		adiw r26,1
+ 1301 078e 8C91      		ld r24,X
+ 1302 0790 1197      		sbiw r26,1
+ 1303 0792 8683      		std Z+6,r24
+ 1304 0794 1782      		std Z+7,__zero_reg__
+ 1305 0796 1296      		adiw r26,2
+ 1306 0798 8C91      		ld r24,X
+ 1307 079a 1297      		sbiw r26,2
+ 1308 079c 8087      		std Z+8,r24
+ 1309 079e 1186      		std Z+9,__zero_reg__
+ 1310 07a0 1396      		adiw r26,3
+ 1311 07a2 8C91      		ld r24,X
+ 1312 07a4 1397      		sbiw r26,3
+ 1313 07a6 8287      		std Z+10,r24
+ 1314 07a8 1386      		std Z+11,__zero_reg__
+ 1315 07aa 1496      		adiw r26,4
+ 1316 07ac 8C91      		ld r24,X
+ 1317 07ae 1497      		sbiw r26,4
+ 1318 07b0 8487      		std Z+12,r24
+ 1319 07b2 1586      		std Z+13,__zero_reg__
+ 1320 07b4 1596      		adiw r26,5
+ 1321 07b6 8C91      		ld r24,X
+ 1322 07b8 8687      		std Z+14,r24
+ 1323 07ba 1786      		std Z+15,__zero_reg__
+ 1324 07bc 0E94 0000 		call fprintf_P
+ 1325 07c0 EDB7      		in r30,__SP_L__
+ 1326 07c2 FEB7      		in r31,__SP_H__
+ 1327 07c4 7096      		adiw r30,16
+ 1328 07c6 0FB6      		in __tmp_reg__,__SREG__
+ 1329 07c8 F894      		cli
+ 1330 07ca FEBF      		out __SP_H__,r31
+ 1331 07cc 0FBE      		out __SREG__,__tmp_reg__
+ 1332 07ce EDBF      		out __SP_L__,r30
+ 1333               	/* epilogue start */
+ 1334               	.LBE71:
+  64:Lib/net/net.c **** }
+ 1336               	.LM63:
+ 1337 07d0 1F91      		pop r17
+ 1338 07d2 0F91      		pop r16
+ 1339 07d4 FF90      		pop r15
+ 1340 07d6 EF90      		pop r14
+ 1341 07d8 DF90      		pop r13
+ 1342 07da CF90      		pop r12
+ 1343 07dc 0895      		ret
+ 1345               	.Lscope8:
+ 1347               		.stabd	78,0,0
+ 1348               		.section	.progmem.data,"a",@progbits
+ 1351               	__c.1706:
+ 1352 0000 0D0A 00   		.string	"\r\n"
+ 1355               	__c.1704:
+ 1356 0003 5552 4720 		.string	"URG "
+ 1356      00
+ 1359               	__c.1702:
+ 1360 0008 4143 4B20 		.string	"ACK "
+ 1360      00
+ 1363               	__c.1700:
+ 1364 000d 5053 4820 		.string	"PSH "
+ 1364      00
+ 1367               	__c.1698:
+ 1368 0012 5253 5420 		.string	"RST "
+ 1368      00
+ 1371               	__c.1696:
+ 1372 0017 5359 4E20 		.string	"SYN "
+ 1372      00
+ 1375               	__c.1694:
+ 1376 001c 4649 4E20 		.string	"FIN "
+ 1376      00
+ 1379               	__c.1692:
+ 1380 0021 466C 6167 		.string	"Flags   : "
+ 1380      7320 2020 
+ 1380      3A20 00
+ 1383               	__c.1690:
+ 1384 002c 4163 6B20 		.string	"Ack Num : 0x%x\r\n"
+ 1384      4E75 6D20 
+ 1384      3A20 3078 
+ 1384      2578 0D0A 
+ 1384      00
+ 1387               	__c.1688:
+ 1388 003d 5365 7120 		.string	"Seq Num : 0x%x"
+ 1388      4E75 6D20 
+ 1388      3A20 3078 
+ 1388      2578 00
+ 1391               	__c.1686:
+ 1392 004c 4473 7420 		.string	"Dst Port: %d\r\n"
+ 1392      506F 7274 
+ 1392      3A20 2564 
+ 1392      0D0A 00
+ 1395               	__c.1684:
+ 1396 005b 5372 6320 		.string	"Src Port: %d\r\n"
+ 1396      506F 7274 
+ 1396      3A20 2564 
+ 1396      0D0A 00
+ 1399               	__c.1682:
+ 1400 006a 5443 5020 		.string	"TCP Header\r\n"
+ 1400      4865 6164 
+ 1400      6572 0D0A 
+ 1400      00
+ 1403               	__c.1665:
+ 1404 0077 0D0A 00   		.string	"\r\n"
+ 1407               	__c.1663:
+ 1408 007a 4465 7374 		.string	"Dest  IP: "
+ 1408      2020 4950 
+ 1408      3A20 00
+ 1411               	__c.1661:
+ 1412 0085 0D0A 00   		.string	"\r\n"
+ 1415               	__c.1659:
+ 1416 0088 536F 7572 		.string	"SourceIP: "
+ 1416      6365 4950 
+ 1416      3A20 00
+ 1419               	__c.1657:
+ 1420 0093 5072 6F74 		.string	"Protocol: %d\r\n"
+ 1420      6F63 6F6C 
+ 1420      3A20 2564 
+ 1420      0D0A 00
+ 1423               	__c.1655:
+ 1424 00a2 5072 6F74 		.string	"Protocol: UDP\r\n"
+ 1424      6F63 6F6C 
+ 1424      3A20 5544 
+ 1424      500D 0A00 
+ 1427               	__c.1653:
+ 1428 00b2 5072 6F74 		.string	"Protocol: TCP\r\n"
+ 1428      6F63 6F6C 
+ 1428      3A20 5443 
+ 1428      500D 0A00 
+ 1431               	__c.1651:
+ 1432 00c2 5072 6F74 		.string	"Protocol: ICMP\r\n"
+ 1432      6F63 6F6C 
+ 1432      3A20 4943 
+ 1432      4D50 0D0A 
+ 1432      00
+ 1435               	__c.1649:
+ 1436 00d3 4C65 6E67 		.string	"Length  : %d\r\n"
+ 1436      7468 2020 
+ 1436      3A20 2564 
+ 1436      0D0A 00
+ 1439               	__c.1647:
+ 1440 00e2 5665 7220 		.string	"Ver     : %d\r\n"
+ 1440      2020 2020 
+ 1440      3A20 2564 
+ 1440      0D0A 00
+ 1443               	__c.1645:
+ 1444 00f1 4950 2048 		.string	"IP Header\r\n"
+ 1444      6561 6465 
+ 1444      720D 0A00 
+ 1447               	__c.1636:
+ 1448 00fd 2D3E 4453 		.string	"->DST:"
+ 1448      543A 00
+ 1451               	__c.1634:
+ 1452 0104 2053 5243 		.string	" SRC:"
+ 1452      3A00 
+ 1455               	__c.1632:
+ 1456 010a 4574 6820 		.string	"Eth Packet Type: 0x%x"
+ 1456      5061 636B 
+ 1456      6574 2054 
+ 1456      7970 653A 
+ 1456      2030 7825 
+ 1459               	__c.1614:
+ 1460 0120 2564 2E25 		.string	"%d.%d.%d.%d"
+ 1460      642E 2564 
+ 1460      2E25 6400 
+ 1463               	__c.1596:
+ 1464 012c 2530 3278 		.string	"%02x:%02x:%02x:%02x:%02x:%02x"
+ 1464      3A25 3032 
+ 1464      783A 2530 
+ 1464      3278 3A25 
+ 1464      3032 783A 
+ 1494               		.text
+ 1496               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 net.c
+     /tmp/cciZxUEW.s:2      *ABS*:0000003f __SREG__
+     /tmp/cciZxUEW.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cciZxUEW.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cciZxUEW.s:5      *ABS*:00000034 __CCP__
+     /tmp/cciZxUEW.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cciZxUEW.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cciZxUEW.s:103    .text:00000000 htons
+     /tmp/cciZxUEW.s:125    .text:00000008 htonl
+     /tmp/cciZxUEW.s:175    .text:00000042 netChecksum
+     /tmp/cciZxUEW.s:274    .text:000000b0 netPrintTcpHeader
+     /tmp/cciZxUEW.s:1399   .progmem.data:0000006a __c.1682
+     /tmp/cciZxUEW.s:1395   .progmem.data:0000005b __c.1684
+     /tmp/cciZxUEW.s:1391   .progmem.data:0000004c __c.1686
+     /tmp/cciZxUEW.s:1387   .progmem.data:0000003d __c.1688
+     /tmp/cciZxUEW.s:1383   .progmem.data:0000002c __c.1690
+     /tmp/cciZxUEW.s:1379   .progmem.data:00000021 __c.1692
+     /tmp/cciZxUEW.s:1375   .progmem.data:0000001c __c.1694
+     /tmp/cciZxUEW.s:1371   .progmem.data:00000017 __c.1696
+     /tmp/cciZxUEW.s:1367   .progmem.data:00000012 __c.1698
+     /tmp/cciZxUEW.s:1363   .progmem.data:0000000d __c.1700
+     /tmp/cciZxUEW.s:1359   .progmem.data:00000008 __c.1702
+     /tmp/cciZxUEW.s:1355   .progmem.data:00000003 __c.1704
+     /tmp/cciZxUEW.s:1351   .progmem.data:00000000 __c.1706
+     /tmp/cciZxUEW.s:645    .text:00000332 netPrintIPAddr
+     /tmp/cciZxUEW.s:1459   .progmem.data:00000120 __c.1614
+     /tmp/cciZxUEW.s:736    .text:000003c0 netPrintIpHeader
+     /tmp/cciZxUEW.s:1443   .progmem.data:000000f1 __c.1645
+     /tmp/cciZxUEW.s:1439   .progmem.data:000000e2 __c.1647
+     /tmp/cciZxUEW.s:1435   .progmem.data:000000d3 __c.1649
+     /tmp/cciZxUEW.s:1431   .progmem.data:000000c2 __c.1651
+     /tmp/cciZxUEW.s:1427   .progmem.data:000000b2 __c.1653
+     /tmp/cciZxUEW.s:1423   .progmem.data:000000a2 __c.1655
+     /tmp/cciZxUEW.s:1419   .progmem.data:00000093 __c.1657
+     /tmp/cciZxUEW.s:1415   .progmem.data:00000088 __c.1659
+     /tmp/cciZxUEW.s:1411   .progmem.data:00000085 __c.1661
+     /tmp/cciZxUEW.s:1407   .progmem.data:0000007a __c.1663
+     /tmp/cciZxUEW.s:1403   .progmem.data:00000077 __c.1665
+     /tmp/cciZxUEW.s:1057   .text:000005f6 netPrintEthAddr
+     /tmp/cciZxUEW.s:1463   .progmem.data:0000012c __c.1596
+     /tmp/cciZxUEW.s:1141   .text:00000676 netPrintEthHeader
+     /tmp/cciZxUEW.s:1455   .progmem.data:0000010a __c.1632
+     /tmp/cciZxUEW.s:1451   .progmem.data:00000104 __c.1634
+     /tmp/cciZxUEW.s:1447   .progmem.data:000000fd __c.1636
+
+UNDEFINED SYMBOLS
+fprintf_P

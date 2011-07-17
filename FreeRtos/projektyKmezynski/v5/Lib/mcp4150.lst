@@ -1,0 +1,159 @@
+   1               		.file	"mcp4150.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 254               		.weak	enableSpiMCP4150
+ 256               	enableSpiMCP4150:
+ 257               		.stabd	46,0,0
+   1:Lib/mcp4150.c **** /*****************************************************************************
+   2:Lib/mcp4150.c **** * vim:sw=2:ts=2:si:et
+   3:Lib/mcp4150.c **** *
+   4:Lib/mcp4150.c **** * Title      : MPC23s17 parrarel I/O 16 bit port driver
+   5:Lib/mcp4150.c **** * Author     : Adam Kaliszan adam.kaliszan@gmail.com
+   6:Lib/mcp4150.c **** * Copyright  : GPL V2
+   7:Lib/mcp4150.c **** *
+   8:Lib/mcp4150.c **** *This driver provides:
+   9:Lib/mcp4150.c **** * - read/set operation
+  10:Lib/mcp4150.c **** *Driver uses mutexes and is condition race free. Function can be invoken by any thread.
+  11:Lib/mcp4150.c **** *****************************************************************************/
+  12:Lib/mcp4150.c **** //@{
+  13:Lib/mcp4150.c **** #include <avr/io.h>
+  14:Lib/mcp4150.c **** #include <util/delay.h>
+  15:Lib/mcp4150.c **** #include "mcp4150.h"
+  16:Lib/mcp4150.c **** #include "spi.h"
+  17:Lib/mcp4150.c **** 
+  18:Lib/mcp4150.c **** void enableSpiMCP4150(void)  {};
+ 259               	.LM0:
+ 260               	.LFBB1:
+ 261               	/* prologue: function */
+ 262               	/* frame size = 0 */
+ 263               	/* epilogue start */
+ 265               	.LM1:
+ 266 0000 0895      		ret
+ 268               	.Lscope1:
+ 270               		.stabd	78,0,0
+ 272               		.weak	disableSpiMCP4150
+ 274               	disableSpiMCP4150:
+ 275               		.stabd	46,0,0
+  19:Lib/mcp4150.c **** void disableSpiMCP4150(void) {};
+ 277               	.LM2:
+ 278               	.LFBB2:
+ 279               	/* prologue: function */
+ 280               	/* frame size = 0 */
+ 281               	/* epilogue start */
+ 283               	.LM3:
+ 284 0002 0895      		ret
+ 286               	.Lscope2:
+ 288               		.stabd	78,0,0
+ 291               	.global	MCP4150_setValue
+ 293               	MCP4150_setValue:
+ 294               		.stabd	46,0,0
+  20:Lib/mcp4150.c **** 
+  21:Lib/mcp4150.c **** /**
+  22:Lib/mcp4150.c ****  * Ustawia wartość rezystancji
+  23:Lib/mcp4150.c ****  * @param inputNo - WARTOŚĆ OD 0 DO 255.
+  24:Lib/mcp4150.c ****  */
+  25:Lib/mcp4150.c **** void MCP4150_setValue(uint8_t value)
+  26:Lib/mcp4150.c **** {  
+ 296               	.LM4:
+ 297               	.LFBB3:
+ 298 0004 1F93      		push r17
+ 299               	/* prologue: function */
+ 300               	/* frame size = 0 */
+ 301 0006 182F      		mov r17,r24
+  27:Lib/mcp4150.c ****   spiTake();
+ 303               	.LM5:
+ 304 0008 0E94 0000 		call spiTake
+  28:Lib/mcp4150.c ****   enableSpiMCP4150();
+ 306               	.LM6:
+ 307 000c 0E94 0000 		call enableSpiMCP4150
+  29:Lib/mcp4150.c ****   
+  30:Lib/mcp4150.c ****   spiSend(0x11);  
+ 309               	.LM7:
+ 310 0010 81E1      		ldi r24,lo8(17)
+ 311 0012 0E94 0000 		call spiSend
+  31:Lib/mcp4150.c ****   spiSend(value);
+ 313               	.LM8:
+ 314 0016 812F      		mov r24,r17
+ 315 0018 0E94 0000 		call spiSend
+  32:Lib/mcp4150.c ****   
+  33:Lib/mcp4150.c ****   disableSpiMCP4150(); 
+ 317               	.LM9:
+ 318 001c 0E94 0000 		call disableSpiMCP4150
+  34:Lib/mcp4150.c ****   spiGive();
+ 320               	.LM10:
+ 321 0020 0E94 0000 		call spiGive
+ 322               	/* epilogue start */
+  35:Lib/mcp4150.c **** }
+ 324               	.LM11:
+ 325 0024 1F91      		pop r17
+ 326 0026 0895      		ret
+ 328               	.Lscope3:
+ 330               		.stabd	78,0,0
+ 331               		.comm klastry,128,1
+ 332               		.comm wwwport,1,1
+ 333               		.comm rollers,2,1
+ 334               		.comm xSemaphoreSpiSS,2,1
+ 335               		.comm portA,1,1
+ 336               		.comm portB,1,1
+ 337               		.comm lockSensors,2,1
+ 338               		.comm xSemaphoreRs485,2,1
+ 339               		.comm nicState,14,1
+ 340               		.comm IpMyConfig,15,1
+ 341               		.comm arpDebug,2,1
+ 342               		.comm arpDebugLevel,1,1
+ 343               		.comm icmpDebug,2,1
+ 344               		.comm icmpDebugLevel,1,1
+ 345               		.comm udpSocket,2,1
+ 346               		.comm udpDbgStream,2,1
+ 347               		.comm udpDbgLevel,1,1
+ 348               		.comm tcpDebugStream,2,1
+ 349               		.comm tcpDebugLevel,1,1
+ 350               		.comm sockets,2,1
+ 351               		.comm czasRtc,7,1
+ 373               		.weak	spiSend
+ 375               	.Letext0:
+ 376               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 mcp4150.c
+     /tmp/cctTnLrh.s:2      *ABS*:0000003f __SREG__
+     /tmp/cctTnLrh.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cctTnLrh.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cctTnLrh.s:5      *ABS*:00000034 __CCP__
+     /tmp/cctTnLrh.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cctTnLrh.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cctTnLrh.s:256    .text:00000000 enableSpiMCP4150
+     /tmp/cctTnLrh.s:274    .text:00000002 disableSpiMCP4150
+     /tmp/cctTnLrh.s:293    .text:00000004 MCP4150_setValue
+                            *COM*:00000080 klastry
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 lockSensors
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+
+UNDEFINED SYMBOLS
+spiTake
+spiSend
+spiGive
+__do_clear_bss

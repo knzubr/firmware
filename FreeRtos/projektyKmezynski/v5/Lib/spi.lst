@@ -1,0 +1,326 @@
+   1               		.file	"spi.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 250               	.global	spiSetCPHA
+ 252               	spiSetCPHA:
+ 253               		.stabd	46,0,0
+   1:Lib/spi.c     **** #include <stdlib.h>
+   2:Lib/spi.c     **** #include <avr/io.h>
+   3:Lib/spi.c     **** #include "FreeRTOS.h"
+   4:Lib/spi.c     **** #include "queue.h"
+   5:Lib/spi.c     **** #include "task.h"
+   6:Lib/spi.c     **** #include "hardware.h"
+   7:Lib/spi.c     **** #include "spi.h"
+   8:Lib/spi.c     **** #include "semphr.h"
+   9:Lib/spi.c     **** 
+  10:Lib/spi.c     **** 
+  11:Lib/spi.c     **** void spiInit(void (*disableAllSpiDevicesFun)(void))
+  12:Lib/spi.c     **** {
+  13:Lib/spi.c     ****   disableAllSpiDevicesFun();
+  14:Lib/spi.c     ****   portENTER_CRITICAL();
+  15:Lib/spi.c     ****   vSemaphoreCreateBinary(xSemaphoreSpiSS); 
+  16:Lib/spi.c     **** 
+  17:Lib/spi.c     ****   SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPIE);
+  18:Lib/spi.c     ****   //SPCR = (1<<SPE)|(1<<MSTR);
+  19:Lib/spi.c     ****   SPSR |= (1<<SPI2X);
+  20:Lib/spi.c     ****   portEXIT_CRITICAL();
+  21:Lib/spi.c     ****   
+  22:Lib/spi.c     ****   //mode 0,0
+  23:Lib/spi.c     **** }
+  24:Lib/spi.c     **** 
+  25:Lib/spi.c     **** void spiSetCPHA(void)
+  26:Lib/spi.c     **** {
+ 255               	.LM0:
+ 256               	.LFBB1:
+ 257               	/* prologue: function */
+ 258               	/* frame size = 0 */
+  27:Lib/spi.c     ****   SPCR |= (1<<CPHA);
+ 260               	.LM1:
+ 261 0000 6A9A      		sbi 45-32,2
+ 262               	/* epilogue start */
+  28:Lib/spi.c     **** }
+ 264               	.LM2:
+ 265 0002 0895      		ret
+ 267               	.Lscope1:
+ 269               		.stabd	78,0,0
+ 271               	.global	spiClearCPHA
+ 273               	spiClearCPHA:
+ 274               		.stabd	46,0,0
+  29:Lib/spi.c     **** 
+  30:Lib/spi.c     **** void spiClearCPHA(void)
+  31:Lib/spi.c     **** {
+ 276               	.LM3:
+ 277               	.LFBB2:
+ 278               	/* prologue: function */
+ 279               	/* frame size = 0 */
+  32:Lib/spi.c     ****   SPCR &= ~(1<<CPHA);
+ 281               	.LM4:
+ 282 0004 6A98      		cbi 45-32,2
+ 283               	/* epilogue start */
+  33:Lib/spi.c     **** }
+ 285               	.LM5:
+ 286 0006 0895      		ret
+ 288               	.Lscope2:
+ 290               		.stabd	78,0,0
+ 292               	.global	spiSetCPOL
+ 294               	spiSetCPOL:
+ 295               		.stabd	46,0,0
+  34:Lib/spi.c     **** 
+  35:Lib/spi.c     **** void spiSetCPOL(void)
+  36:Lib/spi.c     **** {
+ 297               	.LM6:
+ 298               	.LFBB3:
+ 299               	/* prologue: function */
+ 300               	/* frame size = 0 */
+  37:Lib/spi.c     ****   SPCR |= (1<<CPOL);
+ 302               	.LM7:
+ 303 0008 6B9A      		sbi 45-32,3
+ 304               	/* epilogue start */
+  38:Lib/spi.c     **** }
+ 306               	.LM8:
+ 307 000a 0895      		ret
+ 309               	.Lscope3:
+ 311               		.stabd	78,0,0
+ 313               	.global	spiClearCPOL
+ 315               	spiClearCPOL:
+ 316               		.stabd	46,0,0
+  39:Lib/spi.c     **** 
+  40:Lib/spi.c     **** void spiClearCPOL(void)
+  41:Lib/spi.c     **** {
+ 318               	.LM9:
+ 319               	.LFBB4:
+ 320               	/* prologue: function */
+ 321               	/* frame size = 0 */
+  42:Lib/spi.c     ****   SPCR &= ~(1<<CPOL);
+ 323               	.LM10:
+ 324 000c 6B98      		cbi 45-32,3
+ 325               	/* epilogue start */
+  43:Lib/spi.c     **** }
+ 327               	.LM11:
+ 328 000e 0895      		ret
+ 330               	.Lscope4:
+ 332               		.stabd	78,0,0
+ 335               		.weak	spiSend
+ 337               	spiSend:
+ 338               		.stabd	46,0,0
+  44:Lib/spi.c     **** 
+  45:Lib/spi.c     **** void spiTake(void)
+  46:Lib/spi.c     **** {
+  47:Lib/spi.c     ****   xSemaphoreTake(xSemaphoreSpiSS, portMAX_DELAY);
+  48:Lib/spi.c     **** }
+  49:Lib/spi.c     **** 
+  50:Lib/spi.c     **** void spiGive(void)
+  51:Lib/spi.c     **** {
+  52:Lib/spi.c     ****   xSemaphoreGive(xSemaphoreSpiSS);
+  53:Lib/spi.c     **** }
+  54:Lib/spi.c     **** 
+  55:Lib/spi.c     **** uint8_t spiSend(uint8_t data)          { data = 0;  return 0; }
+ 340               	.LM12:
+ 341               	.LFBB5:
+ 342               	/* prologue: function */
+ 343               	/* frame size = 0 */
+ 345               	.LM13:
+ 346 0010 80E0      		ldi r24,lo8(0)
+ 347               	/* epilogue start */
+ 348 0012 0895      		ret
+ 350               	.Lscope5:
+ 352               		.stabd	78,0,0
+ 355               		.weak	spiSendSpinBlock
+ 357               	spiSendSpinBlock:
+ 358               		.stabd	46,0,0
+  56:Lib/spi.c     **** uint8_t spiSendSpinBlock(uint8_t data) { data = 0;  return 0; }
+ 360               	.LM14:
+ 361               	.LFBB6:
+ 362               	/* prologue: function */
+ 363               	/* frame size = 0 */
+ 365               	.LM15:
+ 366 0014 80E0      		ldi r24,lo8(0)
+ 367               	/* epilogue start */
+ 368 0016 0895      		ret
+ 370               	.Lscope6:
+ 372               		.stabd	78,0,0
+ 374               	.global	spiGive
+ 376               	spiGive:
+ 377               		.stabd	46,0,0
+  51:Lib/spi.c     **** {
+ 379               	.LM16:
+ 380               	.LFBB7:
+ 381               	/* prologue: function */
+ 382               	/* frame size = 0 */
+  52:Lib/spi.c     ****   xSemaphoreGive(xSemaphoreSpiSS);
+ 384               	.LM17:
+ 385 0018 8091 0000 		lds r24,xSemaphoreSpiSS
+ 386 001c 9091 0000 		lds r25,(xSemaphoreSpiSS)+1
+ 387 0020 60E0      		ldi r22,lo8(0)
+ 388 0022 70E0      		ldi r23,hi8(0)
+ 389 0024 40E0      		ldi r20,lo8(0)
+ 390 0026 50E0      		ldi r21,hi8(0)
+ 391 0028 20E0      		ldi r18,lo8(0)
+ 392 002a 0E94 0000 		call xQueueGenericSend
+ 393               	/* epilogue start */
+  53:Lib/spi.c     **** }
+ 395               	.LM18:
+ 396 002e 0895      		ret
+ 398               	.Lscope7:
+ 400               		.stabd	78,0,0
+ 402               	.global	spiTake
+ 404               	spiTake:
+ 405               		.stabd	46,0,0
+  46:Lib/spi.c     **** {
+ 407               	.LM19:
+ 408               	.LFBB8:
+ 409               	/* prologue: function */
+ 410               	/* frame size = 0 */
+  47:Lib/spi.c     ****   xSemaphoreTake(xSemaphoreSpiSS, portMAX_DELAY);
+ 412               	.LM20:
+ 413 0030 8091 0000 		lds r24,xSemaphoreSpiSS
+ 414 0034 9091 0000 		lds r25,(xSemaphoreSpiSS)+1
+ 415 0038 60E0      		ldi r22,lo8(0)
+ 416 003a 70E0      		ldi r23,hi8(0)
+ 417 003c 4FEF      		ldi r20,lo8(-1)
+ 418 003e 5FEF      		ldi r21,hi8(-1)
+ 419 0040 20E0      		ldi r18,lo8(0)
+ 420 0042 0E94 0000 		call xQueueGenericReceive
+ 421               	/* epilogue start */
+  48:Lib/spi.c     **** }
+ 423               	.LM21:
+ 424 0046 0895      		ret
+ 426               	.Lscope8:
+ 428               		.stabd	78,0,0
+ 431               	.global	spiInit
+ 433               	spiInit:
+ 434               		.stabd	46,0,0
+  12:Lib/spi.c     **** {
+ 436               	.LM22:
+ 437               	.LFBB9:
+ 438               	/* prologue: function */
+ 439               	/* frame size = 0 */
+  13:Lib/spi.c     ****   disableAllSpiDevicesFun();
+ 441               	.LM23:
+ 442 0048 FC01      		movw r30,r24
+ 443 004a 0995      		icall
+  14:Lib/spi.c     ****   portENTER_CRITICAL();
+ 445               	.LM24:
+ 446               	/* #APP */
+ 447               	 ;  14 "Lib/spi.c" 1
+ 448 004c 0FB6      		in		__tmp_reg__, __SREG__
+ 449               	 ;  0 "" 2
+ 450               	 ;  14 "Lib/spi.c" 1
+ 451 004e F894      		cli
+ 452               	 ;  0 "" 2
+ 453               	 ;  14 "Lib/spi.c" 1
+ 454 0050 0F92      		push	__tmp_reg__
+ 455               	 ;  0 "" 2
+  15:Lib/spi.c     ****   vSemaphoreCreateBinary(xSemaphoreSpiSS); 
+ 457               	.LM25:
+ 458               	/* #NOAPP */
+ 459 0052 81E0      		ldi r24,lo8(1)
+ 460 0054 60E0      		ldi r22,lo8(0)
+ 461 0056 0E94 0000 		call xQueueCreate
+ 462 005a 9093 0000 		sts (xSemaphoreSpiSS)+1,r25
+ 463 005e 8093 0000 		sts xSemaphoreSpiSS,r24
+ 464 0062 0097      		sbiw r24,0
+ 465 0064 01F0      		breq .L18
+ 466 0066 60E0      		ldi r22,lo8(0)
+ 467 0068 70E0      		ldi r23,hi8(0)
+ 468 006a 40E0      		ldi r20,lo8(0)
+ 469 006c 50E0      		ldi r21,hi8(0)
+ 470 006e 20E0      		ldi r18,lo8(0)
+ 471 0070 0E94 0000 		call xQueueGenericSend
+ 472               	.L18:
+  17:Lib/spi.c     ****   SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPIE);
+ 474               	.LM26:
+ 475 0074 80ED      		ldi r24,lo8(-48)
+ 476 0076 8DB9      		out 45-32,r24
+  19:Lib/spi.c     ****   SPSR |= (1<<SPI2X);
+ 478               	.LM27:
+ 479 0078 709A      		sbi 46-32,0
+  20:Lib/spi.c     ****   portEXIT_CRITICAL();
+ 481               	.LM28:
+ 482               	/* #APP */
+ 483               	 ;  20 "Lib/spi.c" 1
+ 484 007a 0F90      		pop		__tmp_reg__
+ 485               	 ;  0 "" 2
+ 486               	 ;  20 "Lib/spi.c" 1
+ 487 007c 0FBE      		out		__SREG__, __tmp_reg__
+ 488               	 ;  0 "" 2
+ 489               	/* epilogue start */
+  23:Lib/spi.c     **** }
+ 491               	.LM29:
+ 492               	/* #NOAPP */
+ 493 007e 0895      		ret
+ 495               	.Lscope9:
+ 497               		.stabd	78,0,0
+ 498               		.comm wwwport,1,1
+ 499               		.comm klastry,128,1
+ 500               		.comm rollers,2,1
+ 501               		.comm xSemaphoreRs485,2,1
+ 502               		.comm xSemaphoreSpiSS,2,1
+ 503               		.comm nicState,14,1
+ 504               		.comm IpMyConfig,15,1
+ 505               		.comm arpDebug,2,1
+ 506               		.comm arpDebugLevel,1,1
+ 507               		.comm icmpDebug,2,1
+ 508               		.comm icmpDebugLevel,1,1
+ 509               		.comm udpSocket,2,1
+ 510               		.comm udpDbgStream,2,1
+ 511               		.comm udpDbgLevel,1,1
+ 512               		.comm tcpDebugStream,2,1
+ 513               		.comm tcpDebugLevel,1,1
+ 514               		.comm sockets,2,1
+ 515               		.comm lockSensors,2,1
+ 516               		.comm czasRtc,7,1
+ 517               		.comm portA,1,1
+ 518               		.comm portB,1,1
+ 541               	.Letext0:
+ 542               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 spi.c
+     /tmp/cc4vJ3oY.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc4vJ3oY.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc4vJ3oY.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc4vJ3oY.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc4vJ3oY.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc4vJ3oY.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc4vJ3oY.s:252    .text:00000000 spiSetCPHA
+     /tmp/cc4vJ3oY.s:273    .text:00000004 spiClearCPHA
+     /tmp/cc4vJ3oY.s:294    .text:00000008 spiSetCPOL
+     /tmp/cc4vJ3oY.s:315    .text:0000000c spiClearCPOL
+     /tmp/cc4vJ3oY.s:337    .text:00000010 spiSend
+     /tmp/cc4vJ3oY.s:357    .text:00000014 spiSendSpinBlock
+     /tmp/cc4vJ3oY.s:376    .text:00000018 spiGive
+                            *COM*:00000002 xSemaphoreSpiSS
+     /tmp/cc4vJ3oY.s:404    .text:00000030 spiTake
+     /tmp/cc4vJ3oY.s:433    .text:00000048 spiInit
+                            *COM*:00000001 wwwport
+                            *COM*:00000080 klastry
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000002 lockSensors
+                            *COM*:00000007 czasRtc
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+
+UNDEFINED SYMBOLS
+xQueueGenericSend
+xQueueGenericReceive
+xQueueCreate
+__do_clear_bss
