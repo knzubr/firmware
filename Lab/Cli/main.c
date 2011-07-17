@@ -85,18 +85,18 @@ streamBuffers_t udpBuffers;
 
 portSHORT main( void )
 {
-  ramDyskInit();              //Inicjalizacja Ram dysku
-  hardwareInit();
-  spiInit(disableAllSpiDevices);
+  ramDyskInit();                                     // Ram disc initialization (Fat 8 filesystem)
+  hardwareInit();                                    // Hardware initialization (set ports directions)
+  spiInit(disableAllSpiDevices);                     // Spi bus initialization
 
 // VTY on serial  
-  xSerialPortInitMinimal(); 
-  CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
-  CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
+  xSerialPortInitMinimal();                          // Initialize UART0 and UART1
+  CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));  // Create CLI instance
+  CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));  // Create CLI instance
 
 
 //  cmdStateClear(newCmdState);
-  
+
   sensorsTaskInit();
   loadConfiguration();
 
@@ -117,13 +117,6 @@ portSHORT main( void )
 }
 /*-----------------------------------------------------------*/
 
-void vApplicationIdleHook( void )
-{
-  for( ;; )
-  {
-    vCoRoutineSchedule();
-  }
-}
 
 void vApplicationTickHook( void )
 {
