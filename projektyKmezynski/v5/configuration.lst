@@ -1,0 +1,155 @@
+   1               		.file	"configuration.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 250               	.global	saveConfiguration
+ 252               	saveConfiguration:
+ 253               		.stabd	46,0,0
+   1:configuration.c **** #include "configuration.h"
+   2:configuration.c **** #include <avr/eeprom.h>
+   3:configuration.c **** #include "hardware.h"
+   4:configuration.c **** #include "hardwareConfig.h"
+   5:configuration.c **** #include "softwareConfig.h"
+   6:configuration.c **** #include "nic.h"
+   7:configuration.c **** 
+   8:configuration.c **** 
+   9:configuration.c **** static struct lockerSensor lockerSensorsEEP[4] __attribute__((section (".eeprom"))) = {{LOCK_SENS_1
+  10:configuration.c ****                                                                                        {LOCK_SENS_2
+  11:configuration.c ****                                                                                        {LOCK_SENS_3
+  12:configuration.c ****                                                                                        {LOCK_SENS_4
+  13:configuration.c **** 
+  14:configuration.c **** void loadConfiguration(void)
+  15:configuration.c **** {
+  16:configuration.c ****   eeprom_read_block(lockSensors, lockerSensorsEEP, 4*sizeof(struct lockerSensor));
+  17:configuration.c **** }
+  18:configuration.c **** 
+  19:configuration.c **** void saveConfiguration(void)
+  20:configuration.c **** {
+ 255               	.LM0:
+ 256               	.LFBB1:
+ 257               	/* prologue: function */
+ 258               	/* frame size = 0 */
+  21:configuration.c ****   saveNic();
+ 260               	.LM1:
+ 261 0000 0E94 0000 		call saveNic
+  22:configuration.c ****   ipSaveConfig();
+ 263               	.LM2:
+ 264 0004 0E94 0000 		call ipSaveConfig
+  23:configuration.c ****   udpSaveConfig();
+ 266               	.LM3:
+ 267 0008 0E94 0000 		call udpSaveConfig
+ 268               	/* epilogue start */
+  24:configuration.c **** }
+ 270               	.LM4:
+ 271 000c 0895      		ret
+ 273               	.Lscope1:
+ 275               		.stabd	78,0,0
+ 277               	.global	loadConfiguration
+ 279               	loadConfiguration:
+ 280               		.stabd	46,0,0
+  15:configuration.c **** {
+ 282               	.LM5:
+ 283               	.LFBB2:
+ 284               	/* prologue: function */
+ 285               	/* frame size = 0 */
+  16:configuration.c ****   eeprom_read_block(lockSensors, lockerSensorsEEP, 4*sizeof(struct lockerSensor));
+ 287               	.LM6:
+ 288 000e 8091 0000 		lds r24,lockSensors
+ 289 0012 9091 0000 		lds r25,(lockSensors)+1
+ 290 0016 60E0      		ldi r22,lo8(lockerSensorsEEP)
+ 291 0018 70E0      		ldi r23,hi8(lockerSensorsEEP)
+ 292 001a 48E1      		ldi r20,lo8(24)
+ 293 001c 50E0      		ldi r21,hi8(24)
+ 294 001e 0E94 0000 		call __eerd_block_m128
+ 295               	/* epilogue start */
+  17:configuration.c **** }
+ 297               	.LM7:
+ 298 0022 0895      		ret
+ 300               	.Lscope2:
+ 302               		.stabd	78,0,0
+ 303               		.section	.eeprom,"aw",@progbits
+ 306               	lockerSensorsEEP:
+ 307 0000 00        		.byte	0
+ 308 0001 BC02      		.word	700
+ 309 0003 0000      		.word	0
+ 310 0005 00        		.byte	0
+ 311 0006 01        		.byte	1
+ 312 0007 EE02      		.word	750
+ 313 0009 0000      		.word	0
+ 314 000b 00        		.byte	0
+ 315 000c 00        		.byte	0
+ 316 000d BC02      		.word	700
+ 317 000f 0000      		.word	0
+ 318 0011 00        		.byte	0
+ 319 0012 01        		.byte	1
+ 320 0013 8403      		.word	900
+ 321 0015 0000      		.word	0
+ 322 0017 00        		.byte	0
+ 323               		.comm klastry,128,1
+ 324               		.comm wwwport,1,1
+ 325               		.comm rollers,2,1
+ 326               		.comm xSemaphoreSpiSS,2,1
+ 327               		.comm portA,1,1
+ 328               		.comm portB,1,1
+ 329               		.comm lockSensors,2,1
+ 330               		.comm xSemaphoreRs485,2,1
+ 331               		.comm nicState,14,1
+ 332               		.comm IpMyConfig,15,1
+ 333               		.comm arpDebug,2,1
+ 334               		.comm arpDebugLevel,1,1
+ 335               		.comm icmpDebug,2,1
+ 336               		.comm icmpDebugLevel,1,1
+ 337               		.comm udpSocket,2,1
+ 338               		.comm udpDbgStream,2,1
+ 339               		.comm udpDbgLevel,1,1
+ 340               		.comm tcpDebugStream,2,1
+ 341               		.comm tcpDebugLevel,1,1
+ 342               		.comm sockets,2,1
+ 343               		.comm czasRtc,7,1
+ 366               		.text
+ 368               	.Letext0:
+ 369               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 configuration.c
+     /tmp/cccuqQDR.s:2      *ABS*:0000003f __SREG__
+     /tmp/cccuqQDR.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cccuqQDR.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cccuqQDR.s:5      *ABS*:00000034 __CCP__
+     /tmp/cccuqQDR.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cccuqQDR.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cccuqQDR.s:252    .text:00000000 saveConfiguration
+     /tmp/cccuqQDR.s:279    .text:0000000e loadConfiguration
+                            *COM*:00000002 lockSensors
+     /tmp/cccuqQDR.s:306    .eeprom:00000000 lockerSensorsEEP
+                            *COM*:00000080 klastry
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+
+UNDEFINED SYMBOLS
+saveNic
+ipSaveConfig
+udpSaveConfig
+__eerd_block_m128
+__do_clear_bss

@@ -1,0 +1,441 @@
+   1               		.file	"list.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 104               	.global	vListInitialise
+ 106               	vListInitialise:
+ 107               		.stabd	46,0,0
+   1:Source/list.c **** /*
+   2:Source/list.c **** 	FreeRTOS.org V5.2.0 - Copyright (C) 2003-2009 Richard Barry.
+   3:Source/list.c **** 
+   4:Source/list.c **** 	This file is part of the FreeRTOS.org distribution.
+   5:Source/list.c **** 
+   6:Source/list.c **** 	FreeRTOS.org is free software; you can redistribute it and/or modify it 
+   7:Source/list.c **** 	under the terms of the GNU General Public License (version 2) as published
+   8:Source/list.c **** 	by the Free Software Foundation and modified by the FreeRTOS exception.
+   9:Source/list.c **** 
+  10:Source/list.c **** 	FreeRTOS.org is distributed in the hope that it will be useful,	but WITHOUT
+  11:Source/list.c **** 	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+  12:Source/list.c **** 	FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
+  13:Source/list.c **** 	more details.
+  14:Source/list.c **** 
+  15:Source/list.c **** 	You should have received a copy of the GNU General Public License along 
+  16:Source/list.c **** 	with FreeRTOS.org; if not, write to the Free Software Foundation, Inc., 59 
+  17:Source/list.c **** 	Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  18:Source/list.c **** 
+  19:Source/list.c **** 	A special exception to the GPL is included to allow you to distribute a 
+  20:Source/list.c **** 	combined work that includes FreeRTOS.org without being obliged to provide
+  21:Source/list.c **** 	the source code for any proprietary components.  See the licensing section
+  22:Source/list.c **** 	of http://www.FreeRTOS.org for full details.
+  23:Source/list.c **** 
+  24:Source/list.c **** 
+  25:Source/list.c **** 	***************************************************************************
+  26:Source/list.c **** 	*                                                                         *
+  27:Source/list.c **** 	* Get the FreeRTOS eBook!  See http://www.FreeRTOS.org/Documentation      *
+  28:Source/list.c **** 	*                                                                         *
+  29:Source/list.c **** 	* This is a concise, step by step, 'hands on' guide that describes both   *
+  30:Source/list.c **** 	* general multitasking concepts and FreeRTOS specifics. It presents and   *
+  31:Source/list.c **** 	* explains numerous examples that are written using the FreeRTOS API.     *
+  32:Source/list.c **** 	* Full source code for all the examples is provided in an accompanying    *
+  33:Source/list.c **** 	* .zip file.                                                              *
+  34:Source/list.c **** 	*                                                                         *
+  35:Source/list.c **** 	***************************************************************************
+  36:Source/list.c **** 
+  37:Source/list.c **** 	1 tab == 4 spaces!
+  38:Source/list.c **** 
+  39:Source/list.c **** 	Please ensure to read the configuration and relevant port sections of the
+  40:Source/list.c **** 	online documentation.
+  41:Source/list.c **** 
+  42:Source/list.c **** 	http://www.FreeRTOS.org - Documentation, latest information, license and
+  43:Source/list.c **** 	contact details.
+  44:Source/list.c **** 
+  45:Source/list.c **** 	http://www.SafeRTOS.com - A version that is certified for use in safety
+  46:Source/list.c **** 	critical systems.
+  47:Source/list.c **** 
+  48:Source/list.c **** 	http://www.OpenRTOS.com - Commercial support, development, porting,
+  49:Source/list.c **** 	licensing and training services.
+  50:Source/list.c **** */
+  51:Source/list.c **** 
+  52:Source/list.c **** 
+  53:Source/list.c **** #include <stdlib.h>
+  54:Source/list.c **** #include "FreeRTOS.h"
+  55:Source/list.c **** #include "list.h"
+  56:Source/list.c **** 
+  57:Source/list.c **** /*-----------------------------------------------------------
+  58:Source/list.c ****  * PUBLIC LIST API documented in list.h
+  59:Source/list.c ****  *----------------------------------------------------------*/
+  60:Source/list.c **** 
+  61:Source/list.c **** void vListInitialise( xList *pxList )
+  62:Source/list.c **** {
+ 109               	.LM0:
+ 110               	.LFBB1:
+ 111               	/* prologue: function */
+ 112               	/* frame size = 0 */
+ 113 0000 FC01      		movw r30,r24
+  63:Source/list.c **** 	/* The list structure contains a list item which is used to mark the
+  64:Source/list.c **** 	end of the list.  To initialise the list the list end is inserted
+  65:Source/list.c **** 	as the only list entry. */
+  66:Source/list.c **** 	pxList->pxIndex = ( xListItem * ) &( pxList->xListEnd );
+ 115               	.LM1:
+ 116 0002 9C01      		movw r18,r24
+ 117 0004 2D5F      		subi r18,lo8(-(3))
+ 118 0006 3F4F      		sbci r19,hi8(-(3))
+ 119 0008 3283      		std Z+2,r19
+ 120 000a 2183      		std Z+1,r18
+  67:Source/list.c **** 
+  68:Source/list.c **** 	/* The list end value is the highest possible value in the list to
+  69:Source/list.c **** 	ensure it remains at the end of the list. */
+  70:Source/list.c **** 	pxList->xListEnd.xItemValue = portMAX_DELAY;
+ 122               	.LM2:
+ 123 000c 8FEF      		ldi r24,lo8(-1)
+ 124 000e 9FEF      		ldi r25,hi8(-1)
+ 125 0010 9483      		std Z+4,r25
+ 126 0012 8383      		std Z+3,r24
+  71:Source/list.c **** 
+  72:Source/list.c **** 	/* The list end next and previous pointers point to itself so we know
+  73:Source/list.c **** 	when the list is empty. */
+  74:Source/list.c **** 	pxList->xListEnd.pxNext = ( xListItem * ) &( pxList->xListEnd );
+ 128               	.LM3:
+ 129 0014 3683      		std Z+6,r19
+ 130 0016 2583      		std Z+5,r18
+  75:Source/list.c **** 	pxList->xListEnd.pxPrevious = ( xListItem * ) &( pxList->xListEnd );
+ 132               	.LM4:
+ 133 0018 3087      		std Z+8,r19
+ 134 001a 2783      		std Z+7,r18
+  76:Source/list.c **** 
+  77:Source/list.c **** 	pxList->uxNumberOfItems = 0;
+ 136               	.LM5:
+ 137 001c 1082      		st Z,__zero_reg__
+ 138               	/* epilogue start */
+  78:Source/list.c **** }
+ 140               	.LM6:
+ 141 001e 0895      		ret
+ 143               	.Lscope1:
+ 145               		.stabd	78,0,0
+ 148               	.global	vListInitialiseItem
+ 150               	vListInitialiseItem:
+ 151               		.stabd	46,0,0
+  79:Source/list.c **** /*-----------------------------------------------------------*/
+  80:Source/list.c **** 
+  81:Source/list.c **** void vListInitialiseItem( xListItem *pxItem )
+  82:Source/list.c **** {
+ 153               	.LM7:
+ 154               	.LFBB2:
+ 155               	/* prologue: function */
+ 156               	/* frame size = 0 */
+  83:Source/list.c **** 	/* Make sure the list item is not recorded as being on a list. */
+  84:Source/list.c **** 	pxItem->pvContainer = NULL;
+ 158               	.LM8:
+ 159 0020 FC01      		movw r30,r24
+ 160 0022 1186      		std Z+9,__zero_reg__
+ 161 0024 1086      		std Z+8,__zero_reg__
+ 162               	/* epilogue start */
+  85:Source/list.c **** }
+ 164               	.LM9:
+ 165 0026 0895      		ret
+ 167               	.Lscope2:
+ 169               		.stabd	78,0,0
+ 173               	.global	vListInsertEnd
+ 175               	vListInsertEnd:
+ 176               		.stabd	46,0,0
+  86:Source/list.c **** /*-----------------------------------------------------------*/
+  87:Source/list.c **** 
+  88:Source/list.c **** void vListInsertEnd( xList *pxList, xListItem *pxNewListItem )
+  89:Source/list.c **** {
+ 178               	.LM10:
+ 179               	.LFBB3:
+ 180 0028 CF93      		push r28
+ 181 002a DF93      		push r29
+ 182               	/* prologue: function */
+ 183               	/* frame size = 0 */
+ 184 002c AC01      		movw r20,r24
+ 185 002e DB01      		movw r26,r22
+  90:Source/list.c **** volatile xListItem * pxIndex;
+  91:Source/list.c **** 
+  92:Source/list.c **** 	/* Insert a new list item into pxList, but rather than sort the list,
+  93:Source/list.c **** 	makes the new list item the last item to be removed by a call to
+  94:Source/list.c **** 	pvListGetOwnerOfNextEntry.  This means it has to be the item pointed to by
+  95:Source/list.c **** 	the pxIndex member. */
+  96:Source/list.c **** 	pxIndex = pxList->pxIndex;
+ 187               	.LM11:
+ 188 0030 EC01      		movw r28,r24
+ 189 0032 2981      		ldd r18,Y+1
+ 190 0034 3A81      		ldd r19,Y+2
+  97:Source/list.c **** 
+  98:Source/list.c **** 	pxNewListItem->pxNext = pxIndex->pxNext;
+ 192               	.LM12:
+ 193 0036 F901      		movw r30,r18
+ 194 0038 8281      		ldd r24,Z+2
+ 195 003a 9381      		ldd r25,Z+3
+ 196 003c 1396      		adiw r26,2+1
+ 197 003e 9C93      		st X,r25
+ 198 0040 8E93      		st -X,r24
+ 199 0042 1297      		sbiw r26,2
+  99:Source/list.c **** 	pxNewListItem->pxPrevious = pxList->pxIndex;
+ 201               	.LM13:
+ 202 0044 8981      		ldd r24,Y+1
+ 203 0046 9A81      		ldd r25,Y+2
+ 204 0048 1596      		adiw r26,4+1
+ 205 004a 9C93      		st X,r25
+ 206 004c 8E93      		st -X,r24
+ 207 004e 1497      		sbiw r26,4
+ 100:Source/list.c **** 	pxIndex->pxNext->pxPrevious = ( volatile xListItem * ) pxNewListItem;
+ 209               	.LM14:
+ 210 0050 0280      		ldd __tmp_reg__,Z+2
+ 211 0052 F381      		ldd r31,Z+3
+ 212 0054 E02D      		mov r30,__tmp_reg__
+ 213 0056 7583      		std Z+5,r23
+ 214 0058 6483      		std Z+4,r22
+ 101:Source/list.c **** 	pxIndex->pxNext = ( volatile xListItem * ) pxNewListItem;
+ 216               	.LM15:
+ 217 005a E901      		movw r28,r18
+ 218 005c 7B83      		std Y+3,r23
+ 219 005e 6A83      		std Y+2,r22
+ 102:Source/list.c **** 	pxList->pxIndex = ( volatile xListItem * ) pxNewListItem;
+ 221               	.LM16:
+ 222 0060 FA01      		movw r30,r20
+ 223 0062 7283      		std Z+2,r23
+ 224 0064 6183      		std Z+1,r22
+ 103:Source/list.c **** 
+ 104:Source/list.c **** 	/* Remember which list the item is in. */
+ 105:Source/list.c **** 	pxNewListItem->pvContainer = ( void * ) pxList;
+ 226               	.LM17:
+ 227 0066 1996      		adiw r26,8+1
+ 228 0068 5C93      		st X,r21
+ 229 006a 4E93      		st -X,r20
+ 230 006c 1897      		sbiw r26,8
+ 106:Source/list.c **** 
+ 107:Source/list.c **** 	( pxList->uxNumberOfItems )++;
+ 232               	.LM18:
+ 233 006e 8081      		ld r24,Z
+ 234 0070 8F5F      		subi r24,lo8(-(1))
+ 235 0072 8083      		st Z,r24
+ 236               	/* epilogue start */
+ 108:Source/list.c **** }
+ 238               	.LM19:
+ 239 0074 DF91      		pop r29
+ 240 0076 CF91      		pop r28
+ 241 0078 0895      		ret
+ 246               	.Lscope3:
+ 248               		.stabd	78,0,0
+ 252               	.global	vListInsert
+ 254               	vListInsert:
+ 255               		.stabd	46,0,0
+ 109:Source/list.c **** /*-----------------------------------------------------------*/
+ 110:Source/list.c **** 
+ 111:Source/list.c **** void vListInsert( xList *pxList, xListItem *pxNewListItem )
+ 112:Source/list.c **** {
+ 257               	.LM20:
+ 258               	.LFBB4:
+ 259 007a CF93      		push r28
+ 260 007c DF93      		push r29
+ 261               	/* prologue: function */
+ 262               	/* frame size = 0 */
+ 263 007e 9C01      		movw r18,r24
+ 264 0080 EB01      		movw r28,r22
+ 113:Source/list.c **** volatile xListItem *pxIterator;
+ 114:Source/list.c **** portTickType xValueOfInsertion;
+ 115:Source/list.c **** 
+ 116:Source/list.c **** 	/* Insert the new list item into the list, sorted in ulListItem order. */
+ 117:Source/list.c **** 	xValueOfInsertion = pxNewListItem->xItemValue;
+ 266               	.LM21:
+ 267 0082 4881      		ld r20,Y
+ 268 0084 5981      		ldd r21,Y+1
+ 118:Source/list.c **** 
+ 119:Source/list.c **** 	/* If the list already contains a list item with the same item value then
+ 120:Source/list.c **** 	the new list item should be placed after it.  This ensures that TCB's which
+ 121:Source/list.c **** 	are stored in ready lists (all of which have the same ulListItem value)
+ 122:Source/list.c **** 	get an equal share of the CPU.  However, if the xItemValue is the same as 
+ 123:Source/list.c **** 	the back marker the iteration loop below will not end.  This means we need
+ 124:Source/list.c **** 	to guard against this by checking the value first and modifying the 
+ 125:Source/list.c **** 	algorithm slightly if necessary. */
+ 126:Source/list.c **** 	if( xValueOfInsertion == portMAX_DELAY )
+ 270               	.LM22:
+ 271 0086 8FEF      		ldi r24,hi8(-1)
+ 272 0088 4F3F      		cpi r20,lo8(-1)
+ 273 008a 5807      		cpc r21,r24
+ 274 008c 01F4      		brne .L8
+ 127:Source/list.c **** 	{
+ 128:Source/list.c **** 		pxIterator = pxList->xListEnd.pxPrevious;
+ 276               	.LM23:
+ 277 008e F901      		movw r30,r18
+ 278 0090 A781      		ldd r26,Z+7
+ 279 0092 B085      		ldd r27,Z+8
+ 280 0094 00C0      		rjmp .L9
+ 281               	.L8:
+ 129:Source/list.c **** 	}
+ 130:Source/list.c **** 	else
+ 131:Source/list.c **** 	{
+ 132:Source/list.c **** 		for( pxIterator = ( xListItem * ) &( pxList->xListEnd ); pxIterator->pxNext->xItemValue <= xValue
+ 283               	.LM24:
+ 284 0096 D901      		movw r26,r18
+ 285 0098 1396      		adiw r26,3
+ 286 009a 00C0      		rjmp .L10
+ 287               	.L11:
+ 288 009c 1296      		adiw r26,2
+ 289 009e 0D90      		ld __tmp_reg__,X+
+ 290 00a0 BC91      		ld r27,X
+ 291 00a2 A02D      		mov r26,__tmp_reg__
+ 292               	.L10:
+ 293 00a4 1296      		adiw r26,2
+ 294 00a6 ED91      		ld r30,X+
+ 295 00a8 FC91      		ld r31,X
+ 296 00aa 1397      		sbiw r26,2+1
+ 297 00ac 8081      		ld r24,Z
+ 298 00ae 9181      		ldd r25,Z+1
+ 299 00b0 4817      		cp r20,r24
+ 300 00b2 5907      		cpc r21,r25
+ 301 00b4 00F4      		brsh .L11
+ 302               	.L9:
+ 133:Source/list.c **** 		{
+ 134:Source/list.c **** 			/* There is nothing to do here, we are just iterating to the
+ 135:Source/list.c **** 			wanted insertion position. */
+ 136:Source/list.c **** 		}
+ 137:Source/list.c **** 	}
+ 138:Source/list.c **** 
+ 139:Source/list.c **** 	pxNewListItem->pxNext = pxIterator->pxNext;
+ 304               	.LM25:
+ 305 00b6 1296      		adiw r26,2
+ 306 00b8 ED91      		ld r30,X+
+ 307 00ba FC91      		ld r31,X
+ 308 00bc 1397      		sbiw r26,2+1
+ 309 00be FB83      		std Y+3,r31
+ 310 00c0 EA83      		std Y+2,r30
+ 140:Source/list.c **** 	pxNewListItem->pxNext->pxPrevious = ( volatile xListItem * ) pxNewListItem;
+ 312               	.LM26:
+ 313 00c2 D583      		std Z+5,r29
+ 314 00c4 C483      		std Z+4,r28
+ 141:Source/list.c **** 	pxNewListItem->pxPrevious = pxIterator;
+ 316               	.LM27:
+ 317 00c6 BD83      		std Y+5,r27
+ 318 00c8 AC83      		std Y+4,r26
+ 142:Source/list.c **** 	pxIterator->pxNext = ( volatile xListItem * ) pxNewListItem;
+ 320               	.LM28:
+ 321 00ca 1396      		adiw r26,2+1
+ 322 00cc DC93      		st X,r29
+ 323 00ce CE93      		st -X,r28
+ 324 00d0 1297      		sbiw r26,2
+ 143:Source/list.c **** 
+ 144:Source/list.c **** 	/* Remember which list the item is in.  This allows fast removal of the
+ 145:Source/list.c **** 	item later. */
+ 146:Source/list.c **** 	pxNewListItem->pvContainer = ( void * ) pxList;
+ 326               	.LM29:
+ 327 00d2 3987      		std Y+9,r19
+ 328 00d4 2887      		std Y+8,r18
+ 147:Source/list.c **** 
+ 148:Source/list.c **** 	( pxList->uxNumberOfItems )++;
+ 330               	.LM30:
+ 331 00d6 F901      		movw r30,r18
+ 332 00d8 8081      		ld r24,Z
+ 333 00da 8F5F      		subi r24,lo8(-(1))
+ 334 00dc 8083      		st Z,r24
+ 335               	/* epilogue start */
+ 149:Source/list.c **** }
+ 337               	.LM31:
+ 338 00de DF91      		pop r29
+ 339 00e0 CF91      		pop r28
+ 340 00e2 0895      		ret
+ 346               	.Lscope4:
+ 348               		.stabd	78,0,0
+ 351               	.global	vListRemove
+ 353               	vListRemove:
+ 354               		.stabd	46,0,0
+ 150:Source/list.c **** /*-----------------------------------------------------------*/
+ 151:Source/list.c **** 
+ 152:Source/list.c **** void vListRemove( xListItem *pxItemToRemove )
+ 153:Source/list.c **** {
+ 356               	.LM32:
+ 357               	.LFBB5:
+ 358 00e4 CF93      		push r28
+ 359 00e6 DF93      		push r29
+ 360               	/* prologue: function */
+ 361               	/* frame size = 0 */
+ 362 00e8 DC01      		movw r26,r24
+ 154:Source/list.c **** xList * pxList;
+ 155:Source/list.c **** 
+ 156:Source/list.c **** 	pxItemToRemove->pxNext->pxPrevious = pxItemToRemove->pxPrevious;
+ 364               	.LM33:
+ 365 00ea 1296      		adiw r26,2
+ 366 00ec ED91      		ld r30,X+
+ 367 00ee FC91      		ld r31,X
+ 368 00f0 1397      		sbiw r26,2+1
+ 369 00f2 1496      		adiw r26,4
+ 370 00f4 8D91      		ld r24,X+
+ 371 00f6 9C91      		ld r25,X
+ 372 00f8 1597      		sbiw r26,4+1
+ 373 00fa 9583      		std Z+5,r25
+ 374 00fc 8483      		std Z+4,r24
+ 157:Source/list.c **** 	pxItemToRemove->pxPrevious->pxNext = pxItemToRemove->pxNext;
+ 376               	.LM34:
+ 377 00fe 1496      		adiw r26,4
+ 378 0100 CD91      		ld r28,X+
+ 379 0102 DC91      		ld r29,X
+ 380 0104 1597      		sbiw r26,4+1
+ 381 0106 FB83      		std Y+3,r31
+ 382 0108 EA83      		std Y+2,r30
+ 158:Source/list.c **** 	
+ 159:Source/list.c **** 	/* The list item knows which list it is in.  Obtain the list from the list
+ 160:Source/list.c **** 	item. */
+ 161:Source/list.c **** 	pxList = ( xList * ) pxItemToRemove->pvContainer;
+ 384               	.LM35:
+ 385 010a 1896      		adiw r26,8
+ 386 010c ED91      		ld r30,X+
+ 387 010e FC91      		ld r31,X
+ 388 0110 1997      		sbiw r26,8+1
+ 162:Source/list.c **** 
+ 163:Source/list.c **** 	/* Make sure the index is left pointing to a valid item. */
+ 164:Source/list.c **** 	if( pxList->pxIndex == pxItemToRemove )
+ 390               	.LM36:
+ 391 0112 8181      		ldd r24,Z+1
+ 392 0114 9281      		ldd r25,Z+2
+ 393 0116 8A17      		cp r24,r26
+ 394 0118 9B07      		cpc r25,r27
+ 395 011a 01F4      		brne .L14
+ 165:Source/list.c **** 	{
+ 166:Source/list.c **** 		pxList->pxIndex = pxItemToRemove->pxPrevious;
+ 397               	.LM37:
+ 398 011c D283      		std Z+2,r29
+ 399 011e C183      		std Z+1,r28
+ 400               	.L14:
+ 167:Source/list.c **** 	}
+ 168:Source/list.c **** 
+ 169:Source/list.c **** 	pxItemToRemove->pvContainer = NULL;
+ 402               	.LM38:
+ 403 0120 1996      		adiw r26,8+1
+ 404 0122 1C92      		st X,__zero_reg__
+ 405 0124 1E92      		st -X,__zero_reg__
+ 406 0126 1897      		sbiw r26,8
+ 170:Source/list.c **** 	( pxList->uxNumberOfItems )--;
+ 408               	.LM39:
+ 409 0128 8081      		ld r24,Z
+ 410 012a 8150      		subi r24,lo8(-(-1))
+ 411 012c 8083      		st Z,r24
+ 412               	/* epilogue start */
+ 171:Source/list.c **** }
+ 414               	.LM40:
+ 415 012e DF91      		pop r29
+ 416 0130 CF91      		pop r28
+ 417 0132 0895      		ret
+ 422               	.Lscope5:
+ 424               		.stabd	78,0,0
+ 426               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 list.c
+     /tmp/ccrhoD19.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccrhoD19.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccrhoD19.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccrhoD19.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccrhoD19.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccrhoD19.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccrhoD19.s:106    .text:00000000 vListInitialise
+     /tmp/ccrhoD19.s:150    .text:00000020 vListInitialiseItem
+     /tmp/ccrhoD19.s:175    .text:00000028 vListInsertEnd
+     /tmp/ccrhoD19.s:254    .text:0000007a vListInsert
+     /tmp/ccrhoD19.s:353    .text:000000e4 vListRemove
+
+NO UNDEFINED SYMBOLS

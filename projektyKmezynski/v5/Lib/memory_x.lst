@@ -1,0 +1,101 @@
+   1               		.file	"memory_x.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+  40               	.global	xmallocAvailable
+  42               	xmallocAvailable:
+  43               		.stabd	46,0,0
+   1:Lib/memory_x.c **** #include "memory_x.h"
+   2:Lib/memory_x.c **** #include "hardwareConfig.h"
+   3:Lib/memory_x.c **** 
+   4:Lib/memory_x.c **** char *heapEnd = HEAP_BEGIN;
+   5:Lib/memory_x.c **** 
+   6:Lib/memory_x.c **** void *xmalloc(size_t size)
+   7:Lib/memory_x.c **** {
+   8:Lib/memory_x.c ****   void *result = malloc(size);
+   9:Lib/memory_x.c ****   
+  10:Lib/memory_x.c ****   heapEnd = (char *)(result);
+  11:Lib/memory_x.c ****   heapEnd += size;
+  12:Lib/memory_x.c ****   
+  13:Lib/memory_x.c ****   return result;
+  14:Lib/memory_x.c **** }
+  15:Lib/memory_x.c **** 
+  16:Lib/memory_x.c **** size_t xmallocAvailable(void)
+  17:Lib/memory_x.c **** {
+  45               	.LM0:
+  46               	.LFBB1:
+  47               	/* prologue: function */
+  48               	/* frame size = 0 */
+  50               	.LM1:
+  51 0000 2091 0000 		lds r18,__malloc_heap_end
+  52 0004 3091 0000 		lds r19,(__malloc_heap_end)+1
+  53 0008 2F5F      		subi r18,lo8(-(1))
+  54 000a 3F4F      		sbci r19,hi8(-(1))
+  55 000c 8091 0000 		lds r24,heapEnd
+  56 0010 9091 0000 		lds r25,(heapEnd)+1
+  57 0014 281B      		sub r18,r24
+  58 0016 390B      		sbc r19,r25
+  18:Lib/memory_x.c ****   return __malloc_heap_end - heapEnd + 1;
+  19:Lib/memory_x.c **** }...
+  60               	.LM2:
+  61 0018 C901      		movw r24,r18
+  62               	/* epilogue start */
+  63 001a 0895      		ret
+  65               	.Lscope1:
+  67               		.stabd	78,0,0
+  70               	.global	xmalloc
+  72               	xmalloc:
+  73               		.stabd	46,0,0
+   7:Lib/memory_x.c **** {
+  75               	.LM3:
+  76               	.LFBB2:
+  77 001c 0F93      		push r16
+  78 001e 1F93      		push r17
+  79               	/* prologue: function */
+  80               	/* frame size = 0 */
+  81 0020 8C01      		movw r16,r24
+   8:Lib/memory_x.c ****   void *result = malloc(size);
+  83               	.LM4:
+  84 0022 0E94 0000 		call malloc
+  11:Lib/memory_x.c ****   heapEnd += size;
+  86               	.LM5:
+  87 0026 080F      		add r16,r24
+  88 0028 191F      		adc r17,r25
+  89 002a 1093 0000 		sts (heapEnd)+1,r17
+  90 002e 0093 0000 		sts heapEnd,r16
+  91               	/* epilogue start */
+  14:Lib/memory_x.c **** }
+  93               	.LM6:
+  94 0032 1F91      		pop r17
+  95 0034 0F91      		pop r16
+  96 0036 0895      		ret
+  98               	.Lscope2:
+ 100               		.stabd	78,0,0
+ 101               	.global	heapEnd
+ 102               		.data
+ 105               	heapEnd:
+ 106 0000 0011      		.word	4352
+ 108               		.text
+ 110               	.Letext0:
+ 111               	.global __do_copy_data
+DEFINED SYMBOLS
+                            *ABS*:00000000 memory_x.c
+     /tmp/cc0DzR25.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc0DzR25.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc0DzR25.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc0DzR25.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc0DzR25.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc0DzR25.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc0DzR25.s:42     .text:00000000 xmallocAvailable
+     /tmp/cc0DzR25.s:105    .data:00000000 heapEnd
+     /tmp/cc0DzR25.s:72     .text:0000001c xmalloc
+
+UNDEFINED SYMBOLS
+__malloc_heap_end
+malloc
+__do_copy_data

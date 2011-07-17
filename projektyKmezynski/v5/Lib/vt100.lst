@@ -1,0 +1,389 @@
+   1               		.file	"vt100.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 249               		.data
+ 250               	.LC0:
+ 251 0000 1B5B 2564 		.string	"\033[%d;%dH"
+ 251      3B25 6448 
+ 251      00
+ 252               		.text
+ 257               	.global	vt100SetCursorPos
+ 259               	vt100SetCursorPos:
+ 260               		.stabd	46,0,0
+   1:Lib/vt100.c   **** /*! \file vt100.c \brief VT100 terminal function library. */
+   2:Lib/vt100.c   **** //*****************************************************************************
+   3:Lib/vt100.c   **** //
+   4:Lib/vt100.c   **** // File Name	: 'vt100.c'
+   5:Lib/vt100.c   **** // Title		: VT100 terminal function library
+   6:Lib/vt100.c   **** // Author		: Pascal Stang - Copyright (C) 2002
+   7:Lib/vt100.c   **** // Created		: 2002.08.27
+   8:Lib/vt100.c   **** // Revised		: 2002.08.27
+   9:Lib/vt100.c   **** // Version		: 0.1
+  10:Lib/vt100.c   **** // Target MCU	: Atmel AVR Series
+  11:Lib/vt100.c   **** // Editor Tabs	: 4
+  12:Lib/vt100.c   **** //
+  13:Lib/vt100.c   **** // NOTE: This code is currently below version 1.0, and therefore is considered
+  14:Lib/vt100.c   **** // to be lacking in some functionality or documentation, or may not be fully
+  15:Lib/vt100.c   **** // tested.  Nonetheless, you can expect most functions to work.
+  16:Lib/vt100.c   **** //
+  17:Lib/vt100.c   **** // This code is distributed under the GNU Public License
+  18:Lib/vt100.c   **** //		which can be found at http://www.gnu.org/licenses/gpl.txt
+  19:Lib/vt100.c   **** //
+  20:Lib/vt100.c   **** //*****************************************************************************
+  21:Lib/vt100.c   **** 
+  22:Lib/vt100.c   **** #ifndef WIN32
+  23:Lib/vt100.c   **** 	#include <avr/io.h>
+  24:Lib/vt100.c   **** 	#include <avr/interrupt.h>
+  25:Lib/vt100.c   **** 	#include <avr/pgmspace.h>
+  26:Lib/vt100.c   **** #endif
+  27:Lib/vt100.c   **** 
+  28:Lib/vt100.c   **** #include "main.h"
+  29:Lib/vt100.c   **** #include "vt100.h"
+  30:Lib/vt100.c   **** #include <stdio.h>
+  31:Lib/vt100.c   **** 
+  32:Lib/vt100.c   **** // Program ROM constants
+  33:Lib/vt100.c   **** 
+  34:Lib/vt100.c   **** // Global variables
+  35:Lib/vt100.c   **** 
+  36:Lib/vt100.c   **** // Functions
+  37:Lib/vt100.c   **** void vt100Init(cmdState_t *state)
+  38:Lib/vt100.c   **** {
+  39:Lib/vt100.c   ****   // initializes terminal to "power-on" settings
+  40:Lib/vt100.c   ****   // ESC c
+  41:Lib/vt100.c   **** 
+  42:Lib/vt100.c   ****  fprintf_P(state->myStdInOut, "\x1B\x63");
+  43:Lib/vt100.c   **** }
+  44:Lib/vt100.c   **** 
+  45:Lib/vt100.c   **** void vt100ClearScreen(cmdState_t *state)
+  46:Lib/vt100.c   **** {
+  47:Lib/vt100.c   ****   // ESC [ 2 J
+  48:Lib/vt100.c   ****   fprintf_P(state->myStdInOut, "\x1B[2J");
+  49:Lib/vt100.c   **** }
+  50:Lib/vt100.c   **** 
+  51:Lib/vt100.c   **** void vt100SetAttr(uint8_t attr, cmdState_t *state)
+  52:Lib/vt100.c   **** {
+  53:Lib/vt100.c   ****   // ESC [ Ps m
+  54:Lib/vt100.c   ****   fprintf_P(state->myStdInOut, "\x1B[%dm",attr);
+  55:Lib/vt100.c   **** }
+  56:Lib/vt100.c   **** 
+  57:Lib/vt100.c   **** void vt100SetCursorMode(uint8_t visible, cmdState_t *state)
+  58:Lib/vt100.c   **** {
+  59:Lib/vt100.c   ****   if(visible)
+  60:Lib/vt100.c   ****   // ESC [ ? 25 h
+  61:Lib/vt100.c   ****     fprintf_P(state->myStdInOut, "\x1B[?25h");
+  62:Lib/vt100.c   ****   else
+  63:Lib/vt100.c   ****   // ESC [ ? 25 l
+  64:Lib/vt100.c   ****     fprintf_P(state->myStdInOut, "\x1B[?25l");
+  65:Lib/vt100.c   **** }
+  66:Lib/vt100.c   **** 
+  67:Lib/vt100.c   **** void vt100SetCursorPos(uint8_t line, uint8_t col, cmdState_t *state)
+  68:Lib/vt100.c   **** {
+ 262               	.LM0:
+ 263               	.LFBB1:
+ 264               	/* prologue: function */
+ 265               	/* frame size = 0 */
+ 266 0000 DA01      		movw r26,r20
+  69:Lib/vt100.c   ****   // ESC [ Pl ; Pc H
+  70:Lib/vt100.c   ****   fprintf_P(state->myStdInOut, "\x1B[%d;%dH",line,col);
+ 268               	.LM1:
+ 269 0002 2DB7      		in r18,__SP_L__
+ 270 0004 3EB7      		in r19,__SP_H__
+ 271 0006 2850      		subi r18,lo8(-(-8))
+ 272 0008 3040      		sbci r19,hi8(-(-8))
+ 273 000a 0FB6      		in __tmp_reg__,__SREG__
+ 274 000c F894      		cli
+ 275 000e 3EBF      		out __SP_H__,r19
+ 276 0010 0FBE      		out __SREG__,__tmp_reg__
+ 277 0012 2DBF      		out __SP_L__,r18
+ 278 0014 EDB7      		in r30,__SP_L__
+ 279 0016 FEB7      		in r31,__SP_H__
+ 280 0018 3196      		adiw r30,1
+ 281 001a 5A96      		adiw r26,26
+ 282 001c 2D91      		ld r18,X+
+ 283 001e 3C91      		ld r19,X
+ 284 0020 5B97      		sbiw r26,26+1
+ 285 0022 ADB7      		in r26,__SP_L__
+ 286 0024 BEB7      		in r27,__SP_H__
+ 287 0026 1296      		adiw r26,1+1
+ 288 0028 3C93      		st X,r19
+ 289 002a 2E93      		st -X,r18
+ 290 002c 1197      		sbiw r26,1
+ 291 002e 20E0      		ldi r18,lo8(.LC0)
+ 292 0030 30E0      		ldi r19,hi8(.LC0)
+ 293 0032 3383      		std Z+3,r19
+ 294 0034 2283      		std Z+2,r18
+ 295 0036 8483      		std Z+4,r24
+ 296 0038 1582      		std Z+5,__zero_reg__
+ 297 003a 6683      		std Z+6,r22
+ 298 003c 1782      		std Z+7,__zero_reg__
+ 299 003e 0E94 0000 		call fprintf_P
+ 300 0042 2DB7      		in r18,__SP_L__
+ 301 0044 3EB7      		in r19,__SP_H__
+ 302 0046 285F      		subi r18,lo8(-(8))
+ 303 0048 3F4F      		sbci r19,hi8(-(8))
+ 304 004a 0FB6      		in __tmp_reg__,__SREG__
+ 305 004c F894      		cli
+ 306 004e 3EBF      		out __SP_H__,r19
+ 307 0050 0FBE      		out __SREG__,__tmp_reg__
+ 308 0052 2DBF      		out __SP_L__,r18
+ 309               	/* epilogue start */
+  71:Lib/vt100.c   **** }
+ 311               	.LM2:
+ 312 0054 0895      		ret
+ 314               	.Lscope1:
+ 316               		.stabd	78,0,0
+ 317               		.data
+ 318               	.LC1:
+ 319 0009 1B5B 3F32 		.string	"\033[?25h"
+ 319      3568 00
+ 320               	.LC2:
+ 321 0010 1B5B 3F32 		.string	"\033[?25l"
+ 321      356C 00
+ 322               		.text
+ 326               	.global	vt100SetCursorMode
+ 328               	vt100SetCursorMode:
+ 329               		.stabd	46,0,0
+  58:Lib/vt100.c   **** {
+ 331               	.LM3:
+ 332               	.LFBB2:
+ 333               	/* prologue: function */
+ 334               	/* frame size = 0 */
+ 335 0056 FB01      		movw r30,r22
+ 336 0058 228D      		ldd r18,Z+26
+ 337 005a 338D      		ldd r19,Z+27
+  59:Lib/vt100.c   ****   if(visible)
+ 339               	.LM4:
+ 340 005c 8823      		tst r24
+ 341 005e 01F0      		breq .L4
+  61:Lib/vt100.c   ****     fprintf_P(state->myStdInOut, "\x1B[?25h");
+ 343               	.LM5:
+ 344 0060 00D0      		rcall .
+ 345 0062 00D0      		rcall .
+ 346 0064 EDB7      		in r30,__SP_L__
+ 347 0066 FEB7      		in r31,__SP_H__
+ 348 0068 3283      		std Z+2,r19
+ 349 006a 2183      		std Z+1,r18
+ 350 006c 80E0      		ldi r24,lo8(.LC1)
+ 351 006e 90E0      		ldi r25,hi8(.LC1)
+ 352 0070 00C0      		rjmp .L7
+ 353               	.L4:
+  64:Lib/vt100.c   ****     fprintf_P(state->myStdInOut, "\x1B[?25l");
+ 355               	.LM6:
+ 356 0072 00D0      		rcall .
+ 357 0074 00D0      		rcall .
+ 358 0076 EDB7      		in r30,__SP_L__
+ 359 0078 FEB7      		in r31,__SP_H__
+ 360 007a 3283      		std Z+2,r19
+ 361 007c 2183      		std Z+1,r18
+ 362 007e 80E0      		ldi r24,lo8(.LC2)
+ 363 0080 90E0      		ldi r25,hi8(.LC2)
+ 364               	.L7:
+ 365 0082 9483      		std Z+4,r25
+ 366 0084 8383      		std Z+3,r24
+ 367 0086 0E94 0000 		call fprintf_P
+ 368 008a 0F90      		pop __tmp_reg__
+ 369 008c 0F90      		pop __tmp_reg__
+ 370 008e 0F90      		pop __tmp_reg__
+ 371 0090 0F90      		pop __tmp_reg__
+ 372 0092 0895      		ret
+ 374               	.Lscope2:
+ 376               		.stabd	78,0,0
+ 377               		.data
+ 378               	.LC3:
+ 379 0017 1B5B 2564 		.string	"\033[%dm"
+ 379      6D00 
+ 380               		.text
+ 384               	.global	vt100SetAttr
+ 386               	vt100SetAttr:
+ 387               		.stabd	46,0,0
+  52:Lib/vt100.c   **** {
+ 389               	.LM7:
+ 390               	.LFBB3:
+ 391               	/* prologue: function */
+ 392               	/* frame size = 0 */
+ 393 0094 DB01      		movw r26,r22
+  54:Lib/vt100.c   ****   fprintf_P(state->myStdInOut, "\x1B[%dm",attr);
+ 395               	.LM8:
+ 396 0096 00D0      		rcall .
+ 397 0098 00D0      		rcall .
+ 398 009a 00D0      		rcall .
+ 399 009c EDB7      		in r30,__SP_L__
+ 400 009e FEB7      		in r31,__SP_H__
+ 401 00a0 3196      		adiw r30,1
+ 402 00a2 5A96      		adiw r26,26
+ 403 00a4 2D91      		ld r18,X+
+ 404 00a6 3C91      		ld r19,X
+ 405 00a8 5B97      		sbiw r26,26+1
+ 406 00aa ADB7      		in r26,__SP_L__
+ 407 00ac BEB7      		in r27,__SP_H__
+ 408 00ae 1296      		adiw r26,1+1
+ 409 00b0 3C93      		st X,r19
+ 410 00b2 2E93      		st -X,r18
+ 411 00b4 1197      		sbiw r26,1
+ 412 00b6 20E0      		ldi r18,lo8(.LC3)
+ 413 00b8 30E0      		ldi r19,hi8(.LC3)
+ 414 00ba 3383      		std Z+3,r19
+ 415 00bc 2283      		std Z+2,r18
+ 416 00be 8483      		std Z+4,r24
+ 417 00c0 1582      		std Z+5,__zero_reg__
+ 418 00c2 0E94 0000 		call fprintf_P
+ 419 00c6 8DB7      		in r24,__SP_L__
+ 420 00c8 9EB7      		in r25,__SP_H__
+ 421 00ca 0696      		adiw r24,6
+ 422 00cc 0FB6      		in __tmp_reg__,__SREG__
+ 423 00ce F894      		cli
+ 424 00d0 9EBF      		out __SP_H__,r25
+ 425 00d2 0FBE      		out __SREG__,__tmp_reg__
+ 426 00d4 8DBF      		out __SP_L__,r24
+ 427               	/* epilogue start */
+  55:Lib/vt100.c   **** }
+ 429               	.LM9:
+ 430 00d6 0895      		ret
+ 432               	.Lscope3:
+ 434               		.stabd	78,0,0
+ 435               		.data
+ 436               	.LC4:
+ 437 001d 1B5B 324A 		.string	"\033[2J"
+ 437      00
+ 438               		.text
+ 441               	.global	vt100ClearScreen
+ 443               	vt100ClearScreen:
+ 444               		.stabd	46,0,0
+  46:Lib/vt100.c   **** {
+ 446               	.LM10:
+ 447               	.LFBB4:
+ 448               	/* prologue: function */
+ 449               	/* frame size = 0 */
+  48:Lib/vt100.c   ****   fprintf_P(state->myStdInOut, "\x1B[2J");
+ 451               	.LM11:
+ 452 00d8 00D0      		rcall .
+ 453 00da 00D0      		rcall .
+ 454 00dc FC01      		movw r30,r24
+ 455 00de 828D      		ldd r24,Z+26
+ 456 00e0 938D      		ldd r25,Z+27
+ 457 00e2 EDB7      		in r30,__SP_L__
+ 458 00e4 FEB7      		in r31,__SP_H__
+ 459 00e6 9283      		std Z+2,r25
+ 460 00e8 8183      		std Z+1,r24
+ 461 00ea 80E0      		ldi r24,lo8(.LC4)
+ 462 00ec 90E0      		ldi r25,hi8(.LC4)
+ 463 00ee 9483      		std Z+4,r25
+ 464 00f0 8383      		std Z+3,r24
+ 465 00f2 0E94 0000 		call fprintf_P
+ 466 00f6 0F90      		pop __tmp_reg__
+ 467 00f8 0F90      		pop __tmp_reg__
+ 468 00fa 0F90      		pop __tmp_reg__
+ 469 00fc 0F90      		pop __tmp_reg__
+ 470               	/* epilogue start */
+  49:Lib/vt100.c   **** }
+ 472               	.LM12:
+ 473 00fe 0895      		ret
+ 475               	.Lscope4:
+ 477               		.stabd	78,0,0
+ 478               		.data
+ 479               	.LC5:
+ 480 0022 1B63 00   		.string	"\033c"
+ 481               		.text
+ 484               	.global	vt100Init
+ 486               	vt100Init:
+ 487               		.stabd	46,0,0
+  38:Lib/vt100.c   **** {
+ 489               	.LM13:
+ 490               	.LFBB5:
+ 491               	/* prologue: function */
+ 492               	/* frame size = 0 */
+  42:Lib/vt100.c   ****  fprintf_P(state->myStdInOut, "\x1B\x63");
+ 494               	.LM14:
+ 495 0100 00D0      		rcall .
+ 496 0102 00D0      		rcall .
+ 497 0104 FC01      		movw r30,r24
+ 498 0106 828D      		ldd r24,Z+26
+ 499 0108 938D      		ldd r25,Z+27
+ 500 010a EDB7      		in r30,__SP_L__
+ 501 010c FEB7      		in r31,__SP_H__
+ 502 010e 9283      		std Z+2,r25
+ 503 0110 8183      		std Z+1,r24
+ 504 0112 80E0      		ldi r24,lo8(.LC5)
+ 505 0114 90E0      		ldi r25,hi8(.LC5)
+ 506 0116 9483      		std Z+4,r25
+ 507 0118 8383      		std Z+3,r24
+ 508 011a 0E94 0000 		call fprintf_P
+ 509 011e 0F90      		pop __tmp_reg__
+ 510 0120 0F90      		pop __tmp_reg__
+ 511 0122 0F90      		pop __tmp_reg__
+ 512 0124 0F90      		pop __tmp_reg__
+ 513               	/* epilogue start */
+  43:Lib/vt100.c   **** }
+ 515               	.LM15:
+ 516 0126 0895      		ret
+ 518               	.Lscope5:
+ 520               		.stabd	78,0,0
+ 521               		.comm klastry,128,1
+ 522               		.comm wwwport,1,1
+ 523               		.comm rollers,2,1
+ 524               		.comm xSemaphoreSpiSS,2,1
+ 525               		.comm portA,1,1
+ 526               		.comm portB,1,1
+ 527               		.comm lockSensors,2,1
+ 528               		.comm xSemaphoreRs485,2,1
+ 529               		.comm nicState,14,1
+ 530               		.comm IpMyConfig,15,1
+ 531               		.comm arpDebug,2,1
+ 532               		.comm arpDebugLevel,1,1
+ 533               		.comm icmpDebug,2,1
+ 534               		.comm icmpDebugLevel,1,1
+ 535               		.comm udpSocket,2,1
+ 536               		.comm udpDbgStream,2,1
+ 537               		.comm udpDbgLevel,1,1
+ 538               		.comm tcpDebugStream,2,1
+ 539               		.comm tcpDebugLevel,1,1
+ 540               		.comm sockets,2,1
+ 541               		.comm czasRtc,7,1
+ 564               	.Letext0:
+ 565               	.global __do_copy_data
+ 566               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 vt100.c
+     /tmp/ccL5cV8s.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccL5cV8s.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccL5cV8s.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccL5cV8s.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccL5cV8s.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccL5cV8s.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccL5cV8s.s:259    .text:00000000 vt100SetCursorPos
+     /tmp/ccL5cV8s.s:328    .text:00000056 vt100SetCursorMode
+     /tmp/ccL5cV8s.s:386    .text:00000094 vt100SetAttr
+     /tmp/ccL5cV8s.s:443    .text:000000d8 vt100ClearScreen
+     /tmp/ccL5cV8s.s:486    .text:00000100 vt100Init
+                            *COM*:00000080 klastry
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 lockSensors
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+
+UNDEFINED SYMBOLS
+fprintf_P
+__do_copy_data
+__do_clear_bss

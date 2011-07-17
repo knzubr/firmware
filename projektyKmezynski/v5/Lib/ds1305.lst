@@ -1,0 +1,568 @@
+   1               		.file	"ds1305.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 119               		.weak	spiEnableDS1305
+ 121               	spiEnableDS1305:
+ 122               		.stabd	46,0,0
+   1:Lib/ds1305.c  **** /*********************************************
+   2:Lib/ds1305.c  ****  * vim:sw=8:ts=8:si:et
+   3:Lib/ds1305.c  ****  * To use the above modeline in vim you must have "set modeline" in your .vimrc
+   4:Lib/ds1305.c  ****  * Author: Guido Socher 
+   5:Lib/ds1305.c  ****  * Copyright: GPL V2
+   6:Lib/ds1305.c  ****  * http://www.gnu.org/licenses/gpl.html
+   7:Lib/ds1305.c  ****  *
+   8:Lib/ds1305.c  ****  * Based on the enc28j60.c file from the AVRlib library by Pascal Stang.
+   9:Lib/ds1305.c  ****  * For AVRlib See http://www.procyonengineering.com/
+  10:Lib/ds1305.c  ****  * Used with explicit permission of Pascal Stang.
+  11:Lib/ds1305.c  ****  *
+  12:Lib/ds1305.c  ****  * Title: Microchip ENC28J60 Ethernet Interface Driver
+  13:Lib/ds1305.c  ****  * Chip type           : ATMEGA88 with ENC28J60
+  14:Lib/ds1305.c  ****  *********************************************/
+  15:Lib/ds1305.c  **** #include <avr/io.h>
+  16:Lib/ds1305.c  **** #include <util/delay.h>
+  17:Lib/ds1305.c  **** #include "ds1305.h"
+  18:Lib/ds1305.c  **** #include "spi.h"
+  19:Lib/ds1305.c  **** 
+  20:Lib/ds1305.c  **** void spiEnableDS1305(void)  {};
+ 124               	.LM0:
+ 125               	.LFBB1:
+ 126               	/* prologue: function */
+ 127               	/* frame size = 0 */
+ 128               	/* epilogue start */
+ 130               	.LM1:
+ 131 0000 0895      		ret
+ 133               	.Lscope1:
+ 135               		.stabd	78,0,0
+ 137               		.weak	spiDisableDS1305
+ 139               	spiDisableDS1305:
+ 140               		.stabd	46,0,0
+  21:Lib/ds1305.c  **** void spiDisableDS1305(void) {};
+ 142               	.LM2:
+ 143               	.LFBB2:
+ 144               	/* prologue: function */
+ 145               	/* frame size = 0 */
+ 146               	/* epilogue start */
+ 148               	.LM3:
+ 149 0002 0895      		ret
+ 151               	.Lscope2:
+ 153               		.stabd	78,0,0
+ 158               	.global	ds1305readMem
+ 160               	ds1305readMem:
+ 161               		.stabd	46,0,0
+  22:Lib/ds1305.c  **** 
+  23:Lib/ds1305.c  **** 
+  24:Lib/ds1305.c  **** void readTimeBCD(timeBCD_t *time)
+  25:Lib/ds1305.c  **** {
+  26:Lib/ds1305.c  ****   spiTake();
+  27:Lib/ds1305.c  ****   spiEnableDS1305();
+  28:Lib/ds1305.c  ****   
+  29:Lib/ds1305.c  ****   uint8_t *ptr = (uint8_t *)(time);
+  30:Lib/ds1305.c  ****   uint8_t i;
+  31:Lib/ds1305.c  ****   
+  32:Lib/ds1305.c  ****   spiSend(0x00);
+  33:Lib/ds1305.c  **** 
+  34:Lib/ds1305.c  ****   for (i=0; i<sizeof(timeBCD_t); i++)
+  35:Lib/ds1305.c  ****   {
+  36:Lib/ds1305.c  ****     *ptr = spiSend(i);
+  37:Lib/ds1305.c  ****     ptr++;
+  38:Lib/ds1305.c  ****   }  
+  39:Lib/ds1305.c  ****   spiDisableDS1305();  
+  40:Lib/ds1305.c  ****   spiGive();
+  41:Lib/ds1305.c  **** }
+  42:Lib/ds1305.c  **** 
+  43:Lib/ds1305.c  **** #if USE_DECODED_TIME_STRUCT
+  44:Lib/ds1305.c  **** void readTimeDecoded(timeDecoded_t *time)
+  45:Lib/ds1305.c  **** {
+  46:Lib/ds1305.c  ****   readTimeBCD((timeBCD_t *)(time));
+  47:Lib/ds1305.c  **** }
+  48:Lib/ds1305.c  **** void readTime (time_t *time)
+  49:Lib/ds1305.c  **** {
+  50:Lib/ds1305.c  ****   readTimeBCD((timeBCD_t *)(time));
+  51:Lib/ds1305.c  **** }
+  52:Lib/ds1305.c  **** #endif /* USE_DECODED_TIME_STRUCT */
+  53:Lib/ds1305.c  **** 
+  54:Lib/ds1305.c  **** 
+  55:Lib/ds1305.c  **** void setTimeBCD(timeBCD_t *time)
+  56:Lib/ds1305.c  **** {
+  57:Lib/ds1305.c  ****   spiTake();
+  58:Lib/ds1305.c  ****   spiEnableDS1305();
+  59:Lib/ds1305.c  ****   
+  60:Lib/ds1305.c  ****   uint8_t *ptr = (uint8_t *)(time);
+  61:Lib/ds1305.c  ****   uint8_t i;
+  62:Lib/ds1305.c  ****   spiSend(0x80);
+  63:Lib/ds1305.c  ****   for (i=0; i<sizeof(timeBCD_t); i++)
+  64:Lib/ds1305.c  ****   {
+  65:Lib/ds1305.c  ****     spiSend(*ptr);
+  66:Lib/ds1305.c  ****     ptr++;
+  67:Lib/ds1305.c  ****   }  
+  68:Lib/ds1305.c  ****   
+  69:Lib/ds1305.c  ****   spiDisableDS1305();  
+  70:Lib/ds1305.c  ****   spiGive();
+  71:Lib/ds1305.c  **** }
+  72:Lib/ds1305.c  **** 
+  73:Lib/ds1305.c  **** #if USE_DECODED_TIME_STRUCT
+  74:Lib/ds1305.c  **** void setTimeDecoded(timeDecoded_t *time)
+  75:Lib/ds1305.c  **** {
+  76:Lib/ds1305.c  ****   setTimeBCD((timeBCD_t *)(time));
+  77:Lib/ds1305.c  **** }
+  78:Lib/ds1305.c  **** void setTime(time_t *time)
+  79:Lib/ds1305.c  **** {
+  80:Lib/ds1305.c  ****   setTimeBCD((timeBCD_t *)(time));
+  81:Lib/ds1305.c  **** }
+  82:Lib/ds1305.c  **** #endif /* USE_DECODED_TIME_STRUCT */
+  83:Lib/ds1305.c  **** 
+  84:Lib/ds1305.c  **** void ds1305start(void)
+  85:Lib/ds1305.c  **** {  
+  86:Lib/ds1305.c  ****   spiTake();
+  87:Lib/ds1305.c  ****   spiEnableDS1305();
+  88:Lib/ds1305.c  **** 
+  89:Lib/ds1305.c  ****   spiSend(0x8F);
+  90:Lib/ds1305.c  ****   spiSend(0x00);
+  91:Lib/ds1305.c  ****   
+  92:Lib/ds1305.c  ****   spiDisableDS1305();  
+  93:Lib/ds1305.c  ****   spiGive();
+  94:Lib/ds1305.c  **** 
+  95:Lib/ds1305.c  ****   return;
+  96:Lib/ds1305.c  **** }
+  97:Lib/ds1305.c  **** 
+  98:Lib/ds1305.c  **** 
+  99:Lib/ds1305.c  **** uint8_t ds1305writeMem      (uint8_t addr, uint8_t length, uint8_t *data)
+ 100:Lib/ds1305.c  **** {
+ 101:Lib/ds1305.c  ****   if (addr > 95)
+ 102:Lib/ds1305.c  ****     return 1;
+ 103:Lib/ds1305.c  ****   if (addr + length > 95)
+ 104:Lib/ds1305.c  ****     return 2;
+ 105:Lib/ds1305.c  **** 
+ 106:Lib/ds1305.c  ****   addr += 0xA0;
+ 107:Lib/ds1305.c  ****   
+ 108:Lib/ds1305.c  ****   spiTake();
+ 109:Lib/ds1305.c  ****   spiEnableDS1305();
+ 110:Lib/ds1305.c  **** 
+ 111:Lib/ds1305.c  ****   spiSend(addr);
+ 112:Lib/ds1305.c  ****   while (length > 0)
+ 113:Lib/ds1305.c  ****   {
+ 114:Lib/ds1305.c  ****     spiSend(*data);
+ 115:Lib/ds1305.c  ****     data++;
+ 116:Lib/ds1305.c  ****     length--;
+ 117:Lib/ds1305.c  ****   }
+ 118:Lib/ds1305.c  ****   
+ 119:Lib/ds1305.c  ****   spiDisableDS1305();  
+ 120:Lib/ds1305.c  ****   spiGive();
+ 121:Lib/ds1305.c  ****   return 0;
+ 122:Lib/ds1305.c  **** }
+ 123:Lib/ds1305.c  **** uint8_t ds1305readMem       (uint8_t addr, uint8_t length, uint8_t *data)
+ 124:Lib/ds1305.c  **** {
+ 163               	.LM4:
+ 164               	.LFBB3:
+ 165 0004 0F93      		push r16
+ 166 0006 1F93      		push r17
+ 167 0008 CF93      		push r28
+ 168 000a DF93      		push r29
+ 169               	/* prologue: function */
+ 170               	/* frame size = 0 */
+ 171 000c 182F      		mov r17,r24
+ 172 000e 062F      		mov r16,r22
+ 173 0010 EA01      		movw r28,r20
+ 125:Lib/ds1305.c  ****   if (addr >95)
+ 175               	.LM5:
+ 176 0012 8036      		cpi r24,lo8(96)
+ 177 0014 00F0      		brlo .L6
+ 178 0016 81E0      		ldi r24,lo8(1)
+ 179 0018 00C0      		rjmp .L7
+ 180               	.L6:
+ 126:Lib/ds1305.c  ****     return 1;
+ 127:Lib/ds1305.c  ****   if (addr + length > 95)
+ 182               	.LM6:
+ 183 001a 90E0      		ldi r25,lo8(0)
+ 184 001c 860F      		add r24,r22
+ 185 001e 911D      		adc r25,__zero_reg__
+ 186 0020 8036      		cpi r24,96
+ 187 0022 9105      		cpc r25,__zero_reg__
+ 188 0024 04F0      		brlt .L8
+ 189 0026 82E0      		ldi r24,lo8(2)
+ 190 0028 00C0      		rjmp .L7
+ 191               	.L8:
+ 128:Lib/ds1305.c  ****     return 2;
+ 129:Lib/ds1305.c  ****   
+ 130:Lib/ds1305.c  ****   addr += 0x20;
+ 131:Lib/ds1305.c  ****   
+ 132:Lib/ds1305.c  ****   spiTake();
+ 193               	.LM7:
+ 194 002a 0E94 0000 		call spiTake
+ 133:Lib/ds1305.c  ****   spiEnableDS1305();
+ 196               	.LM8:
+ 197 002e 0E94 0000 		call spiEnableDS1305
+ 134:Lib/ds1305.c  **** 
+ 135:Lib/ds1305.c  ****   spiSend(addr);
+ 199               	.LM9:
+ 200 0032 812F      		mov r24,r17
+ 201 0034 805E      		subi r24,lo8(-(32))
+ 202 0036 0E94 0000 		call spiSend
+ 203 003a 00C0      		rjmp .L9
+ 204               	.L10:
+ 136:Lib/ds1305.c  ****   while (length > 0)
+ 137:Lib/ds1305.c  ****   {
+ 138:Lib/ds1305.c  ****     *data = spiSend(0);
+ 206               	.LM10:
+ 207 003c 80E0      		ldi r24,lo8(0)
+ 208 003e 0E94 0000 		call spiSend
+ 209 0042 8993      		st Y+,r24
+ 139:Lib/ds1305.c  ****     data++;
+ 140:Lib/ds1305.c  ****     length--;
+ 211               	.LM11:
+ 212 0044 0150      		subi r16,lo8(-(-1))
+ 213               	.L9:
+ 136:Lib/ds1305.c  ****   while (length > 0)
+ 215               	.LM12:
+ 216 0046 0023      		tst r16
+ 217 0048 01F4      		brne .L10
+ 141:Lib/ds1305.c  ****   }
+ 142:Lib/ds1305.c  ****   
+ 143:Lib/ds1305.c  ****   spiDisableDS1305();  
+ 219               	.LM13:
+ 220 004a 0E94 0000 		call spiDisableDS1305
+ 144:Lib/ds1305.c  ****   spiGive();
+ 222               	.LM14:
+ 223 004e 0E94 0000 		call spiGive
+ 224 0052 80E0      		ldi r24,lo8(0)
+ 225               	.L7:
+ 226               	/* epilogue start */
+ 145:Lib/ds1305.c  ****   return 0;
+ 146:Lib/ds1305.c  **** }
+ 228               	.LM15:
+ 229 0054 DF91      		pop r29
+ 230 0056 CF91      		pop r28
+ 231 0058 1F91      		pop r17
+ 232 005a 0F91      		pop r16
+ 233 005c 0895      		ret
+ 235               	.Lscope3:
+ 237               		.stabd	78,0,0
+ 242               	.global	ds1305writeMem
+ 244               	ds1305writeMem:
+ 245               		.stabd	46,0,0
+ 100:Lib/ds1305.c  **** {
+ 247               	.LM16:
+ 248               	.LFBB4:
+ 249 005e 0F93      		push r16
+ 250 0060 1F93      		push r17
+ 251 0062 CF93      		push r28
+ 252 0064 DF93      		push r29
+ 253               	/* prologue: function */
+ 254               	/* frame size = 0 */
+ 255 0066 182F      		mov r17,r24
+ 256 0068 062F      		mov r16,r22
+ 257 006a EA01      		movw r28,r20
+ 101:Lib/ds1305.c  ****   if (addr > 95)
+ 259               	.LM17:
+ 260 006c 8036      		cpi r24,lo8(96)
+ 261 006e 00F0      		brlo .L13
+ 262 0070 81E0      		ldi r24,lo8(1)
+ 263 0072 00C0      		rjmp .L14
+ 264               	.L13:
+ 103:Lib/ds1305.c  ****   if (addr + length > 95)
+ 266               	.LM18:
+ 267 0074 90E0      		ldi r25,lo8(0)
+ 268 0076 860F      		add r24,r22
+ 269 0078 911D      		adc r25,__zero_reg__
+ 270 007a 8036      		cpi r24,96
+ 271 007c 9105      		cpc r25,__zero_reg__
+ 272 007e 04F0      		brlt .L15
+ 273 0080 82E0      		ldi r24,lo8(2)
+ 274 0082 00C0      		rjmp .L14
+ 275               	.L15:
+ 108:Lib/ds1305.c  ****   spiTake();
+ 277               	.LM19:
+ 278 0084 0E94 0000 		call spiTake
+ 109:Lib/ds1305.c  ****   spiEnableDS1305();
+ 280               	.LM20:
+ 281 0088 0E94 0000 		call spiEnableDS1305
+ 111:Lib/ds1305.c  ****   spiSend(addr);
+ 283               	.LM21:
+ 284 008c 812F      		mov r24,r17
+ 285 008e 8056      		subi r24,lo8(-(-96))
+ 286 0090 0E94 0000 		call spiSend
+ 287 0094 00C0      		rjmp .L16
+ 288               	.L17:
+ 114:Lib/ds1305.c  ****     spiSend(*data);
+ 290               	.LM22:
+ 291 0096 8991      		ld r24,Y+
+ 292 0098 0E94 0000 		call spiSend
+ 116:Lib/ds1305.c  ****     length--;
+ 294               	.LM23:
+ 295 009c 0150      		subi r16,lo8(-(-1))
+ 296               	.L16:
+ 112:Lib/ds1305.c  ****   while (length > 0)
+ 298               	.LM24:
+ 299 009e 0023      		tst r16
+ 300 00a0 01F4      		brne .L17
+ 119:Lib/ds1305.c  ****   spiDisableDS1305();  
+ 302               	.LM25:
+ 303 00a2 0E94 0000 		call spiDisableDS1305
+ 120:Lib/ds1305.c  ****   spiGive();
+ 305               	.LM26:
+ 306 00a6 0E94 0000 		call spiGive
+ 307 00aa 80E0      		ldi r24,lo8(0)
+ 308               	.L14:
+ 309               	/* epilogue start */
+ 122:Lib/ds1305.c  **** }
+ 311               	.LM27:
+ 312 00ac DF91      		pop r29
+ 313 00ae CF91      		pop r28
+ 314 00b0 1F91      		pop r17
+ 315 00b2 0F91      		pop r16
+ 316 00b4 0895      		ret
+ 318               	.Lscope4:
+ 320               		.stabd	78,0,0
+ 322               	.global	ds1305start
+ 324               	ds1305start:
+ 325               		.stabd	46,0,0
+  85:Lib/ds1305.c  **** {  
+ 327               	.LM28:
+ 328               	.LFBB5:
+ 329               	/* prologue: function */
+ 330               	/* frame size = 0 */
+  86:Lib/ds1305.c  ****   spiTake();
+ 332               	.LM29:
+ 333 00b6 0E94 0000 		call spiTake
+  87:Lib/ds1305.c  ****   spiEnableDS1305();
+ 335               	.LM30:
+ 336 00ba 0E94 0000 		call spiEnableDS1305
+  89:Lib/ds1305.c  ****   spiSend(0x8F);
+ 338               	.LM31:
+ 339 00be 8FE8      		ldi r24,lo8(-113)
+ 340 00c0 0E94 0000 		call spiSend
+  90:Lib/ds1305.c  ****   spiSend(0x00);
+ 342               	.LM32:
+ 343 00c4 80E0      		ldi r24,lo8(0)
+ 344 00c6 0E94 0000 		call spiSend
+  92:Lib/ds1305.c  ****   spiDisableDS1305();  
+ 346               	.LM33:
+ 347 00ca 0E94 0000 		call spiDisableDS1305
+  93:Lib/ds1305.c  ****   spiGive();
+ 349               	.LM34:
+ 350 00ce 0E94 0000 		call spiGive
+ 351               	/* epilogue start */
+  96:Lib/ds1305.c  **** }
+ 353               	.LM35:
+ 354 00d2 0895      		ret
+ 356               	.Lscope5:
+ 358               		.stabd	78,0,0
+ 360               	.global	setTimeBCD
+ 362               	setTimeBCD:
+ 363               		.stabd	46,0,0
+  56:Lib/ds1305.c  **** {
+ 365               	.LM36:
+ 366               	.LFBB6:
+ 367 00d4 0F93      		push r16
+ 368 00d6 1F93      		push r17
+ 369 00d8 CF93      		push r28
+ 370 00da DF93      		push r29
+ 371               	/* prologue: function */
+ 372               	/* frame size = 0 */
+ 373 00dc 182F      		mov r17,r24
+ 374 00de 092F      		mov r16,r25
+  57:Lib/ds1305.c  ****   spiTake();
+ 376               	.LM37:
+ 377 00e0 0E94 0000 		call spiTake
+  58:Lib/ds1305.c  ****   spiEnableDS1305();
+ 379               	.LM38:
+ 380 00e4 0E94 0000 		call spiEnableDS1305
+  60:Lib/ds1305.c  ****   uint8_t *ptr = (uint8_t *)(time);
+ 382               	.LM39:
+ 383 00e8 212F      		mov r18,r17
+ 384 00ea 302F      		mov r19,r16
+ 385 00ec C901      		movw r24,r18
+ 386 00ee EC01      		movw r28,r24
+  62:Lib/ds1305.c  ****   spiSend(0x80);
+ 388               	.LM40:
+ 389 00f0 80E8      		ldi r24,lo8(-128)
+ 390 00f2 0E94 0000 		call spiSend
+ 391 00f6 10E0      		ldi r17,lo8(0)
+ 392               	.L22:
+  65:Lib/ds1305.c  ****     spiSend(*ptr);
+ 394               	.LM41:
+ 395 00f8 8991      		ld r24,Y+
+ 396 00fa 0E94 0000 		call spiSend
+  63:Lib/ds1305.c  ****   for (i=0; i<sizeof(timeBCD_t); i++)
+ 398               	.LM42:
+ 399 00fe 1F5F      		subi r17,lo8(-(1))
+ 400 0100 1730      		cpi r17,lo8(7)
+ 401 0102 01F4      		brne .L22
+  69:Lib/ds1305.c  ****   spiDisableDS1305();  
+ 403               	.LM43:
+ 404 0104 0E94 0000 		call spiDisableDS1305
+  70:Lib/ds1305.c  ****   spiGive();
+ 406               	.LM44:
+ 407 0108 0E94 0000 		call spiGive
+ 408               	/* epilogue start */
+  71:Lib/ds1305.c  **** }
+ 410               	.LM45:
+ 411 010c DF91      		pop r29
+ 412 010e CF91      		pop r28
+ 413 0110 1F91      		pop r17
+ 414 0112 0F91      		pop r16
+ 415 0114 0895      		ret
+ 421               	.Lscope6:
+ 423               		.stabd	78,0,0
+ 426               	.global	setTime
+ 428               	setTime:
+ 429               		.stabd	46,0,0
+  79:Lib/ds1305.c  **** {
+ 431               	.LM46:
+ 432               	.LFBB7:
+ 433               	/* prologue: function */
+ 434               	/* frame size = 0 */
+  80:Lib/ds1305.c  ****   setTimeBCD((timeBCD_t *)(time));
+ 436               	.LM47:
+ 437 0116 0E94 0000 		call setTimeBCD
+ 438               	/* epilogue start */
+  81:Lib/ds1305.c  **** }
+ 440               	.LM48:
+ 441 011a 0895      		ret
+ 443               	.Lscope7:
+ 445               		.stabd	78,0,0
+ 448               	.global	setTimeDecoded
+ 450               	setTimeDecoded:
+ 451               		.stabd	46,0,0
+  75:Lib/ds1305.c  **** {
+ 453               	.LM49:
+ 454               	.LFBB8:
+ 455               	/* prologue: function */
+ 456               	/* frame size = 0 */
+  76:Lib/ds1305.c  ****   setTimeBCD((timeBCD_t *)(time));
+ 458               	.LM50:
+ 459 011c 0E94 0000 		call setTimeBCD
+ 460               	/* epilogue start */
+  77:Lib/ds1305.c  **** }
+ 462               	.LM51:
+ 463 0120 0895      		ret
+ 465               	.Lscope8:
+ 467               		.stabd	78,0,0
+ 469               	.global	readTimeBCD
+ 471               	readTimeBCD:
+ 472               		.stabd	46,0,0
+  25:Lib/ds1305.c  **** {
+ 474               	.LM52:
+ 475               	.LFBB9:
+ 476 0122 0F93      		push r16
+ 477 0124 1F93      		push r17
+ 478 0126 CF93      		push r28
+ 479 0128 DF93      		push r29
+ 480               	/* prologue: function */
+ 481               	/* frame size = 0 */
+ 482 012a 182F      		mov r17,r24
+ 483 012c 092F      		mov r16,r25
+  26:Lib/ds1305.c  ****   spiTake();
+ 485               	.LM53:
+ 486 012e 0E94 0000 		call spiTake
+  27:Lib/ds1305.c  ****   spiEnableDS1305();
+ 488               	.LM54:
+ 489 0132 0E94 0000 		call spiEnableDS1305
+  29:Lib/ds1305.c  ****   uint8_t *ptr = (uint8_t *)(time);
+ 491               	.LM55:
+ 492 0136 212F      		mov r18,r17
+ 493 0138 302F      		mov r19,r16
+ 494 013a C901      		movw r24,r18
+ 495 013c EC01      		movw r28,r24
+  32:Lib/ds1305.c  ****   spiSend(0x00);
+ 497               	.LM56:
+ 498 013e 80E0      		ldi r24,lo8(0)
+ 499 0140 0E94 0000 		call spiSend
+ 500 0144 10E0      		ldi r17,lo8(0)
+ 501               	.L30:
+  36:Lib/ds1305.c  ****     *ptr = spiSend(i);
+ 503               	.LM57:
+ 504 0146 812F      		mov r24,r17
+ 505 0148 0E94 0000 		call spiSend
+ 506 014c 8993      		st Y+,r24
+  34:Lib/ds1305.c  ****   for (i=0; i<sizeof(timeBCD_t); i++)
+ 508               	.LM58:
+ 509 014e 1F5F      		subi r17,lo8(-(1))
+ 510 0150 1730      		cpi r17,lo8(7)
+ 511 0152 01F4      		brne .L30
+  39:Lib/ds1305.c  ****   spiDisableDS1305();  
+ 513               	.LM59:
+ 514 0154 0E94 0000 		call spiDisableDS1305
+  40:Lib/ds1305.c  ****   spiGive();
+ 516               	.LM60:
+ 517 0158 0E94 0000 		call spiGive
+ 518               	/* epilogue start */
+  41:Lib/ds1305.c  **** }
+ 520               	.LM61:
+ 521 015c DF91      		pop r29
+ 522 015e CF91      		pop r28
+ 523 0160 1F91      		pop r17
+ 524 0162 0F91      		pop r16
+ 525 0164 0895      		ret
+ 531               	.Lscope9:
+ 533               		.stabd	78,0,0
+ 536               	.global	readTime
+ 538               	readTime:
+ 539               		.stabd	46,0,0
+  49:Lib/ds1305.c  **** {
+ 541               	.LM62:
+ 542               	.LFBB10:
+ 543               	/* prologue: function */
+ 544               	/* frame size = 0 */
+  50:Lib/ds1305.c  ****   readTimeBCD((timeBCD_t *)(time));
+ 546               	.LM63:
+ 547 0166 0E94 0000 		call readTimeBCD
+ 548               	/* epilogue start */
+  51:Lib/ds1305.c  **** }
+ 550               	.LM64:
+ 551 016a 0895      		ret
+ 553               	.Lscope10:
+ 555               		.stabd	78,0,0
+ 558               	.global	readTimeDecoded
+ 560               	readTimeDecoded:
+ 561               		.stabd	46,0,0
+  45:Lib/ds1305.c  **** {
+ 563               	.LM65:
+ 564               	.LFBB11:
+ 565               	/* prologue: function */
+ 566               	/* frame size = 0 */
+  46:Lib/ds1305.c  ****   readTimeBCD((timeBCD_t *)(time));
+ 568               	.LM66:
+ 569 016c 0E94 0000 		call readTimeBCD
+ 570               	/* epilogue start */
+  47:Lib/ds1305.c  **** }
+ 572               	.LM67:
+ 573 0170 0895      		ret
+ 575               	.Lscope11:
+ 577               		.stabd	78,0,0
+ 578               		.comm xSemaphoreSpiSS,2,1
+ 580               		.weak	spiSend
+ 582               	.Letext0:
+ 583               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 ds1305.c
+     /tmp/cc7sHr1E.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc7sHr1E.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc7sHr1E.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc7sHr1E.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc7sHr1E.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc7sHr1E.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc7sHr1E.s:121    .text:00000000 spiEnableDS1305
+     /tmp/cc7sHr1E.s:139    .text:00000002 spiDisableDS1305
+     /tmp/cc7sHr1E.s:160    .text:00000004 ds1305readMem
+     /tmp/cc7sHr1E.s:244    .text:0000005e ds1305writeMem
+     /tmp/cc7sHr1E.s:324    .text:000000b6 ds1305start
+     /tmp/cc7sHr1E.s:362    .text:000000d4 setTimeBCD
+     /tmp/cc7sHr1E.s:428    .text:00000116 setTime
+     /tmp/cc7sHr1E.s:450    .text:0000011c setTimeDecoded
+     /tmp/cc7sHr1E.s:471    .text:00000122 readTimeBCD
+     /tmp/cc7sHr1E.s:538    .text:00000166 readTime
+     /tmp/cc7sHr1E.s:560    .text:0000016c readTimeDecoded
+                            *COM*:00000002 xSemaphoreSpiSS
+
+UNDEFINED SYMBOLS
+spiTake
+spiSend
+spiGive
+__do_clear_bss

@@ -1,0 +1,307 @@
+   1               		.file	"netstack_task.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 252               	.global	encTask
+ 254               	encTask:
+ 255               		.stabd	46,0,0
+   1:netstack_task.c **** /*********************************************
+   2:netstack_task.c ****  * vim:sw=8:ts=8:si:et
+   3:netstack_task.c ****  * To use the above modeline in vim you must have "set modeline" in your .vimrc
+   4:netstack_task.c ****  * Author: Guido Socher
+   5:netstack_task.c ****  * Copyright: GPL V2
+   6:netstack_task.c ****  * See http://www.gnu.org/licenses/gpl.html
+   7:netstack_task.c ****  *
+   8:netstack_task.c ****  * Ethernet remote device and sensor
+   9:netstack_task.c ****  * UDP and HTTP interface
+  10:netstack_task.c ****         url looks like this http://baseurl/password/command
+  11:netstack_task.c ****         or http://baseurl/password/
+  12:netstack_task.c ****  *
+  13:netstack_task.c ****  * Chip type           : Atmega88 or Atmega168 or Atmega328 with ENC28J60
+  14:netstack_task.c ****  * Note: there is a version number in the text. Search for tuxgraphics
+  15:netstack_task.c ****  *********************************************/
+  16:netstack_task.c **** #include "netstack_task.h"
+  17:netstack_task.c **** 
+  18:netstack_task.c **** 
+  19:netstack_task.c **** /*uint16_t printHTMLstatus(char *buf, uint16_t pos, uint16_t maxPos)
+  20:netstack_task.c **** {*/
+  21:netstack_task.c **** /*  char *tmpPtr;
+  22:netstack_task.c **** 
+  23:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ( "<head><meta http-equiv=\"Content-Type\" con
+  24:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ( "<h3>Status</h3>"));
+  25:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p>"SYSTEM_NAME" ver <b>"S_VERSION"</b> buil
+  26:netstack_task.c ****   
+  27:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p><table border=1>"));
+  28:netstack_task.c **** 
+  29:netstack_task.c ****   tmpPtr = getBufPosToWrite(buf, pos);
+  30:netstack_task.c ****   pos +=sprintf_P(tmpPtr, PSTR("<tr><td>Temperatura</td><td>%d C</td></tr>"), temperature);
+  31:netstack_task.c ****   tmpPtr = getBufPosToWrite(buf, pos);
+  32:netstack_task.c ****   pos +=sprintf_P(tmpPtr, PSTR("<tr><td>Napięcie na magistrali</td><td>%d V</td></tr>"), voltage);
+  33:netstack_task.c **** 
+  34:netstack_task.c ****   uint8_t tmp = ramDyskLiczbaWolnychKlastrow();
+  35:netstack_task.c ****   tmpPtr = getBufPosToWrite(buf, pos);
+  36:netstack_task.c ****   pos +=sprintf_P(tmpPtr, PSTR("<tr><td>Liczba wolnych klastrów</td><td>%d / %d</td></tr>"), tmp, 
+  37:netstack_task.c **** 
+  38:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("</table></p>"));
+  39:netstack_task.c **** 
+  40:netstack_task.c ****   tmpPtr = getBufPosToWrite(buf, pos);
+  41:netstack_task.c ****   
+  42:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR("<h3>Czujniki rygli</h3>"));
+  43:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p><table border=1>"));
+  44:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<tr><td>Czujnik nr</td><td>Położenie rygla
+  45:netstack_task.c ****   for (tmp = 0; tmp < 4; tmp++)
+  46:netstack_task.c ****   {
+  47:netstack_task.c ****     if (lockSensors[tmp].enabled)
+  48:netstack_task.c ****     {
+  49:netstack_task.c ****       tmpPtr = getBufPosToWrite(buf, pos);
+  50:netstack_task.c ****       pos +=sprintf_P(tmpPtr, PSTR("<tr align=\"center\"><td>%d</td>"), tmp+1);
+  51:netstack_task.c ****       if (lockSensors[tmp].locked)
+  52:netstack_task.c ****         pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<td>zamknięty</td>"));
+  53:netstack_task.c ****       else
+  54:netstack_task.c ****         pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<td>otwarty</td>"));
+  55:netstack_task.c **** 
+  56:netstack_task.c ****       tmpPtr = getBufPosToWrite(buf, pos);
+  57:netstack_task.c ****       pos +=sprintf_P(tmpPtr, PSTR("<td>%d</td><td>%d</td>"), lockSensors[tmp].acVal, lockSensors[t
+  58:netstack_task.c ****       pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("</tr>"));
+  59:netstack_task.c ****     }
+  60:netstack_task.c ****   }
+  61:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("</table></p>"));
+  62:netstack_task.c **** 
+  63:netstack_task.c ****   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR("<h3>Moduły wykonawcze</h3>"));
+  64:netstack_task.c ****   return pos;*/
+  65:netstack_task.c **** //   return 0;
+  66:netstack_task.c **** // }
+  67:netstack_task.c **** 
+  68:netstack_task.c **** 
+  69:netstack_task.c **** void encTask ( void *pvParameters )
+  70:netstack_task.c **** {
+ 257               	.LM0:
+ 258               	.LFBB1:
+ 259 0000 EF92      		push r14
+ 260 0002 FF92      		push r15
+ 261 0004 0F93      		push r16
+ 262 0006 1F93      		push r17
+ 263 0008 CF93      		push r28
+ 264 000a DF93      		push r29
+ 265               	/* prologue: function */
+ 266               	/* frame size = 0 */
+  71:netstack_task.c ****   FILE *netstackDebug = (FILE *) pvParameters;
+ 268               	.LM1:
+ 269 000c EC01      		movw r28,r24
+  72:netstack_task.c ****   uint16_t plen;
+  73:netstack_task.c **** 
+  74:netstack_task.c ****   nicInit();
+ 271               	.LM2:
+ 272 000e 0E94 0000 		call nicInit
+  75:netstack_task.c ****   ipInit();
+ 274               	.LM3:
+ 275 0012 0E94 0000 		call ipInit
+  76:netstack_task.c ****   arpInit();
+ 277               	.LM4:
+ 278 0016 0E94 0000 		call arpInit
+  77:netstack_task.c ****   icmpInit();
+ 280               	.LM5:
+ 281 001a 0E94 0000 		call icmpInit
+  78:netstack_task.c **** 
+  79:netstack_task.c **** 
+  80:netstack_task.c ****   //TODO    init_ip_arp_udp_tcp (mymac, ipGetConfig()->ip, MYWWWPORT);
+  81:netstack_task.c ****   
+  82:netstack_task.c ****   
+  83:netstack_task.c ****   for ( ; ; )
+  84:netstack_task.c ****   {
+  85:netstack_task.c ****     vTaskDelay ( 10 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zw
+  86:netstack_task.c ****     
+  87:netstack_task.c ****     // get the next new packet:
+  88:netstack_task.c ****     plen = nicPoll();
+  89:netstack_task.c ****     /*plen will ne unequal to zero if there is a valid
+  90:netstack_task.c ****     * packet (without crc error) */
+  91:netstack_task.c ****     if ( plen==0 )
+  92:netstack_task.c ****     {
+  93:netstack_task.c ****       flushUdpQueues();
+  94:netstack_task.c ****       flushTcpQueues();
+  95:netstack_task.c ****       //flush HTTP long file queue 
+  96:netstack_task.c ****       continue;
+  97:netstack_task.c ****     }
+  98:netstack_task.c ****     
+  99:netstack_task.c ****     if(nicState.layer2.ethHeader->type == htons(ETHTYPE_IP))             // process an IP packet
+ 100:netstack_task.c ****     {
+ 101:netstack_task.c ****       arpIpIn();
+ 102:netstack_task.c ****       netstackIPv4Process();
+ 103:netstack_task.c ****     }
+ 104:netstack_task.c ****     else if(nicState.layer2.ethHeader->type == htons(ETHTYPE_ARP))       // process an ARP packet
+ 105:netstack_task.c ****     {
+ 106:netstack_task.c ****       arpArpIn();
+ 107:netstack_task.c ****     }
+ 108:netstack_task.c ****     else
+ 109:netstack_task.c ****     {
+ 110:netstack_task.c ****       if (netstackDebug != NULL)
+ 111:netstack_task.c ****       {
+ 112:netstack_task.c ****         fprintf_P(netstackDebug, PSTR("Unknown packet\r\n"));
+ 283               	.LM6:
+ 284 001e 80E0      		ldi r24,lo8(__c.2984)
+ 285 0020 E82E      		mov r14,r24
+ 286 0022 80E0      		ldi r24,hi8(__c.2984)
+ 287 0024 F82E      		mov r15,r24
+ 288               	.L9:
+  85:netstack_task.c ****     vTaskDelay ( 10 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zw
+ 290               	.LM7:
+ 291 0026 8AE0      		ldi r24,lo8(10)
+ 292 0028 90E0      		ldi r25,hi8(10)
+ 293 002a 0E94 0000 		call vTaskDelay
+  88:netstack_task.c ****     plen = nicPoll();
+ 295               	.LM8:
+ 296 002e 0E94 0000 		call nicPoll
+  91:netstack_task.c ****     if ( plen==0 )
+ 298               	.LM9:
+ 299 0032 892B      		or r24,r25
+ 300 0034 01F4      		brne .L2
+  93:netstack_task.c ****       flushUdpQueues();
+ 302               	.LM10:
+ 303 0036 0E94 0000 		call flushUdpQueues
+  94:netstack_task.c ****       flushTcpQueues();
+ 305               	.LM11:
+ 306 003a 0E94 0000 		call flushTcpQueues
+ 307 003e 00C0      		rjmp .L9
+ 308               	.L2:
+  99:netstack_task.c ****     if(nicState.layer2.ethHeader->type == htons(ETHTYPE_IP))             // process an IP packet
+ 310               	.LM12:
+ 311 0040 E091 0000 		lds r30,nicState+8
+ 312 0044 F091 0000 		lds r31,(nicState+8)+1
+ 313 0048 0485      		ldd r16,Z+12
+ 314 004a 1585      		ldd r17,Z+13
+ 315 004c 80E0      		ldi r24,lo8(2048)
+ 316 004e 98E0      		ldi r25,hi8(2048)
+ 317 0050 0E94 0000 		call htons
+ 318 0054 0817      		cp r16,r24
+ 319 0056 1907      		cpc r17,r25
+ 320 0058 01F4      		brne .L4
+ 101:netstack_task.c ****       arpIpIn();
+ 322               	.LM13:
+ 323 005a 0E94 0000 		call arpIpIn
+ 102:netstack_task.c ****       netstackIPv4Process();
+ 325               	.LM14:
+ 326 005e 0E94 0000 		call netstackIPv4Process
+ 327 0062 00C0      		rjmp .L9
+ 328               	.L4:
+ 104:netstack_task.c ****     else if(nicState.layer2.ethHeader->type == htons(ETHTYPE_ARP))       // process an ARP packet
+ 330               	.LM15:
+ 331 0064 E091 0000 		lds r30,nicState+8
+ 332 0068 F091 0000 		lds r31,(nicState+8)+1
+ 333 006c 0485      		ldd r16,Z+12
+ 334 006e 1585      		ldd r17,Z+13
+ 335 0070 86E0      		ldi r24,lo8(2054)
+ 336 0072 98E0      		ldi r25,hi8(2054)
+ 337 0074 0E94 0000 		call htons
+ 338 0078 0817      		cp r16,r24
+ 339 007a 1907      		cpc r17,r25
+ 340 007c 01F4      		brne .L5
+ 106:netstack_task.c ****       arpArpIn();
+ 342               	.LM16:
+ 343 007e 0E94 0000 		call arpArpIn
+ 344 0082 00C0      		rjmp .L9
+ 345               	.L5:
+ 110:netstack_task.c ****       if (netstackDebug != NULL)
+ 347               	.LM17:
+ 348 0084 2097      		sbiw r28,0
+ 349 0086 01F0      		breq .L9
+ 351               	.LM18:
+ 352 0088 00D0      		rcall .
+ 353 008a 00D0      		rcall .
+ 354 008c EDB7      		in r30,__SP_L__
+ 355 008e FEB7      		in r31,__SP_H__
+ 356 0090 D283      		std Z+2,r29
+ 357 0092 C183      		std Z+1,r28
+ 358 0094 F482      		std Z+4,r15
+ 359 0096 E382      		std Z+3,r14
+ 360 0098 0E94 0000 		call fprintf_P
+ 361 009c 0F90      		pop __tmp_reg__
+ 362 009e 0F90      		pop __tmp_reg__
+ 363 00a0 0F90      		pop __tmp_reg__
+ 364 00a2 0F90      		pop __tmp_reg__
+ 365 00a4 00C0      		rjmp .L9
+ 367               	.Lscope1:
+ 369               		.stabd	78,0,0
+ 370               		.section	.progmem.data,"a",@progbits
+ 373               	__c.2984:
+ 374 0000 556E 6B6E 		.string	"Unknown packet\r\n"
+ 374      6F77 6E20 
+ 374      7061 636B 
+ 374      6574 0D0A 
+ 374      00
+ 375               		.comm klastry,128,1
+ 376               		.comm wwwport,1,1
+ 377               		.comm rollers,2,1
+ 378               		.comm xSemaphoreSpiSS,2,1
+ 379               		.comm portA,1,1
+ 380               		.comm portB,1,1
+ 381               		.comm lockSensors,2,1
+ 382               		.comm xSemaphoreRs485,2,1
+ 383               		.comm nicState,14,1
+ 384               		.comm IpMyConfig,15,1
+ 385               		.comm arpDebug,2,1
+ 386               		.comm arpDebugLevel,1,1
+ 387               		.comm icmpDebug,2,1
+ 388               		.comm icmpDebugLevel,1,1
+ 389               		.comm udpSocket,2,1
+ 390               		.comm udpDbgStream,2,1
+ 391               		.comm udpDbgLevel,1,1
+ 392               		.comm tcpDebugStream,2,1
+ 393               		.comm tcpDebugLevel,1,1
+ 394               		.comm sockets,2,1
+ 395               		.comm czasRtc,7,1
+ 418               		.weak	nicPoll
+ 419               		.text
+ 421               	.Letext0:
+ 422               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 netstack_task.c
+     /tmp/ccqnk54x.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccqnk54x.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccqnk54x.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccqnk54x.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccqnk54x.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccqnk54x.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccqnk54x.s:254    .text:00000000 encTask
+     /tmp/ccqnk54x.s:373    .progmem.data:00000000 __c.2984
+                            *COM*:0000000e nicState
+                            *COM*:00000080 klastry
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 lockSensors
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+
+UNDEFINED SYMBOLS
+nicInit
+ipInit
+arpInit
+icmpInit
+vTaskDelay
+nicPoll
+flushUdpQueues
+flushTcpQueues
+htons
+arpIpIn
+netstackIPv4Process
+arpArpIn
+fprintf_P
+__do_clear_bss
