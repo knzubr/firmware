@@ -60,6 +60,8 @@ volatile uint8_t voltage;
 
 void vApplicationIdleHook( void );
 
+void vBlinkLed(void *pvParameters);
+
 /**
  * RTC clock support
  */
@@ -69,6 +71,7 @@ xTaskHandle xHandleVTY_USB;
 xTaskHandle xHandleVTY_UDP;
 xTaskHandle xHandleEnc;
 xTaskHandle xHandleSensors;
+xTaskHandle xHandleBlinkLed;
 
 void initExternalMem(void)
 {
@@ -96,6 +99,8 @@ portSHORT main( void )
 
 
 //  cmdStateClear(newCmdState);
+  DDRF = 0x0F;    //JTAG and A/C
+  PORTF |= 0x06; 
   
   sensorsTaskInit();
   loadConfiguration();
@@ -112,6 +117,7 @@ portSHORT main( void )
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
   xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
+  xTaskCreate(vBlinkLed,      NULL /*"ENC"    */, 0, 			NULL, 					2, &xHandleBlinkLed);
   vTaskStartScheduler();
   return 0;
 }
@@ -132,5 +138,21 @@ void vApplicationTickHook( void )
   {
     tickCntr = configTICK_RATE_HZ;
     arpTimer();    
+  }
+}
+
+void vBlinkLed(void *pvParameters)
+{
+  //cmdState_t *state = (cmdState_t *)(pvParameters);
+    
+  //uint8_t f = 0;
+  for(;;)
+  {
+      portTickType xDelay2 = 1000 / portTICK_RATE_MS;
+      vTaskDelay(xDelay2);
+      PORTF ^= 0x04; 
+//      f = xTaskGetTickCount();
+      //fprintf( (FILE *)&state->myStdInOut, "B");
+      //fprintf(&state->myStdInOut, "TickTime: %d\r\n", f);
   }
 }
