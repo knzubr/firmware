@@ -50,6 +50,10 @@ typedef struct
   {
     struct netArpHeader  *arp;
     struct netIpHeader   *ip;
+    #if IPV6_SUPPORT
+    struct uip_ipv6_hdr	 *ipv6;
+    uint8_t              *buf; //Pointer on layer3
+    #endif
   } layer3;
   
   union
@@ -57,11 +61,13 @@ typedef struct
     struct netIcmpHeader *icmp;
     struct netTcpHeader  *tcp;
     struct netUdpHeader  *udp;
+    //#if IPV6_SUPPORT
+    //struct uip_icmp6_hdr *icmpv6; //in ipv6 "header length" before icmp_header may varry - there may be extended header
+    //#endif
   } layer4;
 }  nicState_t;
 
 nicState_t       nicState;
-
 
 /**
  * Create mac buffer and next call hardware specyfic function to initialize NIC
