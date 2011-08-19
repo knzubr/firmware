@@ -1,0 +1,167 @@
+   1               		.file	"cli_task.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 123               	.global	vTaskVTYsocket
+ 125               	vTaskVTYsocket:
+ 126               		.stabd	46,0,0
+   1:cli_task.c    **** #include "cli_task.h"
+   2:cli_task.c    **** 
+   3:cli_task.c    **** void vTaskVTYusb(void *cliStatePtr)
+   4:cli_task.c    **** {
+   5:cli_task.c    ****   cmdState_t *state = (cmdState_t *)(cliStatePtr);
+   6:cli_task.c    ****   fprintf_P(state->myStdInOut, PSTR("Restart\r\n"));
+   7:cli_task.c    ****   cmdlineInputFunc('\r', state);
+   8:cli_task.c    ****   
+   9:cli_task.c    ****   char znak;
+  10:cli_task.c    ****   for( ;; )
+  11:cli_task.c    ****   {
+  12:cli_task.c    ****     if( xQueueReceive(xVtyRec, &znak, portMAX_DELAY))
+  13:cli_task.c    ****     {
+  14:cli_task.c    ****       cmdlineInputFunc((char)znak, state);
+  15:cli_task.c    ****       cmdlineMainLoop(state);
+  16:cli_task.c    ****     }  
+  17:cli_task.c    ****   }
+  18:cli_task.c    **** }
+  19:cli_task.c    **** 
+  20:cli_task.c    **** void vTaskVTYsocket(void *cliStatePtr)
+  21:cli_task.c    **** {
+ 128               	.LM0:
+ 129               	.LFBB1:
+ 130 0000 CF93      		push r28
+ 131 0002 DF93      		push r29
+ 132               	/* prologue: function */
+ 133               	/* frame size = 0 */
+  22:cli_task.c    ****   cmdState_t *state = (cmdState_t *)(cliStatePtr);
+ 135               	.LM1:
+ 136 0004 EC01      		movw r28,r24
+ 137               	.L2:
+  23:cli_task.c    ****   
+  24:cli_task.c    ****   char znak;
+  25:cli_task.c    ****   for( ;; )
+  26:cli_task.c    ****   {
+  27:cli_task.c    ****     znak = 0;
+  28:cli_task.c    ****     znak = fgetc(state->myStdInOut);
+ 139               	.LM2:
+ 140 0006 8A8D      		ldd r24,Y+26
+ 141 0008 9B8D      		ldd r25,Y+27
+ 142 000a 0E94 0000 		call fgetc
+  29:cli_task.c    ****     cmdlineInputFunc((char)znak, state);
+ 144               	.LM3:
+ 145 000e BE01      		movw r22,r28
+ 146 0010 0E94 0000 		call cmdlineInputFunc
+  30:cli_task.c    ****     cmdlineMainLoop(state);
+ 148               	.LM4:
+ 149 0014 CE01      		movw r24,r28
+ 150 0016 0E94 0000 		call cmdlineMainLoop
+ 151 001a 00C0      		rjmp .L2
+ 153               	.Lscope1:
+ 155               		.stabd	78,0,0
+ 157               	.global	vTaskVTYusb
+ 159               	vTaskVTYusb:
+ 160               		.stabd	46,0,0
+   4:cli_task.c    **** {
+ 162               	.LM5:
+ 163               	.LFBB2:
+ 164 001c EF92      		push r14
+ 165 001e FF92      		push r15
+ 166 0020 0F93      		push r16
+ 167 0022 1F93      		push r17
+ 168 0024 DF93      		push r29
+ 169 0026 CF93      		push r28
+ 170 0028 0F92      		push __tmp_reg__
+ 171 002a CDB7      		in r28,__SP_L__
+ 172 002c DEB7      		in r29,__SP_H__
+ 173               	/* prologue: function */
+ 174               	/* frame size = 1 */
+   5:cli_task.c    ****   cmdState_t *state = (cmdState_t *)(cliStatePtr);
+ 176               	.LM6:
+ 177 002e 8C01      		movw r16,r24
+   6:cli_task.c    ****   fprintf_P(state->myStdInOut, PSTR("Restart\r\n"));
+ 179               	.LM7:
+ 180 0030 00D0      		rcall .
+ 181 0032 00D0      		rcall .
+ 182 0034 FC01      		movw r30,r24
+ 183 0036 828D      		ldd r24,Z+26
+ 184 0038 938D      		ldd r25,Z+27
+ 185 003a EDB7      		in r30,__SP_L__
+ 186 003c FEB7      		in r31,__SP_H__
+ 187 003e 9283      		std Z+2,r25
+ 188 0040 8183      		std Z+1,r24
+ 189 0042 80E0      		ldi r24,lo8(__c.1665)
+ 190 0044 90E0      		ldi r25,hi8(__c.1665)
+ 191 0046 9483      		std Z+4,r25
+ 192 0048 8383      		std Z+3,r24
+ 193 004a 0E94 0000 		call fprintf_P
+   7:cli_task.c    ****   cmdlineInputFunc('\r', state);
+ 195               	.LM8:
+ 196 004e 0F90      		pop __tmp_reg__
+ 197 0050 0F90      		pop __tmp_reg__
+ 198 0052 0F90      		pop __tmp_reg__
+ 199 0054 0F90      		pop __tmp_reg__
+ 200 0056 8DE0      		ldi r24,lo8(13)
+ 201 0058 B801      		movw r22,r16
+ 202 005a 0E94 0000 		call cmdlineInputFunc
+  12:cli_task.c    ****     if( xQueueReceive(xVtyRec, &znak, portMAX_DELAY))
+ 204               	.LM9:
+ 205 005e 7E01      		movw r14,r28
+ 206 0060 0894      		sec
+ 207 0062 E11C      		adc r14,__zero_reg__
+ 208 0064 F11C      		adc r15,__zero_reg__
+ 209               	.L9:
+ 210 0066 8091 0000 		lds r24,xVtyRec
+ 211 006a 9091 0000 		lds r25,(xVtyRec)+1
+ 212 006e B701      		movw r22,r14
+ 213 0070 4FEF      		ldi r20,lo8(-1)
+ 214 0072 5FEF      		ldi r21,hi8(-1)
+ 215 0074 20E0      		ldi r18,lo8(0)
+ 216 0076 0E94 0000 		call xQueueGenericReceive
+ 217 007a 8823      		tst r24
+ 218 007c 01F0      		breq .L9
+  14:cli_task.c    ****       cmdlineInputFunc((char)znak, state);
+ 220               	.LM10:
+ 221 007e 8981      		ldd r24,Y+1
+ 222 0080 B801      		movw r22,r16
+ 223 0082 0E94 0000 		call cmdlineInputFunc
+  15:cli_task.c    ****       cmdlineMainLoop(state);
+ 225               	.LM11:
+ 226 0086 C801      		movw r24,r16
+ 227 0088 0E94 0000 		call cmdlineMainLoop
+ 228 008c 00C0      		rjmp .L9
+ 233               	.Lscope2:
+ 235               		.stabd	78,0,0
+ 236               		.section	.progmem.data,"a",@progbits
+ 239               	__c.1665:
+ 240 0000 5265 7374 		.string	"Restart\r\n"
+ 240      6172 740D 
+ 240      0A00 
+ 241               		.comm wwwport,1,1
+ 244               		.text
+ 246               	.Letext0:
+ 247               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 cli_task.c
+     /tmp/ccnUEyQP.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccnUEyQP.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccnUEyQP.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccnUEyQP.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccnUEyQP.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccnUEyQP.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccnUEyQP.s:125    .text:00000000 vTaskVTYsocket
+     /tmp/ccnUEyQP.s:159    .text:0000001c vTaskVTYusb
+     /tmp/ccnUEyQP.s:239    .progmem.data:00000000 __c.1665
+                            *COM*:00000001 wwwport
+
+UNDEFINED SYMBOLS
+fgetc
+cmdlineInputFunc
+cmdlineMainLoop
+fprintf_P
+xVtyRec
+xQueueGenericReceive
+__do_clear_bss
