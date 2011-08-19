@@ -1,0 +1,2671 @@
+Archive member included because of file (symbol)
+
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+                              vty.o (__udivmodqi4)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+                              sensors_task.o (__udivmodhi4)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o (exit)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+                              main.o (__do_clear_bss)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                              ../../freeRtos/Lib/memory_x.o (malloc)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                              ../../freeRtos/Lib/cmdline.o (strtol)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o) (isspace)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                              ../../freeRtos/Lib/cmdline.o (memcpy_P)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                              vty.o (strncmp_P)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                              ../../freeRtos/Lib/ramdysk.o (memcpy)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                              ../../freeRtos/Lib/cmdline.o (memset)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                              ../../freeRtos/Source/tasks.o (strcat)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                              ../../freeRtos/Lib/cmdline.o (strcpy)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                              ../../freeRtos/Lib/ramdysk.o (strncmp)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                              ../../freeRtos/Lib/ramdysk.o (strncpy)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                              ../../freeRtos/Lib/ramdysk.o (fclose)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                              cli_task.o (fgetc)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                              ../../freeRtos/Lib/ramdysk.o (fprintf)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                              hardware.o (fprintf_P)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                              vty.o (fputc)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                              ../../freeRtos/Lib/ramdysk.o (fputs)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o) (__iob)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                              ../../freeRtos/Source/tasks.o (sprintf)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                              (vfprintf)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                              configuration.o (__eerd_block_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                              ../../freeRtos/Lib/net/ip.o (__eerd_dword_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                              ../../freeRtos/Lib/net/udp.o (__eerd_word_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                              ../../freeRtos/Lib/net/nic.o (__eeupd_block_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o) (__eeupd_r18_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                              ../../freeRtos/Lib/net/ip.o (__eeupd_dword_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                              ../../freeRtos/Lib/net/udp.o (__eeupd_word_m128)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o) (errno)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o) (__ctype_isfalse)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o) (strnlen_P)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o) (strnlen)
+/usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o) (__ultoa_invert)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o) (__mulsi3)
+/usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o) (__udivmodsi4)
+
+Allocating common symbols
+Common symbol       size              file
+
+usbStream           0xe               main.o
+portB               0x1               main.o
+wwwport             0x1               main.o
+fdVty               0x6               vty.o
+xVtyTx              0x2               main.o
+udpDbgLevel         0x1               main.o
+ArpTable            0x6e              ../../freeRtos/Lib/net/arp.o
+nicState            0xe               main.o
+errno               0x2               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+arpDebug            0x2               main.o
+udpStream           0xe               main.o
+xRs485Rec           0x2               main.o
+CLIStateSerialUsb   0x2               main.o
+lockSensors         0x2               main.o
+udpSocket           0x2               main.o
+temperature         0x1               main.o
+tcpDebugLevel       0x1               main.o
+__brkval            0x2               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+xHandleSensors      0x2               main.o
+rollers             0x2               main.o
+xSpiRx              0x2               hardware.o
+icmpDebug           0x2               main.o
+voltage             0x1               main.o
+xVtyRec             0x2               main.o
+xSemaphoreRs485     0x2               main.o
+xHandleVTY_UDP      0x2               main.o
+czasRtc             0x7               main.o
+xHandleVTY_USB      0x2               main.o
+Ipv6MyConfig        0x5               main.o
+sockets             0x2               main.o
+xSemaphoreSpiSS     0x2               main.o
+udpDbgStream        0x2               main.o
+portA               0x1               main.o
+xRs485Tx            0x2               main.o
+udpBuffers          0x4               main.o
+klastry             0x80              main.o
+xHandleEnc          0x2               main.o
+debugStream         0x2               main.o
+icmpDebugLevel      0x1               main.o
+tcpDebugStream      0x2               main.o
+IpMyConfig          0xf               main.o
+__flp               0x2               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__iob               0x6               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+arpDebugLevel       0x1               main.o
+CLIStateSerialUdp   0x2               main.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+text             0x00000000         0x00020000         xr
+data             0x00800060         0x0000ffa0         rw !x
+eeprom           0x00810000         0x00010000         rw !x
+fuse             0x00820000         0x00000400         rw !x
+lock             0x00830000         0x00000400         rw !x
+signature        0x00840000         0x00000400         rw !x
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+Address of section .data set to 0x800100
+LOAD /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+LOAD main.o
+LOAD configuration.o
+LOAD serial.o
+LOAD hardware.o
+LOAD sensors_task.o
+LOAD vty.o
+LOAD netstack_task.o
+LOAD cli_task.o
+LOAD ../../freeRtos/Lib/spi.o
+LOAD ../../freeRtos/Lib/memory_x.o
+LOAD ../../freeRtos/Lib/ramdysk.o
+LOAD ../../freeRtos/Lib/cmdline.o
+LOAD ../../freeRtos/Lib/xmodem.o
+LOAD ../../freeRtos/Lib/vt100.o
+LOAD ../../freeRtos/Lib/ds1305.o
+LOAD ../../freeRtos/Lib/mpc23s17.o
+LOAD ../../freeRtos/Lib/mcp3008.o
+LOAD ../../freeRtos/Lib/mcp4150.o
+LOAD ../../freeRtos/Lib/enc28j60.o
+LOAD ../../freeRtos/Lib/queueStream.o
+LOAD ../../freeRtos/Lib/net/nic.o
+LOAD ../../freeRtos/Lib/net/net.o
+LOAD ../../freeRtos/Lib/net/ip.o
+LOAD ../../freeRtos/Lib/net/icmp.o
+LOAD ../../freeRtos/Lib/net/arp.o
+LOAD ../../freeRtos/Lib/net/tcp.o
+LOAD ../../freeRtos/Lib/net/udp.o
+LOAD ../../freeRtos/Lib/net/ipv6.o
+LOAD ../../freeRtos/Lib/Rs485_prot.o
+LOAD ../../freeRtos/Source/tasks.o
+LOAD ../../freeRtos/Source/queue.o
+LOAD ../../freeRtos/Source/list.o
+LOAD ../../freeRtos/Source/croutine.o
+LOAD ../../freeRtos/portable/MemMang/heap_avr.o
+LOAD ../../freeRtos/portable/GCC/ATMega64/port.o
+                0x00801100                __heap_start = 0x801100
+                0x008027ff                __heap_end = 0x8027ff
+LOAD /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libm.a
+LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
+LOAD /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a
+LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
+
+.hash
+ *(.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rel.init
+ *(.rel.init)
+
+.rela.init
+ *(.rela.init)
+
+.rel.text
+ *(.rel.text)
+ *(.rel.text.*)
+ *(.rel.gnu.linkonce.t*)
+
+.rela.text
+ *(.rela.text)
+ *(.rela.text.*)
+ *(.rela.gnu.linkonce.t*)
+
+.rel.fini
+ *(.rel.fini)
+
+.rela.fini
+ *(.rela.fini)
+
+.rel.rodata
+ *(.rel.rodata)
+ *(.rel.rodata.*)
+ *(.rel.gnu.linkonce.r*)
+
+.rela.rodata
+ *(.rela.rodata)
+ *(.rela.rodata.*)
+ *(.rela.gnu.linkonce.r*)
+
+.rel.data
+ *(.rel.data)
+ *(.rel.data.*)
+ *(.rel.gnu.linkonce.d*)
+
+.rela.data
+ *(.rela.data)
+ *(.rela.data.*)
+ *(.rela.gnu.linkonce.d*)
+
+.rel.ctors
+ *(.rel.ctors)
+
+.rela.ctors
+ *(.rela.ctors)
+
+.rel.dtors
+ *(.rel.dtors)
+
+.rela.dtors
+ *(.rela.dtors)
+
+.rel.got
+ *(.rel.got)
+
+.rela.got
+ *(.rela.got)
+
+.rel.bss
+ *(.rel.bss)
+
+.rela.bss
+ *(.rela.bss)
+
+.rel.plt
+ *(.rel.plt)
+
+.rela.plt
+ *(.rela.plt)
+
+.text           0x00000000     0xc190
+ *(.vectors)
+ .vectors       0x00000000       0x8c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x00000000                __vectors
+                0x00000000                __vector_default
+ *(.vectors)
+ *(.progmem.gcc*)
+ *(.progmem*)
+ .progmem.data  0x0000008c       0x3c hardware.o
+                0x0000008c                statusLockerSensDescStr
+                0x00000097                statusLockerOpenStr
+                0x000000a0                statusLockerCloseStr
+                0x000000a9                statusLockerSensAdditionalDescStr
+ .progmem.data  0x000000c8      0xa5e vty.o
+                0x000000c8                errorOK
+                0x000000d1                errorNoFile
+                0x000000db                errorxModemFrameStartTimeout
+                0x000000de                errorxModemByteSendTimeout
+                0x000000e1                errorxModemWrongFrameNo
+                0x000000e4                errorxModemFrameFrameNoCorrectionNotMatch
+                0x000000e7                errorxModemFrameCrc
+                0x000000fa                errorxModemRemoteSideCan
+                0x00000121                errorxModemUnknownResponse
+                0x00000140                errorNoRemoteDevice
+                0x00000163                errorBootloaderNotResponding
+                0x00000182                errorOpenFile
+                0x00000197                systemStateStr
+                0x000001a7                statusNumberOfTasksStr
+                0x000001c0                statusStaticHeapStateStr
+                0x000001ea                statusDynamicHeapStateStr
+                0x00000214                statusRamDiskStateStr
+                0x00000241                statusTemperatureStr
+                0x0000025c                statusVoltageStr
+                0x00000277                systemRamConfigStr
+                0x0000028a                statusMacStr
+                0x0000029f                statusIpStr
+                0x000002b4                statusIpMaskStr
+                0x000002c9                statusIpGwStr
+                0x000002de                statusRs485listStr
+                0x000002f9                statusNoRs485Dev
+                0x00000313                statusLockerSensorsStr
+                0x0000032c                statusLockerSensorsDisStr
+                0x00000348                editRamFileIntroStr
+                0x00000370                readRamFIleLenStr
+                0x00000382                xwyslijStartStr
+                0x0000039f                movingCurtainUpStr
+                0x000003d2                movingCurtainDownStr
+                0x00000405                movingCurtainPosStr
+                0x00000415                debugEnabledInfoStr
+                0x00000428                debugDisabledInfoStr
+                0x0000043c                cmd_help
+                0x00000441                cmd_help_help
+                0x00000453                cmd_status
+                0x0000045a                cmd_help_status
+                0x00000491                cmd_enc_stat
+                0x00000499                cmd_help_enc_stat
+                0x000004b3                cmd_time
+                0x000004b8                cmd_help_time
+                0x000004c3                cmd_net_dbg
+                0x000004c9                cmd_help_net_dbg
+                0x00000512                cmd_rping
+                0x00000518                cmd_help_rping
+                0x0000053e                cmd_ping
+                0x00000543                cmd_help_ping
+                0x00000574                cmd_xRec
+                0x00000579                cmd_help_xRec
+                0x0000059f                cmd_xSend
+                0x000005a5                cmd_help_xSend
+                0x000005c8                cmd_xflash
+                0x000005cf                cmd_help_xflash
+                0x00000607                cmd_dir_rf
+                0x0000060d                cmd_help_dir_rf
+                0x00000621                cmd_create_rf
+                0x00000625                cmd_help_create_rf
+                0x00000641                cmd_erase_rf
+                0x00000649                cmd_help_erase_rf
+                0x0000066e                cmd_edit_rf
+                0x00000675                cmd_help_edit_rf
+                0x0000069f                cmd_read_rf
+                0x000006a6                cmd_help_read_rf
+                0x000006d0                cmd_up
+                0x000006d3                cmd_help_up
+                0x000006f9                cmd_down
+                0x000006fe                cmd_help_down
+                0x00000726                cmd_spa
+                0x0000072a                cmd_help_spa
+                0x0000073d                cmd_spb
+                0x00000741                cmd_help_spb
+                0x00000754                cmd_settime
+                0x0000075c                cmd_help_settime
+                0x0000077e                cmd_ac
+                0x00000781                cmd_help_ac
+                0x000007a1                cmd_enable
+                0x000007a8                cmd_help_enable
+                0x000007b4                cmd_disable
+                0x000007bc                cmd_help_disable
+                0x000007c6                cmd_configure
+                0x000007cd                cmd_help_configure
+                0x000007dc                cmd_conf_ip
+                0x000007df                cmd_help_conf_ip
+                0x00000802                cmd_conf_udp
+                0x00000806                cmd_help_conf_udp
+                0x00000854                cmd_conf_ip_mask
+                0x00000859                cmd_conf_ip_mask_help
+                0x00000869                cmd_conf_ip_gw
+                0x0000086c                cmd_conf_ip_gw_help
+                0x00000894                cmd_conf_mac
+                0x00000898                cmd_help_conf_mac
+                0x000008c6                cmd_conf_save
+                0x000008cb                cmd_help_conf_save
+                0x000008de                cmd_ustawR
+                0x000008e3                cmd_help_ustawR
+                0x00000900                okStr
+                0x00000905                nlStr
+                0x00000908                BladBuforaPozostaloBajtowStr
+                0x00000932                errorStrings
+                0x0000094a                cmdListNormal
+                0x00000980                cmdListEnable
+                0x00000a16                cmdListConfigure
+ .progmem.data  0x00000b26       0x44 netstack_task.o
+ .progmem.data  0x00000b6a        0xa cli_task.o
+ .progmem.data  0x00000b74       0x72 ../../freeRtos/Lib/cmdline.o
+                0x00000b74                CmdlinePromptNormal
+                0x00000b7b                CmdlinePromptEnable
+                0x00000b82                CmdlinePromptConfigure
+                0x00000b89                CmdlineNotice
+                0x00000b93                CmdlineCmdNotFound
+ .progmem.data  0x00000be6       0x75 ../../freeRtos/Lib/enc28j60.o
+ .progmem.data  0x00000c5b       0x1f ../../freeRtos/Lib/net/nic.o
+ .progmem.data  0x00000c7a      0x14a ../../freeRtos/Lib/net/net.o
+ .progmem.data  0x00000dc4      0x13c ../../freeRtos/Lib/net/ip.o
+ .progmem.data  0x00000f00       0xb7 ../../freeRtos/Lib/net/icmp.o
+ .progmem.data  0x00000fb7      0x125 ../../freeRtos/Lib/net/arp.o
+ .progmem.data  0x000010dc      0x175 ../../freeRtos/Lib/net/tcp.o
+ .progmem.data  0x00001251       0xcb ../../freeRtos/Lib/net/udp.o
+ .progmem.data  0x0000131c      0x158 ../../freeRtos/Lib/net/ipv6.o
+ .progmem.data  0x00001474       0xbd ../../freeRtos/Lib/Rs485_prot.o
+                0x00001474                statusRollerDescStr
+                0x000014b2                statusRollerDescStr2
+                0x00001532                . = ALIGN (0x2)
+ *fill*         0x00001531        0x1 00
+                0x00001532                __trampolines_start = .
+ *(.trampolines)
+ .trampolines   0x00001532        0x0 linker stubs
+ *(.trampolines*)
+                0x00001532                __trampolines_end = .
+ *(.jumptables)
+ *(.jumptables*)
+ *(.lowtext)
+ *(.lowtext*)
+                0x00001532                __ctors_start = .
+ *(.ctors)
+                0x00001532                __ctors_end = .
+                0x00001532                __dtors_start = .
+ *(.dtors)
+                0x00001532                __dtors_end = .
+ SORT(*)(.ctors)
+ SORT(*)(.dtors)
+ *(.init0)
+ .init0         0x00001532        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x00001532                __init
+ *(.init0)
+ *(.init1)
+ *(.init1)
+ *(.init2)
+ .init2         0x00001532        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ *(.init2)
+ *(.init3)
+ *(.init3)
+ *(.init4)
+ .init4         0x0000153e       0x1a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x0000153e                __do_copy_data
+ .init4         0x00001558        0xc main.o
+                0x00001558                initExternalMem
+ .init4         0x00001564       0x10 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+                0x00001564                __do_clear_bss
+ *(.init4)
+ *(.init5)
+ *(.init5)
+ *(.init6)
+ *(.init6)
+ *(.init7)
+ *(.init7)
+ *(.init8)
+ *(.init8)
+ *(.init9)
+ .init9         0x00001574        0x8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ *(.init9)
+ *(.text)
+ .text          0x0000157c        0x4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x0000157c                __vector_22
+                0x0000157c                __vector_28
+                0x0000157c                __vector_1
+                0x0000157c                __vector_32
+                0x0000157c                __vector_34
+                0x0000157c                __vector_24
+                0x0000157c                __bad_interrupt
+                0x0000157c                __vector_6
+                0x0000157c                __vector_3
+                0x0000157c                __vector_23
+                0x0000157c                __vector_25
+                0x0000157c                __vector_11
+                0x0000157c                __vector_13
+                0x0000157c                __vector_7
+                0x0000157c                __vector_27
+                0x0000157c                __vector_5
+                0x0000157c                __vector_33
+                0x0000157c                __vector_4
+                0x0000157c                __vector_9
+                0x0000157c                __vector_2
+                0x0000157c                __vector_21
+                0x0000157c                __vector_15
+                0x0000157c                __vector_29
+                0x0000157c                __vector_8
+                0x0000157c                __vector_26
+                0x0000157c                __vector_14
+                0x0000157c                __vector_10
+                0x0000157c                __vector_16
+ .text          0x00001580      0x122 main.o
+                0x00001580                vApplicationTickHook
+                0x0000159a                vApplicationIdleHook
+                0x000015a0                main
+ .text          0x000016a2       0x24 configuration.o
+                0x000016a2                saveConfiguration
+                0x000016b0                loadConfiguration
+ .text          0x000016c6      0x43a serial.o
+                0x000016c6                initQueueStreamUSB
+                0x000016e2                __vector_20
+                0x00001708                InterruptVtyOn
+                0x00001714                __vector_31
+                0x0000179c                __vector_19
+                0x00001824                uartVtySendByte
+                0x0000185a                VtyPutChar
+                0x00001864                releaseRs485
+                0x0000187c                uartRs485SendByte
+                0x000018aa                __vector_30
+                0x00001934                __vector_18
+                0x000019bc                takeRs485
+                0x000019d4                flushRs485RecBuffer
+                0x00001a1a                rs485Receive
+                0x00001a32                VtyGetChar
+                0x00001a6e                xSerialPortInitMinimal
+ .text          0x00001b00      0x46a hardware.o
+                0x00001b00                spiSendSpinBlock
+                0x00001b10                disableAllSpiDevices
+                0x00001b26                spiEnableEnc28j60
+                0x00001b2a                spiDisableEnc28j60
+                0x00001b2e                enableSpiSd
+                0x00001b3a                disableSpiSd
+                0x00001b46                enableSpiMPC23S17
+                0x00001b4a                disableSpiMPC23S17
+                0x00001b4e                enableSpiMCP3008
+                0x00001b58                disableSpiMCP3008
+                0x00001b62                enableSpiMCP4150
+                0x00001b6c                disableSpiMCP4150
+                0x00001b76                spiEnableDS1305
+                0x00001b80                spiDisableDS1305
+                0x00001b8a                __vector_17
+                0x00001bfe                spiSend
+                0x00001c2c                checkLockerSensors
+                0x00001dc0                printLockers
+                0x00001f20                LockersMemInit
+                0x00001f32                hardwareInit
+ .text          0x00001f6a       0x82 sensors_task.o
+                0x00001f6a                sensorsTask
+                0x00001fe2                sensorsTaskInit
+ .text          0x00001fec     0x178a vty.o
+                0x00002410                printErrorInfo
+                0x000032d6                printStatus
+                0x00003754                VtyInit
+ .text          0x00003776      0x118 netstack_task.o
+                0x00003776                encTask
+ .text          0x0000388e       0x8e cli_task.o
+                0x0000388e                vTaskVTYsocket
+                0x000038aa                vTaskVTYusb
+ .text          0x0000391c       0x80 ../../freeRtos/Lib/spi.o
+                0x0000391c                spiSetCPHA
+                0x00003920                spiClearCPHA
+                0x00003924                spiSetCPOL
+                0x00003928                spiClearCPOL
+                0x00003934                spiGive
+                0x0000394c                spiTake
+                0x00003964                spiInit
+ .text          0x0000399c       0x38 ../../freeRtos/Lib/memory_x.o
+                0x0000399c                xmallocAvailable
+                0x000039b8                xmalloc
+ .text          0x000039d4      0xab2 ../../freeRtos/Lib/ramdysk.o
+                0x000039d4                ramDyskLiczbaWolnychKlastrow
+                0x000039f0                ramDyskDir
+                0x00003bc8                ramDyskDodajBlokXmodem
+                0x00003c94                ramDyskUstawWskaznikNaKoniec
+                0x00003cd6                ramDyskUstawWskaznik
+                0x00003d88                ramDyskCzytajBajtZPliku
+                0x00003e2c                ramDyskZapiszBajtDoPliku
+                0x00003ee2                ramDyskCzyscPlik
+                0x00003f42                ramDyskZamknijPlik
+                0x00003f62                ramDyskZamknijPlikStdIo
+                0x00003f98                ramDyskInit
+                0x00003fbc                ramDyskCzytajBlokZPliku
+                0x000040fc                ramDyskZapiszBlokDoPliku
+                0x000042f0                ramDyskUsunPlik
+                0x00004340                ramDyskOtworzPlik
+                0x00004370                ramDyskOtworzPlikStdIo
+                0x000043ae                ramDyskUtworzPlik
+ .text          0x00004486      0xab6 ../../freeRtos/Lib/cmdline.o
+                0x00004486                cmdLineGetLastArgIdx
+                0x000044b0                cmdlineGetArgStr
+                0x000044fe                cmdPrintHelp
+                0x00004604                cmdlineGetArgHex
+                0x0000462a                cmdlineGetArgInt
+                0x000046a0                cmdlineMainLoop
+                0x00004918                cmdStateConfigure
+                0x000049f2                cmdlineInputFunc
+ .text          0x00004f3c        0x0 ../../freeRtos/Lib/xmodem.o
+ .text          0x00004f3c      0x128 ../../freeRtos/Lib/vt100.o
+                0x00004f3c                vt100SetCursorPos
+                0x00004f92                vt100SetCursorMode
+                0x00004fd0                vt100SetAttr
+                0x00005014                vt100ClearScreen
+                0x0000503c                vt100Init
+ .text          0x00005064      0x172 ../../freeRtos/Lib/ds1305.o
+                0x00005068                ds1305readMem
+                0x000050c2                ds1305writeMem
+                0x0000511a                ds1305start
+                0x00005138                setTimeBCD
+                0x0000517a                setTime
+                0x00005180                setTimeDecoded
+                0x00005186                readTimeBCD
+                0x000051ca                readTime
+                0x000051d0                readTimeDecoded
+ .text          0x000051d6      0x23e ../../freeRtos/Lib/mpc23s17.o
+                0x000051da                MPC23s17ReadPortB
+                0x0000520e                MPC23s17ReadPortA
+                0x00005242                MPC23s17ClearBitsOnPortB
+                0x00005280                MPC23s17SetBitsOnPortB
+                0x000052bc                MPC23s17SetPortB
+                0x000052f2                MPC23s17ClearBitsOnPortA
+                0x00005330                MPC23s17SetBitsOnPortA
+                0x0000536c                MPC23s17SetPortA
+                0x000053a8                MPC23s17SetDirB
+                0x000053de                MPC23s17SetDirA
+ .text          0x00005414       0x98 ../../freeRtos/Lib/mcp3008.o
+                0x00005418                MCP3008_getSampleSingle
+                0x00005462                MCP3008_getSampleDiff
+ .text          0x000054ac       0x28 ../../freeRtos/Lib/mcp4150.o
+                0x000054b0                MCP4150_setValue
+ .text          0x000054d4      0x6f0 ../../freeRtos/Lib/enc28j60.o
+                0x00005570                nicSetMacAddress
+                0x0000560a                nicRegDump
+                0x000057b2                nicGetMacAddress
+                0x000057fa                enc28j60hasRxPkt
+                0x00005806                enc28j60getrev
+                0x0000580e                nicPoll
+                0x0000597c                nicSend
+                0x00005a2c                enc28j60linkup
+                0x00005a9e                nicMacInit
+ .text          0x00005bc4       0x9a ../../freeRtos/Lib/queueStream.o
+                0x00005bc4                initQueueStream
+ .text          0x00005c5e       0xb0 ../../freeRtos/Lib/net/nic.o
+                0x00005cac                nicInit
+                0x00005cfc                saveNic
+ .text          0x00005d0e      0x7de ../../freeRtos/Lib/net/net.o
+                0x00005d0e                htons
+                0x00005d16                htonl
+                0x00005d50                netChecksum
+                0x00005dbe                netPrintTcpHeader
+                0x00006040                netPrintIPAddr
+                0x000060ce                netPrintIpHeader
+                0x00006304                netPrintEthAddr
+                0x00006384                netPrintEthHeader
+ .text          0x000064ec      0x594 ../../freeRtos/Lib/net/ip.o
+                0x000064ec                setIpDebug
+                0x00006506                ipSetConfig
+                0x00006548                ipSetConfigIp
+                0x0000655a                ipSetConfigMask
+                0x0000656c                ipSetConfigGw
+                0x0000657e                ipGetConfig
+                0x00006584                ipPrintConfig
+                0x00006672                ipSend
+                0x00006852                netstackIPv4Process
+                0x000069e0                ipSaveConfig
+                0x00006a2a                ipInit
+ .text          0x00006a80      0x324 ../../freeRtos/Lib/net/icmp.o
+                0x00006a80                icmpInit
+                0x00006a8e                setIcmpDebug
+                0x00006a9c                icmpPrintHeader
+                0x00006c3e                icmpEchoRequest
+                0x00006d58                icmpIpIn
+ .text          0x00006da4      0x8a2 ../../freeRtos/Lib/net/arp.o
+                0x00006da4                setArpDebug
+                0x00006dbe                arpTimer
+                0x00006dd8                arpMatchIp
+                0x00006e0c                arpPrintTable
+                0x00007000                arpIpIn
+                0x000071c0                arpPrintHeader
+                0x0000739a                arpIpOut
+                0x00007496                arpInit
+                0x000074ae                arpArpIn
+ .text          0x00007646      0x588 ../../freeRtos/Lib/net/tcp.o
+                0x00007646                sendTcBuffer
+                0x0000764a                setTcpDebug
+                0x00007658                flushTcpQueues
+                0x0000765a                httpProcess
+                0x0000765c                calculateTcpChecksun
+                0x00007682                processTcpPacket
+                0x00007ad6                netstackTCPIPProcess
+                0x00007b2c                socketInit
+ .text          0x00007bce      0x514 ../../freeRtos/Lib/net/udp.o
+                0x00007bce                setUdpDebug
+                0x00007bdc                udpPrintStatus
+                0x00007cf8                udpSaveConfig
+                0x00007d3a                netstackUDPIPProcess
+                0x00007f3c                udpSend
+                0x00008002                flushUdpQueues
+                0x00008060                udpInit
+ .text          0x000080e2      0x4c6 ../../freeRtos/Lib/net/ipv6.o
+                0x000080e2                ipv6DebugInit
+                0x000080ec                netPrintIpv6Header
+                0x0000844e                netPrintIpv6HeaderRAW
+                0x0000854a                netstackIPv6Process
+                0x00008580                ipv6Init
+ .text          0x000085a8     0x11f6 ../../freeRtos/Lib/Rs485_prot.o
+                0x000085b6                rs485curtainUp
+                0x0000873e                rs485curtainDown
+                0x000088c6                printRs485devices
+                0x000089a8                rs485xModemFlash
+                0x00009050                rs485ping
+                0x000093d4                rs485rollerHello
+                0x00009780                rollersMemInit
+ .text          0x0000979e      0xde6 ../../freeRtos/Source/tasks.o
+                0x0000979e                uxTaskPriorityGet
+                0x000097bc                xTaskIsTaskSuspended
+                0x000097e4                vTaskSuspendAll
+                0x000097f0                xTaskGetTickCount
+                0x00009806                uxTaskGetNumberOfTasks
+                0x0000980c                vTaskStartTrace
+                0x0000983e                ulTaskEndTrace
+                0x0000986e                vTaskSwitchContext
+                0x00009992                vTaskSetTimeOutState
+                0x000099a8                xTaskCheckForTimeOut
+                0x00009a24                vTaskMissedYield
+                0x00009a2c                xTaskRemoveFromEventList
+                0x00009ab2                xTaskResumeFromISR
+                0x00009b4e                vTaskPlaceOnEventList
+                0x00009bde                vTaskIncrementTick
+                0x00009e2e                xTaskResumeAll
+                0x00009f28                vTaskList
+                0x00009fd4                vTaskResume
+                0x0000a066                vTaskSuspend
+                0x0000a0e4                vTaskPrioritySet
+                0x0000a1be                vTaskDelay
+                0x0000a23a                vTaskDelayUntil
+                0x0000a2e8                vTaskEndScheduler
+                0x0000a2f4                xTaskGenericCreate
+                0x0000a52e                vTaskStartScheduler
+ .text          0x0000a584      0x672 ../../freeRtos/Source/queue.o
+                0x0000a584                uxQueueMessagesWaiting
+                0x0000a594                uxQueueMessagesWaitingFromISR
+                0x0000a59a                xQueueIsQueueEmptyFromISR
+                0x0000a5aa                xQueueIsQueueFullFromISR
+                0x0000a5bc                vQueueDelete
+                0x0000a5d8                xQueueReceiveFromISR
+                0x0000a6d8                xQueueGenericSendFromISR
+                0x0000a7a8                xQueueGenericReceive
+                0x0000a940                xQueueGenericSend
+                0x0000aa88                xQueueCreateExternal
+                0x0000ab30                xQueueCreate
+ .text          0x0000abf6      0x134 ../../freeRtos/Source/list.o
+                0x0000abf6                vListInitialise
+                0x0000ac16                vListInitialiseItem
+                0x0000ac1e                vListInsertEnd
+                0x0000ac70                vListInsert
+                0x0000acda                vListRemove
+ .text          0x0000ad2a      0x378 ../../freeRtos/Source/croutine.o
+                0x0000ad2a                xCoRoutineRemoveFromEventList
+                0x0000ad80                vCoRoutineSchedule
+                0x0000af50                vCoRoutineAddToDelayedList
+                0x0000afca                xCoRoutineCreate
+ .text          0x0000b0a2       0x6e ../../freeRtos/portable/MemMang/heap_avr.o
+                0x0000b0a2                vPortFree
+                0x0000b0a4                vPortInitialiseBlocks
+                0x0000b0ae                xPortGetFreeHeapSize
+                0x0000b0c2                pvPortMalloc
+ .text          0x0000b110      0x2b6 ../../freeRtos/portable/GCC/ATMega64/port.o
+                0x0000b110                pxPortInitialiseStack
+                0x0000b1a0                xPortStartScheduler
+                0x0000b20c                vPortEndScheduler
+                0x0000b20e                __vector_12
+                0x0000b25e                vPortYieldFromTick
+                0x0000b314                vPortYield
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+ .text          0x0000b3c6        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                0x0000b3c6                . = ALIGN (0x2)
+ *(.text.*)
+ .text.libgcc   0x0000b3c6       0x18 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+                0x0000b3c6                __udivmodqi4
+ .text.libgcc   0x0000b3de       0x28 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+                0x0000b3de                __udivmodhi4
+ .text.libgcc   0x0000b406        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .text.libgcc   0x0000b406        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .text.avr-libc
+                0x0000b406      0x20a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                0x0000b406                malloc
+                0x0000b560                free
+ .text.avr-libc
+                0x0000b610      0x25e /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                0x0000b610                strtol
+ .text.avr-libc
+                0x0000b86e       0x10 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                0x0000b86e                isspace
+ .text.avr-libc
+                0x0000b87e       0x12 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                0x0000b87e                memcpy_P
+ .text.avr-libc
+                0x0000b890       0x1c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                0x0000b890                strncmp_P
+ .text.avr-libc
+                0x0000b8ac       0x12 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                0x0000b8ac                memcpy
+ .text.avr-libc
+                0x0000b8be        0xe /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                0x0000b8be                memset
+ .text.avr-libc
+                0x0000b8cc       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                0x0000b8cc                strcat
+ .text.avr-libc
+                0x0000b8e2        0xe /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                0x0000b8e2                strcpy
+ .text.avr-libc
+                0x0000b8f0       0x1c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                0x0000b8f0                strncmp
+ .text.avr-libc
+                0x0000b90c       0x1e /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                0x0000b90c                strncpy
+ .text.avr-libc
+                0x0000b92a       0x56 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                0x0000b92a                fclose
+ .text.avr-libc
+                0x0000b980       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                0x0000b980                fgetc
+ .text.avr-libc
+                0x0000ba04       0x22 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                0x0000ba04                fprintf
+ .text.avr-libc
+                0x0000ba26       0x3c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                0x0000ba26                fprintf_P
+ .text.avr-libc
+                0x0000ba62       0x58 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                0x0000ba62                fputc
+ .text.avr-libc
+                0x0000baba       0x56 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                0x0000baba                fputs
+ .text.avr-libc
+                0x0000bb10       0x62 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                0x0000bb10                sprintf
+ .text.avr-libc
+                0x0000bb72      0x40c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                0x0000bb72                vfprintf
+ .text.avr-libc
+                0x0000bf7e       0x20 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                0x0000bf7e                __eerd_block_m128
+                0x0000bf82                __eerd_blraw_m128
+ .text.avr-libc
+                0x0000bf9e        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                0x0000bf9e                __eerd_dword_m128
+                0x0000bf9e                __eerd_float_m128
+ .text.avr-libc
+                0x0000bfaa        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                0x0000bfaa                __eerd_word_m128
+ .text.avr-libc
+                0x0000bfb6       0x20 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                0x0000bfb6                __eeupd_block_m128
+ .text.avr-libc
+                0x0000bfd6       0x22 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                0x0000bfd6                __eeupd_byte_m128
+                0x0000bfd8                __eeupd_r18_m128
+ .text.avr-libc
+                0x0000bff8       0x18 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                0x0000bff8                __eeupd_dword_m128
+                0x0000bff8                __eeupd_float_m128
+ .text.avr-libc
+                0x0000c010        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                0x0000c010                __eeupd_word_m128
+ .text.avr-libc
+                0x0000c01c        0x6 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                0x0000c01c                __ctype_isfalse
+                0x0000c020                __ctype_istrue
+ .text.avr-libc
+                0x0000c022       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                0x0000c022                strnlen_P
+ .text.avr-libc
+                0x0000c038       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                0x0000c038                strnlen
+ .text.avr-libc
+                0x0000c04e       0xbc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                0x0000c04e                __ultoa_invert
+ .text.libgcc   0x0000c10a       0x3e /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+                0x0000c10a                __mulsi3
+ .text.libgcc   0x0000c148       0x44 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                0x0000c148                __udivmodsi4
+                0x0000c18c                . = ALIGN (0x2)
+ *(.fini9)
+ .fini9         0x0000c18c        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+                0x0000c18c                exit
+                0x0000c18c                _exit
+ *(.fini9)
+ *(.fini8)
+ *(.fini8)
+ *(.fini7)
+ *(.fini7)
+ *(.fini6)
+ *(.fini6)
+ *(.fini5)
+ *(.fini5)
+ *(.fini4)
+ *(.fini4)
+ *(.fini3)
+ *(.fini3)
+ *(.fini2)
+ *(.fini2)
+ *(.fini1)
+ *(.fini1)
+ *(.fini0)
+ .fini0         0x0000c18c        0x4 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ *(.fini0)
+                0x0000c190                _etext = .
+
+.data           0x00800100       0x88 load address 0x0000c190
+                0x00800100                PROVIDE (__data_start, .)
+ *(.data)
+ .data          0x00800100        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .data          0x00800100        0x1 main.o
+ .data          0x00800101        0x0 configuration.o
+ .data          0x00800101        0x1 serial.o
+ .data          0x00800102        0x0 hardware.o
+ .data          0x00800102        0x0 sensors_task.o
+ .data          0x00800102        0x0 vty.o
+ .data          0x00800102        0x0 netstack_task.o
+ .data          0x00800102        0x0 cli_task.o
+ .data          0x00800102        0x0 ../../freeRtos/Lib/spi.o
+ .data          0x00800102        0x2 ../../freeRtos/Lib/memory_x.o
+                0x00800102                heapEnd
+ .data          0x00800104       0x22 ../../freeRtos/Lib/ramdysk.o
+ .data          0x00800126        0x0 ../../freeRtos/Lib/cmdline.o
+ .data          0x00800126        0x0 ../../freeRtos/Lib/xmodem.o
+ .data          0x00800126       0x25 ../../freeRtos/Lib/vt100.o
+ .data          0x0080014b        0x0 ../../freeRtos/Lib/ds1305.o
+ .data          0x0080014b        0x0 ../../freeRtos/Lib/mpc23s17.o
+ .data          0x0080014b        0x0 ../../freeRtos/Lib/mcp3008.o
+ .data          0x0080014b        0x0 ../../freeRtos/Lib/mcp4150.o
+ .data          0x0080014b        0x0 ../../freeRtos/Lib/enc28j60.o
+ .data          0x0080014b        0x0 ../../freeRtos/Lib/queueStream.o
+ .data          0x0080014b        0x0 ../../freeRtos/Lib/net/nic.o
+ .data          0x0080014b        0x0 ../../freeRtos/Lib/net/net.o
+ .data          0x0080014b       0x14 ../../freeRtos/Lib/net/ip.o
+ .data          0x0080015f        0x8 ../../freeRtos/Lib/net/icmp.o
+ .data          0x00800167        0x0 ../../freeRtos/Lib/net/arp.o
+ .data          0x00800167        0x0 ../../freeRtos/Lib/net/tcp.o
+ .data          0x00800167        0x0 ../../freeRtos/Lib/net/udp.o
+ .data          0x00800167        0x0 ../../freeRtos/Lib/net/ipv6.o
+ .data          0x00800167        0x0 ../../freeRtos/Lib/Rs485_prot.o
+ .data          0x00800167       0x1b ../../freeRtos/Source/tasks.o
+ .data          0x00800182        0x0 ../../freeRtos/Source/queue.o
+ .data          0x00800182        0x0 ../../freeRtos/Source/list.o
+ .data          0x00800182        0x0 ../../freeRtos/Source/croutine.o
+ .data          0x00800182        0x0 ../../freeRtos/portable/MemMang/heap_avr.o
+ .data          0x00800182        0x0 ../../freeRtos/portable/GCC/ATMega64/port.o
+ .data          0x00800182        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+ .data          0x00800182        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+ .data          0x00800182        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .data          0x00800182        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .data          0x00800182        0x6 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                0x00800182                __malloc_margin
+                0x00800184                __malloc_heap_start
+                0x00800186                __malloc_heap_end
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+ .data          0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+ *(.data*)
+ *(.rodata)
+ *(.rodata*)
+ *(.gnu.linkonce.d*)
+                0x00800188                . = ALIGN (0x2)
+                0x00800188                _edata = .
+                0x00800188                PROVIDE (__data_end, .)
+
+.bss            0x00800188      0xe61
+                0x00800188                PROVIDE (__bss_start, .)
+ *(.bss)
+ .bss           0x00800188        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .bss           0x00800188        0x1 main.o
+                0x00800188                timer100Hz
+ .bss           0x00800189        0x0 configuration.o
+ .bss           0x00800189        0x5 serial.o
+ .bss           0x0080018e        0x2 hardware.o
+ .bss           0x00800190        0x0 sensors_task.o
+ .bss           0x00800190        0x0 vty.o
+ .bss           0x00800190        0x0 netstack_task.o
+ .bss           0x00800190        0x0 cli_task.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/spi.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/memory_x.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/ramdysk.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/cmdline.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/xmodem.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/vt100.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/ds1305.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/mpc23s17.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/mcp3008.o
+ .bss           0x00800190        0x0 ../../freeRtos/Lib/mcp4150.o
+ .bss           0x00800190        0x3 ../../freeRtos/Lib/enc28j60.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/queueStream.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/net/nic.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/net/net.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/net/ip.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/net/icmp.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/net/arp.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/net/tcp.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/net/udp.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/net/ipv6.o
+ .bss           0x00800193        0x0 ../../freeRtos/Lib/Rs485_prot.o
+ .bss           0x00800193       0x89 ../../freeRtos/Source/tasks.o
+                0x00800193                pxCurrentTCB
+ .bss           0x0080021c        0x0 ../../freeRtos/Source/queue.o
+ .bss           0x0080021c        0x0 ../../freeRtos/Source/list.o
+ .bss           0x0080021c       0x31 ../../freeRtos/Source/croutine.o
+                0x0080021c                pxCurrentCoRoutine
+ .bss           0x0080024d      0xc1e ../../freeRtos/portable/MemMang/heap_avr.o
+ .bss           0x00800e6b        0x0 ../../freeRtos/portable/GCC/ATMega64/port.o
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+ .bss           0x00800e6b        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+ *(.bss*)
+ *(COMMON)
+ COMMON         0x00800e6b       0xfc main.o
+                0x00800e6b                usbStream
+                0x00800e79                portB
+                0x00800e7a                wwwport
+                0x00800e7b                xVtyTx
+                0x00800e7d                udpDbgLevel
+                0x00800e7e                nicState
+                0x00800e8c                arpDebug
+                0x00800e8e                udpStream
+                0x00800e9c                xRs485Rec
+                0x00800e9e                CLIStateSerialUsb
+                0x00800ea0                lockSensors
+                0x00800ea2                udpSocket
+                0x00800ea4                temperature
+                0x00800ea5                tcpDebugLevel
+                0x00800ea6                xHandleSensors
+                0x00800ea8                rollers
+                0x00800eaa                icmpDebug
+                0x00800eac                voltage
+                0x00800ead                xVtyRec
+                0x00800eaf                xSemaphoreRs485
+                0x00800eb1                xHandleVTY_UDP
+                0x00800eb3                czasRtc
+                0x00800eba                xHandleVTY_USB
+                0x00800ebc                Ipv6MyConfig
+                0x00800ec1                sockets
+                0x00800ec3                xSemaphoreSpiSS
+                0x00800ec5                udpDbgStream
+                0x00800ec7                portA
+                0x00800ec8                xRs485Tx
+                0x00800eca                udpBuffers
+                0x00800ece                klastry
+                0x00800f4e                xHandleEnc
+                0x00800f50                debugStream
+                0x00800f52                icmpDebugLevel
+                0x00800f53                tcpDebugStream
+                0x00800f55                IpMyConfig
+                0x00800f64                arpDebugLevel
+                0x00800f65                CLIStateSerialUdp
+ COMMON         0x00800f67        0x2 hardware.o
+                0x00800f67                xSpiRx
+ COMMON         0x00800f69        0x6 vty.o
+                0x00800f69                fdVty
+ COMMON         0x00800f6f       0x6e ../../freeRtos/Lib/net/arp.o
+                0x00800f6f                ArpTable
+ COMMON         0x00800fdd        0x4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                0x00800fdd                __brkval
+                0x00800fdf                __flp
+ COMMON         0x00800fe1        0x6 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                0x00800fe1                __iob
+ COMMON         0x00800fe7        0x2 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                0x00800fe7                errno
+                0x00800fe9                PROVIDE (__bss_end, .)
+                0x0000c190                __data_load_start = LOADADDR (.data)
+                0x0000c218                __data_load_end = (__data_load_start + SIZEOF (.data))
+
+.noinit         0x00800fe9        0x0
+                0x00800fe9                PROVIDE (__noinit_start, .)
+ *(.noinit*)
+                0x00800fe9                PROVIDE (__noinit_end, .)
+                0x00800fe9                _end = .
+                0x00800fe9                PROVIDE (__heap_start, .)
+
+.eeprom         0x00810000       0x32
+ *(.eeprom*)
+ .eeprom        0x00810000       0x18 configuration.o
+ .eeprom        0x00810018        0x6 ../../freeRtos/Lib/net/nic.o
+ .eeprom        0x0081001e        0xc ../../freeRtos/Lib/net/ip.o
+ .eeprom        0x0081002a        0x8 ../../freeRtos/Lib/net/udp.o
+                0x00810032                __eeprom_end = .
+
+.fuse
+ *(.fuse)
+ *(.lfuse)
+ *(.hfuse)
+ *(.efuse)
+
+.lock
+ *(.lock*)
+
+.signature
+ *(.signature*)
+
+.stab           0x00000000    0x1bedc
+ *(.stab)
+ .stab          0x00000000      0x750 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .stab          0x00000750      0xfd8 main.o
+                                0xfe4 (size before relaxing)
+ .stab          0x00001728      0x5b8 configuration.o
+                                0xd8c (size before relaxing)
+ .stab          0x00001ce0     0x10d4 serial.o
+                               0x165c (size before relaxing)
+ .stab          0x00002db4      0xec4 hardware.o
+                               0x1788 (size before relaxing)
+ .stab          0x00003c78      0x564 sensors_task.o
+                                0xe1c (size before relaxing)
+ .stab          0x000041dc     0x246c vty.o
+                               0x2d3c (size before relaxing)
+ .stab          0x00006648      0x5ac netstack_task.o
+                                0xe64 (size before relaxing)
+ .stab          0x00006bf4      0x378 cli_task.o
+                                0x684 (size before relaxing)
+ .stab          0x00006f6c      0x738 ../../freeRtos/Lib/spi.o
+                                0xffc (size before relaxing)
+ .stab          0x000076a4      0x1d4 ../../freeRtos/Lib/memory_x.o
+                                0x240 (size before relaxing)
+ .stab          0x00007878     0x1ae8 ../../freeRtos/Lib/ramdysk.o
+                               0x234c (size before relaxing)
+ .stab          0x00009360     0x15c0 ../../freeRtos/Lib/cmdline.o
+                               0x1e90 (size before relaxing)
+ .stab          0x0000a920      0x42c ../../freeRtos/Lib/xmodem.o
+                                0xcfc (size before relaxing)
+ .stab          0x0000ad4c      0x618 ../../freeRtos/Lib/vt100.o
+                                0xedc (size before relaxing)
+ .stab          0x0000b364      0x7c8 ../../freeRtos/Lib/ds1305.o
+                                0xb4c (size before relaxing)
+ .stab          0x0000bb2c      0xd2c ../../freeRtos/Lib/mpc23s17.o
+                               0x1608 (size before relaxing)
+ .stab          0x0000c858      0x684 ../../freeRtos/Lib/mcp3008.o
+                                0xf54 (size before relaxing)
+ .stab          0x0000cedc      0x54c ../../freeRtos/Lib/mcp4150.o
+                                0xe1c (size before relaxing)
+ .stab          0x0000d428     0x10f8 ../../freeRtos/Lib/enc28j60.o
+                               0x19b0 (size before relaxing)
+ .stab          0x0000e520      0x33c ../../freeRtos/Lib/queueStream.o
+                                0x5e8 (size before relaxing)
+ .stab          0x0000e85c      0x564 ../../freeRtos/Lib/net/nic.o
+                                0x828 (size before relaxing)
+ .stab          0x0000edc0      0x7f8 ../../freeRtos/Lib/net/net.o
+                                0xb34 (size before relaxing)
+ .stab          0x0000f5b8      0xa74 ../../freeRtos/Lib/net/ip.o
+                                0xfa8 (size before relaxing)
+ .stab          0x0001002c      0x6c0 ../../freeRtos/Lib/net/icmp.o
+                                0xc0c (size before relaxing)
+ .stab          0x000106ec      0xb7c ../../freeRtos/Lib/net/arp.o
+                               0x10c8 (size before relaxing)
+ .stab          0x00011268      0xa68 ../../freeRtos/Lib/net/tcp.o
+                                0xf54 (size before relaxing)
+ .stab          0x00011cd0      0x8ac ../../freeRtos/Lib/net/udp.o
+                                0xdf8 (size before relaxing)
+ .stab          0x0001257c      0x558 ../../freeRtos/Lib/net/ipv6.o
+                                0x918 (size before relaxing)
+ .stab          0x00012ad4     0x2070 ../../freeRtos/Lib/Rs485_prot.o
+                               0x2910 (size before relaxing)
+ .stab          0x00014b44     0x1a04 ../../freeRtos/Source/tasks.o
+                               0x1d7c (size before relaxing)
+ .stab          0x00016548     0x105c ../../freeRtos/Source/queue.o
+                               0x12e4 (size before relaxing)
+ .stab          0x000175a4      0x534 ../../freeRtos/Source/list.o
+                                0x810 (size before relaxing)
+ .stab          0x00017ad8      0x738 ../../freeRtos/Source/croutine.o
+                                0xa74 (size before relaxing)
+ .stab          0x00018210      0x36c ../../freeRtos/portable/MemMang/heap_avr.o
+                                0x6a8 (size before relaxing)
+ .stab          0x0001857c      0x624 ../../freeRtos/portable/GCC/ATMega64/port.o
+                                0x960 (size before relaxing)
+ .stab          0x00018ba0      0x6cc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                0x6fc (size before relaxing)
+ .stab          0x0001926c      0x3a8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                                0x408 (size before relaxing)
+ .stab          0x00019614       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x000196b0       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                                 0x90 (size before relaxing)
+ .stab          0x00019734       0xc0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                                 0xcc (size before relaxing)
+ .stab          0x000197f4       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                                 0x90 (size before relaxing)
+ .stab          0x00019878       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                                 0x78 (size before relaxing)
+ .stab          0x000198e4       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x00019980       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                                 0x78 (size before relaxing)
+ .stab          0x000199ec       0xc0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                                 0xcc (size before relaxing)
+ .stab          0x00019aac       0xcc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                                 0xd8 (size before relaxing)
+ .stab          0x00019b78      0x204 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                                0x414 (size before relaxing)
+ .stab          0x00019d7c      0x24c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                                0x42c (size before relaxing)
+ .stab          0x00019fc8      0x198 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                                0x378 (size before relaxing)
+ .stab          0x0001a160      0x1bc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                                0x39c (size before relaxing)
+ .stab          0x0001a31c      0x1d4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                                0x3b4 (size before relaxing)
+ .stab          0x0001a4f0      0x1d4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                                0x3b4 (size before relaxing)
+ .stab          0x0001a6c4      0x12c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                                0x30c (size before relaxing)
+ .stab          0x0001a7f0      0x1f8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                                0x3d8 (size before relaxing)
+ .stab          0x0001a9e8      0x918 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                                0xb58 (size before relaxing)
+ .stab          0x0001b300      0x108 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                                0x114 (size before relaxing)
+ .stab          0x0001b408       0x78 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                                 0x84 (size before relaxing)
+ .stab          0x0001b480       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                                 0x78 (size before relaxing)
+ .stab          0x0001b4ec       0xe4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                                 0xf0 (size before relaxing)
+ .stab          0x0001b5d0      0x108 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                                0x114 (size before relaxing)
+ .stab          0x0001b6d8       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x0001b774       0x60 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                                 0x6c (size before relaxing)
+ .stab          0x0001b7d4       0xf0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                                 0xfc (size before relaxing)
+ .stab          0x0001b8c4       0x60 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                                 0x6c (size before relaxing)
+ .stab          0x0001b924       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x0001b9c0       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                                 0xa8 (size before relaxing)
+ .stab          0x0001ba5c      0x480 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                                0x48c (size before relaxing)
+
+.stabstr        0x00000000     0xe492
+ *(.stabstr)
+ .stabstr       0x00000000     0xe492 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment
+ *(.comment)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info)
+ *(.gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+OUTPUT(firmware.elf elf32-avr)
+LOAD linker stubs
+
+Cross Reference Table
+
+Symbol                                            File
+ArpTable                                          ../../freeRtos/Lib/net/arp.o
+BladBuforaPozostaloBajtowStr                      vty.o
+CLIStateSerialUdp                                 main.o
+CLIStateSerialUsb                                 main.o
+CmdlineCmdNotFound                                ../../freeRtos/Lib/cmdline.o
+CmdlineNotice                                     ../../freeRtos/Lib/cmdline.o
+CmdlinePromptConfigure                            ../../freeRtos/Lib/cmdline.o
+CmdlinePromptEnable                               ../../freeRtos/Lib/cmdline.o
+CmdlinePromptNormal                               ../../freeRtos/Lib/cmdline.o
+InterruptVtyOn                                    serial.o
+IpMyConfig                                        ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+Ipv6MyConfig                                      ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/ipv6.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+LockersMemInit                                    hardware.o
+                                                  sensors_task.o
+MCP3008_getSampleDiff                             ../../freeRtos/Lib/mcp3008.o
+MCP3008_getSampleSingle                           ../../freeRtos/Lib/mcp3008.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+MCP4150_setValue                                  ../../freeRtos/Lib/mcp4150.o
+                                                  vty.o
+MPC23s17ClearBitsOnPortA                          ../../freeRtos/Lib/mpc23s17.o
+                                                  hardware.o
+MPC23s17ClearBitsOnPortB                          ../../freeRtos/Lib/mpc23s17.o
+MPC23s17ReadPortA                                 ../../freeRtos/Lib/mpc23s17.o
+MPC23s17ReadPortB                                 ../../freeRtos/Lib/mpc23s17.o
+MPC23s17SetBitsOnPortA                            ../../freeRtos/Lib/mpc23s17.o
+                                                  hardware.o
+MPC23s17SetBitsOnPortB                            ../../freeRtos/Lib/mpc23s17.o
+MPC23s17SetDirA                                   ../../freeRtos/Lib/mpc23s17.o
+                                                  vty.o
+                                                  sensors_task.o
+MPC23s17SetDirB                                   ../../freeRtos/Lib/mpc23s17.o
+                                                  vty.o
+                                                  sensors_task.o
+MPC23s17SetPortA                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  vty.o
+MPC23s17SetPortB                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  vty.o
+VtyGetChar                                        serial.o
+VtyInit                                           vty.o
+                                                  main.o
+VtyPutChar                                        serial.o
+__bad_interrupt                                   /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__brkval                                          /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__bss_end                                         /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+__bss_start                                       /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+__ctype_isfalse                                   /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+__ctype_istrue                                    /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+__data_end                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__data_load_start                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__data_start                                      /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__do_clear_bss                                    /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  ../../freeRtos/portable/MemMang/heap_avr.o
+                                                  ../../freeRtos/Source/croutine.o
+                                                  ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/ipv6.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/nic.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/ds1305.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  cli_task.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+__do_copy_data                                    /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/memory_x.o
+                                                  serial.o
+                                                  main.o
+__eerd_block_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                                                  ../../freeRtos/Lib/net/nic.o
+                                                  configuration.o
+__eerd_blraw_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+__eerd_dword_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+__eerd_float_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+__eerd_word_m128                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                                                  ../../freeRtos/Lib/net/udp.o
+__eeupd_block_m128                                /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                                                  ../../freeRtos/Lib/net/nic.o
+__eeupd_byte_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+__eeupd_dword_m128                                /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+__eeupd_float_m128                                /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+__eeupd_r18_m128                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+__eeupd_word_m128                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                                                  ../../freeRtos/Lib/net/udp.o
+__flp                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__heap_end                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__heap_start                                      /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__init                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__iob                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+__malloc_heap_end                                 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  ../../freeRtos/Lib/memory_x.o
+__malloc_heap_start                               /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__malloc_margin                                   /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+__mulsi3                                          /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+__stack                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__udivmodhi4                                      /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+                                                  sensors_task.o
+__udivmodqi4                                      /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+                                                  vty.o
+__udivmodsi4                                      /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+__ultoa_invert                                    /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+__vector_1                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_10                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_11                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_12                                       ../../freeRtos/portable/GCC/ATMega64/port.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_13                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_14                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_15                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_16                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_17                                       hardware.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_18                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_19                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_2                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_20                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_21                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_22                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_23                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_24                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_25                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_26                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_27                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_28                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_29                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_3                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_30                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_31                                       serial.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_32                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_33                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_34                                       /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_4                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_5                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_6                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_7                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_8                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_9                                        /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vector_default                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+__vectors                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+_exit                                             /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+arpArpIn                                          ../../freeRtos/Lib/net/arp.o
+                                                  netstack_task.o
+arpDebug                                          ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+arpDebugLevel                                     ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+arpInit                                           ../../freeRtos/Lib/net/arp.o
+                                                  netstack_task.o
+arpIpIn                                           ../../freeRtos/Lib/net/arp.o
+                                                  netstack_task.o
+arpIpOut                                          ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+arpMatchIp                                        ../../freeRtos/Lib/net/arp.o
+arpPrintHeader                                    ../../freeRtos/Lib/net/arp.o
+arpPrintTable                                     ../../freeRtos/Lib/net/arp.o
+arpTimer                                          ../../freeRtos/Lib/net/arp.o
+                                                  main.o
+calculateTcpChecksun                              ../../freeRtos/Lib/net/tcp.o
+checkLockerSensors                                hardware.o
+                                                  sensors_task.o
+cmdLineGetLastArgIdx                              ../../freeRtos/Lib/cmdline.o
+cmdListConfigure                                  vty.o
+cmdListEnable                                     vty.o
+cmdListNormal                                     vty.o
+cmdPrintHelp                                      ../../freeRtos/Lib/cmdline.o
+                                                  vty.o
+cmdStateConfigure                                 ../../freeRtos/Lib/cmdline.o
+                                                  vty.o
+cmd_ac                                            vty.o
+cmd_conf_ip                                       vty.o
+cmd_conf_ip_gw                                    vty.o
+cmd_conf_ip_gw_help                               vty.o
+cmd_conf_ip_mask                                  vty.o
+cmd_conf_ip_mask_help                             vty.o
+cmd_conf_mac                                      vty.o
+cmd_conf_save                                     vty.o
+cmd_conf_udp                                      vty.o
+cmd_configure                                     vty.o
+cmd_create_rf                                     vty.o
+cmd_dir_rf                                        vty.o
+cmd_disable                                       vty.o
+cmd_down                                          vty.o
+cmd_edit_rf                                       vty.o
+cmd_enable                                        vty.o
+cmd_enc_stat                                      vty.o
+cmd_erase_rf                                      vty.o
+cmd_help                                          vty.o
+cmd_help_ac                                       vty.o
+cmd_help_conf_ip                                  vty.o
+cmd_help_conf_mac                                 vty.o
+cmd_help_conf_save                                vty.o
+cmd_help_conf_udp                                 vty.o
+cmd_help_configure                                vty.o
+cmd_help_create_rf                                vty.o
+cmd_help_dir_rf                                   vty.o
+cmd_help_disable                                  vty.o
+cmd_help_down                                     vty.o
+cmd_help_edit_rf                                  vty.o
+cmd_help_enable                                   vty.o
+cmd_help_enc_stat                                 vty.o
+cmd_help_erase_rf                                 vty.o
+cmd_help_help                                     vty.o
+cmd_help_net_dbg                                  vty.o
+cmd_help_ping                                     vty.o
+cmd_help_read_rf                                  vty.o
+cmd_help_rping                                    vty.o
+cmd_help_settime                                  vty.o
+cmd_help_spa                                      vty.o
+cmd_help_spb                                      vty.o
+cmd_help_status                                   vty.o
+cmd_help_time                                     vty.o
+cmd_help_up                                       vty.o
+cmd_help_ustawR                                   vty.o
+cmd_help_xRec                                     vty.o
+cmd_help_xSend                                    vty.o
+cmd_help_xflash                                   vty.o
+cmd_net_dbg                                       vty.o
+cmd_ping                                          vty.o
+cmd_read_rf                                       vty.o
+cmd_rping                                         vty.o
+cmd_settime                                       vty.o
+cmd_spa                                           vty.o
+cmd_spb                                           vty.o
+cmd_status                                        vty.o
+cmd_time                                          vty.o
+cmd_up                                            vty.o
+cmd_ustawR                                        vty.o
+cmd_xRec                                          vty.o
+cmd_xSend                                         vty.o
+cmd_xflash                                        vty.o
+cmdlineGetArgHex                                  ../../freeRtos/Lib/cmdline.o
+                                                  vty.o
+cmdlineGetArgInt                                  ../../freeRtos/Lib/cmdline.o
+                                                  vty.o
+cmdlineGetArgStr                                  ../../freeRtos/Lib/cmdline.o
+                                                  vty.o
+cmdlineInputFunc                                  ../../freeRtos/Lib/cmdline.o
+                                                  cli_task.o
+cmdlineMainLoop                                   ../../freeRtos/Lib/cmdline.o
+                                                  cli_task.o
+czasRtc                                           ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+debugDisabledInfoStr                              vty.o
+debugEnabledInfoStr                               vty.o
+debugStream                                       ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/ipv6.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+disableAllSpiDevices                              hardware.o
+                                                  main.o
+disableSpiMCP3008                                 hardware.o
+disableSpiMCP4150                                 hardware.o
+disableSpiMPC23S17                                hardware.o
+disableSpiSd                                      hardware.o
+ds1305readMem                                     ../../freeRtos/Lib/ds1305.o
+ds1305start                                       ../../freeRtos/Lib/ds1305.o
+                                                  vty.o
+ds1305writeMem                                    ../../freeRtos/Lib/ds1305.o
+editRamFileIntroStr                               vty.o
+enableSpiMCP3008                                  hardware.o
+enableSpiMCP4150                                  hardware.o
+enableSpiMPC23S17                                 hardware.o
+enableSpiSd                                       hardware.o
+enc28j60getrev                                    ../../freeRtos/Lib/enc28j60.o
+enc28j60hasRxPkt                                  ../../freeRtos/Lib/enc28j60.o
+enc28j60linkup                                    ../../freeRtos/Lib/enc28j60.o
+encTask                                           netstack_task.o
+                                                  main.o
+errno                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+errorBootloaderNotResponding                      vty.o
+errorNoFile                                       vty.o
+errorNoRemoteDevice                               vty.o
+errorOK                                           vty.o
+errorOpenFile                                     vty.o
+errorStrings                                      vty.o
+errorxModemByteSendTimeout                        vty.o
+errorxModemFrameCrc                               vty.o
+errorxModemFrameFrameNoCorrectionNotMatch         vty.o
+errorxModemFrameStartTimeout                      vty.o
+errorxModemRemoteSideCan                          vty.o
+errorxModemUnknownResponse                        vty.o
+errorxModemWrongFrameNo                           vty.o
+exit                                              /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+fclose                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                                                  ../../freeRtos/Lib/ramdysk.o
+fdVty                                             vty.o
+fgetc                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                                                  cli_task.o
+flushRs485RecBuffer                               serial.o
+flushTcpQueues                                    ../../freeRtos/Lib/net/tcp.o
+                                                  netstack_task.o
+flushUdpQueues                                    ../../freeRtos/Lib/net/udp.o
+                                                  netstack_task.o
+fprintf                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                                                  ../../freeRtos/Lib/ramdysk.o
+fprintf_P                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/ipv6.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/nic.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  cli_task.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  hardware.o
+fputc                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+fputs                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                                                  ../../freeRtos/Lib/ramdysk.o
+free                                              /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+hardwareInit                                      hardware.o
+                                                  main.o
+heapEnd                                           ../../freeRtos/Lib/memory_x.o
+htonl                                             ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+htons                                             ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  netstack_task.o
+                                                  vty.o
+httpProcess                                       ../../freeRtos/Lib/net/tcp.o
+icmpDebug                                         ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+icmpDebugLevel                                    ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+icmpEchoRequest                                   ../../freeRtos/Lib/net/icmp.o
+icmpInit                                          ../../freeRtos/Lib/net/icmp.o
+                                                  netstack_task.o
+icmpIpIn                                          ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+icmpPrintHeader                                   ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+initExternalMem                                   main.o
+initQueueStream                                   ../../freeRtos/Lib/queueStream.o
+                                                  main.o
+initQueueStreamUSB                                serial.o
+                                                  main.o
+ipGetConfig                                       ../../freeRtos/Lib/net/ip.o
+                                                  vty.o
+ipInit                                            ../../freeRtos/Lib/net/ip.o
+                                                  netstack_task.o
+ipPrintConfig                                     ../../freeRtos/Lib/net/ip.o
+ipSaveConfig                                      ../../freeRtos/Lib/net/ip.o
+                                                  configuration.o
+ipSend                                            ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+ipSetConfig                                       ../../freeRtos/Lib/net/ip.o
+ipSetConfigGw                                     ../../freeRtos/Lib/net/ip.o
+                                                  vty.o
+ipSetConfigIp                                     ../../freeRtos/Lib/net/ip.o
+                                                  vty.o
+ipSetConfigMask                                   ../../freeRtos/Lib/net/ip.o
+                                                  vty.o
+ipv6DebugInit                                     ../../freeRtos/Lib/net/ipv6.o
+                                                  netstack_task.o
+ipv6Init                                          ../../freeRtos/Lib/net/ipv6.o
+                                                  netstack_task.o
+isspace                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+klastry                                           ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+loadConfiguration                                 configuration.o
+                                                  main.o
+lockSensors                                       ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+main                                              main.o
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+malloc                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                                                  ../../freeRtos/Lib/memory_x.o
+memcpy                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                                                  ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+memcpy_P                                          /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                                                  ../../freeRtos/Lib/cmdline.o
+memset                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                                                  ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/cmdline.o
+movingCurtainDownStr                              vty.o
+movingCurtainPosStr                               vty.o
+movingCurtainUpStr                                vty.o
+netChecksum                                       ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+netPrintEthAddr                                   ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  vty.o
+netPrintEthHeader                                 ../../freeRtos/Lib/net/net.o
+netPrintIPAddr                                    ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  vty.o
+netPrintIpHeader                                  ../../freeRtos/Lib/net/net.o
+netPrintIpv6Header                                ../../freeRtos/Lib/net/ipv6.o
+netPrintIpv6HeaderRAW                             ../../freeRtos/Lib/net/ipv6.o
+netPrintTcpHeader                                 ../../freeRtos/Lib/net/net.o
+netstackIPv4Process                               ../../freeRtos/Lib/net/ip.o
+                                                  netstack_task.o
+netstackIPv6Process                               ../../freeRtos/Lib/net/ipv6.o
+                                                  netstack_task.o
+netstackTCPIPProcess                              ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+netstackUDPIPProcess                              ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+nicGetMacAddress                                  ../../freeRtos/Lib/enc28j60.o
+nicInit                                           ../../freeRtos/Lib/net/nic.o
+                                                  netstack_task.o
+nicMacInit                                        ../../freeRtos/Lib/enc28j60.o
+nicPoll                                           ../../freeRtos/Lib/enc28j60.o
+                                                  netstack_task.o
+nicRegDump                                        ../../freeRtos/Lib/enc28j60.o
+                                                  vty.o
+nicSend                                           ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+nicSetMacAddress                                  ../../freeRtos/Lib/enc28j60.o
+                                                  vty.o
+nicState                                          ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/ipv6.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/net/nic.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+nlStr                                             vty.o
+okStr                                             vty.o
+portA                                             ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+portB                                             ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+printErrorInfo                                    vty.o
+printLockers                                      hardware.o
+                                                  vty.o
+printRs485devices                                 ../../freeRtos/Lib/Rs485_prot.o
+                                                  vty.o
+printStatus                                       vty.o
+processTcpPacket                                  ../../freeRtos/Lib/net/tcp.o
+pvPortMalloc                                      ../../freeRtos/portable/MemMang/heap_avr.o
+                                                  ../../freeRtos/Source/croutine.o
+                                                  ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Source/tasks.o
+pxCurrentCoRoutine                                ../../freeRtos/Source/croutine.o
+pxCurrentTCB                                      ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/portable/GCC/ATMega64/port.o
+pxPortInitialiseStack                             ../../freeRtos/portable/GCC/ATMega64/port.o
+                                                  ../../freeRtos/Source/tasks.o
+ramDyskCzyscPlik                                  ../../freeRtos/Lib/ramdysk.o
+ramDyskCzytajBajtZPliku                           ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  vty.o
+ramDyskCzytajBlokZPliku                           ../../freeRtos/Lib/ramdysk.o
+ramDyskDir                                        ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskDodajBlokXmodem                            ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskInit                                       ../../freeRtos/Lib/ramdysk.o
+                                                  main.o
+ramDyskLiczbaWolnychKlastrow                      ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskOtworzPlik                                 ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskOtworzPlikStdIo                            ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskUstawWskaznik                              ../../freeRtos/Lib/ramdysk.o
+ramDyskUstawWskaznikNaKoniec                      ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskUsunPlik                                   ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskUtworzPlik                                 ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskZamknijPlik                                ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskZamknijPlikStdIo                           ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskZapiszBajtDoPliku                          ../../freeRtos/Lib/ramdysk.o
+                                                  vty.o
+ramDyskZapiszBlokDoPliku                          ../../freeRtos/Lib/ramdysk.o
+readRamFIleLenStr                                 vty.o
+readTime                                          ../../freeRtos/Lib/ds1305.o
+readTimeBCD                                       ../../freeRtos/Lib/ds1305.o
+readTimeDecoded                                   ../../freeRtos/Lib/ds1305.o
+                                                  vty.o
+releaseRs485                                      serial.o
+rollers                                           ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+rollersMemInit                                    ../../freeRtos/Lib/Rs485_prot.o
+                                                  sensors_task.o
+rs485Receive                                      serial.o
+rs485curtainDown                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  vty.o
+rs485curtainUp                                    ../../freeRtos/Lib/Rs485_prot.o
+                                                  vty.o
+rs485ping                                         ../../freeRtos/Lib/Rs485_prot.o
+                                                  vty.o
+rs485rollerHello                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  sensors_task.o
+rs485xModemFlash                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  vty.o
+saveConfiguration                                 configuration.o
+                                                  vty.o
+saveNic                                           ../../freeRtos/Lib/net/nic.o
+                                                  configuration.o
+sendTcBuffer                                      ../../freeRtos/Lib/net/tcp.o
+sensorsTask                                       sensors_task.o
+sensorsTaskInit                                   sensors_task.o
+                                                  main.o
+setArpDebug                                       ../../freeRtos/Lib/net/arp.o
+                                                  vty.o
+setIcmpDebug                                      ../../freeRtos/Lib/net/icmp.o
+                                                  vty.o
+setIpDebug                                        ../../freeRtos/Lib/net/ip.o
+                                                  vty.o
+setTcpDebug                                       ../../freeRtos/Lib/net/tcp.o
+                                                  vty.o
+setTime                                           ../../freeRtos/Lib/ds1305.o
+setTimeBCD                                        ../../freeRtos/Lib/ds1305.o
+setTimeDecoded                                    ../../freeRtos/Lib/ds1305.o
+                                                  vty.o
+setUdpDebug                                       ../../freeRtos/Lib/net/udp.o
+                                                  vty.o
+socketInit                                        ../../freeRtos/Lib/net/tcp.o
+                                                  main.o
+sockets                                           ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+spiClearCPHA                                      ../../freeRtos/Lib/spi.o
+spiClearCPOL                                      ../../freeRtos/Lib/spi.o
+spiDisableDS1305                                  hardware.o
+spiDisableEnc28j60                                hardware.o
+spiEnableDS1305                                   hardware.o
+spiEnableEnc28j60                                 hardware.o
+spiGive                                           ../../freeRtos/Lib/spi.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/ds1305.o
+spiInit                                           ../../freeRtos/Lib/spi.o
+                                                  main.o
+spiSend                                           hardware.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/ds1305.o
+spiSendSpinBlock                                  hardware.o
+spiSetCPHA                                        ../../freeRtos/Lib/spi.o
+spiSetCPOL                                        ../../freeRtos/Lib/spi.o
+spiTake                                           ../../freeRtos/Lib/spi.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/ds1305.o
+sprintf                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                                                  ../../freeRtos/Source/tasks.o
+statusDynamicHeapStateStr                         vty.o
+statusIpGwStr                                     vty.o
+statusIpMaskStr                                   vty.o
+statusIpStr                                       vty.o
+statusLockerCloseStr                              hardware.o
+statusLockerOpenStr                               hardware.o
+statusLockerSensAdditionalDescStr                 hardware.o
+statusLockerSensDescStr                           hardware.o
+statusLockerSensorsDisStr                         vty.o
+statusLockerSensorsStr                            vty.o
+statusMacStr                                      vty.o
+statusNoRs485Dev                                  vty.o
+statusNumberOfTasksStr                            vty.o
+statusRamDiskStateStr                             vty.o
+statusRollerDescStr                               ../../freeRtos/Lib/Rs485_prot.o
+statusRollerDescStr2                              ../../freeRtos/Lib/Rs485_prot.o
+statusRs485listStr                                vty.o
+statusStaticHeapStateStr                          vty.o
+statusTemperatureStr                              vty.o
+statusVoltageStr                                  vty.o
+strcat                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                                                  ../../freeRtos/Source/tasks.o
+strcpy                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                                                  ../../freeRtos/Lib/cmdline.o
+strncmp                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                                                  ../../freeRtos/Lib/ramdysk.o
+strncmp_P                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  vty.o
+strncpy                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                                                  ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Lib/net/nic.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+strnlen                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+strnlen_P                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+strtol                                            /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                                                  ../../freeRtos/Lib/cmdline.o
+systemRamConfigStr                                vty.o
+systemStateStr                                    vty.o
+takeRs485                                         serial.o
+tcpDebugLevel                                     ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+tcpDebugStream                                    ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+temperature                                       vty.o
+                                                  sensors_task.o
+                                                  main.o
+timer100Hz                                        main.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+uartRs485SendByte                                 serial.o
+uartVtySendByte                                   serial.o
+                                                  vty.o
+udpBuffers                                        main.o
+udpDbgLevel                                       ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+udpDbgStream                                      ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+udpInit                                           ../../freeRtos/Lib/net/udp.o
+                                                  main.o
+udpPrintStatus                                    ../../freeRtos/Lib/net/udp.o
+                                                  vty.o
+udpSaveConfig                                     ../../freeRtos/Lib/net/udp.o
+                                                  configuration.o
+udpSend                                           ../../freeRtos/Lib/net/udp.o
+udpSocket                                         ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+udpStream                                         main.o
+ulTaskEndTrace                                    ../../freeRtos/Source/tasks.o
+usbStream                                         main.o
+uxQueueMessagesWaiting                            ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Lib/net/udp.o
+uxQueueMessagesWaitingFromISR                     ../../freeRtos/Source/queue.o
+uxTaskGetNumberOfTasks                            ../../freeRtos/Source/tasks.o
+                                                  vty.o
+uxTaskPriorityGet                                 ../../freeRtos/Source/tasks.o
+vApplicationIdleHook                              main.o
+vApplicationTickHook                              main.o
+                                                  ../../freeRtos/Source/tasks.o
+vCoRoutineAddToDelayedList                        ../../freeRtos/Source/croutine.o
+vCoRoutineSchedule                                ../../freeRtos/Source/croutine.o
+                                                  main.o
+vListInitialise                                   ../../freeRtos/Source/list.o
+                                                  ../../freeRtos/Source/croutine.o
+                                                  ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Source/tasks.o
+vListInitialiseItem                               ../../freeRtos/Source/list.o
+                                                  ../../freeRtos/Source/croutine.o
+                                                  ../../freeRtos/Source/tasks.o
+vListInsert                                       ../../freeRtos/Source/list.o
+                                                  ../../freeRtos/Source/croutine.o
+                                                  ../../freeRtos/Source/tasks.o
+vListInsertEnd                                    ../../freeRtos/Source/list.o
+                                                  ../../freeRtos/Source/croutine.o
+                                                  ../../freeRtos/Source/tasks.o
+vListRemove                                       ../../freeRtos/Source/list.o
+                                                  ../../freeRtos/Source/croutine.o
+                                                  ../../freeRtos/Source/tasks.o
+vPortEndScheduler                                 ../../freeRtos/portable/GCC/ATMega64/port.o
+                                                  ../../freeRtos/Source/tasks.o
+vPortFree                                         ../../freeRtos/portable/MemMang/heap_avr.o
+                                                  ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Source/tasks.o
+vPortInitialiseBlocks                             ../../freeRtos/portable/MemMang/heap_avr.o
+vPortYield                                        ../../freeRtos/portable/GCC/ATMega64/port.o
+                                                  ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Source/tasks.o
+                                                  hardware.o
+                                                  serial.o
+vPortYieldFromTick                                ../../freeRtos/portable/GCC/ATMega64/port.o
+vQueueDelete                                      ../../freeRtos/Source/queue.o
+vTaskDelay                                        ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  netstack_task.o
+                                                  sensors_task.o
+                                                  hardware.o
+vTaskDelayUntil                                   ../../freeRtos/Source/tasks.o
+vTaskEndScheduler                                 ../../freeRtos/Source/tasks.o
+vTaskIncrementTick                                ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/portable/GCC/ATMega64/port.o
+vTaskList                                         ../../freeRtos/Source/tasks.o
+vTaskMissedYield                                  ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Source/queue.o
+vTaskPlaceOnEventList                             ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Source/queue.o
+vTaskPrioritySet                                  ../../freeRtos/Source/tasks.o
+vTaskResume                                       ../../freeRtos/Source/tasks.o
+vTaskSetTimeOutState                              ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Source/queue.o
+vTaskStartScheduler                               ../../freeRtos/Source/tasks.o
+                                                  main.o
+vTaskStartTrace                                   ../../freeRtos/Source/tasks.o
+vTaskSuspend                                      ../../freeRtos/Source/tasks.o
+vTaskSuspendAll                                   ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/portable/MemMang/heap_avr.o
+                                                  ../../freeRtos/Source/queue.o
+vTaskSwitchContext                                ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/portable/GCC/ATMega64/port.o
+vTaskVTYsocket                                    cli_task.o
+vTaskVTYusb                                       cli_task.o
+                                                  main.o
+vfprintf                                          /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                                                  /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+voltage                                           vty.o
+                                                  sensors_task.o
+                                                  main.o
+vt100ClearScreen                                  ../../freeRtos/Lib/vt100.o
+vt100Init                                         ../../freeRtos/Lib/vt100.o
+vt100SetAttr                                      ../../freeRtos/Lib/vt100.o
+vt100SetCursorMode                                ../../freeRtos/Lib/vt100.o
+vt100SetCursorPos                                 ../../freeRtos/Lib/vt100.o
+wwwport                                           ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/ipv6.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/arp.o
+                                                  ../../freeRtos/Lib/net/icmp.o
+                                                  ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/nic.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  cli_task.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+xCoRoutineCreate                                  ../../freeRtos/Source/croutine.o
+xCoRoutineRemoveFromEventList                     ../../freeRtos/Source/croutine.o
+xHandleEnc                                        main.o
+xHandleSensors                                    main.o
+xHandleVTY_UDP                                    main.o
+xHandleVTY_USB                                    main.o
+xPortGetFreeHeapSize                              ../../freeRtos/portable/MemMang/heap_avr.o
+                                                  vty.o
+xPortStartScheduler                               ../../freeRtos/portable/GCC/ATMega64/port.o
+                                                  ../../freeRtos/Source/tasks.o
+xQueueCreate                                      ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  hardware.o
+                                                  serial.o
+xQueueCreateExternal                              ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Lib/net/udp.o
+xQueueGenericReceive                              ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/queueStream.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  cli_task.o
+                                                  vty.o
+                                                  hardware.o
+                                                  serial.o
+xQueueGenericSend                                 ../../freeRtos/Source/queue.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/queueStream.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  serial.o
+xQueueGenericSendFromISR                          ../../freeRtos/Source/queue.o
+                                                  hardware.o
+                                                  serial.o
+xQueueIsQueueEmptyFromISR                         ../../freeRtos/Source/queue.o
+xQueueIsQueueFullFromISR                          ../../freeRtos/Source/queue.o
+xQueueReceiveFromISR                              ../../freeRtos/Source/queue.o
+                                                  serial.o
+xRs485Rec                                         ../../freeRtos/Lib/Rs485_prot.o
+                                                  serial.o
+                                                  main.o
+xRs485Tx                                          serial.o
+                                                  main.o
+xSemaphoreRs485                                   ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+xSemaphoreSpiSS                                   ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/enc28j60.o
+                                                  ../../freeRtos/Lib/mcp4150.o
+                                                  ../../freeRtos/Lib/mcp3008.o
+                                                  ../../freeRtos/Lib/mpc23s17.o
+                                                  ../../freeRtos/Lib/ds1305.o
+                                                  ../../freeRtos/Lib/vt100.o
+                                                  ../../freeRtos/Lib/xmodem.o
+                                                  ../../freeRtos/Lib/cmdline.o
+                                                  ../../freeRtos/Lib/ramdysk.o
+                                                  ../../freeRtos/Lib/spi.o
+                                                  netstack_task.o
+                                                  vty.o
+                                                  sensors_task.o
+                                                  hardware.o
+                                                  serial.o
+                                                  configuration.o
+                                                  main.o
+xSerialPortInitMinimal                            serial.o
+                                                  main.o
+xSpiRx                                            hardware.o
+xTaskCheckForTimeOut                              ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Source/queue.o
+xTaskGenericCreate                                ../../freeRtos/Source/tasks.o
+                                                  main.o
+xTaskGetTickCount                                 ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Source/croutine.o
+xTaskIsTaskSuspended                              ../../freeRtos/Source/tasks.o
+xTaskRemoveFromEventList                          ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/Source/queue.o
+xTaskResumeAll                                    ../../freeRtos/Source/tasks.o
+                                                  ../../freeRtos/portable/MemMang/heap_avr.o
+                                                  ../../freeRtos/Source/queue.o
+xTaskResumeFromISR                                ../../freeRtos/Source/tasks.o
+xVtyRec                                           cli_task.o
+                                                  vty.o
+                                                  serial.o
+                                                  main.o
+xVtyTx                                            serial.o
+                                                  main.o
+xmalloc                                           ../../freeRtos/Lib/memory_x.o
+                                                  ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/ipv6.o
+                                                  ../../freeRtos/Lib/net/udp.o
+                                                  ../../freeRtos/Lib/net/tcp.o
+                                                  hardware.o
+                                                  main.o
+xmallocAvailable                                  ../../freeRtos/Lib/memory_x.o
+                                                  vty.o
+xwyslijStartStr                                   vty.o
