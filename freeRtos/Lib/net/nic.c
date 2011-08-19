@@ -39,6 +39,11 @@ static void nicBufferInit(void)
   nicState.layer2.buf  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR);
   nicState.layer3.ip   = (struct netIpHeader *)   (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); //Te wartosci beda ustawiane w czasie analizy pakietu
   nicState.layer4.icmp = (struct  netIcmpHeader *)(NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN + IP_HEADER_LEN);
+  #if IPV6_SUPPORT
+  nicState.layer3.ipv6 = (struct netIpHeader *)   (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); 
+  nicState.layer3.buf  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); 
+  //nicState.layer4.icmpv6  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); //Te wartosci beda ustawiane w czasie analizy pakietu
+  #endif /*IPV6_SUPPORT*/
   memset(nicState.layer2.buf, 0, nicState.bufferSize);
   eeprom_read_block(&nicState.mac.addr, mymac_eep, 6);
 }
