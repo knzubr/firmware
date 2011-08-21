@@ -11,10 +11,12 @@
 #include "net.h"
 #include "nic.h"
 #include "softwareConfig.h"
+#include "ipv6.h"
+#include "checksum.h"
 
 #define PRINTF(...) fprintf_P(__VA_ARGS__)
 #define PRINTF2(stream, ...) fprintf_P(stream, PSTR(__VA_ARGS__))
-#define PRINT6ADDR(stream, addr) PRINTF(stream, PSTR("IPv6 addr: %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x \r\n"), ((u8_t *)addr)[0], ((u8_t *)addr)[1], ((u8_t *)addr)[2], ((u8_t *)addr)[3], ((u8_t *)addr)[4], ((u8_t *)addr)[5], ((u8_t *)addr)[6], ((u8_t *)addr)[7], ((u8_t *)addr)[8], ((u8_t *)addr)[9], ((u8_t *)addr)[10], ((u8_t *)addr)[11], ((u8_t *)addr)[12], ((u8_t *)addr)[13], ((u8_t *)addr)[14], ((u8_t *)addr)[15])
+//#define PRINT6ADDR(stream, addr) PRINTF(stream, PSTR("IPv6 addr: %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x \r\n"), ((u8_t *)addr)[0], ((u8_t *)addr)[1], ((u8_t *)addr)[2], ((u8_t *)addr)[3], ((u8_t *)addr)[4], ((u8_t *)addr)[5], ((u8_t *)addr)[6], ((u8_t *)addr)[7], ((u8_t *)addr)[8], ((u8_t *)addr)[9], ((u8_t *)addr)[10], ((u8_t *)addr)[11], ((u8_t *)addr)[12], ((u8_t *)addr)[13], ((u8_t *)addr)[14], ((u8_t *)addr)[15])
 
 
 
@@ -54,7 +56,7 @@ extern nicState_t nicState;
 #define UIP_ND6_OPT_MTU                 5
 
 /** \brief HOP LIMIT to be used when sending ND messages (255) */
-#define UIP_ND6_HOP_LIMIT               64
+#define UIP_ND6_HOP_LIMIT               0xff
 
 
 /** \name Neighbor Advertisement flags masks */
@@ -94,19 +96,19 @@ struct uip_nd6_na {
 /**
  * The sums below are quite used in ND. 
  */
-#define uip_l2_l3_hdr_len (ETH_HEADER_LEN + UIP_IPH_LEN + uip_ext_len)
+//#define uip_l2_l3_hdr_len (ETH_HEADER_LEN + UIP_IPH_LEN + uip_ext_len)
+////#define uip_l2_l3_icmp_hdr_len (ETH_HEADER_LEN + UIP_IPH_LEN + uip_ext_len + UIP_ICMPH_LEN)
+////#define uip_l3_hdr_len (IP_HEADER_LEN + uip_ext_len)
 //#define uip_l2_l3_icmp_hdr_len (ETH_HEADER_LEN + UIP_IPH_LEN + uip_ext_len + UIP_ICMPH_LEN)
-//#define uip_l3_hdr_len (IP_HEADER_LEN + uip_ext_len)
-#define uip_l2_l3_icmp_hdr_len (ETH_HEADER_LEN + UIP_IPH_LEN + uip_ext_len + UIP_ICMPH_LEN)
 
-#define uip_l2_l3_icmp_hdr_len  ETH_HEADER_LEN + IP_HEADER_LEN + uip_ext_len + UIP_ICMPH_LEN
+//#define uip_l2_l3_icmp_hdr_len  ETH_HEADER_LEN + IP_HEADER_LEN + uip_ext_len + UIP_ICMPH_LEN
 #define UIP_ND6_NS_BUF     ((struct uip_nd6_ns *)&nicState.layer2.buf[uip_l2_l3_icmp_hdr_len])
 
 /** Pointer to ND option */
 #define UIP_ND6_OPT_HDR_BUF  ((struct uip_nd6_opt_hdr *)&nicState.layer2.buf[uip_l2_l3_icmp_hdr_len + nd6_opt_offset])
 
-#define UIP_IP_BUF                          ((struct uip_ip_hdr *)&nicState.layer2.buf[14]) 
-#define UIP_ICMP_BUF                        ((struct uip_icmp6_hdr *)&nicState.layer2.buf[uip_l2_l3_hdr_len])
+//#define UIP_IP_BUF                          ((struct uip_ip_hdr *)&nicState.layer2.buf[14]) 
+//#define UIP_ICMP_BUF                        ((struct uip_icmp6_hdr *)&nicState.layer2.buf[uip_l2_l3_hdr_len])
 #define UIP_ND6_NA_BUF                      ((struct uip_nd6_na *)&nicState.layer2.buf[uip_l2_l3_icmp_hdr_len])
 
 
@@ -150,7 +152,7 @@ uip_icmp6_echo_request_input(void);
  */
 //void uip_icmp6_error_output(u8_t type, u8_t code, uint32_t param); 
 
-void uip_nd6_io_ns_input(uint16_t packetLenght);
+
 
 #if ICMP6_DEBUG
 /** Debug Network Discovery */
