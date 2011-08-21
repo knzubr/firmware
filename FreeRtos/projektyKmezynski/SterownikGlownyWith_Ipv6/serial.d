@@ -39,4 +39,9 @@ serial.o serial.d : serial.c ../../freeRtos/Source/include/FreeRTOS.h \
   ../../freeRtos/Lib/net/include/udp.h \
   ../../freeRtos/Lib/net/include/icmp.h \
   ../../freeRtos/Lib/net/include/ipv6.h \
-  ../../freeRtos/Lib/net/include/ipv6Conf.h vty.h configuration.h
+  ../../freeRtos/Lib/net/include/ipv6Conf.h \
+  ../../freeRtos/Lib/net/include/uip-netif.h \
+  ../../freeRtos/Lib/net/include/ipv6.h \
+  ../../freeRtos/Lib/net/include/ipv6-nd.h \
+  ../../freeRtos/Lib/net/include/icmp6.h \
+  ../../freeRtos/Lib/net/include/checksum.h vty.h configuration.h

@@ -146,15 +146,15 @@
  247               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 cli_task.c
-     /tmp/ccnUEyQP.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccnUEyQP.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccnUEyQP.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccnUEyQP.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccnUEyQP.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccnUEyQP.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccnUEyQP.s:125    .text:00000000 vTaskVTYsocket
-     /tmp/ccnUEyQP.s:159    .text:0000001c vTaskVTYusb
-     /tmp/ccnUEyQP.s:239    .progmem.data:00000000 __c.1665
+     /tmp/cchxamig.s:2      *ABS*:0000003f __SREG__
+     /tmp/cchxamig.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cchxamig.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cchxamig.s:5      *ABS*:00000034 __CCP__
+     /tmp/cchxamig.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cchxamig.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cchxamig.s:125    .text:00000000 vTaskVTYsocket
+     /tmp/cchxamig.s:159    .text:0000001c vTaskVTYusb
+     /tmp/cchxamig.s:239    .progmem.data:00000000 __c.1665
                             *COM*:00000001 wwwport
 
 UNDEFINED SYMBOLS

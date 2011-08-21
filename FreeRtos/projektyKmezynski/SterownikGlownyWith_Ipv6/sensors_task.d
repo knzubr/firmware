@@ -40,5 +40,10 @@ sensors_task.o sensors_task.d : sensors_task.c sensors_task.h main.h \
   ../../freeRtos/Lib/net/include/udp.h \
   ../../freeRtos/Lib/net/include/icmp.h \
   ../../freeRtos/Lib/net/include/ipv6.h \
-  ../../freeRtos/Lib/net/include/ipv6Conf.h vty.h configuration.h \
+  ../../freeRtos/Lib/net/include/ipv6Conf.h \
+  ../../freeRtos/Lib/net/include/uip-netif.h \
+  ../../freeRtos/Lib/net/include/ipv6.h \
+  ../../freeRtos/Lib/net/include/ipv6-nd.h \
+  ../../freeRtos/Lib/net/include/icmp6.h \
+  ../../freeRtos/Lib/net/include/checksum.h vty.h configuration.h \
   ../../freeRtos/Lib/include/protocol1.h

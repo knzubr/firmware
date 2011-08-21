@@ -69,7 +69,6 @@
 void encTask ( void *pvParameters )
 {
   FILE *netstackDebug = (FILE *) pvParameters;
-  uint16_t plen;
   #ifdef DEBUG_PRINT_NET_PACKET
   uint16_t packetNo = 0;
   #endif /*DEBUG_PRINT_NET_PACKET*/
@@ -78,14 +77,16 @@ void encTask ( void *pvParameters )
   ipInit();
   arpInit();
   icmpInit();
-  #ifdef IP_DEBUG
+  #if IP_DEBUG
     #if IPV6_SUPPORT
     ipv6DebugInit(netstackDebug);
+    vICMP6DebugInit(netstackDebug);
     #endif /*IPV6_SUPPORT*/
   fprintf_P(netstackDebug, PSTR("IP stack ready \r\n"));
   #endif /*IP_DEBUG*/
   #if IPV6_SUPPORT
   ipv6Init();
+  uip_netif_init();
   #endif /*IPV6_SUPPORT*/
   
   //TODO    init_ip_arp_udp_tcp (mymac, ipGetConfig()->ip, MYWWWPORT);

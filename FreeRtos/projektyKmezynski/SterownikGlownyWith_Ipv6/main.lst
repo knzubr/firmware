@@ -7,10 +7,10 @@
    7               	__zero_reg__ = 1
   10               		.text
   11               	.Ltext0:
- 259               		.section	.init4,"ax",@progbits
- 261               	.global	initExternalMem
- 263               	initExternalMem:
- 264               		.stabd	46,0,0
+ 276               		.section	.init4,"ax",@progbits
+ 278               	.global	initExternalMem
+ 280               	initExternalMem:
+ 281               		.stabd	46,0,0
    1:main.c        **** /*
    2:main.c        ****  
    3:main.c        **** 	FreeRTOS.org V5.2.0 - Copyright (C) 2003-2009 Richard Barry.
@@ -85,29 +85,29 @@
   72:main.c        **** 
   73:main.c        **** void initExternalMem(void)
   74:main.c        **** {
- 266               	.LM0:
- 267               	.LFBB1:
- 268               	/* prologue: naked */
- 269               	/* frame size = 0 */
+ 283               	.LM0:
+ 284               	.LFBB1:
+ 285               	/* prologue: naked */
+ 286               	/* frame size = 0 */
   75:main.c        ****   MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
- 271               	.LM1:
- 272 0000 85B7      		in r24,85-32
- 273 0002 8068      		ori r24,lo8(-128)
- 274 0004 85BF      		out 85-32,r24
+ 288               	.LM1:
+ 289 0000 85B7      		in r24,85-32
+ 290 0002 8068      		ori r24,lo8(-128)
+ 291 0004 85BF      		out 85-32,r24
   76:main.c        ****   MCUCR |= 0x0E;
- 276               	.LM2:
- 277 0006 85B7      		in r24,85-32
- 278 0008 8E60      		ori r24,lo8(14)
- 279 000a 85BF      		out 85-32,r24
- 280               	/* epilogue start */
+ 293               	.LM2:
+ 294 0006 85B7      		in r24,85-32
+ 295 0008 8E60      		ori r24,lo8(14)
+ 296 000a 85BF      		out 85-32,r24
+ 297               	/* epilogue start */
   77:main.c        **** }
- 282               	.LM3:
- 284               	.Lscope1:
- 286               		.stabd	78,0,0
- 287               		.text
- 289               	.global	vApplicationTickHook
- 291               	vApplicationTickHook:
- 292               		.stabd	46,0,0
+ 299               	.LM3:
+ 301               	.Lscope1:
+ 303               		.stabd	78,0,0
+ 304               		.text
+ 306               	.global	vApplicationTickHook
+ 308               	vApplicationTickHook:
+ 309               		.stabd	46,0,0
   78:main.c        **** 
   79:main.c        **** cmdState_t *CLIStateSerialUsb;
   80:main.c        **** cmdState_t *CLIStateSerialUdp;
@@ -160,253 +160,257 @@
  127:main.c        **** 
  128:main.c        **** void vApplicationTickHook( void )
  129:main.c        **** {
- 294               	.LM4:
- 295               	.LFBB2:
- 296               	/* prologue: function */
- 297               	/* frame size = 0 */
+ 311               	.LM4:
+ 312               	.LFBB2:
+ 313               	/* prologue: function */
+ 314               	/* frame size = 0 */
  130:main.c        ****   static uint8_t tickCntr = configTICK_RATE_HZ;
  131:main.c        ****   if (--tickCntr == 0)
- 299               	.LM5:
- 300 0000 8091 0000 		lds r24,tickCntr.3069
- 301 0004 8150      		subi r24,lo8(-(-1))
- 302 0006 8093 0000 		sts tickCntr.3069,r24
- 303 000a 8823      		tst r24
- 304 000c 01F4      		brne .L5
+ 316               	.LM5:
+ 317 0000 8091 0000 		lds r24,tickCntr.3152
+ 318 0004 8150      		subi r24,lo8(-(-1))
+ 319 0006 8093 0000 		sts tickCntr.3152,r24
+ 320 000a 8823      		tst r24
+ 321 000c 01F4      		brne .L5
  132:main.c        ****   {
  133:main.c        ****     tickCntr = configTICK_RATE_HZ;
- 306               	.LM6:
- 307 000e 84E6      		ldi r24,lo8(100)
- 308 0010 8093 0000 		sts tickCntr.3069,r24
+ 323               	.LM6:
+ 324 000e 84E6      		ldi r24,lo8(100)
+ 325 0010 8093 0000 		sts tickCntr.3152,r24
  134:main.c        ****     arpTimer();    
- 310               	.LM7:
- 311 0014 0E94 0000 		call arpTimer
- 312               	.L5:
- 313 0018 0895      		ret
- 318               	.Lscope2:
- 320               		.stabd	78,0,0
- 322               	.global	vApplicationIdleHook
- 324               	vApplicationIdleHook:
- 325               		.stabd	46,0,0
+ 327               	.LM7:
+ 328 0014 0E94 0000 		call arpTimer
+ 329               	.L5:
+ 330 0018 0895      		ret
+ 335               	.Lscope2:
+ 337               		.stabd	78,0,0
+ 339               	.global	vApplicationIdleHook
+ 341               	vApplicationIdleHook:
+ 342               		.stabd	46,0,0
  121:main.c        **** {
- 327               	.LM8:
- 328               	.LFBB3:
- 329               	/* prologue: function */
- 330               	/* frame size = 0 */
- 331               	.L7:
+ 344               	.LM8:
+ 345               	.LFBB3:
+ 346               	/* prologue: function */
+ 347               	/* frame size = 0 */
+ 348               	.L7:
  124:main.c        ****     vCoRoutineSchedule();
- 333               	.LM9:
- 334 001a 0E94 0000 		call vCoRoutineSchedule
- 335 001e 00C0      		rjmp .L7
- 337               	.Lscope3:
- 339               		.stabd	78,0,0
- 341               	.global	main
- 343               	main:
- 344               		.stabd	46,0,0
+ 350               	.LM9:
+ 351 001a 0E94 0000 		call vCoRoutineSchedule
+ 352 001e 00C0      		rjmp .L7
+ 354               	.Lscope3:
+ 356               		.stabd	78,0,0
+ 358               	.global	main
+ 360               	main:
+ 361               		.stabd	46,0,0
   87:main.c        **** {
- 346               	.LM10:
- 347               	.LFBB4:
- 348 0020 AF92      		push r10
- 349 0022 BF92      		push r11
- 350 0024 CF92      		push r12
- 351 0026 DF92      		push r13
- 352 0028 EF92      		push r14
- 353 002a FF92      		push r15
- 354 002c 0F93      		push r16
- 355 002e 1F93      		push r17
- 356               	/* prologue: function */
- 357               	/* frame size = 0 */
+ 363               	.LM10:
+ 364               	.LFBB4:
+ 365 0020 AF92      		push r10
+ 366 0022 BF92      		push r11
+ 367 0024 CF92      		push r12
+ 368 0026 DF92      		push r13
+ 369 0028 EF92      		push r14
+ 370 002a FF92      		push r15
+ 371 002c 0F93      		push r16
+ 372 002e 1F93      		push r17
+ 373               	/* prologue: function */
+ 374               	/* frame size = 0 */
   88:main.c        ****   ramDyskInit();              //Inicjalizacja Ram dysku
- 359               	.LM11:
- 360 0030 0E94 0000 		call ramDyskInit
+ 376               	.LM11:
+ 377 0030 0E94 0000 		call ramDyskInit
   89:main.c        ****   hardwareInit();
- 362               	.LM12:
- 363 0034 0E94 0000 		call hardwareInit
+ 379               	.LM12:
+ 380 0034 0E94 0000 		call hardwareInit
   90:main.c        ****   spiInit(disableAllSpiDevices);
- 365               	.LM13:
- 366 0038 80E0      		ldi r24,lo8(gs(disableAllSpiDevices))
- 367 003a 90E0      		ldi r25,hi8(gs(disableAllSpiDevices))
- 368 003c 0E94 0000 		call spiInit
+ 382               	.LM13:
+ 383 0038 80E0      		ldi r24,lo8(gs(disableAllSpiDevices))
+ 384 003a 90E0      		ldi r25,hi8(gs(disableAllSpiDevices))
+ 385 003c 0E94 0000 		call spiInit
   93:main.c        ****   xSerialPortInitMinimal(); 
- 370               	.LM14:
- 371 0040 0E94 0000 		call xSerialPortInitMinimal
+ 387               	.LM14:
+ 388 0040 0E94 0000 		call xSerialPortInitMinimal
   94:main.c        ****   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
- 373               	.LM15:
- 374 0044 83E2      		ldi r24,lo8(35)
- 375 0046 90E0      		ldi r25,hi8(35)
- 376 0048 0E94 0000 		call xmalloc
- 377 004c 9093 0000 		sts (CLIStateSerialUsb)+1,r25
- 378 0050 8093 0000 		sts CLIStateSerialUsb,r24
+ 390               	.LM15:
+ 391 0044 83E2      		ldi r24,lo8(35)
+ 392 0046 90E0      		ldi r25,hi8(35)
+ 393 0048 0E94 0000 		call xmalloc
+ 394 004c 9093 0000 		sts (CLIStateSerialUsb)+1,r25
+ 395 0050 8093 0000 		sts CLIStateSerialUsb,r24
   95:main.c        ****   CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
- 380               	.LM16:
- 381 0054 83E2      		ldi r24,lo8(35)
- 382 0056 90E0      		ldi r25,hi8(35)
- 383 0058 0E94 0000 		call xmalloc
- 384 005c 9093 0000 		sts (CLIStateSerialUdp)+1,r25
- 385 0060 8093 0000 		sts CLIStateSerialUdp,r24
+ 397               	.LM16:
+ 398 0054 83E2      		ldi r24,lo8(35)
+ 399 0056 90E0      		ldi r25,hi8(35)
+ 400 0058 0E94 0000 		call xmalloc
+ 401 005c 9093 0000 		sts (CLIStateSerialUdp)+1,r25
+ 402 0060 8093 0000 		sts CLIStateSerialUdp,r24
  100:main.c        ****   sensorsTaskInit();
- 387               	.LM17:
- 388 0064 0E94 0000 		call sensorsTaskInit
+ 404               	.LM17:
+ 405 0064 0E94 0000 		call sensorsTaskInit
  101:main.c        ****   loadConfiguration();
- 390               	.LM18:
- 391 0068 0E94 0000 		call loadConfiguration
+ 407               	.LM18:
+ 408 0068 0E94 0000 		call loadConfiguration
  103:main.c        ****   initQueueStreamUSB(&usbStream);
- 393               	.LM19:
- 394 006c 00E0      		ldi r16,lo8(usbStream)
- 395 006e 10E0      		ldi r17,hi8(usbStream)
- 396 0070 C801      		movw r24,r16
- 397 0072 0E94 0000 		call initQueueStreamUSB
+ 410               	.LM19:
+ 411 006c 00E0      		ldi r16,lo8(usbStream)
+ 412 006e 10E0      		ldi r17,hi8(usbStream)
+ 413 0070 C801      		movw r24,r16
+ 414 0072 0E94 0000 		call initQueueStreamUSB
  104:main.c        ****   VtyInit(CLIStateSerialUsb, &usbStream);
- 399               	.LM20:
- 400 0076 8091 0000 		lds r24,CLIStateSerialUsb
- 401 007a 9091 0000 		lds r25,(CLIStateSerialUsb)+1
- 402 007e B801      		movw r22,r16
- 403 0080 0E94 0000 		call VtyInit
+ 416               	.LM20:
+ 417 0076 8091 0000 		lds r24,CLIStateSerialUsb
+ 418 007a 9091 0000 		lds r25,(CLIStateSerialUsb)+1
+ 419 007e B801      		movw r22,r16
+ 420 0080 0E94 0000 		call VtyInit
  106:main.c        ****   udpInit();
- 405               	.LM21:
- 406 0084 0E94 0000 		call udpInit
+ 422               	.LM21:
+ 423 0084 0E94 0000 		call udpInit
  107:main.c        ****   socketInit();
- 408               	.LM22:
- 409 0088 0E94 0000 		call socketInit
+ 425               	.LM22:
+ 426 0088 0E94 0000 		call socketInit
  108:main.c        ****   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
- 411               	.LM23:
- 412 008c E091 0000 		lds r30,udpSocket
- 413 0090 F091 0000 		lds r31,(udpSocket)+1
- 414 0094 00E0      		ldi r16,lo8(udpStream)
- 415 0096 10E0      		ldi r17,hi8(udpStream)
- 416 0098 4285      		ldd r20,Z+10
- 417 009a 5385      		ldd r21,Z+11
- 418 009c 2485      		ldd r18,Z+12
- 419 009e 3585      		ldd r19,Z+13
- 420 00a0 C801      		movw r24,r16
- 421 00a2 60E0      		ldi r22,lo8(udpBuffers)
- 422 00a4 70E0      		ldi r23,hi8(udpBuffers)
- 423 00a6 0E94 0000 		call initQueueStream
+ 428               	.LM23:
+ 429 008c E091 0000 		lds r30,udpSocket
+ 430 0090 F091 0000 		lds r31,(udpSocket)+1
+ 431 0094 00E0      		ldi r16,lo8(udpStream)
+ 432 0096 10E0      		ldi r17,hi8(udpStream)
+ 433 0098 4285      		ldd r20,Z+10
+ 434 009a 5385      		ldd r21,Z+11
+ 435 009c 2485      		ldd r18,Z+12
+ 436 009e 3585      		ldd r19,Z+13
+ 437 00a0 C801      		movw r24,r16
+ 438 00a2 60E0      		ldi r22,lo8(udpBuffers)
+ 439 00a4 70E0      		ldi r23,hi8(udpBuffers)
+ 440 00a6 0E94 0000 		call initQueueStream
  109:main.c        ****   VtyInit(CLIStateSerialUdp, &udpStream);
- 425               	.LM24:
- 426 00aa 8091 0000 		lds r24,CLIStateSerialUdp
- 427 00ae 9091 0000 		lds r25,(CLIStateSerialUdp)+1
- 428 00b2 B801      		movw r22,r16
- 429 00b4 0E94 0000 		call VtyInit
+ 442               	.LM24:
+ 443 00aa 8091 0000 		lds r24,CLIStateSerialUdp
+ 444 00ae 9091 0000 		lds r25,(CLIStateSerialUdp)+1
+ 445 00b2 B801      		movw r22,r16
+ 446 00b4 0E94 0000 		call VtyInit
  111:main.c        ****   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->
- 431               	.LM25:
- 432 00b8 E091 0000 		lds r30,CLIStateSerialUsb
- 433 00bc F091 0000 		lds r31,(CLIStateSerialUsb)+1
- 434 00c0 228D      		ldd r18,Z+26
- 435 00c2 338D      		ldd r19,Z+27
- 436 00c4 80E0      		ldi r24,lo8(gs(encTask))
- 437 00c6 90E0      		ldi r25,hi8(gs(encTask))
- 438 00c8 60E0      		ldi r22,lo8(0)
- 439 00ca 70E0      		ldi r23,hi8(0)
- 440 00cc 44EF      		ldi r20,lo8(500)
- 441 00ce 51E0      		ldi r21,hi8(500)
- 442 00d0 00E0      		ldi r16,lo8(0)
- 443 00d2 F0E0      		ldi r31,lo8(xHandleEnc)
- 444 00d4 EF2E      		mov r14,r31
- 445 00d6 F0E0      		ldi r31,hi8(xHandleEnc)
- 446 00d8 FF2E      		mov r15,r31
- 447 00da CC24      		clr r12
- 448 00dc DD24      		clr r13
- 449 00de AA24      		clr r10
- 450 00e0 BB24      		clr r11
- 451 00e2 0E94 0000 		call xTaskGenericCreate
+ 448               	.LM25:
+ 449 00b8 E091 0000 		lds r30,CLIStateSerialUsb
+ 450 00bc F091 0000 		lds r31,(CLIStateSerialUsb)+1
+ 451 00c0 228D      		ldd r18,Z+26
+ 452 00c2 338D      		ldd r19,Z+27
+ 453 00c4 80E0      		ldi r24,lo8(gs(encTask))
+ 454 00c6 90E0      		ldi r25,hi8(gs(encTask))
+ 455 00c8 60E0      		ldi r22,lo8(0)
+ 456 00ca 70E0      		ldi r23,hi8(0)
+ 457 00cc 44EF      		ldi r20,lo8(500)
+ 458 00ce 51E0      		ldi r21,hi8(500)
+ 459 00d0 00E0      		ldi r16,lo8(0)
+ 460 00d2 F0E0      		ldi r31,lo8(xHandleEnc)
+ 461 00d4 EF2E      		mov r14,r31
+ 462 00d6 F0E0      		ldi r31,hi8(xHandleEnc)
+ 463 00d8 FF2E      		mov r15,r31
+ 464 00da CC24      		clr r12
+ 465 00dc DD24      		clr r13
+ 466 00de AA24      		clr r10
+ 467 00e0 BB24      		clr r11
+ 468 00e2 0E94 0000 		call xTaskGenericCreate
  112:main.c        ****   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb)
- 453               	.LM26:
- 454 00e6 2091 0000 		lds r18,CLIStateSerialUsb
- 455 00ea 3091 0000 		lds r19,(CLIStateSerialUsb)+1
- 456 00ee 80E0      		ldi r24,lo8(gs(vTaskVTYusb))
- 457 00f0 90E0      		ldi r25,hi8(gs(vTaskVTYusb))
- 458 00f2 60E0      		ldi r22,lo8(0)
- 459 00f4 70E0      		ldi r23,hi8(0)
- 460 00f6 4CEB      		ldi r20,lo8(700)
- 461 00f8 52E0      		ldi r21,hi8(700)
- 462 00fa 01E0      		ldi r16,lo8(1)
- 463 00fc E0E0      		ldi r30,lo8(xHandleVTY_USB)
- 464 00fe EE2E      		mov r14,r30
- 465 0100 E0E0      		ldi r30,hi8(xHandleVTY_USB)
- 466 0102 FE2E      		mov r15,r30
- 467 0104 0E94 0000 		call xTaskGenericCreate
+ 470               	.LM26:
+ 471 00e6 2091 0000 		lds r18,CLIStateSerialUsb
+ 472 00ea 3091 0000 		lds r19,(CLIStateSerialUsb)+1
+ 473 00ee 80E0      		ldi r24,lo8(gs(vTaskVTYusb))
+ 474 00f0 90E0      		ldi r25,hi8(gs(vTaskVTYusb))
+ 475 00f2 60E0      		ldi r22,lo8(0)
+ 476 00f4 70E0      		ldi r23,hi8(0)
+ 477 00f6 4CEB      		ldi r20,lo8(700)
+ 478 00f8 52E0      		ldi r21,hi8(700)
+ 479 00fa 01E0      		ldi r16,lo8(1)
+ 480 00fc E0E0      		ldi r30,lo8(xHandleVTY_USB)
+ 481 00fe EE2E      		mov r14,r30
+ 482 0100 E0E0      		ldi r30,hi8(xHandleVTY_USB)
+ 483 0102 FE2E      		mov r15,r30
+ 484 0104 0E94 0000 		call xTaskGenericCreate
  115:main.c        ****   vTaskStartScheduler();
- 469               	.LM27:
- 470 0108 0E94 0000 		call vTaskStartScheduler
+ 486               	.LM27:
+ 487 0108 0E94 0000 		call vTaskStartScheduler
  117:main.c        **** }
- 472               	.LM28:
- 473 010c 80E0      		ldi r24,lo8(0)
- 474 010e 90E0      		ldi r25,hi8(0)
- 475               	/* epilogue start */
- 476 0110 1F91      		pop r17
- 477 0112 0F91      		pop r16
- 478 0114 FF90      		pop r15
- 479 0116 EF90      		pop r14
- 480 0118 DF90      		pop r13
- 481 011a CF90      		pop r12
- 482 011c BF90      		pop r11
- 483 011e AF90      		pop r10
- 484 0120 0895      		ret
- 486               	.Lscope4:
- 488               		.stabd	78,0,0
- 489               	.global	timer100Hz
- 490               	.global	timer100Hz
- 491               		.section .bss
- 494               	timer100Hz:
- 495 0000 00        		.skip 1,0
- 496               		.data
- 499               	tickCntr.3069:
- 500 0000 64        		.byte	100
- 501               		.comm klastry,128,1
- 502               		.comm wwwport,1,1
- 503               		.comm rollers,2,1
- 504               		.comm xVtyRec,2,1
- 505               		.comm xVtyTx,2,1
- 506               		.comm xSemaphoreSpiSS,2,1
- 507               		.comm portA,1,1
- 508               		.comm portB,1,1
- 509               		.comm lockSensors,2,1
- 510               		.comm xRs485Rec,2,1
- 511               		.comm xRs485Tx,2,1
- 512               		.comm xSemaphoreRs485,2,1
- 513               		.comm nicState,14,1
- 514               		.comm IpMyConfig,15,1
- 515               		.comm arpDebug,2,1
- 516               		.comm arpDebugLevel,1,1
- 517               		.comm icmpDebug,2,1
- 518               		.comm icmpDebugLevel,1,1
- 519               		.comm udpSocket,2,1
- 520               		.comm udpDbgStream,2,1
- 521               		.comm udpDbgLevel,1,1
- 522               		.comm tcpDebugStream,2,1
- 523               		.comm tcpDebugLevel,1,1
- 524               		.comm sockets,2,1
- 525               		.comm temperature,1,1
- 526               		.comm voltage,1,1
- 527               		.comm Ipv6MyConfig,5,1
- 528               		.comm debugStream,2,1
- 529               		.comm czasRtc,7,1
- 530               		.comm xHandleVTY_USB,2,1
- 531               		.comm xHandleVTY_UDP,2,1
- 532               		.comm xHandleEnc,2,1
- 533               		.comm xHandleSensors,2,1
- 534               		.comm CLIStateSerialUsb,2,1
- 535               		.comm CLIStateSerialUdp,2,1
- 536               		.comm usbStream,14,1
- 537               		.comm udpStream,14,1
- 538               		.comm udpBuffers,4,1
- 579               		.text
- 581               	.Letext0:
- 582               	.global __do_copy_data
- 583               	.global __do_clear_bss
+ 489               	.LM28:
+ 490 010c 80E0      		ldi r24,lo8(0)
+ 491 010e 90E0      		ldi r25,hi8(0)
+ 492               	/* epilogue start */
+ 493 0110 1F91      		pop r17
+ 494 0112 0F91      		pop r16
+ 495 0114 FF90      		pop r15
+ 496 0116 EF90      		pop r14
+ 497 0118 DF90      		pop r13
+ 498 011a CF90      		pop r12
+ 499 011c BF90      		pop r11
+ 500 011e AF90      		pop r10
+ 501 0120 0895      		ret
+ 503               	.Lscope4:
+ 505               		.stabd	78,0,0
+ 506               	.global	timer100Hz
+ 507               	.global	timer100Hz
+ 508               		.section .bss
+ 511               	timer100Hz:
+ 512 0000 00        		.skip 1,0
+ 513               		.data
+ 516               	tickCntr.3152:
+ 517 0000 64        		.byte	100
+ 518               		.comm klastry,128,1
+ 519               		.comm wwwport,1,1
+ 520               		.comm rollers,2,1
+ 521               		.comm xVtyRec,2,1
+ 522               		.comm xVtyTx,2,1
+ 523               		.comm xSemaphoreSpiSS,2,1
+ 524               		.comm portA,1,1
+ 525               		.comm portB,1,1
+ 526               		.comm lockSensors,2,1
+ 527               		.comm xRs485Rec,2,1
+ 528               		.comm xRs485Tx,2,1
+ 529               		.comm xSemaphoreRs485,2,1
+ 530               		.comm nicState,14,1
+ 531               		.comm plen,2,1
+ 532               		.comm IpMyConfig,15,1
+ 533               		.comm arpDebug,2,1
+ 534               		.comm arpDebugLevel,1,1
+ 535               		.comm icmpDebug,2,1
+ 536               		.comm icmpDebugLevel,1,1
+ 537               		.comm udpSocket,2,1
+ 538               		.comm udpDbgStream,2,1
+ 539               		.comm udpDbgLevel,1,1
+ 540               		.comm tcpDebugStream,2,1
+ 541               		.comm tcpDebugLevel,1,1
+ 542               		.comm sockets,2,1
+ 543               		.comm temperature,1,1
+ 544               		.comm voltage,1,1
+ 545               		.comm entries,2,1
+ 546               		.comm debugStream,2,1
+ 547               		.comm uip_netif_physical_if,2,1
+ 548               		.comm uip_ext_len,1,1
+ 549               		.comm uip_ext_opt_offset,1,1
+ 550               		.comm czasRtc,7,1
+ 551               		.comm xHandleVTY_USB,2,1
+ 552               		.comm xHandleVTY_UDP,2,1
+ 553               		.comm xHandleEnc,2,1
+ 554               		.comm xHandleSensors,2,1
+ 555               		.comm CLIStateSerialUsb,2,1
+ 556               		.comm CLIStateSerialUdp,2,1
+ 557               		.comm usbStream,14,1
+ 558               		.comm udpStream,14,1
+ 559               		.comm udpBuffers,4,1
+ 604               		.text
+ 606               	.Letext0:
+ 607               	.global __do_copy_data
+ 608               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-     /tmp/ccppyWWp.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccppyWWp.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccppyWWp.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccppyWWp.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccppyWWp.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccppyWWp.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccppyWWp.s:263    .init4:00000000 initExternalMem
-     /tmp/ccppyWWp.s:291    .text:00000000 vApplicationTickHook
-     /tmp/ccppyWWp.s:499    .data:00000000 tickCntr.3069
-     /tmp/ccppyWWp.s:324    .text:0000001a vApplicationIdleHook
-     /tmp/ccppyWWp.s:343    .text:00000020 main
+     /tmp/ccbapRRj.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccbapRRj.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccbapRRj.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccbapRRj.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccbapRRj.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccbapRRj.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccbapRRj.s:280    .init4:00000000 initExternalMem
+     /tmp/ccbapRRj.s:308    .text:00000000 vApplicationTickHook
+     /tmp/ccbapRRj.s:516    .data:00000000 tickCntr.3152
+     /tmp/ccbapRRj.s:341    .text:0000001a vApplicationIdleHook
+     /tmp/ccbapRRj.s:360    .text:00000020 main
                             *COM*:00000002 CLIStateSerialUsb
                             *COM*:00000002 CLIStateSerialUdp
                             *COM*:0000000e usbStream
@@ -415,7 +419,7 @@ DEFINED SYMBOLS
                             *COM*:00000004 udpBuffers
                             *COM*:00000002 xHandleEnc
                             *COM*:00000002 xHandleVTY_USB
-     /tmp/ccppyWWp.s:494    .bss:00000000 timer100Hz
+     /tmp/ccbapRRj.s:511    .bss:00000000 timer100Hz
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers
@@ -429,6 +433,7 @@ DEFINED SYMBOLS
                             *COM*:00000002 xRs485Tx
                             *COM*:00000002 xSemaphoreRs485
                             *COM*:0000000e nicState
+                            *COM*:00000002 plen
                             *COM*:0000000f IpMyConfig
                             *COM*:00000002 arpDebug
                             *COM*:00000001 arpDebugLevel
@@ -441,8 +446,11 @@ DEFINED SYMBOLS
                             *COM*:00000002 sockets
                             *COM*:00000001 temperature
                             *COM*:00000001 voltage
-                            *COM*:00000005 Ipv6MyConfig
+                            *COM*:00000002 entries
                             *COM*:00000002 debugStream
+                            *COM*:00000002 uip_netif_physical_if
+                            *COM*:00000001 uip_ext_len
+                            *COM*:00000001 uip_ext_opt_offset
                             *COM*:00000007 czasRtc
                             *COM*:00000002 xHandleVTY_UDP
                             *COM*:00000002 xHandleSensors
