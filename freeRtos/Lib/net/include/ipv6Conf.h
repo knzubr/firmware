@@ -35,6 +35,12 @@
 /** The maximum transmission unit at the IP Layer*/
 #define UIP_LINK_MTU 1280
 
+#ifndef UIP_LITTLE_ENDIAN
+#define UIP_LITTLE_ENDIAN  3412
+#endif /* UIP_LITTLE_ENDIAN */
+#ifndef UIP_BIG_ENDIAN
+#define UIP_BIG_ENDIAN     1234
+#endif /* UIP_BIG_ENDIAN */
 
 
 

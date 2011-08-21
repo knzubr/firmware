@@ -24,7 +24,7 @@
 
 #include "nic.h"
 
-static uint8_t   mymac_eep[6] __attribute__((section (".eeprom"))) = {0x54,0x55,0x58,0x10,0x00,0x25};
+static uint8_t   mymac_eep[6] __attribute__((section (".eeprom"))) = {0x00,0x11,0x22,0x33,0x44,0x55};
 
 
 /* Weak functions, that hast to be overriden in hardware specyfic driver implementation i.e. in enc28j60 */

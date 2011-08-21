@@ -68,6 +68,7 @@ typedef struct
 }  nicState_t;
 
 nicState_t       nicState;
+uint16_t         plen; //PacketLength (uip_len)
 
 /**
  * Create mac buffer and next call hardware specyfic function to initialize NIC

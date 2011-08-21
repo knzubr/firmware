@@ -61,6 +61,7 @@ add_library(NetworkStack STATIC
 			       ../../freeRtos/Lib/net/icmp6.c 	       ../../freeRtos/Lib/net/include/icmp6.h		 # ICMPv6 messages
                                ../../freeRtos/Lib/net/tcp6.c           ../../freeRtos/Lib/net/include/tcp6.h             # Tcp over IPv6 protocol
                                ../../freeRtos/Lib/net/uip-netif.c      ../../freeRtos/Lib/net/include/uip-netif.h        # Interface IPv6 settings
+			       ../../freeRtos/Lib/net/checksum.c       ../../freeRtos/Lib/net/include/checksum.h         # IPv6 checksum
                                                                        ../../freeRtos/Lib/net/include/ipv6Conf.h         # Interface IPv6 conf
 
 

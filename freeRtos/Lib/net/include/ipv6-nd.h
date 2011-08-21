@@ -9,12 +9,15 @@
  * For now, only Neighbour Discovery is implemented
  */
 
-#include "net.h"
+#include "ipv6.h"
 #include "softwareConfig.h"
 
 #define uip_eth_addr netEthAddr //tymczasowo, docelowo zamien na zmienna z liku net.h
 #define MAX_TIME 128
 #define ENTRIES 8
+
+#define UIP_ND6_REACHABLE_TIME         30000
+#define UIP_ND6_RETRANS_TIMER	       1000 
 
 
 typedef struct {
@@ -28,13 +31,15 @@ neighbor_entry* entries;
 
 void vNDinit(void); //init ND cache
 
-void uip_neighbor_add(uip_ipaddr_t *ipaddr, struct netEthAddr *addr);
+//void uip_neighbor_add(uip_ipaddr_t *ipaddr, struct netEthAddr *addr);
 
-neighbor_entry * find_entry(uip_ipaddr_t *ipaddr);
+//neighbor_entry * find_entry(uip_ipaddr_t *ipaddr);
 
-#if ND_DEBUG
+void uip_nd6_io_ns_input(uint16_t packetLenght);
+
+#if IP_DEBUG
 /** Debug Network Discovery */
-FILE *debugstream; 
+FILE *debugStream; 
 
 /** Assign debug stram */
 void vNDDebugInit(FILE *stream); 

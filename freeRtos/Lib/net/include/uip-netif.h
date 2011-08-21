@@ -7,7 +7,8 @@
 #define UIP_CONF_NETIF_MAX_ADDRESSES 2
 #endif /*UIP_CONF_NETIF_MAX_ADDRESSES*/
 
-#include "net.h"
+#include "ipv6.h"
+#include "ipv6-nd.h"
 
 /**
  * \brief Possible states for the address of an interface (RFC 4862 autoconf +
@@ -58,15 +59,15 @@ struct uip_netif {
 
 
 /*---------------------------------------------------------------------------*/
-extern struct uip_netif *uip_netif_physical_if;
+/** \brief The single physical interface */
+struct uip_netif *uip_netif_physical_if;
 //extern struct etimer uip_netif_timer_dad;
 //extern struct etimer uip_netif_timer_rs;
 //extern struct etimer uip_netif_timer_periodic;
 
 /*---------------------------------------------------------------------------*/
 /** \brief Initialize the network interfac and run stateless autoconf */
-//void  uip_netif_init(void);
-
+void  uip_netif_init(void);
 
 /**
  * \brief Check if an unicast address is attached to my interface
@@ -76,29 +77,12 @@ extern struct uip_netif *uip_netif_physical_if;
 #define uip_netif_is_addr_my_unicast(a) (uip_netif_addr_lookup(a, 128, 0) != NULL)
 
 /**
- * \brief Check if this is my solicited-node multicast address
- * \param ipaddr an IP address to be checked
- * \return 1 if the address is my solicited-node (otherwise false)
- */
-//uint8_t  uip_netif_is_addr_my_solicited(uip_ipaddr_t *ipaddr);
-
-/**
- * \brief Autoconfigure and add an address corresponding to a specific prefix
- * \param ipaddr the prefix if we are doing autoconf, the address for DHCP and manual
- * \param length the prefix length if autoconf, 0 for DHCP and manual
- * \param vlifetime valid lifetime of the address, 0 if the address has INFINITE lifetime, 
- *        non 0 otherwise
- * \param type AUTOCONF or MANUAL or DHCP 
- */
-//void uip_netif_addr_add(uip_ipaddr_t *ipaddr, uint8_t length, clock_time_t vlifetime, uip_netif_type type);
-
-/**
  * \brief Set the 8 last bytes of the IP address
  *        based on the L2 identifier using autoconf
  * \param *ipaddr the IP address to be completed with layer 2 info
  * \param *lladdr the L2 address
  */
-//void uip_netif_addr_autoconf_set(uip_ipaddr_t *ipaddr, uip_lladdr_t *lladdr);
+void uip_netif_addr_autoconf_set(uip_ipaddr_t *ipaddr, struct netEthAddr *lladdr);
 
 /**
  * \brief Lookup an address
@@ -113,16 +97,7 @@ extern struct uip_netif *uip_netif_physical_if;
  * or DHCP.
  * Note: if we do not care about the type, type MUST be 0 
  */
-struct uip_netif_addr *
-uip_netif_addr_lookup(uip_ipaddr_t *ipaddr, uint8_t length, uip_netif_type type);
-
-/**
- * \brief Select the appropriate source address for a packet
- * \param ipaddr the selected address (returned value)
- * \param ipaddr the destination of the packet 
- */
-void uip_netif_select_src(uip_ipaddr_t *src, uip_ipaddr_t *dst);
-
+struct uip_netif_addr *uip_netif_addr_lookup(uip_ipaddr_t *ipaddr, uint8_t length, uip_netif_type type);
 
 #endif
 
