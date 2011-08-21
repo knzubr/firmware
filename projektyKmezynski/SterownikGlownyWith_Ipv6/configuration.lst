@@ -7,9 +7,9 @@
    7               	__zero_reg__ = 1
   10               		.text
   11               	.Ltext0:
- 258               	.global	saveConfiguration
- 260               	saveConfiguration:
- 261               		.stabd	46,0,0
+ 275               	.global	saveConfiguration
+ 277               	saveConfiguration:
+ 278               		.stabd	46,0,0
    1:configuration.c **** #include "configuration.h"
    2:configuration.c **** #include <avr/eeprom.h>
    3:configuration.c **** #include "hardware.h"
@@ -30,104 +30,108 @@
   18:configuration.c **** 
   19:configuration.c **** void saveConfiguration(void)
   20:configuration.c **** {
- 263               	.LM0:
- 264               	.LFBB1:
- 265               	/* prologue: function */
- 266               	/* frame size = 0 */
+ 280               	.LM0:
+ 281               	.LFBB1:
+ 282               	/* prologue: function */
+ 283               	/* frame size = 0 */
   21:configuration.c ****   saveNic();
- 268               	.LM1:
- 269 0000 0E94 0000 		call saveNic
+ 285               	.LM1:
+ 286 0000 0E94 0000 		call saveNic
   22:configuration.c ****   ipSaveConfig();
- 271               	.LM2:
- 272 0004 0E94 0000 		call ipSaveConfig
+ 288               	.LM2:
+ 289 0004 0E94 0000 		call ipSaveConfig
   23:configuration.c ****   udpSaveConfig();
- 274               	.LM3:
- 275 0008 0E94 0000 		call udpSaveConfig
- 276               	/* epilogue start */
+ 291               	.LM3:
+ 292 0008 0E94 0000 		call udpSaveConfig
+ 293               	/* epilogue start */
   24:configuration.c **** }
- 278               	.LM4:
- 279 000c 0895      		ret
- 281               	.Lscope1:
- 283               		.stabd	78,0,0
- 285               	.global	loadConfiguration
- 287               	loadConfiguration:
- 288               		.stabd	46,0,0
+ 295               	.LM4:
+ 296 000c 0895      		ret
+ 298               	.Lscope1:
+ 300               		.stabd	78,0,0
+ 302               	.global	loadConfiguration
+ 304               	loadConfiguration:
+ 305               		.stabd	46,0,0
   15:configuration.c **** {
- 290               	.LM5:
- 291               	.LFBB2:
- 292               	/* prologue: function */
- 293               	/* frame size = 0 */
+ 307               	.LM5:
+ 308               	.LFBB2:
+ 309               	/* prologue: function */
+ 310               	/* frame size = 0 */
   16:configuration.c ****   eeprom_read_block(lockSensors, lockerSensorsEEP, 4*sizeof(struct lockerSensor));
- 295               	.LM6:
- 296 000e 8091 0000 		lds r24,lockSensors
- 297 0012 9091 0000 		lds r25,(lockSensors)+1
- 298 0016 60E0      		ldi r22,lo8(lockerSensorsEEP)
- 299 0018 70E0      		ldi r23,hi8(lockerSensorsEEP)
- 300 001a 48E1      		ldi r20,lo8(24)
- 301 001c 50E0      		ldi r21,hi8(24)
- 302 001e 0E94 0000 		call __eerd_block_m128
- 303               	/* epilogue start */
+ 312               	.LM6:
+ 313 000e 8091 0000 		lds r24,lockSensors
+ 314 0012 9091 0000 		lds r25,(lockSensors)+1
+ 315 0016 60E0      		ldi r22,lo8(lockerSensorsEEP)
+ 316 0018 70E0      		ldi r23,hi8(lockerSensorsEEP)
+ 317 001a 48E1      		ldi r20,lo8(24)
+ 318 001c 50E0      		ldi r21,hi8(24)
+ 319 001e 0E94 0000 		call __eerd_block_m128
+ 320               	/* epilogue start */
   17:configuration.c **** }
- 305               	.LM7:
- 306 0022 0895      		ret
- 308               	.Lscope2:
- 310               		.stabd	78,0,0
- 311               		.section	.eeprom,"aw",@progbits
- 314               	lockerSensorsEEP:
- 315 0000 00        		.byte	0
- 316 0001 BC02      		.word	700
- 317 0003 0000      		.word	0
- 318 0005 00        		.byte	0
- 319 0006 01        		.byte	1
- 320 0007 EE02      		.word	750
- 321 0009 0000      		.word	0
- 322 000b 00        		.byte	0
- 323 000c 00        		.byte	0
- 324 000d BC02      		.word	700
- 325 000f 0000      		.word	0
- 326 0011 00        		.byte	0
- 327 0012 01        		.byte	1
- 328 0013 8403      		.word	900
- 329 0015 0000      		.word	0
- 330 0017 00        		.byte	0
- 331               		.comm klastry,128,1
- 332               		.comm wwwport,1,1
- 333               		.comm rollers,2,1
- 334               		.comm xSemaphoreSpiSS,2,1
- 335               		.comm portA,1,1
- 336               		.comm portB,1,1
- 337               		.comm lockSensors,2,1
- 338               		.comm xSemaphoreRs485,2,1
- 339               		.comm nicState,14,1
- 340               		.comm IpMyConfig,15,1
- 341               		.comm arpDebug,2,1
- 342               		.comm arpDebugLevel,1,1
- 343               		.comm icmpDebug,2,1
- 344               		.comm icmpDebugLevel,1,1
- 345               		.comm udpSocket,2,1
- 346               		.comm udpDbgStream,2,1
- 347               		.comm udpDbgLevel,1,1
- 348               		.comm tcpDebugStream,2,1
- 349               		.comm tcpDebugLevel,1,1
- 350               		.comm sockets,2,1
- 351               		.comm Ipv6MyConfig,5,1
- 352               		.comm debugStream,2,1
- 353               		.comm czasRtc,7,1
- 378               		.text
- 380               	.Letext0:
- 381               	.global __do_clear_bss
+ 322               	.LM7:
+ 323 0022 0895      		ret
+ 325               	.Lscope2:
+ 327               		.stabd	78,0,0
+ 328               		.section	.eeprom,"aw",@progbits
+ 331               	lockerSensorsEEP:
+ 332 0000 00        		.byte	0
+ 333 0001 BC02      		.word	700
+ 334 0003 0000      		.word	0
+ 335 0005 00        		.byte	0
+ 336 0006 01        		.byte	1
+ 337 0007 EE02      		.word	750
+ 338 0009 0000      		.word	0
+ 339 000b 00        		.byte	0
+ 340 000c 00        		.byte	0
+ 341 000d BC02      		.word	700
+ 342 000f 0000      		.word	0
+ 343 0011 00        		.byte	0
+ 344 0012 01        		.byte	1
+ 345 0013 8403      		.word	900
+ 346 0015 0000      		.word	0
+ 347 0017 00        		.byte	0
+ 348               		.comm klastry,128,1
+ 349               		.comm wwwport,1,1
+ 350               		.comm rollers,2,1
+ 351               		.comm xSemaphoreSpiSS,2,1
+ 352               		.comm portA,1,1
+ 353               		.comm portB,1,1
+ 354               		.comm lockSensors,2,1
+ 355               		.comm xSemaphoreRs485,2,1
+ 356               		.comm nicState,14,1
+ 357               		.comm plen,2,1
+ 358               		.comm IpMyConfig,15,1
+ 359               		.comm arpDebug,2,1
+ 360               		.comm arpDebugLevel,1,1
+ 361               		.comm icmpDebug,2,1
+ 362               		.comm icmpDebugLevel,1,1
+ 363               		.comm udpSocket,2,1
+ 364               		.comm udpDbgStream,2,1
+ 365               		.comm udpDbgLevel,1,1
+ 366               		.comm tcpDebugStream,2,1
+ 367               		.comm tcpDebugLevel,1,1
+ 368               		.comm sockets,2,1
+ 369               		.comm entries,2,1
+ 370               		.comm debugStream,2,1
+ 371               		.comm uip_netif_physical_if,2,1
+ 372               		.comm uip_ext_len,1,1
+ 373               		.comm uip_ext_opt_offset,1,1
+ 374               		.comm czasRtc,7,1
+ 403               		.text
+ 405               	.Letext0:
+ 406               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 configuration.c
-     /tmp/cca1Mp3x.s:2      *ABS*:0000003f __SREG__
-     /tmp/cca1Mp3x.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cca1Mp3x.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cca1Mp3x.s:5      *ABS*:00000034 __CCP__
-     /tmp/cca1Mp3x.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/cca1Mp3x.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/cca1Mp3x.s:260    .text:00000000 saveConfiguration
-     /tmp/cca1Mp3x.s:287    .text:0000000e loadConfiguration
+     /tmp/ccZ36Ids.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccZ36Ids.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccZ36Ids.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccZ36Ids.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccZ36Ids.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccZ36Ids.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccZ36Ids.s:277    .text:00000000 saveConfiguration
+     /tmp/ccZ36Ids.s:304    .text:0000000e loadConfiguration
                             *COM*:00000002 lockSensors
-     /tmp/cca1Mp3x.s:314    .eeprom:00000000 lockerSensorsEEP
+     /tmp/ccZ36Ids.s:331    .eeprom:00000000 lockerSensorsEEP
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers
@@ -136,6 +140,7 @@ DEFINED SYMBOLS
                             *COM*:00000001 portB
                             *COM*:00000002 xSemaphoreRs485
                             *COM*:0000000e nicState
+                            *COM*:00000002 plen
                             *COM*:0000000f IpMyConfig
                             *COM*:00000002 arpDebug
                             *COM*:00000001 arpDebugLevel
@@ -147,8 +152,11 @@ DEFINED SYMBOLS
                             *COM*:00000002 tcpDebugStream
                             *COM*:00000001 tcpDebugLevel
                             *COM*:00000002 sockets
-                            *COM*:00000005 Ipv6MyConfig
+                            *COM*:00000002 entries
                             *COM*:00000002 debugStream
+                            *COM*:00000002 uip_netif_physical_if
+                            *COM*:00000001 uip_ext_len
+                            *COM*:00000001 uip_ext_opt_offset
                             *COM*:00000007 czasRtc
 
 UNDEFINED SYMBOLS

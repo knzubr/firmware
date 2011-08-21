@@ -39,4 +39,9 @@ main.o main.d : main.c main.h ../../freeRtos/Lib/include/memory_x.h \
   ../../freeRtos/Lib/net/include/udp.h \
   ../../freeRtos/Lib/net/include/icmp.h \
   ../../freeRtos/Lib/net/include/ipv6.h \
-  ../../freeRtos/Lib/net/include/ipv6Conf.h vty.h configuration.h
+  ../../freeRtos/Lib/net/include/ipv6Conf.h \
+  ../../freeRtos/Lib/net/include/uip-netif.h \
+  ../../freeRtos/Lib/net/include/ipv6.h \
+  ../../freeRtos/Lib/net/include/ipv6-nd.h \
+  ../../freeRtos/Lib/net/include/icmp6.h \
+  ../../freeRtos/Lib/net/include/checksum.h vty.h configuration.h

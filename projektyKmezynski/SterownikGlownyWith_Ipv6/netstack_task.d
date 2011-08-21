@@ -40,4 +40,9 @@ netstack_task.o netstack_task.d : netstack_task.c netstack_task.h \
   ../../freeRtos/Lib/include/memory_x.h \
   ../../freeRtos/Lib/net/include/icmp.h hardware.h hardwareConfig.h \
   softwareConfig.h ../../freeRtos/Lib/net/include/ipv6.h \
-  ../../freeRtos/Lib/net/include/ipv6Conf.h
+  ../../freeRtos/Lib/net/include/ipv6Conf.h \
+  ../../freeRtos/Lib/net/include/uip-netif.h \
+  ../../freeRtos/Lib/net/include/ipv6.h \
+  ../../freeRtos/Lib/net/include/ipv6-nd.h \
+  ../../freeRtos/Lib/net/include/icmp6.h \
+  ../../freeRtos/Lib/net/include/checksum.h
