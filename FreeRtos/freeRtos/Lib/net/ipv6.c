@@ -16,7 +16,7 @@ void netstackIPv6Process(void)
 {
   //uip_ip6addr_t *ipv6addr;
   #if IP_DEBUG
-  fprintf_P(debugStream, PSTR("*IPv6 packet in.\r\n"));
+  fprintf_P(debugStream, PSTR("*IPv6 packet in. Length: %d\r\n"), plen);
   netPrintIpv6Header(debugStream);
   //netPrintIpv6HeaderRAW(debugStream);
   netPrintIpv6PayloadRAW(debugStream);
@@ -67,7 +67,7 @@ void netstackIPv6Process(void)
   else 
   {
     #if IP_DEBUG
-    fprintf_P(debugStream, PSTR("ip: packet shorter than reported in IP header."));
+    fprintf_P(debugStream, PSTR("ip: packet shorter than reported in IP header.\n\r"));
     #endif /*IP_DEBUG*/  
   }
    
