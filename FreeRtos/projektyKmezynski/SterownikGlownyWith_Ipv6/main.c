@@ -110,7 +110,7 @@ portSHORT main( void )
   
   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut, 0, &xHandleEnc);
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
-  //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
+  xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
   //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
   vTaskStartScheduler();
   return 0;
