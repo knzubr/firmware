@@ -180,6 +180,7 @@ LOAD ../../freeRtos/Lib/net/icmp6.o
 LOAD ../../freeRtos/Lib/net/checksum.o
 LOAD ../../freeRtos/Lib/net/uip-netif.o
 LOAD ../../freeRtos/Lib/net/ipv6-nd.o
+LOAD ../../freeRtos/Lib/net/tcp6.o
 LOAD ../../freeRtos/Lib/Rs485_prot.o
 LOAD ../../freeRtos/Source/tasks.o
 LOAD ../../freeRtos/Source/queue.o
@@ -284,7 +285,7 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0xea8c
+.text           0x00000000     0xf198
  *(.vectors)
  .vectors       0x00000000       0x8c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
                 0x00000000                __vectors
@@ -422,46 +423,46 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
  .progmem.data  0x0000131c      0x328 ../../freeRtos/Lib/net/ipv6.o
  .progmem.data  0x00001644        0xf ../../freeRtos/Lib/net/icmp6.o
  .progmem.data  0x00001653      0x6bb ../../freeRtos/Lib/net/ipv6-nd.o
- .progmem.data  0x00001d0e       0xbd ../../freeRtos/Lib/Rs485_prot.o
-                0x00001d0e                statusRollerDescStr
-                0x00001d4c                statusRollerDescStr2
-                0x00001dcc                . = ALIGN (0x2)
- *fill*         0x00001dcb        0x1 00
-                0x00001dcc                __trampolines_start = .
+ .progmem.data  0x00001d0e      0x175 ../../freeRtos/Lib/net/tcp6.o
+ .progmem.data  0x00001e83       0xbd ../../freeRtos/Lib/Rs485_prot.o
+                0x00001e83                statusRollerDescStr
+                0x00001ec1                statusRollerDescStr2
+                0x00001f40                . = ALIGN (0x2)
+                0x00001f40                __trampolines_start = .
  *(.trampolines)
- .trampolines   0x00001dcc        0x0 linker stubs
+ .trampolines   0x00001f40        0x0 linker stubs
  *(.trampolines*)
-                0x00001dcc                __trampolines_end = .
+                0x00001f40                __trampolines_end = .
  *(.jumptables)
  *(.jumptables*)
  *(.lowtext)
  *(.lowtext*)
-                0x00001dcc                __ctors_start = .
+                0x00001f40                __ctors_start = .
  *(.ctors)
-                0x00001dcc                __ctors_end = .
-                0x00001dcc                __dtors_start = .
+                0x00001f40                __ctors_end = .
+                0x00001f40                __dtors_start = .
  *(.dtors)
-                0x00001dcc                __dtors_end = .
+                0x00001f40                __dtors_end = .
  SORT(*)(.ctors)
  SORT(*)(.dtors)
  *(.init0)
- .init0         0x00001dcc        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
-                0x00001dcc                __init
+ .init0         0x00001f40        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x00001f40                __init
  *(.init0)
  *(.init1)
  *(.init1)
  *(.init2)
- .init2         0x00001dcc        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .init2         0x00001f40        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
  *(.init2)
  *(.init3)
  *(.init3)
  *(.init4)
- .init4         0x00001dd8       0x1a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
-                0x00001dd8                __do_copy_data
- .init4         0x00001df2        0xc main.o
-                0x00001df2                initExternalMem
- .init4         0x00001dfe       0x10 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
-                0x00001dfe                __do_clear_bss
+ .init4         0x00001f4c       0x1a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x00001f4c                __do_copy_data
+ .init4         0x00001f66        0xc main.o
+                0x00001f66                initExternalMem
+ .init4         0x00001f72       0x10 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+                0x00001f72                __do_clear_bss
  *(.init4)
  *(.init5)
  *(.init5)
@@ -472,484 +473,494 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x00001e0e        0x8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .init9         0x00001f82        0x8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
  *(.init9)
  *(.text)
- .text          0x00001e16        0x4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
-                0x00001e16                __vector_22
-                0x00001e16                __vector_28
-                0x00001e16                __vector_1
-                0x00001e16                __vector_32
-                0x00001e16                __vector_34
-                0x00001e16                __vector_24
-                0x00001e16                __bad_interrupt
-                0x00001e16                __vector_6
-                0x00001e16                __vector_3
-                0x00001e16                __vector_23
-                0x00001e16                __vector_25
-                0x00001e16                __vector_11
-                0x00001e16                __vector_13
-                0x00001e16                __vector_7
-                0x00001e16                __vector_27
-                0x00001e16                __vector_5
-                0x00001e16                __vector_33
-                0x00001e16                __vector_4
-                0x00001e16                __vector_9
-                0x00001e16                __vector_2
-                0x00001e16                __vector_21
-                0x00001e16                __vector_15
-                0x00001e16                __vector_29
-                0x00001e16                __vector_8
-                0x00001e16                __vector_26
-                0x00001e16                __vector_14
-                0x00001e16                __vector_10
-                0x00001e16                __vector_16
- .text          0x00001e1a      0x122 main.o
-                0x00001e1a                vApplicationTickHook
-                0x00001e34                vApplicationIdleHook
-                0x00001e3a                main
- .text          0x00001f3c       0x24 configuration.o
-                0x00001f3c                saveConfiguration
-                0x00001f4a                loadConfiguration
- .text          0x00001f60      0x43a serial.o
-                0x00001f60                initQueueStreamUSB
-                0x00001f7c                __vector_20
-                0x00001fa2                InterruptVtyOn
-                0x00001fae                __vector_31
-                0x00002036                __vector_19
-                0x000020be                uartVtySendByte
-                0x000020f4                VtyPutChar
-                0x000020fe                releaseRs485
-                0x00002116                uartRs485SendByte
-                0x00002144                __vector_30
-                0x000021ce                __vector_18
-                0x00002256                takeRs485
-                0x0000226e                flushRs485RecBuffer
-                0x000022b4                rs485Receive
-                0x000022cc                VtyGetChar
-                0x00002308                xSerialPortInitMinimal
- .text          0x0000239a      0x46a hardware.o
-                0x0000239a                spiSendSpinBlock
-                0x000023aa                disableAllSpiDevices
-                0x000023c0                spiEnableEnc28j60
-                0x000023c4                spiDisableEnc28j60
-                0x000023c8                enableSpiSd
-                0x000023d4                disableSpiSd
-                0x000023e0                enableSpiMPC23S17
-                0x000023e4                disableSpiMPC23S17
-                0x000023e8                enableSpiMCP3008
-                0x000023f2                disableSpiMCP3008
-                0x000023fc                enableSpiMCP4150
-                0x00002406                disableSpiMCP4150
-                0x00002410                spiEnableDS1305
-                0x0000241a                spiDisableDS1305
-                0x00002424                __vector_17
-                0x00002498                spiSend
-                0x000024c6                checkLockerSensors
-                0x0000265a                printLockers
-                0x000027ba                LockersMemInit
-                0x000027cc                hardwareInit
- .text          0x00002804       0x82 sensors_task.o
-                0x00002804                sensorsTask
-                0x0000287c                sensorsTaskInit
- .text          0x00002886     0x178a vty.o
-                0x00002caa                printErrorInfo
-                0x00003b70                printStatus
-                0x00003fee                VtyInit
- .text          0x00004010      0x12a netstack_task.o
-                0x00004010                encTask
- .text          0x0000413a       0x8e cli_task.o
-                0x0000413a                vTaskVTYsocket
-                0x00004156                vTaskVTYusb
- .text          0x000041c8       0x80 ../../freeRtos/Lib/spi.o
-                0x000041c8                spiSetCPHA
-                0x000041cc                spiClearCPHA
-                0x000041d0                spiSetCPOL
-                0x000041d4                spiClearCPOL
-                0x000041e0                spiGive
-                0x000041f8                spiTake
-                0x00004210                spiInit
- .text          0x00004248       0x38 ../../freeRtos/Lib/memory_x.o
-                0x00004248                xmallocAvailable
-                0x00004264                xmalloc
- .text          0x00004280      0xab2 ../../freeRtos/Lib/ramdysk.o
-                0x00004280                ramDyskLiczbaWolnychKlastrow
-                0x0000429c                ramDyskDir
-                0x00004474                ramDyskDodajBlokXmodem
-                0x00004540                ramDyskUstawWskaznikNaKoniec
-                0x00004582                ramDyskUstawWskaznik
-                0x00004634                ramDyskCzytajBajtZPliku
-                0x000046d8                ramDyskZapiszBajtDoPliku
-                0x0000478e                ramDyskCzyscPlik
-                0x000047ee                ramDyskZamknijPlik
-                0x0000480e                ramDyskZamknijPlikStdIo
-                0x00004844                ramDyskInit
-                0x00004868                ramDyskCzytajBlokZPliku
-                0x000049a8                ramDyskZapiszBlokDoPliku
-                0x00004b9c                ramDyskUsunPlik
-                0x00004bec                ramDyskOtworzPlik
-                0x00004c1c                ramDyskOtworzPlikStdIo
-                0x00004c5a                ramDyskUtworzPlik
- .text          0x00004d32      0xab6 ../../freeRtos/Lib/cmdline.o
-                0x00004d32                cmdLineGetLastArgIdx
-                0x00004d5c                cmdlineGetArgStr
-                0x00004daa                cmdPrintHelp
-                0x00004eb0                cmdlineGetArgHex
-                0x00004ed6                cmdlineGetArgInt
-                0x00004f4c                cmdlineMainLoop
-                0x000051c4                cmdStateConfigure
-                0x0000529e                cmdlineInputFunc
- .text          0x000057e8        0x0 ../../freeRtos/Lib/xmodem.o
- .text          0x000057e8      0x128 ../../freeRtos/Lib/vt100.o
-                0x000057e8                vt100SetCursorPos
-                0x0000583e                vt100SetCursorMode
-                0x0000587c                vt100SetAttr
-                0x000058c0                vt100ClearScreen
-                0x000058e8                vt100Init
- .text          0x00005910      0x172 ../../freeRtos/Lib/ds1305.o
-                0x00005914                ds1305readMem
-                0x0000596e                ds1305writeMem
-                0x000059c6                ds1305start
-                0x000059e4                setTimeBCD
-                0x00005a26                setTime
-                0x00005a2c                setTimeDecoded
-                0x00005a32                readTimeBCD
-                0x00005a76                readTime
-                0x00005a7c                readTimeDecoded
- .text          0x00005a82      0x23e ../../freeRtos/Lib/mpc23s17.o
-                0x00005a86                MPC23s17ReadPortB
-                0x00005aba                MPC23s17ReadPortA
-                0x00005aee                MPC23s17ClearBitsOnPortB
-                0x00005b2c                MPC23s17SetBitsOnPortB
-                0x00005b68                MPC23s17SetPortB
-                0x00005b9e                MPC23s17ClearBitsOnPortA
-                0x00005bdc                MPC23s17SetBitsOnPortA
-                0x00005c18                MPC23s17SetPortA
-                0x00005c54                MPC23s17SetDirB
-                0x00005c8a                MPC23s17SetDirA
- .text          0x00005cc0       0x98 ../../freeRtos/Lib/mcp3008.o
-                0x00005cc4                MCP3008_getSampleSingle
-                0x00005d0e                MCP3008_getSampleDiff
- .text          0x00005d58       0x28 ../../freeRtos/Lib/mcp4150.o
-                0x00005d5c                MCP4150_setValue
- .text          0x00005d80      0x6f0 ../../freeRtos/Lib/enc28j60.o
-                0x00005e1c                nicSetMacAddress
-                0x00005eb6                nicRegDump
-                0x0000605e                nicGetMacAddress
-                0x000060a6                enc28j60hasRxPkt
-                0x000060b2                enc28j60getrev
-                0x000060ba                nicPoll
-                0x00006228                nicSend
-                0x000062d8                enc28j60linkup
-                0x0000634a                nicMacInit
- .text          0x00006470       0x9a ../../freeRtos/Lib/queueStream.o
-                0x00006470                initQueueStream
- .text          0x0000650a       0xb0 ../../freeRtos/Lib/net/nic.o
-                0x00006558                nicInit
-                0x000065a8                saveNic
- .text          0x000065ba      0x7de ../../freeRtos/Lib/net/net.o
-                0x000065ba                htons
-                0x000065c2                htonl
-                0x000065fc                netChecksum
-                0x0000666a                netPrintTcpHeader
-                0x000068ec                netPrintIPAddr
-                0x0000697a                netPrintIpHeader
-                0x00006bb0                netPrintEthAddr
-                0x00006c30                netPrintEthHeader
- .text          0x00006d98      0x594 ../../freeRtos/Lib/net/ip.o
-                0x00006d98                setIpDebug
-                0x00006db2                ipSetConfig
-                0x00006df4                ipSetConfigIp
-                0x00006e06                ipSetConfigMask
-                0x00006e18                ipSetConfigGw
-                0x00006e2a                ipGetConfig
-                0x00006e30                ipPrintConfig
-                0x00006f1e                ipSend
-                0x000070fe                netstackIPv4Process
-                0x0000728c                ipSaveConfig
-                0x000072d6                ipInit
- .text          0x0000732c      0x324 ../../freeRtos/Lib/net/icmp.o
-                0x0000732c                icmpInit
-                0x0000733a                setIcmpDebug
-                0x00007348                icmpPrintHeader
-                0x000074ea                icmpEchoRequest
-                0x00007604                icmpIpIn
- .text          0x00007650      0x8a2 ../../freeRtos/Lib/net/arp.o
-                0x00007650                setArpDebug
-                0x0000766a                arpTimer
-                0x00007684                arpMatchIp
-                0x000076b8                arpPrintTable
-                0x000078ac                arpIpIn
-                0x00007a6c                arpPrintHeader
-                0x00007c46                arpIpOut
-                0x00007d42                arpInit
-                0x00007d5a                arpArpIn
- .text          0x00007ef2      0x588 ../../freeRtos/Lib/net/tcp.o
-                0x00007ef2                sendTcBuffer
-                0x00007ef6                setTcpDebug
-                0x00007f04                flushTcpQueues
-                0x00007f06                httpProcess
-                0x00007f08                calculateTcpChecksun
-                0x00007f2e                processTcpPacket
-                0x00008382                netstackTCPIPProcess
-                0x000083d8                socketInit
- .text          0x0000847a      0x514 ../../freeRtos/Lib/net/udp.o
-                0x0000847a                setUdpDebug
-                0x00008488                udpPrintStatus
-                0x000085a4                udpSaveConfig
-                0x000085e6                netstackUDPIPProcess
-                0x000087e8                udpSend
-                0x000088ae                flushUdpQueues
-                0x0000890c                udpInit
- .text          0x0000898e      0xca4 ../../freeRtos/Lib/net/ipv6.o
-                0x0000898e                ipv6Init
-                0x00008990                ipv6DebugInit
-                0x0000899a                checkPacketLen
-                0x000089c4                ipv6PrintConfig
-                0x00008c6c                netPrintIpv6PayloadRAW
-                0x00008dcc                netPrintIpv6Header
-                0x0000913c                netPrintIpv6HeaderRAW
-                0x00009276                swithEthAddresses
-                0x000092ba                netstackIPv6Process
- .text          0x00009632       0xd0 ../../freeRtos/Lib/net/icmp6.o
-                0x00009632                vICMP6DebugInit
-                0x0000963c                uip_icmp6_echo_request_input
- .text          0x00009702       0xe0 ../../freeRtos/Lib/net/checksum.o
-                0x0000974e                uip_icmp6chksum
-                0x000097a2                uip_ipchksum
-                0x000097ce                uip_chksum
- .text          0x000097e2      0x19a ../../freeRtos/Lib/net/uip-netif.o
-                0x000097e2                uip_netif_addr_lookup
-                0x00009874                uip_netif_addr_autoconf_set
-                0x000098b2                uip_netif_init
- .text          0x0000997c     0x150e ../../freeRtos/Lib/net/ipv6-nd.o
-                0x0000997c                vNDDebugInit
-                0x00009986                vNDinit
-                0x00009a0c                uip_nd6_io_ns_input
- .text          0x0000ae8a     0x11f6 ../../freeRtos/Lib/Rs485_prot.o
-                0x0000ae98                rs485curtainUp
-                0x0000b020                rs485curtainDown
-                0x0000b1a8                printRs485devices
-                0x0000b28a                rs485xModemFlash
-                0x0000b932                rs485ping
-                0x0000bcb6                rs485rollerHello
-                0x0000c062                rollersMemInit
- .text          0x0000c080      0xde6 ../../freeRtos/Source/tasks.o
-                0x0000c080                uxTaskPriorityGet
-                0x0000c09e                xTaskIsTaskSuspended
-                0x0000c0c6                vTaskSuspendAll
-                0x0000c0d2                xTaskGetTickCount
-                0x0000c0e8                uxTaskGetNumberOfTasks
-                0x0000c0ee                vTaskStartTrace
-                0x0000c120                ulTaskEndTrace
-                0x0000c150                vTaskSwitchContext
-                0x0000c274                vTaskSetTimeOutState
-                0x0000c28a                xTaskCheckForTimeOut
-                0x0000c306                vTaskMissedYield
-                0x0000c30e                xTaskRemoveFromEventList
-                0x0000c394                xTaskResumeFromISR
-                0x0000c430                vTaskPlaceOnEventList
-                0x0000c4c0                vTaskIncrementTick
-                0x0000c710                xTaskResumeAll
-                0x0000c80a                vTaskList
-                0x0000c8b6                vTaskResume
-                0x0000c948                vTaskSuspend
-                0x0000c9c6                vTaskPrioritySet
-                0x0000caa0                vTaskDelay
-                0x0000cb1c                vTaskDelayUntil
-                0x0000cbca                vTaskEndScheduler
-                0x0000cbd6                xTaskGenericCreate
-                0x0000ce10                vTaskStartScheduler
- .text          0x0000ce66      0x672 ../../freeRtos/Source/queue.o
-                0x0000ce66                uxQueueMessagesWaiting
-                0x0000ce76                uxQueueMessagesWaitingFromISR
-                0x0000ce7c                xQueueIsQueueEmptyFromISR
-                0x0000ce8c                xQueueIsQueueFullFromISR
-                0x0000ce9e                vQueueDelete
-                0x0000ceba                xQueueReceiveFromISR
-                0x0000cfba                xQueueGenericSendFromISR
-                0x0000d08a                xQueueGenericReceive
-                0x0000d222                xQueueGenericSend
-                0x0000d36a                xQueueCreateExternal
-                0x0000d412                xQueueCreate
- .text          0x0000d4d8      0x134 ../../freeRtos/Source/list.o
-                0x0000d4d8                vListInitialise
-                0x0000d4f8                vListInitialiseItem
-                0x0000d500                vListInsertEnd
-                0x0000d552                vListInsert
-                0x0000d5bc                vListRemove
- .text          0x0000d60c      0x378 ../../freeRtos/Source/croutine.o
-                0x0000d60c                xCoRoutineRemoveFromEventList
-                0x0000d662                vCoRoutineSchedule
-                0x0000d832                vCoRoutineAddToDelayedList
-                0x0000d8ac                xCoRoutineCreate
- .text          0x0000d984       0x6e ../../freeRtos/portable/MemMang/heap_avr.o
-                0x0000d984                vPortFree
-                0x0000d986                vPortInitialiseBlocks
-                0x0000d990                xPortGetFreeHeapSize
-                0x0000d9a4                pvPortMalloc
- .text          0x0000d9f2      0x2b6 ../../freeRtos/portable/GCC/ATMega64/port.o
-                0x0000d9f2                pxPortInitialiseStack
-                0x0000da82                xPortStartScheduler
-                0x0000daee                vPortEndScheduler
-                0x0000daf0                __vector_12
-                0x0000db40                vPortYieldFromTick
-                0x0000dbf6                vPortYield
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcmp.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
- .text          0x0000dca8        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
-                0x0000dca8                . = ALIGN (0x2)
+ .text          0x00001f8a        0x4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+                0x00001f8a                __vector_22
+                0x00001f8a                __vector_28
+                0x00001f8a                __vector_1
+                0x00001f8a                __vector_32
+                0x00001f8a                __vector_34
+                0x00001f8a                __vector_24
+                0x00001f8a                __bad_interrupt
+                0x00001f8a                __vector_6
+                0x00001f8a                __vector_3
+                0x00001f8a                __vector_23
+                0x00001f8a                __vector_25
+                0x00001f8a                __vector_11
+                0x00001f8a                __vector_13
+                0x00001f8a                __vector_7
+                0x00001f8a                __vector_27
+                0x00001f8a                __vector_5
+                0x00001f8a                __vector_33
+                0x00001f8a                __vector_4
+                0x00001f8a                __vector_9
+                0x00001f8a                __vector_2
+                0x00001f8a                __vector_21
+                0x00001f8a                __vector_15
+                0x00001f8a                __vector_29
+                0x00001f8a                __vector_8
+                0x00001f8a                __vector_26
+                0x00001f8a                __vector_14
+                0x00001f8a                __vector_10
+                0x00001f8a                __vector_16
+ .text          0x00001f8e      0x142 main.o
+                0x00001f8e                vApplicationTickHook
+                0x00001fa8                vApplicationIdleHook
+                0x00001fae                main
+ .text          0x000020d0       0x24 configuration.o
+                0x000020d0                saveConfiguration
+                0x000020de                loadConfiguration
+ .text          0x000020f4      0x43a serial.o
+                0x000020f4                initQueueStreamUSB
+                0x00002110                __vector_20
+                0x00002136                InterruptVtyOn
+                0x00002142                __vector_31
+                0x000021ca                __vector_19
+                0x00002252                uartVtySendByte
+                0x00002288                VtyPutChar
+                0x00002292                releaseRs485
+                0x000022aa                uartRs485SendByte
+                0x000022d8                __vector_30
+                0x00002362                __vector_18
+                0x000023ea                takeRs485
+                0x00002402                flushRs485RecBuffer
+                0x00002448                rs485Receive
+                0x00002460                VtyGetChar
+                0x0000249c                xSerialPortInitMinimal
+ .text          0x0000252e      0x46a hardware.o
+                0x0000252e                spiSendSpinBlock
+                0x0000253e                disableAllSpiDevices
+                0x00002554                spiEnableEnc28j60
+                0x00002558                spiDisableEnc28j60
+                0x0000255c                enableSpiSd
+                0x00002568                disableSpiSd
+                0x00002574                enableSpiMPC23S17
+                0x00002578                disableSpiMPC23S17
+                0x0000257c                enableSpiMCP3008
+                0x00002586                disableSpiMCP3008
+                0x00002590                enableSpiMCP4150
+                0x0000259a                disableSpiMCP4150
+                0x000025a4                spiEnableDS1305
+                0x000025ae                spiDisableDS1305
+                0x000025b8                __vector_17
+                0x0000262c                spiSend
+                0x0000265a                checkLockerSensors
+                0x000027ee                printLockers
+                0x0000294e                LockersMemInit
+                0x00002960                hardwareInit
+ .text          0x00002998       0x82 sensors_task.o
+                0x00002998                sensorsTask
+                0x00002a10                sensorsTaskInit
+ .text          0x00002a1a     0x178a vty.o
+                0x00002e3e                printErrorInfo
+                0x00003d04                printStatus
+                0x00004182                VtyInit
+ .text          0x000041a4      0x12a netstack_task.o
+                0x000041a4                encTask
+ .text          0x000042ce       0x8e cli_task.o
+                0x000042ce                vTaskVTYsocket
+                0x000042ea                vTaskVTYusb
+ .text          0x0000435c       0x80 ../../freeRtos/Lib/spi.o
+                0x0000435c                spiSetCPHA
+                0x00004360                spiClearCPHA
+                0x00004364                spiSetCPOL
+                0x00004368                spiClearCPOL
+                0x00004374                spiGive
+                0x0000438c                spiTake
+                0x000043a4                spiInit
+ .text          0x000043dc       0x38 ../../freeRtos/Lib/memory_x.o
+                0x000043dc                xmallocAvailable
+                0x000043f8                xmalloc
+ .text          0x00004414      0xab2 ../../freeRtos/Lib/ramdysk.o
+                0x00004414                ramDyskLiczbaWolnychKlastrow
+                0x00004430                ramDyskDir
+                0x00004608                ramDyskDodajBlokXmodem
+                0x000046d4                ramDyskUstawWskaznikNaKoniec
+                0x00004716                ramDyskUstawWskaznik
+                0x000047c8                ramDyskCzytajBajtZPliku
+                0x0000486c                ramDyskZapiszBajtDoPliku
+                0x00004922                ramDyskCzyscPlik
+                0x00004982                ramDyskZamknijPlik
+                0x000049a2                ramDyskZamknijPlikStdIo
+                0x000049d8                ramDyskInit
+                0x000049fc                ramDyskCzytajBlokZPliku
+                0x00004b3c                ramDyskZapiszBlokDoPliku
+                0x00004d30                ramDyskUsunPlik
+                0x00004d80                ramDyskOtworzPlik
+                0x00004db0                ramDyskOtworzPlikStdIo
+                0x00004dee                ramDyskUtworzPlik
+ .text          0x00004ec6      0xab6 ../../freeRtos/Lib/cmdline.o
+                0x00004ec6                cmdLineGetLastArgIdx
+                0x00004ef0                cmdlineGetArgStr
+                0x00004f3e                cmdPrintHelp
+                0x00005044                cmdlineGetArgHex
+                0x0000506a                cmdlineGetArgInt
+                0x000050e0                cmdlineMainLoop
+                0x00005358                cmdStateConfigure
+                0x00005432                cmdlineInputFunc
+ .text          0x0000597c        0x0 ../../freeRtos/Lib/xmodem.o
+ .text          0x0000597c      0x128 ../../freeRtos/Lib/vt100.o
+                0x0000597c                vt100SetCursorPos
+                0x000059d2                vt100SetCursorMode
+                0x00005a10                vt100SetAttr
+                0x00005a54                vt100ClearScreen
+                0x00005a7c                vt100Init
+ .text          0x00005aa4      0x172 ../../freeRtos/Lib/ds1305.o
+                0x00005aa8                ds1305readMem
+                0x00005b02                ds1305writeMem
+                0x00005b5a                ds1305start
+                0x00005b78                setTimeBCD
+                0x00005bba                setTime
+                0x00005bc0                setTimeDecoded
+                0x00005bc6                readTimeBCD
+                0x00005c0a                readTime
+                0x00005c10                readTimeDecoded
+ .text          0x00005c16      0x23e ../../freeRtos/Lib/mpc23s17.o
+                0x00005c1a                MPC23s17ReadPortB
+                0x00005c4e                MPC23s17ReadPortA
+                0x00005c82                MPC23s17ClearBitsOnPortB
+                0x00005cc0                MPC23s17SetBitsOnPortB
+                0x00005cfc                MPC23s17SetPortB
+                0x00005d32                MPC23s17ClearBitsOnPortA
+                0x00005d70                MPC23s17SetBitsOnPortA
+                0x00005dac                MPC23s17SetPortA
+                0x00005de8                MPC23s17SetDirB
+                0x00005e1e                MPC23s17SetDirA
+ .text          0x00005e54       0x98 ../../freeRtos/Lib/mcp3008.o
+                0x00005e58                MCP3008_getSampleSingle
+                0x00005ea2                MCP3008_getSampleDiff
+ .text          0x00005eec       0x28 ../../freeRtos/Lib/mcp4150.o
+                0x00005ef0                MCP4150_setValue
+ .text          0x00005f14      0x6f0 ../../freeRtos/Lib/enc28j60.o
+                0x00005fb0                nicSetMacAddress
+                0x0000604a                nicRegDump
+                0x000061f2                nicGetMacAddress
+                0x0000623a                enc28j60hasRxPkt
+                0x00006246                enc28j60getrev
+                0x0000624e                nicPoll
+                0x000063bc                nicSend
+                0x0000646c                enc28j60linkup
+                0x000064de                nicMacInit
+ .text          0x00006604       0x9a ../../freeRtos/Lib/queueStream.o
+                0x00006604                initQueueStream
+ .text          0x0000669e       0xb0 ../../freeRtos/Lib/net/nic.o
+                0x000066ec                nicInit
+                0x0000673c                saveNic
+ .text          0x0000674e      0x7de ../../freeRtos/Lib/net/net.o
+                0x0000674e                htons
+                0x00006756                htonl
+                0x00006790                netChecksum
+                0x000067fe                netPrintTcpHeader
+                0x00006a80                netPrintIPAddr
+                0x00006b0e                netPrintIpHeader
+                0x00006d44                netPrintEthAddr
+                0x00006dc4                netPrintEthHeader
+ .text          0x00006f2c      0x594 ../../freeRtos/Lib/net/ip.o
+                0x00006f2c                setIpDebug
+                0x00006f46                ipSetConfig
+                0x00006f88                ipSetConfigIp
+                0x00006f9a                ipSetConfigMask
+                0x00006fac                ipSetConfigGw
+                0x00006fbe                ipGetConfig
+                0x00006fc4                ipPrintConfig
+                0x000070b2                ipSend
+                0x00007292                netstackIPv4Process
+                0x00007420                ipSaveConfig
+                0x0000746a                ipInit
+ .text          0x000074c0      0x324 ../../freeRtos/Lib/net/icmp.o
+                0x000074c0                icmpInit
+                0x000074ce                setIcmpDebug
+                0x000074dc                icmpPrintHeader
+                0x0000767e                icmpEchoRequest
+                0x00007798                icmpIpIn
+ .text          0x000077e4      0x8a2 ../../freeRtos/Lib/net/arp.o
+                0x000077e4                setArpDebug
+                0x000077fe                arpTimer
+                0x00007818                arpMatchIp
+                0x0000784c                arpPrintTable
+                0x00007a40                arpIpIn
+                0x00007c00                arpPrintHeader
+                0x00007dda                arpIpOut
+                0x00007ed6                arpInit
+                0x00007eee                arpArpIn
+ .text          0x00008086      0x588 ../../freeRtos/Lib/net/tcp.o
+                0x00008086                sendTcBuffer
+                0x0000808a                setTcpDebug
+                0x00008098                flushTcpQueues
+                0x0000809a                httpProcess
+                0x0000809c                calculateTcpChecksun
+                0x000080c2                processTcpPacket
+                0x00008516                netstackTCPIPProcess
+                0x0000856c                socketInit
+ .text          0x0000860e      0x514 ../../freeRtos/Lib/net/udp.o
+                0x0000860e                setUdpDebug
+                0x0000861c                udpPrintStatus
+                0x00008738                udpSaveConfig
+                0x0000877a                netstackUDPIPProcess
+                0x0000897c                udpSend
+                0x00008a42                flushUdpQueues
+                0x00008aa0                udpInit
+ .text          0x00008b22      0xca4 ../../freeRtos/Lib/net/ipv6.o
+                0x00008b22                ipv6Init
+                0x00008b24                ipv6DebugInit
+                0x00008b2e                checkPacketLen
+                0x00008b58                ipv6PrintConfig
+                0x00008e00                netPrintIpv6PayloadRAW
+                0x00008f60                netPrintIpv6Header
+                0x000092d0                netPrintIpv6HeaderRAW
+                0x0000940a                swithEthAddresses
+                0x0000944e                netstackIPv6Process
+ .text          0x000097c6       0xd0 ../../freeRtos/Lib/net/icmp6.o
+                0x000097c6                vICMP6DebugInit
+                0x000097d0                uip_icmp6_echo_request_input
+ .text          0x00009896       0xe0 ../../freeRtos/Lib/net/checksum.o
+                0x000098e2                uip_icmp6chksum
+                0x00009936                uip_ipchksum
+                0x00009962                uip_chksum
+ .text          0x00009976      0x19a ../../freeRtos/Lib/net/uip-netif.o
+                0x00009976                uip_netif_addr_lookup
+                0x00009a08                uip_netif_addr_autoconf_set
+                0x00009a46                uip_netif_init
+ .text          0x00009b10     0x150e ../../freeRtos/Lib/net/ipv6-nd.o
+                0x00009b10                vNDDebugInit
+                0x00009b1a                vNDinit
+                0x00009ba0                uip_nd6_io_ns_input
+ .text          0x0000b01e      0x578 ../../freeRtos/Lib/net/tcp6.o
+                0x0000b01e                sendTcBuffer6
+                0x0000b022                setTcpDebug6
+                0x0000b030                flushTcpQueues6
+                0x0000b032                httpProcess6
+                0x0000b034                findConnectedSocket6
+                0x0000b202                netstackTCPIPProcess6
+                0x0000b258                calculateTcpChecksum6
+                0x0000b27e                processTcpPacket6
+                0x0000b4f4                socketInit6
+ .text          0x0000b596     0x11f6 ../../freeRtos/Lib/Rs485_prot.o
+                0x0000b5a4                rs485curtainUp
+                0x0000b72c                rs485curtainDown
+                0x0000b8b4                printRs485devices
+                0x0000b996                rs485xModemFlash
+                0x0000c03e                rs485ping
+                0x0000c3c2                rs485rollerHello
+                0x0000c76e                rollersMemInit
+ .text          0x0000c78c      0xde6 ../../freeRtos/Source/tasks.o
+                0x0000c78c                uxTaskPriorityGet
+                0x0000c7aa                xTaskIsTaskSuspended
+                0x0000c7d2                vTaskSuspendAll
+                0x0000c7de                xTaskGetTickCount
+                0x0000c7f4                uxTaskGetNumberOfTasks
+                0x0000c7fa                vTaskStartTrace
+                0x0000c82c                ulTaskEndTrace
+                0x0000c85c                vTaskSwitchContext
+                0x0000c980                vTaskSetTimeOutState
+                0x0000c996                xTaskCheckForTimeOut
+                0x0000ca12                vTaskMissedYield
+                0x0000ca1a                xTaskRemoveFromEventList
+                0x0000caa0                xTaskResumeFromISR
+                0x0000cb3c                vTaskPlaceOnEventList
+                0x0000cbcc                vTaskIncrementTick
+                0x0000ce1c                xTaskResumeAll
+                0x0000cf16                vTaskList
+                0x0000cfc2                vTaskResume
+                0x0000d054                vTaskSuspend
+                0x0000d0d2                vTaskPrioritySet
+                0x0000d1ac                vTaskDelay
+                0x0000d228                vTaskDelayUntil
+                0x0000d2d6                vTaskEndScheduler
+                0x0000d2e2                xTaskGenericCreate
+                0x0000d51c                vTaskStartScheduler
+ .text          0x0000d572      0x672 ../../freeRtos/Source/queue.o
+                0x0000d572                uxQueueMessagesWaiting
+                0x0000d582                uxQueueMessagesWaitingFromISR
+                0x0000d588                xQueueIsQueueEmptyFromISR
+                0x0000d598                xQueueIsQueueFullFromISR
+                0x0000d5aa                vQueueDelete
+                0x0000d5c6                xQueueReceiveFromISR
+                0x0000d6c6                xQueueGenericSendFromISR
+                0x0000d796                xQueueGenericReceive
+                0x0000d92e                xQueueGenericSend
+                0x0000da76                xQueueCreateExternal
+                0x0000db1e                xQueueCreate
+ .text          0x0000dbe4      0x134 ../../freeRtos/Source/list.o
+                0x0000dbe4                vListInitialise
+                0x0000dc04                vListInitialiseItem
+                0x0000dc0c                vListInsertEnd
+                0x0000dc5e                vListInsert
+                0x0000dcc8                vListRemove
+ .text          0x0000dd18      0x378 ../../freeRtos/Source/croutine.o
+                0x0000dd18                xCoRoutineRemoveFromEventList
+                0x0000dd6e                vCoRoutineSchedule
+                0x0000df3e                vCoRoutineAddToDelayedList
+                0x0000dfb8                xCoRoutineCreate
+ .text          0x0000e090       0x6e ../../freeRtos/portable/MemMang/heap_avr.o
+                0x0000e090                vPortFree
+                0x0000e092                vPortInitialiseBlocks
+                0x0000e09c                xPortGetFreeHeapSize
+                0x0000e0b0                pvPortMalloc
+ .text          0x0000e0fe      0x2b6 ../../freeRtos/portable/GCC/ATMega64/port.o
+                0x0000e0fe                pxPortInitialiseStack
+                0x0000e18e                xPortStartScheduler
+                0x0000e1fa                vPortEndScheduler
+                0x0000e1fc                __vector_12
+                0x0000e24c                vPortYieldFromTick
+                0x0000e302                vPortYield
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcmp.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+ .text          0x0000e3b4        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                0x0000e3b4                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x0000dca8       0x18 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
-                0x0000dca8                __udivmodqi4
- .text.libgcc   0x0000dcc0       0x28 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
-                0x0000dcc0                __udivmodhi4
- .text.libgcc   0x0000dce8        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
- .text.libgcc   0x0000dce8        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x0000e3b4       0x18 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodqi4.o)
+                0x0000e3b4                __udivmodqi4
+ .text.libgcc   0x0000e3cc       0x28 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodhi4.o)
+                0x0000e3cc                __udivmodhi4
+ .text.libgcc   0x0000e3f4        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .text.libgcc   0x0000e3f4        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_clear_bss.o)
  .text.avr-libc
-                0x0000dce8      0x20a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
-                0x0000dce8                malloc
-                0x0000de42                free
+                0x0000e3f4      0x20a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+                0x0000e3f4                malloc
+                0x0000e54e                free
  .text.avr-libc
-                0x0000def2      0x25e /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
-                0x0000def2                strtol
+                0x0000e5fe      0x25e /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+                0x0000e5fe                strtol
  .text.avr-libc
-                0x0000e150       0x10 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
-                0x0000e150                isspace
+                0x0000e85c       0x10 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+                0x0000e85c                isspace
  .text.avr-libc
-                0x0000e160       0x12 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
-                0x0000e160                memcpy_P
+                0x0000e86c       0x12 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+                0x0000e86c                memcpy_P
  .text.avr-libc
-                0x0000e172       0x1c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
-                0x0000e172                strncmp_P
+                0x0000e87e       0x1c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+                0x0000e87e                strncmp_P
  .text.avr-libc
-                0x0000e18e       0x1a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcmp.o)
-                0x0000e18e                memcmp
+                0x0000e89a       0x1a /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcmp.o)
+                0x0000e89a                memcmp
  .text.avr-libc
-                0x0000e1a8       0x12 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
-                0x0000e1a8                memcpy
+                0x0000e8b4       0x12 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+                0x0000e8b4                memcpy
  .text.avr-libc
-                0x0000e1ba        0xe /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
-                0x0000e1ba                memset
+                0x0000e8c6        0xe /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+                0x0000e8c6                memset
  .text.avr-libc
-                0x0000e1c8       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
-                0x0000e1c8                strcat
+                0x0000e8d4       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+                0x0000e8d4                strcat
  .text.avr-libc
-                0x0000e1de        0xe /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
-                0x0000e1de                strcpy
+                0x0000e8ea        0xe /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+                0x0000e8ea                strcpy
  .text.avr-libc
-                0x0000e1ec       0x1c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
-                0x0000e1ec                strncmp
+                0x0000e8f8       0x1c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+                0x0000e8f8                strncmp
  .text.avr-libc
-                0x0000e208       0x1e /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
-                0x0000e208                strncpy
+                0x0000e914       0x1e /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+                0x0000e914                strncpy
  .text.avr-libc
-                0x0000e226       0x56 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
-                0x0000e226                fclose
+                0x0000e932       0x56 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+                0x0000e932                fclose
  .text.avr-libc
-                0x0000e27c       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
-                0x0000e27c                fgetc
+                0x0000e988       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+                0x0000e988                fgetc
  .text.avr-libc
-                0x0000e300       0x22 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
-                0x0000e300                fprintf
+                0x0000ea0c       0x22 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+                0x0000ea0c                fprintf
  .text.avr-libc
-                0x0000e322       0x3c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
-                0x0000e322                fprintf_P
+                0x0000ea2e       0x3c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+                0x0000ea2e                fprintf_P
  .text.avr-libc
-                0x0000e35e       0x58 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
-                0x0000e35e                fputc
+                0x0000ea6a       0x58 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+                0x0000ea6a                fputc
  .text.avr-libc
-                0x0000e3b6       0x56 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
-                0x0000e3b6                fputs
+                0x0000eac2       0x56 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+                0x0000eac2                fputs
  .text.avr-libc
-                0x0000e40c       0x62 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
-                0x0000e40c                sprintf
+                0x0000eb18       0x62 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+                0x0000eb18                sprintf
  .text.avr-libc
-                0x0000e46e      0x40c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
-                0x0000e46e                vfprintf
+                0x0000eb7a      0x40c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+                0x0000eb7a                vfprintf
  .text.avr-libc
-                0x0000e87a       0x20 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
-                0x0000e87a                __eerd_block_m128
-                0x0000e87e                __eerd_blraw_m128
+                0x0000ef86       0x20 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+                0x0000ef86                __eerd_block_m128
+                0x0000ef8a                __eerd_blraw_m128
  .text.avr-libc
-                0x0000e89a        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
-                0x0000e89a                __eerd_dword_m128
-                0x0000e89a                __eerd_float_m128
+                0x0000efa6        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+                0x0000efa6                __eerd_dword_m128
+                0x0000efa6                __eerd_float_m128
  .text.avr-libc
-                0x0000e8a6        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
-                0x0000e8a6                __eerd_word_m128
+                0x0000efb2        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+                0x0000efb2                __eerd_word_m128
  .text.avr-libc
-                0x0000e8b2       0x20 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
-                0x0000e8b2                __eeupd_block_m128
+                0x0000efbe       0x20 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+                0x0000efbe                __eeupd_block_m128
  .text.avr-libc
-                0x0000e8d2       0x22 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
-                0x0000e8d2                __eeupd_byte_m128
-                0x0000e8d4                __eeupd_r18_m128
+                0x0000efde       0x22 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+                0x0000efde                __eeupd_byte_m128
+                0x0000efe0                __eeupd_r18_m128
  .text.avr-libc
-                0x0000e8f4       0x18 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
-                0x0000e8f4                __eeupd_dword_m128
-                0x0000e8f4                __eeupd_float_m128
+                0x0000f000       0x18 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+                0x0000f000                __eeupd_dword_m128
+                0x0000f000                __eeupd_float_m128
  .text.avr-libc
-                0x0000e90c        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
-                0x0000e90c                __eeupd_word_m128
+                0x0000f018        0xc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+                0x0000f018                __eeupd_word_m128
  .text.avr-libc
-                0x0000e918        0x6 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
-                0x0000e918                __ctype_isfalse
-                0x0000e91c                __ctype_istrue
+                0x0000f024        0x6 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+                0x0000f024                __ctype_isfalse
+                0x0000f028                __ctype_istrue
  .text.avr-libc
-                0x0000e91e       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
-                0x0000e91e                strnlen_P
+                0x0000f02a       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+                0x0000f02a                strnlen_P
  .text.avr-libc
-                0x0000e934       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
-                0x0000e934                strnlen
+                0x0000f040       0x16 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+                0x0000f040                strnlen
  .text.avr-libc
-                0x0000e94a       0xbc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
-                0x0000e94a                __ultoa_invert
- .text.libgcc   0x0000ea06       0x3e /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
-                0x0000ea06                __mulsi3
- .text.libgcc   0x0000ea44       0x44 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
-                0x0000ea44                __udivmodsi4
-                0x0000ea88                . = ALIGN (0x2)
+                0x0000f056       0xbc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+                0x0000f056                __ultoa_invert
+ .text.libgcc   0x0000f112       0x3e /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_mulsi3.o)
+                0x0000f112                __mulsi3
+ .text.libgcc   0x0000f150       0x44 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_udivmodsi4.o)
+                0x0000f150                __udivmodsi4
+                0x0000f194                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000ea88        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
-                0x0000ea88                exit
-                0x0000ea88                _exit
+ .fini9         0x0000f194        0x0 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+                0x0000f194                exit
+                0x0000f194                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -968,11 +979,11 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000ea88        0x4 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
+ .fini0         0x0000f194        0x4 /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a(_exit.o)
  *(.fini0)
-                0x0000ea8c                _etext = .
+                0x0000f198                _etext = .
 
-.data           0x00800100       0x88 load address 0x0000ea8c
+.data           0x00800100       0x88 load address 0x0000f198
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
@@ -1009,6 +1020,7 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
  .data          0x00800167        0x0 ../../freeRtos/Lib/net/checksum.o
  .data          0x00800167        0x0 ../../freeRtos/Lib/net/uip-netif.o
  .data          0x00800167        0x0 ../../freeRtos/Lib/net/ipv6-nd.o
+ .data          0x00800167        0x0 ../../freeRtos/Lib/net/tcp6.o
  .data          0x00800167        0x0 ../../freeRtos/Lib/Rs485_prot.o
  .data          0x00800167       0x1b ../../freeRtos/Source/tasks.o
  .data          0x00800182        0x0 ../../freeRtos/Source/queue.o
@@ -1103,6 +1115,7 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
  .bss           0x008001a3        0x0 ../../freeRtos/Lib/net/checksum.o
  .bss           0x008001a3        0x0 ../../freeRtos/Lib/net/uip-netif.o
  .bss           0x008001a3        0x5 ../../freeRtos/Lib/net/ipv6-nd.o
+ .bss           0x008001a8        0x0 ../../freeRtos/Lib/net/tcp6.o
  .bss           0x008001a8        0x0 ../../freeRtos/Lib/Rs485_prot.o
  .bss           0x008001a8       0x89 ../../freeRtos/Source/tasks.o
                 0x008001a8                pxCurrentTCB
@@ -1210,8 +1223,8 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
  COMMON         0x00800fff        0x2 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
                 0x00800fff                errno
                 0x00801001                PROVIDE (__bss_end, .)
-                0x0000ea8c                __data_load_start = LOADADDR (.data)
-                0x0000eb14                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0000f198                __data_load_start = LOADADDR (.data)
+                0x0000f220                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x00801001        0x0
                 0x00801001                PROVIDE (__noinit_start, .)
@@ -1240,157 +1253,159 @@ LOAD /usr/lib/gcc/avr/4.3.5/avr51/libgcc.a
 .signature
  *(.signature*)
 
-.stab           0x00000000    0x1e7ec
+.stab           0x00000000    0x1f260
  *(.stab)
  .stab          0x00000000      0x750 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
- .stab          0x00000750     0x10d4 main.o
-                               0x10e0 (size before relaxing)
- .stab          0x00001824      0x60c configuration.o
+ .stab          0x00000750     0x10e0 main.o
+                               0x10ec (size before relaxing)
+ .stab          0x00001830      0x60c configuration.o
                                 0xe88 (size before relaxing)
- .stab          0x00001e30     0x11b8 serial.o
+ .stab          0x00001e3c     0x11b8 serial.o
                                0x1758 (size before relaxing)
- .stab          0x00002fe8      0xf18 hardware.o
+ .stab          0x00002ff4      0xf18 hardware.o
                                0x1884 (size before relaxing)
- .stab          0x00003f00      0x5b8 sensors_task.o
+ .stab          0x00003f0c      0x5b8 sensors_task.o
                                 0xf18 (size before relaxing)
- .stab          0x000044b8     0x24c0 vty.o
+ .stab          0x000044c4     0x24c0 vty.o
                                0x2e38 (size before relaxing)
- .stab          0x00006978      0x618 netstack_task.o
+ .stab          0x00006984      0x618 netstack_task.o
                                 0xf78 (size before relaxing)
- .stab          0x00006f90      0x378 cli_task.o
+ .stab          0x00006f9c      0x378 cli_task.o
                                 0x684 (size before relaxing)
- .stab          0x00007308      0x78c ../../freeRtos/Lib/spi.o
+ .stab          0x00007314      0x78c ../../freeRtos/Lib/spi.o
                                0x10f8 (size before relaxing)
- .stab          0x00007a94      0x1d4 ../../freeRtos/Lib/memory_x.o
+ .stab          0x00007aa0      0x1d4 ../../freeRtos/Lib/memory_x.o
                                 0x240 (size before relaxing)
- .stab          0x00007c68     0x1b3c ../../freeRtos/Lib/ramdysk.o
+ .stab          0x00007c74     0x1b3c ../../freeRtos/Lib/ramdysk.o
                                0x2448 (size before relaxing)
- .stab          0x000097a4     0x1614 ../../freeRtos/Lib/cmdline.o
+ .stab          0x000097b0     0x1614 ../../freeRtos/Lib/cmdline.o
                                0x1f8c (size before relaxing)
- .stab          0x0000adb8      0x480 ../../freeRtos/Lib/xmodem.o
+ .stab          0x0000adc4      0x480 ../../freeRtos/Lib/xmodem.o
                                 0xdf8 (size before relaxing)
- .stab          0x0000b238      0x66c ../../freeRtos/Lib/vt100.o
+ .stab          0x0000b244      0x66c ../../freeRtos/Lib/vt100.o
                                 0xfd8 (size before relaxing)
- .stab          0x0000b8a4      0x7c8 ../../freeRtos/Lib/ds1305.o
+ .stab          0x0000b8b0      0x7c8 ../../freeRtos/Lib/ds1305.o
                                 0xb4c (size before relaxing)
- .stab          0x0000c06c      0xd80 ../../freeRtos/Lib/mpc23s17.o
+ .stab          0x0000c078      0xd80 ../../freeRtos/Lib/mpc23s17.o
                                0x1704 (size before relaxing)
- .stab          0x0000cdec      0x6d8 ../../freeRtos/Lib/mcp3008.o
+ .stab          0x0000cdf8      0x6d8 ../../freeRtos/Lib/mcp3008.o
                                0x1050 (size before relaxing)
- .stab          0x0000d4c4      0x5a0 ../../freeRtos/Lib/mcp4150.o
+ .stab          0x0000d4d0      0x5a0 ../../freeRtos/Lib/mcp4150.o
                                 0xf18 (size before relaxing)
- .stab          0x0000da64     0x114c ../../freeRtos/Lib/enc28j60.o
+ .stab          0x0000da70     0x114c ../../freeRtos/Lib/enc28j60.o
                                0x1aac (size before relaxing)
- .stab          0x0000ebb0      0x33c ../../freeRtos/Lib/queueStream.o
+ .stab          0x0000ebbc      0x33c ../../freeRtos/Lib/queueStream.o
                                 0x5e8 (size before relaxing)
- .stab          0x0000eeec      0x570 ../../freeRtos/Lib/net/nic.o
+ .stab          0x0000eef8      0x570 ../../freeRtos/Lib/net/nic.o
                                 0x834 (size before relaxing)
- .stab          0x0000f45c      0x7f8 ../../freeRtos/Lib/net/net.o
+ .stab          0x0000f468      0x7f8 ../../freeRtos/Lib/net/net.o
                                 0xb34 (size before relaxing)
- .stab          0x0000fc54      0xa80 ../../freeRtos/Lib/net/ip.o
+ .stab          0x0000fc60      0xa80 ../../freeRtos/Lib/net/ip.o
                                 0xfb4 (size before relaxing)
- .stab          0x000106d4      0x6cc ../../freeRtos/Lib/net/icmp.o
+ .stab          0x000106e0      0x6cc ../../freeRtos/Lib/net/icmp.o
                                 0xc18 (size before relaxing)
- .stab          0x00010da0      0xb88 ../../freeRtos/Lib/net/arp.o
+ .stab          0x00010dac      0xb88 ../../freeRtos/Lib/net/arp.o
                                0x10d4 (size before relaxing)
- .stab          0x00011928      0xa74 ../../freeRtos/Lib/net/tcp.o
+ .stab          0x00011934      0xa74 ../../freeRtos/Lib/net/tcp.o
                                 0xf60 (size before relaxing)
- .stab          0x0001239c      0x8b8 ../../freeRtos/Lib/net/udp.o
+ .stab          0x000123a8      0x8b8 ../../freeRtos/Lib/net/udp.o
                                 0xe04 (size before relaxing)
- .stab          0x00012c54      0xcc0 ../../freeRtos/Lib/net/ipv6.o
+ .stab          0x00012c60      0xcc0 ../../freeRtos/Lib/net/ipv6.o
                                0x1218 (size before relaxing)
- .stab          0x00013914      0x438 ../../freeRtos/Lib/net/icmp6.o
+ .stab          0x00013920      0x438 ../../freeRtos/Lib/net/icmp6.o
                                 0xa2c (size before relaxing)
- .stab          0x00013d4c      0x60c ../../freeRtos/Lib/net/checksum.o
+ .stab          0x00013d58      0x60c ../../freeRtos/Lib/net/checksum.o
                                 0xc00 (size before relaxing)
- .stab          0x00014358      0x558 ../../freeRtos/Lib/net/uip-netif.o
+ .stab          0x00014364      0x558 ../../freeRtos/Lib/net/uip-netif.o
                                 0xb58 (size before relaxing)
- .stab          0x000148b0      0xa2c ../../freeRtos/Lib/net/ipv6-nd.o
+ .stab          0x000148bc      0xa2c ../../freeRtos/Lib/net/ipv6-nd.o
                                0x102c (size before relaxing)
- .stab          0x000152dc     0x20c4 ../../freeRtos/Lib/Rs485_prot.o
+ .stab          0x000152e8      0xa68 ../../freeRtos/Lib/net/tcp6.o
+                               0x1050 (size before relaxing)
+ .stab          0x00015d50     0x20c4 ../../freeRtos/Lib/Rs485_prot.o
                                0x2a0c (size before relaxing)
- .stab          0x000173a0     0x1a04 ../../freeRtos/Source/tasks.o
+ .stab          0x00017e14     0x1a04 ../../freeRtos/Source/tasks.o
                                0x1d7c (size before relaxing)
- .stab          0x00018da4     0x105c ../../freeRtos/Source/queue.o
+ .stab          0x00019818     0x105c ../../freeRtos/Source/queue.o
                                0x12e4 (size before relaxing)
- .stab          0x00019e00      0x534 ../../freeRtos/Source/list.o
+ .stab          0x0001a874      0x534 ../../freeRtos/Source/list.o
                                 0x810 (size before relaxing)
- .stab          0x0001a334      0x738 ../../freeRtos/Source/croutine.o
+ .stab          0x0001ada8      0x738 ../../freeRtos/Source/croutine.o
                                 0xa74 (size before relaxing)
- .stab          0x0001aa6c      0x36c ../../freeRtos/portable/MemMang/heap_avr.o
+ .stab          0x0001b4e0      0x36c ../../freeRtos/portable/MemMang/heap_avr.o
                                 0x6a8 (size before relaxing)
- .stab          0x0001add8      0x624 ../../freeRtos/portable/GCC/ATMega64/port.o
+ .stab          0x0001b84c      0x624 ../../freeRtos/portable/GCC/ATMega64/port.o
                                 0x960 (size before relaxing)
- .stab          0x0001b3fc      0x6cc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
+ .stab          0x0001be70      0x6cc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(malloc.o)
                                 0x6fc (size before relaxing)
- .stab          0x0001bac8      0x3a8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
+ .stab          0x0001c53c      0x3a8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strtol.o)
                                 0x408 (size before relaxing)
- .stab          0x0001be70       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
+ .stab          0x0001c8e4       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(isspace.o)
                                  0xa8 (size before relaxing)
- .stab          0x0001bf0c       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
+ .stab          0x0001c980       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy_P.o)
                                  0x90 (size before relaxing)
- .stab          0x0001bf90       0xc0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
+ .stab          0x0001ca04       0xc0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp_P.o)
                                  0xcc (size before relaxing)
- .stab          0x0001c050       0xb4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcmp.o)
+ .stab          0x0001cac4       0xb4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcmp.o)
                                  0xc0 (size before relaxing)
- .stab          0x0001c104       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
+ .stab          0x0001cb78       0x84 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memcpy.o)
                                  0x90 (size before relaxing)
- .stab          0x0001c188       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
+ .stab          0x0001cbfc       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(memset.o)
                                  0x78 (size before relaxing)
- .stab          0x0001c1f4       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
+ .stab          0x0001cc68       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcat.o)
                                  0xa8 (size before relaxing)
- .stab          0x0001c290       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
+ .stab          0x0001cd04       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strcpy.o)
                                  0x78 (size before relaxing)
- .stab          0x0001c2fc       0xc0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
+ .stab          0x0001cd70       0xc0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncmp.o)
                                  0xcc (size before relaxing)
- .stab          0x0001c3bc       0xcc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
+ .stab          0x0001ce30       0xcc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strncpy.o)
                                  0xd8 (size before relaxing)
- .stab          0x0001c488      0x204 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
+ .stab          0x0001cefc      0x204 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fclose.o)
                                 0x414 (size before relaxing)
- .stab          0x0001c68c      0x24c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
+ .stab          0x0001d100      0x24c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
                                 0x42c (size before relaxing)
- .stab          0x0001c8d8      0x198 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
+ .stab          0x0001d34c      0x198 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
                                 0x378 (size before relaxing)
- .stab          0x0001ca70      0x1bc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
+ .stab          0x0001d4e4      0x1bc /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
                                 0x39c (size before relaxing)
- .stab          0x0001cc2c      0x1d4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
+ .stab          0x0001d6a0      0x1d4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputc.o)
                                 0x3b4 (size before relaxing)
- .stab          0x0001ce00      0x1d4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
+ .stab          0x0001d874      0x1d4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fputs.o)
                                 0x3b4 (size before relaxing)
- .stab          0x0001cfd4      0x12c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
+ .stab          0x0001da48      0x12c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(iob.o)
                                 0x30c (size before relaxing)
- .stab          0x0001d100      0x1f8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
+ .stab          0x0001db74      0x1f8 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(sprintf.o)
                                 0x3d8 (size before relaxing)
- .stab          0x0001d2f8      0x918 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
+ .stab          0x0001dd6c      0x918 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
                                 0xb58 (size before relaxing)
- .stab          0x0001dc10      0x108 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
+ .stab          0x0001e684      0x108 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_block_atmega128.o)
                                 0x114 (size before relaxing)
- .stab          0x0001dd18       0x78 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
+ .stab          0x0001e78c       0x78 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_dword_atmega128.o)
                                  0x84 (size before relaxing)
- .stab          0x0001dd90       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
+ .stab          0x0001e804       0x6c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eerd_word_atmega128.o)
                                  0x78 (size before relaxing)
- .stab          0x0001ddfc       0xe4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
+ .stab          0x0001e870       0xe4 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_block_atmega128.o)
                                  0xf0 (size before relaxing)
- .stab          0x0001dee0      0x108 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
+ .stab          0x0001e954      0x108 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_byte_atmega128.o)
                                 0x114 (size before relaxing)
- .stab          0x0001dfe8       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
+ .stab          0x0001ea5c       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_dword_atmega128.o)
                                  0xa8 (size before relaxing)
- .stab          0x0001e084       0x60 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
+ .stab          0x0001eaf8       0x60 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(eeupd_word_atmega128.o)
                                  0x6c (size before relaxing)
- .stab          0x0001e0e4       0xf0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
+ .stab          0x0001eb58       0xf0 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(errno.o)
                                  0xfc (size before relaxing)
- .stab          0x0001e1d4       0x60 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
+ .stab          0x0001ec48       0x60 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(cty_isfalse.o)
                                  0x6c (size before relaxing)
- .stab          0x0001e234       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
+ .stab          0x0001eca8       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen_P.o)
                                  0xa8 (size before relaxing)
- .stab          0x0001e2d0       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
+ .stab          0x0001ed44       0x9c /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(strnlen.o)
                                  0xa8 (size before relaxing)
- .stab          0x0001e36c      0x480 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
+ .stab          0x0001ede0      0x480 /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(ultoa_invert.o)
                                 0x48c (size before relaxing)
 
-.stabstr        0x00000000     0xfe0b
+.stabstr        0x00000000    0x1010d
  *(.stabstr)
- .stabstr       0x00000000     0xfe0b /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
+ .stabstr       0x00000000    0x1010d /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/crtm128.o
 
 .stab.excl
  *(.stab.excl)
@@ -1463,6 +1478,7 @@ CmdlinePromptEnable                               ../../freeRtos/Lib/cmdline.o
 CmdlinePromptNormal                               ../../freeRtos/Lib/cmdline.o
 InterruptVtyOn                                    serial.o
 IpMyConfig                                        ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -1538,6 +1554,7 @@ __do_clear_bss                                    /usr/lib/gcc/avr/4.3.5/avr51/l
                                                   ../../freeRtos/Source/croutine.o
                                                   ../../freeRtos/Source/tasks.o
                                                   ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -1674,6 +1691,7 @@ _exit                                             /usr/lib/gcc/avr/4.3.5/avr51/l
 arpArpIn                                          ../../freeRtos/Lib/net/arp.o
                                                   netstack_task.o
 arpDebug                                          ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -1701,6 +1719,7 @@ arpDebug                                          ../../freeRtos/Lib/Rs485_prot.
                                                   configuration.o
                                                   main.o
 arpDebugLevel                                     ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -1739,7 +1758,9 @@ arpPrintHeader                                    ../../freeRtos/Lib/net/arp.o
 arpPrintTable                                     ../../freeRtos/Lib/net/arp.o
 arpTimer                                          ../../freeRtos/Lib/net/arp.o
                                                   main.o
+calculateTcpChecksum6                             ../../freeRtos/Lib/net/tcp6.o
 calculateTcpChecksun                              ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
 checkLockerSensors                                hardware.o
                                                   sensors_task.o
 checkPacketLen                                    ../../freeRtos/Lib/net/ipv6.o
@@ -1843,6 +1864,7 @@ czasRtc                                           ../../freeRtos/Lib/Rs485_prot.
 debugDisabledInfoStr                              vty.o
 debugEnabledInfoStr                               vty.o
 debugStream                                       ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -1885,6 +1907,7 @@ enc28j60linkup                                    ../../freeRtos/Lib/enc28j60.o
 encTask                                           netstack_task.o
                                                   main.o
 entries                                           ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -1928,15 +1951,18 @@ fclose                                            /usr/lib/gcc/avr/4.3.5/../../.
 fdVty                                             vty.o
 fgetc                                             /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fgetc.o)
                                                   cli_task.o
+findConnectedSocket6                              ../../freeRtos/Lib/net/tcp6.o
 flushRs485RecBuffer                               serial.o
 flushTcpQueues                                    ../../freeRtos/Lib/net/tcp.o
                                                   netstack_task.o
+flushTcpQueues6                                   ../../freeRtos/Lib/net/tcp6.o
 flushUdpQueues                                    ../../freeRtos/Lib/net/udp.o
                                                   netstack_task.o
 fprintf                                           /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf.o)
                                                   ../../freeRtos/Lib/ramdysk.o
 fprintf_P                                         /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(fprintf_p.o)
                                                   ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/icmp6.o
                                                   ../../freeRtos/Lib/net/ipv6.o
@@ -1968,8 +1994,10 @@ hardwareInit                                      hardware.o
                                                   main.o
 heapEnd                                           ../../freeRtos/Lib/memory_x.o
 htonl                                             ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/tcp.o
 htons                                             ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/checksum.o
                                                   ../../freeRtos/Lib/net/udp.o
                                                   ../../freeRtos/Lib/net/tcp.o
@@ -1979,7 +2007,9 @@ htons                                             ../../freeRtos/Lib/net/net.o
                                                   netstack_task.o
                                                   vty.o
 httpProcess                                       ../../freeRtos/Lib/net/tcp.o
+httpProcess6                                      ../../freeRtos/Lib/net/tcp6.o
 icmpDebug                                         ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2007,6 +2037,7 @@ icmpDebug                                         ../../freeRtos/Lib/Rs485_prot.
                                                   configuration.o
                                                   main.o
 icmpDebugLevel                                    ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2053,6 +2084,7 @@ ipPrintConfig                                     ../../freeRtos/Lib/net/ip.o
 ipSaveConfig                                      ../../freeRtos/Lib/net/ip.o
                                                   configuration.o
 ipSend                                            ../../freeRtos/Lib/net/ip.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/udp.o
                                                   ../../freeRtos/Lib/net/tcp.o
 ipSetConfig                                       ../../freeRtos/Lib/net/ip.o
@@ -2124,6 +2156,7 @@ movingCurtainDownStr                              vty.o
 movingCurtainPosStr                               vty.o
 movingCurtainUpStr                                vty.o
 netChecksum                                       ../../freeRtos/Lib/net/net.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/tcp.o
                                                   ../../freeRtos/Lib/net/icmp.o
                                                   ../../freeRtos/Lib/net/ip.o
@@ -2148,6 +2181,7 @@ netstackIPv6Process                               ../../freeRtos/Lib/net/ipv6.o
                                                   netstack_task.o
 netstackTCPIPProcess                              ../../freeRtos/Lib/net/tcp.o
                                                   ../../freeRtos/Lib/net/ip.o
+netstackTCPIPProcess6                             ../../freeRtos/Lib/net/tcp6.o
 netstackUDPIPProcess                              ../../freeRtos/Lib/net/udp.o
                                                   ../../freeRtos/Lib/net/ip.o
 nicGetMacAddress                                  ../../freeRtos/Lib/enc28j60.o
@@ -2166,6 +2200,7 @@ nicSend                                           ../../freeRtos/Lib/enc28j60.o
 nicSetMacAddress                                  ../../freeRtos/Lib/enc28j60.o
                                                   vty.o
 nicState                                          ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2196,6 +2231,7 @@ nicState                                          ../../freeRtos/Lib/Rs485_prot.
 nlStr                                             vty.o
 okStr                                             vty.o
 plen                                              ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2264,6 +2300,8 @@ printRs485devices                                 ../../freeRtos/Lib/Rs485_prot.
                                                   vty.o
 printStatus                                       vty.o
 processTcpPacket                                  ../../freeRtos/Lib/net/tcp.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
+processTcpPacket6                                 ../../freeRtos/Lib/net/tcp6.o
 pvPortMalloc                                      ../../freeRtos/portable/MemMang/heap_avr.o
                                                   ../../freeRtos/Source/croutine.o
                                                   ../../freeRtos/Source/queue.o
@@ -2345,6 +2383,7 @@ saveConfiguration                                 configuration.o
 saveNic                                           ../../freeRtos/Lib/net/nic.o
                                                   configuration.o
 sendTcBuffer                                      ../../freeRtos/Lib/net/tcp.o
+sendTcBuffer6                                     ../../freeRtos/Lib/net/tcp6.o
 sensorsTask                                       sensors_task.o
 sensorsTaskInit                                   sensors_task.o
                                                   main.o
@@ -2356,6 +2395,7 @@ setIpDebug                                        ../../freeRtos/Lib/net/ip.o
                                                   vty.o
 setTcpDebug                                       ../../freeRtos/Lib/net/tcp.o
                                                   vty.o
+setTcpDebug6                                      ../../freeRtos/Lib/net/tcp6.o
 setTime                                           ../../freeRtos/Lib/ds1305.o
 setTimeBCD                                        ../../freeRtos/Lib/ds1305.o
 setTimeDecoded                                    ../../freeRtos/Lib/ds1305.o
@@ -2364,7 +2404,9 @@ setUdpDebug                                       ../../freeRtos/Lib/net/udp.o
                                                   vty.o
 socketInit                                        ../../freeRtos/Lib/net/tcp.o
                                                   main.o
+socketInit6                                       ../../freeRtos/Lib/net/tcp6.o
 sockets                                           ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2466,6 +2508,7 @@ systemRamConfigStr                                vty.o
 systemStateStr                                    vty.o
 takeRs485                                         serial.o
 tcpDebugLevel                                     ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2493,6 +2536,7 @@ tcpDebugLevel                                     ../../freeRtos/Lib/Rs485_prot.
                                                   configuration.o
                                                   main.o
 tcpDebugStream                                    ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2523,12 +2567,14 @@ temperature                                       vty.o
                                                   sensors_task.o
                                                   main.o
 timer100Hz                                        main.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/tcp.o
 uartRs485SendByte                                 serial.o
 uartVtySendByte                                   serial.o
                                                   vty.o
 udpBuffers                                        main.o
 udpDbgLevel                                       ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2556,6 +2602,7 @@ udpDbgLevel                                       ../../freeRtos/Lib/Rs485_prot.
                                                   configuration.o
                                                   main.o
 udpDbgStream                                      ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2590,6 +2637,7 @@ udpSaveConfig                                     ../../freeRtos/Lib/net/udp.o
                                                   configuration.o
 udpSend                                           ../../freeRtos/Lib/net/udp.o
 udpSocket                                         ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2619,6 +2667,7 @@ udpSocket                                         ../../freeRtos/Lib/Rs485_prot.
 udpStream                                         main.o
 uip_chksum                                        ../../freeRtos/Lib/net/checksum.o
 uip_ext_len                                       ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2641,6 +2690,7 @@ uip_ext_len                                       ../../freeRtos/Lib/Rs485_prot.
                                                   configuration.o
                                                   main.o
 uip_ext_opt_offset                                ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2675,6 +2725,7 @@ uip_netif_addr_lookup                             ../../freeRtos/Lib/net/uip-net
 uip_netif_init                                    ../../freeRtos/Lib/net/uip-netif.o
                                                   netstack_task.o
 uip_netif_physical_if                             ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2772,6 +2823,7 @@ vTaskSuspendAll                                   ../../freeRtos/Source/tasks.o
 vTaskSwitchContext                                ../../freeRtos/Source/tasks.o
                                                   ../../freeRtos/portable/GCC/ATMega64/port.o
 vTaskVTYsocket                                    cli_task.o
+                                                  main.o
 vTaskVTYusb                                       cli_task.o
                                                   main.o
 vfprintf                                          /usr/lib/gcc/avr/4.3.5/../../../avr/lib/avr51/libc.a(vfprintf_std.o)
@@ -2787,6 +2839,7 @@ vt100SetAttr                                      ../../freeRtos/Lib/vt100.o
 vt100SetCursorMode                                ../../freeRtos/Lib/vt100.o
 vt100SetCursorPos                                 ../../freeRtos/Lib/vt100.o
 wwwport                                           ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/checksum.o
@@ -2917,6 +2970,7 @@ xVtyTx                                            serial.o
                                                   main.o
 xmalloc                                           ../../freeRtos/Lib/memory_x.o
                                                   ../../freeRtos/Lib/Rs485_prot.o
+                                                  ../../freeRtos/Lib/net/tcp6.o
                                                   ../../freeRtos/Lib/net/ipv6-nd.o
                                                   ../../freeRtos/Lib/net/uip-netif.o
                                                   ../../freeRtos/Lib/net/udp.o

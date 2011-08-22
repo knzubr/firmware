@@ -84,6 +84,7 @@ $(LIB_NET_DIR)/icmp6.c \
 $(LIB_NET_DIR)/checksum.c \
 $(LIB_NET_DIR)/uip-netif.c \
 $(LIB_NET_DIR)/ipv6-nd.c \
+$(LIB_NET_DIR)/tcp6.c \
 $(LIB_DIR)/Rs485_prot.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \

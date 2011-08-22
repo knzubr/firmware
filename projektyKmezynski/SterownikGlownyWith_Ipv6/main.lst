@@ -143,7 +143,7 @@
  110:main.c        ****   
  111:main.c        ****   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->
  112:main.c        ****   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb)
- 113:main.c        ****   //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUd
+ 113:main.c        ****   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp)
  114:main.c        ****   //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                    
  115:main.c        ****   vTaskStartScheduler();
  116:main.c        ****   return 0;
@@ -300,10 +300,10 @@
  457 00cc 44EF      		ldi r20,lo8(500)
  458 00ce 51E0      		ldi r21,hi8(500)
  459 00d0 00E0      		ldi r16,lo8(0)
- 460 00d2 F0E0      		ldi r31,lo8(xHandleEnc)
- 461 00d4 EF2E      		mov r14,r31
- 462 00d6 F0E0      		ldi r31,hi8(xHandleEnc)
- 463 00d8 FF2E      		mov r15,r31
+ 460 00d2 A0E0      		ldi r26,lo8(xHandleEnc)
+ 461 00d4 EA2E      		mov r14,r26
+ 462 00d6 A0E0      		ldi r26,hi8(xHandleEnc)
+ 463 00d8 FA2E      		mov r15,r26
  464 00da CC24      		clr r12
  465 00dc DD24      		clr r13
  466 00de AA24      		clr r10
@@ -320,97 +320,112 @@
  477 00f6 4CEB      		ldi r20,lo8(700)
  478 00f8 52E0      		ldi r21,hi8(700)
  479 00fa 01E0      		ldi r16,lo8(1)
- 480 00fc E0E0      		ldi r30,lo8(xHandleVTY_USB)
- 481 00fe EE2E      		mov r14,r30
- 482 0100 E0E0      		ldi r30,hi8(xHandleVTY_USB)
- 483 0102 FE2E      		mov r15,r30
+ 480 00fc F0E0      		ldi r31,lo8(xHandleVTY_USB)
+ 481 00fe EF2E      		mov r14,r31
+ 482 0100 F0E0      		ldi r31,hi8(xHandleVTY_USB)
+ 483 0102 FF2E      		mov r15,r31
  484 0104 0E94 0000 		call xTaskGenericCreate
- 115:main.c        ****   vTaskStartScheduler();
+ 113:main.c        ****   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp)
  486               	.LM27:
- 487 0108 0E94 0000 		call vTaskStartScheduler
+ 487 0108 2091 0000 		lds r18,CLIStateSerialUdp
+ 488 010c 3091 0000 		lds r19,(CLIStateSerialUdp)+1
+ 489 0110 80E0      		ldi r24,lo8(gs(vTaskVTYsocket))
+ 490 0112 90E0      		ldi r25,hi8(gs(vTaskVTYsocket))
+ 491 0114 60E0      		ldi r22,lo8(0)
+ 492 0116 70E0      		ldi r23,hi8(0)
+ 493 0118 4CEB      		ldi r20,lo8(700)
+ 494 011a 52E0      		ldi r21,hi8(700)
+ 495 011c E0E0      		ldi r30,lo8(xHandleVTY_UDP)
+ 496 011e EE2E      		mov r14,r30
+ 497 0120 E0E0      		ldi r30,hi8(xHandleVTY_UDP)
+ 498 0122 FE2E      		mov r15,r30
+ 499 0124 0E94 0000 		call xTaskGenericCreate
+ 115:main.c        ****   vTaskStartScheduler();
+ 501               	.LM28:
+ 502 0128 0E94 0000 		call vTaskStartScheduler
  117:main.c        **** }
- 489               	.LM28:
- 490 010c 80E0      		ldi r24,lo8(0)
- 491 010e 90E0      		ldi r25,hi8(0)
- 492               	/* epilogue start */
- 493 0110 1F91      		pop r17
- 494 0112 0F91      		pop r16
- 495 0114 FF90      		pop r15
- 496 0116 EF90      		pop r14
- 497 0118 DF90      		pop r13
- 498 011a CF90      		pop r12
- 499 011c BF90      		pop r11
- 500 011e AF90      		pop r10
- 501 0120 0895      		ret
- 503               	.Lscope4:
- 505               		.stabd	78,0,0
- 506               	.global	timer100Hz
- 507               	.global	timer100Hz
- 508               		.section .bss
- 511               	timer100Hz:
- 512 0000 00        		.skip 1,0
- 513               		.data
- 516               	tickCntr.3152:
- 517 0000 64        		.byte	100
- 518               		.comm klastry,128,1
- 519               		.comm wwwport,1,1
- 520               		.comm rollers,2,1
- 521               		.comm xVtyRec,2,1
- 522               		.comm xVtyTx,2,1
- 523               		.comm xSemaphoreSpiSS,2,1
- 524               		.comm portA,1,1
- 525               		.comm portB,1,1
- 526               		.comm lockSensors,2,1
- 527               		.comm xRs485Rec,2,1
- 528               		.comm xRs485Tx,2,1
- 529               		.comm xSemaphoreRs485,2,1
- 530               		.comm nicState,14,1
- 531               		.comm plen,2,1
- 532               		.comm IpMyConfig,15,1
- 533               		.comm arpDebug,2,1
- 534               		.comm arpDebugLevel,1,1
- 535               		.comm icmpDebug,2,1
- 536               		.comm icmpDebugLevel,1,1
- 537               		.comm udpSocket,2,1
- 538               		.comm udpDbgStream,2,1
- 539               		.comm udpDbgLevel,1,1
- 540               		.comm tcpDebugStream,2,1
- 541               		.comm tcpDebugLevel,1,1
- 542               		.comm sockets,2,1
- 543               		.comm temperature,1,1
- 544               		.comm voltage,1,1
- 545               		.comm entries,2,1
- 546               		.comm debugStream,2,1
- 547               		.comm uip_netif_physical_if,2,1
- 548               		.comm uip_ext_len,1,1
- 549               		.comm uip_ext_opt_offset,1,1
- 550               		.comm czasRtc,7,1
- 551               		.comm xHandleVTY_USB,2,1
- 552               		.comm xHandleVTY_UDP,2,1
- 553               		.comm xHandleEnc,2,1
- 554               		.comm xHandleSensors,2,1
- 555               		.comm CLIStateSerialUsb,2,1
- 556               		.comm CLIStateSerialUdp,2,1
- 557               		.comm usbStream,14,1
- 558               		.comm udpStream,14,1
- 559               		.comm udpBuffers,4,1
- 604               		.text
- 606               	.Letext0:
- 607               	.global __do_copy_data
- 608               	.global __do_clear_bss
+ 504               	.LM29:
+ 505 012c 80E0      		ldi r24,lo8(0)
+ 506 012e 90E0      		ldi r25,hi8(0)
+ 507               	/* epilogue start */
+ 508 0130 1F91      		pop r17
+ 509 0132 0F91      		pop r16
+ 510 0134 FF90      		pop r15
+ 511 0136 EF90      		pop r14
+ 512 0138 DF90      		pop r13
+ 513 013a CF90      		pop r12
+ 514 013c BF90      		pop r11
+ 515 013e AF90      		pop r10
+ 516 0140 0895      		ret
+ 518               	.Lscope4:
+ 520               		.stabd	78,0,0
+ 521               	.global	timer100Hz
+ 522               	.global	timer100Hz
+ 523               		.section .bss
+ 526               	timer100Hz:
+ 527 0000 00        		.skip 1,0
+ 528               		.data
+ 531               	tickCntr.3152:
+ 532 0000 64        		.byte	100
+ 533               		.comm klastry,128,1
+ 534               		.comm wwwport,1,1
+ 535               		.comm rollers,2,1
+ 536               		.comm xVtyRec,2,1
+ 537               		.comm xVtyTx,2,1
+ 538               		.comm xSemaphoreSpiSS,2,1
+ 539               		.comm portA,1,1
+ 540               		.comm portB,1,1
+ 541               		.comm lockSensors,2,1
+ 542               		.comm xRs485Rec,2,1
+ 543               		.comm xRs485Tx,2,1
+ 544               		.comm xSemaphoreRs485,2,1
+ 545               		.comm nicState,14,1
+ 546               		.comm plen,2,1
+ 547               		.comm IpMyConfig,15,1
+ 548               		.comm arpDebug,2,1
+ 549               		.comm arpDebugLevel,1,1
+ 550               		.comm icmpDebug,2,1
+ 551               		.comm icmpDebugLevel,1,1
+ 552               		.comm udpSocket,2,1
+ 553               		.comm udpDbgStream,2,1
+ 554               		.comm udpDbgLevel,1,1
+ 555               		.comm tcpDebugStream,2,1
+ 556               		.comm tcpDebugLevel,1,1
+ 557               		.comm sockets,2,1
+ 558               		.comm temperature,1,1
+ 559               		.comm voltage,1,1
+ 560               		.comm entries,2,1
+ 561               		.comm debugStream,2,1
+ 562               		.comm uip_netif_physical_if,2,1
+ 563               		.comm uip_ext_len,1,1
+ 564               		.comm uip_ext_opt_offset,1,1
+ 565               		.comm czasRtc,7,1
+ 566               		.comm xHandleVTY_USB,2,1
+ 567               		.comm xHandleVTY_UDP,2,1
+ 568               		.comm xHandleEnc,2,1
+ 569               		.comm xHandleSensors,2,1
+ 570               		.comm CLIStateSerialUsb,2,1
+ 571               		.comm CLIStateSerialUdp,2,1
+ 572               		.comm usbStream,14,1
+ 573               		.comm udpStream,14,1
+ 574               		.comm udpBuffers,4,1
+ 619               		.text
+ 621               	.Letext0:
+ 622               	.global __do_copy_data
+ 623               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-     /tmp/ccbapRRj.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccbapRRj.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccbapRRj.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccbapRRj.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccbapRRj.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccbapRRj.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccbapRRj.s:280    .init4:00000000 initExternalMem
-     /tmp/ccbapRRj.s:308    .text:00000000 vApplicationTickHook
-     /tmp/ccbapRRj.s:516    .data:00000000 tickCntr.3152
-     /tmp/ccbapRRj.s:341    .text:0000001a vApplicationIdleHook
-     /tmp/ccbapRRj.s:360    .text:00000020 main
+     /tmp/cc62GkyQ.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc62GkyQ.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc62GkyQ.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc62GkyQ.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc62GkyQ.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc62GkyQ.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc62GkyQ.s:280    .init4:00000000 initExternalMem
+     /tmp/cc62GkyQ.s:308    .text:00000000 vApplicationTickHook
+     /tmp/cc62GkyQ.s:531    .data:00000000 tickCntr.3152
+     /tmp/cc62GkyQ.s:341    .text:0000001a vApplicationIdleHook
+     /tmp/cc62GkyQ.s:360    .text:00000020 main
                             *COM*:00000002 CLIStateSerialUsb
                             *COM*:00000002 CLIStateSerialUdp
                             *COM*:0000000e usbStream
@@ -419,7 +434,8 @@ DEFINED SYMBOLS
                             *COM*:00000004 udpBuffers
                             *COM*:00000002 xHandleEnc
                             *COM*:00000002 xHandleVTY_USB
-     /tmp/ccbapRRj.s:511    .bss:00000000 timer100Hz
+                            *COM*:00000002 xHandleVTY_UDP
+     /tmp/cc62GkyQ.s:526    .bss:00000000 timer100Hz
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers
@@ -452,7 +468,6 @@ DEFINED SYMBOLS
                             *COM*:00000001 uip_ext_len
                             *COM*:00000001 uip_ext_opt_offset
                             *COM*:00000007 czasRtc
-                            *COM*:00000002 xHandleVTY_UDP
                             *COM*:00000002 xHandleSensors
 
 UNDEFINED SYMBOLS
@@ -474,6 +489,7 @@ initQueueStream
 encTask
 xTaskGenericCreate
 vTaskVTYusb
+vTaskVTYsocket
 vTaskStartScheduler
 __do_copy_data
 __do_clear_bss
