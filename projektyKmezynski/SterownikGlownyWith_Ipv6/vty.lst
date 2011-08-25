@@ -1609,8 +1609,8 @@
  1017 03ec 3C93      		st X,r19
  1018 03ee 2E93      		st -X,r18
  1019 03f0 1197      		sbiw r26,1
- 1020 03f2 20E0      		ldi r18,lo8(__c.3542)
- 1021 03f4 30E0      		ldi r19,hi8(__c.3542)
+ 1020 03f2 20E0      		ldi r18,lo8(__c.3546)
+ 1021 03f4 30E0      		ldi r19,hi8(__c.3546)
  1022 03f6 3383      		std Z+3,r19
  1023 03f8 2283      		std Z+2,r18
  1024 03fa F482      		std Z+4,r15
@@ -2835,8 +2835,8 @@
  2333 0b1e FEB7      		in r31,__SP_H__
  2334 0b20 9283      		std Z+2,r25
  2335 0b22 8183      		std Z+1,r24
- 2336 0b24 80E0      		ldi r24,lo8(__c.3660)
- 2337 0b26 90E0      		ldi r25,hi8(__c.3660)
+ 2336 0b24 80E0      		ldi r24,lo8(__c.3664)
+ 2337 0b26 90E0      		ldi r25,hi8(__c.3664)
  2338 0b28 9483      		std Z+4,r25
  2339 0b2a 8383      		std Z+3,r24
  2340 0b2c 0E94 0000 		call fprintf_P
@@ -3677,8 +3677,8 @@
  3013 0ef2 00C0      		rjmp .L140
  311:vty.c         ****     if (strncmp_P(str, PSTR("arp"), 3) == 0)
  3015               	.LM256:
- 3016 0ef4 60E0      		ldi r22,lo8(__c.3394)
- 3017 0ef6 70E0      		ldi r23,hi8(__c.3394)
+ 3016 0ef4 60E0      		ldi r22,lo8(__c.3398)
+ 3017 0ef6 70E0      		ldi r23,hi8(__c.3398)
  3018 0ef8 43E0      		ldi r20,lo8(3)
  3019 0efa 50E0      		ldi r21,hi8(3)
  3020 0efc 0E94 0000 		call strncmp_P
@@ -3695,8 +3695,8 @@
  318:vty.c         ****     if (strncmp_P(str, PSTR("ip"), 2) == 0)
  3032               	.LM258:
  3033 0f10 C801      		movw r24,r16
- 3034 0f12 60E0      		ldi r22,lo8(__c.3396)
- 3035 0f14 70E0      		ldi r23,hi8(__c.3396)
+ 3034 0f12 60E0      		ldi r22,lo8(__c.3400)
+ 3035 0f14 70E0      		ldi r23,hi8(__c.3400)
  3036 0f16 42E0      		ldi r20,lo8(2)
  3037 0f18 50E0      		ldi r21,hi8(2)
  3038 0f1a 0E94 0000 		call strncmp_P
@@ -3713,8 +3713,8 @@
  325:vty.c         ****     if (strncmp_P(str, PSTR("icmp"), 2) == 0)
  3050               	.LM260:
  3051 0f2e C801      		movw r24,r16
- 3052 0f30 60E0      		ldi r22,lo8(__c.3398)
- 3053 0f32 70E0      		ldi r23,hi8(__c.3398)
+ 3052 0f30 60E0      		ldi r22,lo8(__c.3402)
+ 3053 0f32 70E0      		ldi r23,hi8(__c.3402)
  3054 0f34 42E0      		ldi r20,lo8(2)
  3055 0f36 50E0      		ldi r21,hi8(2)
  3056 0f38 0E94 0000 		call strncmp_P
@@ -3731,8 +3731,8 @@
  332:vty.c         ****     if (strncmp_P(str, PSTR("tcp"), 2) == 0)
  3068               	.LM262:
  3069 0f4c C801      		movw r24,r16
- 3070 0f4e 60E0      		ldi r22,lo8(__c.3400)
- 3071 0f50 70E0      		ldi r23,hi8(__c.3400)
+ 3070 0f4e 60E0      		ldi r22,lo8(__c.3404)
+ 3071 0f50 70E0      		ldi r23,hi8(__c.3404)
  3072 0f52 42E0      		ldi r20,lo8(2)
  3073 0f54 50E0      		ldi r21,hi8(2)
  3074 0f56 0E94 0000 		call strncmp_P
@@ -3768,8 +3768,8 @@
  339:vty.c         ****     if (strncmp_P(str, PSTR("udp"), 2) == 0)
  3105               	.LM265:
  3106 0f8a C801      		movw r24,r16
- 3107 0f8c 60E0      		ldi r22,lo8(__c.3402)
- 3108 0f8e 70E0      		ldi r23,hi8(__c.3402)
+ 3107 0f8c 60E0      		ldi r22,lo8(__c.3406)
+ 3108 0f8e 70E0      		ldi r23,hi8(__c.3406)
  3109 0f90 42E0      		ldi r20,lo8(2)
  3110 0f92 50E0      		ldi r21,hi8(2)
  3111 0f94 0E94 0000 		call strncmp_P
@@ -3786,8 +3786,8 @@
  3122               	.L140:
  350:vty.c         ****     if (strncmp_P(str, PSTR("arp"), 3) == 0)
  3124               	.LM267:
- 3125 0faa 60E0      		ldi r22,lo8(__c.3404)
- 3126 0fac 70E0      		ldi r23,hi8(__c.3404)
+ 3125 0faa 60E0      		ldi r22,lo8(__c.3408)
+ 3126 0fac 70E0      		ldi r23,hi8(__c.3408)
  3127 0fae 43E0      		ldi r20,lo8(3)
  3128 0fb0 50E0      		ldi r21,hi8(3)
  3129 0fb2 0E94 0000 		call strncmp_P
@@ -3804,8 +3804,8 @@
  357:vty.c         ****     if (strncmp_P(str, PSTR("ip"), 2) == 0)
  3141               	.LM269:
  3142 0fc6 C801      		movw r24,r16
- 3143 0fc8 60E0      		ldi r22,lo8(__c.3406)
- 3144 0fca 70E0      		ldi r23,hi8(__c.3406)
+ 3143 0fc8 60E0      		ldi r22,lo8(__c.3410)
+ 3144 0fca 70E0      		ldi r23,hi8(__c.3410)
  3145 0fcc 42E0      		ldi r20,lo8(2)
  3146 0fce 50E0      		ldi r21,hi8(2)
  3147 0fd0 0E94 0000 		call strncmp_P
@@ -3822,8 +3822,8 @@
  364:vty.c         ****     if (strncmp_P(str, PSTR("icmp"), 2) == 0)
  3159               	.LM271:
  3160 0fe4 C801      		movw r24,r16
- 3161 0fe6 60E0      		ldi r22,lo8(__c.3408)
- 3162 0fe8 70E0      		ldi r23,hi8(__c.3408)
+ 3161 0fe6 60E0      		ldi r22,lo8(__c.3412)
+ 3162 0fe8 70E0      		ldi r23,hi8(__c.3412)
  3163 0fea 42E0      		ldi r20,lo8(2)
  3164 0fec 50E0      		ldi r21,hi8(2)
  3165 0fee 0E94 0000 		call strncmp_P
@@ -3840,8 +3840,8 @@
  371:vty.c         ****     if (strncmp_P(str, PSTR("tcp"), 2) == 0)
  3177               	.LM273:
  3178 1002 C801      		movw r24,r16
- 3179 1004 60E0      		ldi r22,lo8(__c.3410)
- 3180 1006 70E0      		ldi r23,hi8(__c.3410)
+ 3179 1004 60E0      		ldi r22,lo8(__c.3414)
+ 3180 1006 70E0      		ldi r23,hi8(__c.3414)
  3181 1008 42E0      		ldi r20,lo8(2)
  3182 100a 50E0      		ldi r21,hi8(2)
  3183 100c 0E94 0000 		call strncmp_P
@@ -3893,8 +3893,8 @@
  378:vty.c         ****     if (strncmp_P(str, PSTR("udp"), 2) == 0)
  3230               	.LM276:
  3231 1060 C801      		movw r24,r16
- 3232 1062 60E0      		ldi r22,lo8(__c.3412)
- 3233 1064 70E0      		ldi r23,hi8(__c.3412)
+ 3232 1062 60E0      		ldi r22,lo8(__c.3416)
+ 3233 1064 70E0      		ldi r23,hi8(__c.3416)
  3234 1066 42E0      		ldi r20,lo8(2)
  3235 1068 50E0      		ldi r21,hi8(2)
  3236 106a 0E94 0000 		call strncmp_P
@@ -4216,8 +4216,8 @@
  3575 1250 DEB7      		in r29,__SP_H__
  3576 1252 9A83      		std Y+2,r25
  3577 1254 8983      		std Y+1,r24
- 3578 1256 80E0      		ldi r24,lo8(__c.3364)
- 3579 1258 90E0      		ldi r25,hi8(__c.3364)
+ 3578 1256 80E0      		ldi r24,lo8(__c.3368)
+ 3579 1258 90E0      		ldi r25,hi8(__c.3368)
  3580 125a 9383      		std Z+3,r25
  3581 125c 8283      		std Z+2,r24
  3582 125e 822F      		mov r24,r18
@@ -4328,8 +4328,8 @@
  3697 12fa 9C93      		st X,r25
  3698 12fc 8E93      		st -X,r24
  3699 12fe 1197      		sbiw r26,1
- 3700 1300 80E0      		ldi r24,lo8(__c.3314)
- 3701 1302 90E0      		ldi r25,hi8(__c.3314)
+ 3700 1300 80E0      		ldi r24,lo8(__c.3318)
+ 3701 1302 90E0      		ldi r25,hi8(__c.3318)
  3702 1304 1496      		adiw r26,3+1
  3703 1306 9C93      		st X,r25
  3704 1308 8E93      		st -X,r24
@@ -4582,8 +4582,8 @@
  3951 14e8 FEB7      		in r31,__SP_H__
  3952 14ea D283      		std Z+2,r29
  3953 14ec C183      		std Z+1,r28
- 3954 14ee 80E0      		ldi r24,lo8(__c.3317)
- 3955 14f0 90E0      		ldi r25,hi8(__c.3317)
+ 3954 14ee 80E0      		ldi r24,lo8(__c.3321)
+ 3955 14f0 90E0      		ldi r25,hi8(__c.3321)
  3956 14f2 9483      		std Z+4,r25
  3957 14f4 8383      		std Z+3,r24
  3958 14f6 0E94 0000 		call fprintf_P
@@ -4624,8 +4624,8 @@
  3993 1538 FEB7      		in r31,__SP_H__
  3994 153a D283      		std Z+2,r29
  3995 153c C183      		std Z+1,r28
- 3996 153e 80E0      		ldi r24,lo8(__c.3319)
- 3997 1540 90E0      		ldi r25,hi8(__c.3319)
+ 3996 153e 80E0      		ldi r24,lo8(__c.3323)
+ 3997 1540 90E0      		ldi r25,hi8(__c.3323)
  3998 1542 9483      		std Z+4,r25
  3999 1544 8383      		std Z+3,r24
  4000 1546 0E94 0000 		call fprintf_P
@@ -4668,8 +4668,8 @@
  4037 158c DC93      		st X,r29
  4038 158e CE93      		st -X,r28
  4039 1590 1197      		sbiw r26,1
- 4040 1592 80E0      		ldi r24,lo8(__c.3321)
- 4041 1594 90E0      		ldi r25,hi8(__c.3321)
+ 4040 1592 80E0      		ldi r24,lo8(__c.3325)
+ 4041 1594 90E0      		ldi r25,hi8(__c.3325)
  4042 1596 1496      		adiw r26,3+1
  4043 1598 9C93      		st X,r25
  4044 159a 8E93      		st -X,r24
@@ -4710,8 +4710,8 @@
  4079 15dc FEB7      		in r31,__SP_H__
  4080 15de D283      		std Z+2,r29
  4081 15e0 C183      		std Z+1,r28
- 4082 15e2 80E0      		ldi r24,lo8(__c.3323)
- 4083 15e4 90E0      		ldi r25,hi8(__c.3323)
+ 4082 15e2 80E0      		ldi r24,lo8(__c.3327)
+ 4083 15e4 90E0      		ldi r25,hi8(__c.3327)
  4084 15e6 9483      		std Z+4,r25
  4085 15e8 8383      		std Z+3,r24
  4086 15ea 0E94 0000 		call fprintf_P
@@ -5710,56 +5710,56 @@
  5036 0996 0000      		.word	0
  5037 0998 0000      		.word	0
  5038 099a 0000      		.word	0
- 5041               	__c.3542:
+ 5041               	__c.3546:
  5042 099c 5761 7274 		.string	"Wartosc probki na wejsciu %d: %d\r\n"
  5042      6F73 6320 
  5042      7072 6F62 
  5042      6B69 206E 
  5042      6120 7765 
- 5045               	__c.3660:
+ 5045               	__c.3664:
  5046 09bf 586D 6F64 		.string	"Xmodem: rozpoczynanie odbioru\r\n"
  5046      656D 3A20 
  5046      726F 7A70 
  5046      6F63 7A79 
  5046      6E61 6E69 
- 5049               	__c.3412:
+ 5049               	__c.3416:
  5050 09df 7564 7000 		.string	"udp"
- 5053               	__c.3410:
+ 5053               	__c.3414:
  5054 09e3 7463 7000 		.string	"tcp"
- 5057               	__c.3408:
+ 5057               	__c.3412:
  5058 09e7 6963 6D70 		.string	"icmp"
  5058      00
- 5061               	__c.3406:
+ 5061               	__c.3410:
  5062 09ec 6970 00   		.string	"ip"
- 5065               	__c.3404:
+ 5065               	__c.3408:
  5066 09ef 6172 7000 		.string	"arp"
- 5069               	__c.3402:
+ 5069               	__c.3406:
  5070 09f3 7564 7000 		.string	"udp"
- 5073               	__c.3400:
+ 5073               	__c.3404:
  5074 09f7 7463 7000 		.string	"tcp"
- 5077               	__c.3398:
+ 5077               	__c.3402:
  5078 09fb 6963 6D70 		.string	"icmp"
  5078      00
- 5081               	__c.3396:
+ 5081               	__c.3400:
  5082 0a00 6970 00   		.string	"ip"
- 5085               	__c.3394:
+ 5085               	__c.3398:
  5086 0a03 6172 7000 		.string	"arp"
- 5089               	__c.3364:
+ 5089               	__c.3368:
  5090 0a07 416B 7475 		.string	"Aktualny czas %d:%d:%d\r\n"
  5090      616C 6E79 
  5090      2063 7A61 
  5090      7320 2564 
  5090      3A25 643A 
- 5093               	__c.3323:
+ 5093               	__c.3327:
  5094 0a20 0D0A 00   		.string	"\r\n"
- 5097               	__c.3321:
+ 5097               	__c.3325:
  5098 0a23 0D0A 00   		.string	"\r\n"
- 5101               	__c.3319:
+ 5101               	__c.3323:
  5102 0a26 0D0A 00   		.string	"\r\n"
- 5105               	__c.3317:
+ 5105               	__c.3321:
  5106 0a29 0D0A 00   		.string	"\r\n"
- 5109               	__c.3314:
- 5110 0a2c 4672 6565 		.string	"FreeRtos+ ver 0.31 build: Aug 21 2011, 16:30:31\r\n"
+ 5109               	__c.3318:
+ 5110 0a2c 4672 6565 		.string	"FreeRtos+ ver 0.31 build: Aug 25 2011, 02:29:24\r\n"
  5110      5274 6F73 
  5110      2B20 7665 
  5110      7220 302E 
@@ -5799,173 +5799,173 @@
  5295               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 vty.c
-     /tmp/ccQATRFc.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccQATRFc.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccQATRFc.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccQATRFc.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccQATRFc.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccQATRFc.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccQATRFc.s:279    .text:00000000 enableFunction
-     /tmp/ccQATRFc.s:4920   .progmem.data:000008b8 cmdListEnable
-     /tmp/ccQATRFc.s:321    .text:00000022 disableFunction
-     /tmp/ccQATRFc.s:4889   .progmem.data:00000882 cmdListNormal
-     /tmp/ccQATRFc.s:357    .text:0000003a configureModeFunction
-     /tmp/ccQATRFc.s:4999   .progmem.data:0000094e cmdListConfigure
-     /tmp/ccQATRFc.s:399    .text:0000005c saveConfigFunction
-     /tmp/ccQATRFc.s:422    .text:00000066 setMacAddrFunction
+     /tmp/ccYTHQwi.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccYTHQwi.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccYTHQwi.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccYTHQwi.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccYTHQwi.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccYTHQwi.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccYTHQwi.s:279    .text:00000000 enableFunction
+     /tmp/ccYTHQwi.s:4920   .progmem.data:000008b8 cmdListEnable
+     /tmp/ccYTHQwi.s:321    .text:00000022 disableFunction
+     /tmp/ccYTHQwi.s:4889   .progmem.data:00000882 cmdListNormal
+     /tmp/ccYTHQwi.s:357    .text:0000003a configureModeFunction
+     /tmp/ccYTHQwi.s:4999   .progmem.data:0000094e cmdListConfigure
+     /tmp/ccYTHQwi.s:399    .text:0000005c saveConfigFunction
+     /tmp/ccYTHQwi.s:422    .text:00000066 setMacAddrFunction
                             *COM*:0000000e nicState
-     /tmp/ccQATRFc.s:499    .text:000000d4 pingFunction
-     /tmp/ccQATRFc.s:555    .text:00000112 setUdpFunction
+     /tmp/ccYTHQwi.s:499    .text:000000d4 pingFunction
+     /tmp/ccYTHQwi.s:555    .text:00000112 setUdpFunction
                             *COM*:00000002 udpSocket
-     /tmp/ccQATRFc.s:703    .text:0000020c setIpGwFunction
-     /tmp/ccQATRFc.s:811    .text:000002bc setIpMaskFunction
-     /tmp/ccQATRFc.s:866    .text:000002fc setIpFunction
-     /tmp/ccQATRFc.s:974    .text:000003ac czytajAC_Function
-     /tmp/ccQATRFc.s:5041   .progmem.data:0000099c __c.3542
-     /tmp/ccQATRFc.s:1055   .text:00000424 printErrorInfo
-     /tmp/ccQATRFc.s:4873   .progmem.data:0000086a errorStrings
-     /tmp/ccQATRFc.s:1152   .text:0000049a setTimeFunction
+     /tmp/ccYTHQwi.s:703    .text:0000020c setIpGwFunction
+     /tmp/ccYTHQwi.s:811    .text:000002bc setIpMaskFunction
+     /tmp/ccYTHQwi.s:866    .text:000002fc setIpFunction
+     /tmp/ccYTHQwi.s:974    .text:000003ac czytajAC_Function
+     /tmp/ccYTHQwi.s:5041   .progmem.data:0000099c __c.3546
+     /tmp/ccYTHQwi.s:1055   .text:00000424 printErrorInfo
+     /tmp/ccYTHQwi.s:4873   .progmem.data:0000086a errorStrings
+     /tmp/ccYTHQwi.s:1152   .text:0000049a setTimeFunction
                             *COM*:00000007 czasRtc
-     /tmp/ccQATRFc.s:1288   .text:00000568 ustawPortRezystor
-     /tmp/ccQATRFc.s:1329   .text:0000058c ustawPortExtBFunction
-     /tmp/ccQATRFc.s:1367   .text:000005b0 ustawPortExtAFunction
-     /tmp/ccQATRFc.s:1405   .text:000005d4 curtainDownFunction
-     /tmp/ccQATRFc.s:4526   .progmem.data:0000030a movingCurtainDownStr
-     /tmp/ccQATRFc.s:4531   .progmem.data:0000033d movingCurtainPosStr
-     /tmp/ccQATRFc.s:1559   .text:000006c0 curtainUpFunction
-     /tmp/ccQATRFc.s:4521   .progmem.data:000002d7 movingCurtainUpStr
-     /tmp/ccQATRFc.s:1731   .text:000007c4 goXmodemWyslijFunction
-     /tmp/ccQATRFc.s:4516   .progmem.data:000002ba xwyslijStartStr
+     /tmp/ccYTHQwi.s:1288   .text:00000568 ustawPortRezystor
+     /tmp/ccYTHQwi.s:1329   .text:0000058c ustawPortExtBFunction
+     /tmp/ccYTHQwi.s:1367   .text:000005b0 ustawPortExtAFunction
+     /tmp/ccYTHQwi.s:1405   .text:000005d4 curtainDownFunction
+     /tmp/ccYTHQwi.s:4526   .progmem.data:0000030a movingCurtainDownStr
+     /tmp/ccYTHQwi.s:4531   .progmem.data:0000033d movingCurtainPosStr
+     /tmp/ccYTHQwi.s:1559   .text:000006c0 curtainUpFunction
+     /tmp/ccYTHQwi.s:4521   .progmem.data:000002d7 movingCurtainUpStr
+     /tmp/ccYTHQwi.s:1731   .text:000007c4 goXmodemWyslijFunction
+     /tmp/ccYTHQwi.s:4516   .progmem.data:000002ba xwyslijStartStr
                             *COM*:00000006 fdVty
-     /tmp/ccQATRFc.s:4421   .progmem.data:000000ba errorOpenFile
-     /tmp/ccQATRFc.s:1833   .text:00000868 editRamFileFunction
-     /tmp/ccQATRFc.s:4506   .progmem.data:00000280 editRamFileIntroStr
-     /tmp/ccQATRFc.s:1993   .text:00000968 eraseRamFileFunction
-     /tmp/ccQATRFc.s:2036   .text:00000996 dodajRamPlikFunction
-     /tmp/ccQATRFc.s:2088   .text:000009d0 rpingFunction
-     /tmp/ccQATRFc.s:2155   .text:00000a1c flashExModuleFunction
-     /tmp/ccQATRFc.s:2292   .text:00000ade goXmodemOdbierzFunction
-     /tmp/ccQATRFc.s:5045   .progmem.data:000009bf __c.3660
-     /tmp/ccQATRFc.s:2978   .text:00000ec6 debugFunction
-     /tmp/ccQATRFc.s:5085   .progmem.data:00000a03 __c.3394
-     /tmp/ccQATRFc.s:5081   .progmem.data:00000a00 __c.3396
-     /tmp/ccQATRFc.s:5077   .progmem.data:000009fb __c.3398
-     /tmp/ccQATRFc.s:5073   .progmem.data:000009f7 __c.3400
-     /tmp/ccQATRFc.s:4541   .progmem.data:00000360 debugDisabledInfoStr
-     /tmp/ccQATRFc.s:5069   .progmem.data:000009f3 __c.3402
-     /tmp/ccQATRFc.s:5065   .progmem.data:000009ef __c.3404
-     /tmp/ccQATRFc.s:5061   .progmem.data:000009ec __c.3406
-     /tmp/ccQATRFc.s:5057   .progmem.data:000009e7 __c.3408
-     /tmp/ccQATRFc.s:5053   .progmem.data:000009e3 __c.3410
-     /tmp/ccQATRFc.s:4536   .progmem.data:0000034d debugEnabledInfoStr
-     /tmp/ccQATRFc.s:5049   .progmem.data:000009df __c.3412
-     /tmp/ccQATRFc.s:3269   .text:00001090 statusEncFunction
-     /tmp/ccQATRFc.s:3295   .text:000010a0 readRamFIleFunction
-     /tmp/ccQATRFc.s:4511   .progmem.data:000002a8 readRamFIleLenStr
-     /tmp/ccQATRFc.s:4863   .progmem.data:0000083d nlStr
-     /tmp/ccQATRFc.s:3494   .text:000011e6 writeRamFileFunction
-     /tmp/ccQATRFc.s:3520   .text:000011f6 pokazCzasFunction
-     /tmp/ccQATRFc.s:5089   .progmem.data:00000a07 __c.3364
-     /tmp/ccQATRFc.s:3656   .text:000012e0 helpFunction
-     /tmp/ccQATRFc.s:3680   .text:000012ea printStatus
-     /tmp/ccQATRFc.s:5109   .progmem.data:00000a2c __c.3314
-     /tmp/ccQATRFc.s:4426   .progmem.data:000000cf systemStateStr
-     /tmp/ccQATRFc.s:4431   .progmem.data:000000df statusNumberOfTasksStr
-     /tmp/ccQATRFc.s:4436   .progmem.data:000000f8 statusStaticHeapStateStr
-     /tmp/ccQATRFc.s:4441   .progmem.data:00000122 statusDynamicHeapStateStr
-     /tmp/ccQATRFc.s:4451   .progmem.data:00000179 statusTemperatureStr
-     /tmp/ccQATRFc.s:4456   .progmem.data:00000194 statusVoltageStr
-     /tmp/ccQATRFc.s:4446   .progmem.data:0000014c statusRamDiskStateStr
-     /tmp/ccQATRFc.s:4461   .progmem.data:000001af systemRamConfigStr
-     /tmp/ccQATRFc.s:4466   .progmem.data:000001c2 statusMacStr
-     /tmp/ccQATRFc.s:5105   .progmem.data:00000a29 __c.3317
-     /tmp/ccQATRFc.s:4471   .progmem.data:000001d7 statusIpStr
-     /tmp/ccQATRFc.s:5101   .progmem.data:00000a26 __c.3319
-     /tmp/ccQATRFc.s:4476   .progmem.data:000001ec statusIpMaskStr
-     /tmp/ccQATRFc.s:5097   .progmem.data:00000a23 __c.3321
-     /tmp/ccQATRFc.s:4481   .progmem.data:00000201 statusIpGwStr
-     /tmp/ccQATRFc.s:5093   .progmem.data:00000a20 __c.3323
-     /tmp/ccQATRFc.s:4486   .progmem.data:00000216 statusRs485listStr
-     /tmp/ccQATRFc.s:4491   .progmem.data:00000231 statusNoRs485Dev
-     /tmp/ccQATRFc.s:4496   .progmem.data:0000024b statusLockerSensorsStr
-     /tmp/ccQATRFc.s:4501   .progmem.data:00000264 statusLockerSensorsDisStr
-     /tmp/ccQATRFc.s:4196   .text:0000169a statusFunction
-     /tmp/ccQATRFc.s:4330   .text:00001768 VtyInit
-     /tmp/ccQATRFc.s:4366   .progmem.data:00000000 errorOK
-     /tmp/ccQATRFc.s:4371   .progmem.data:00000009 errorNoFile
-     /tmp/ccQATRFc.s:4376   .progmem.data:00000013 errorxModemFrameStartTimeout
-     /tmp/ccQATRFc.s:4381   .progmem.data:00000016 errorxModemByteSendTimeout
-     /tmp/ccQATRFc.s:4386   .progmem.data:00000019 errorxModemWrongFrameNo
-     /tmp/ccQATRFc.s:4391   .progmem.data:0000001c errorxModemFrameFrameNoCorrectionNotMatch
-     /tmp/ccQATRFc.s:4396   .progmem.data:0000001f errorxModemFrameCrc
-     /tmp/ccQATRFc.s:4401   .progmem.data:00000032 errorxModemRemoteSideCan
-     /tmp/ccQATRFc.s:4406   .progmem.data:00000059 errorxModemUnknownResponse
-     /tmp/ccQATRFc.s:4411   .progmem.data:00000078 errorNoRemoteDevice
-     /tmp/ccQATRFc.s:4416   .progmem.data:0000009b errorBootloaderNotResponding
-     /tmp/ccQATRFc.s:4546   .progmem.data:00000374 cmd_help
-     /tmp/ccQATRFc.s:4551   .progmem.data:00000379 cmd_help_help
-     /tmp/ccQATRFc.s:4556   .progmem.data:0000038b cmd_status
-     /tmp/ccQATRFc.s:4561   .progmem.data:00000392 cmd_help_status
-     /tmp/ccQATRFc.s:4566   .progmem.data:000003c9 cmd_enc_stat
-     /tmp/ccQATRFc.s:4571   .progmem.data:000003d1 cmd_help_enc_stat
-     /tmp/ccQATRFc.s:4576   .progmem.data:000003eb cmd_time
-     /tmp/ccQATRFc.s:4581   .progmem.data:000003f0 cmd_help_time
-     /tmp/ccQATRFc.s:4586   .progmem.data:000003fb cmd_net_dbg
-     /tmp/ccQATRFc.s:4591   .progmem.data:00000401 cmd_help_net_dbg
-     /tmp/ccQATRFc.s:4597   .progmem.data:0000044a cmd_rping
-     /tmp/ccQATRFc.s:4602   .progmem.data:00000450 cmd_help_rping
-     /tmp/ccQATRFc.s:4607   .progmem.data:00000476 cmd_ping
-     /tmp/ccQATRFc.s:4612   .progmem.data:0000047b cmd_help_ping
-     /tmp/ccQATRFc.s:4617   .progmem.data:000004ac cmd_xRec
-     /tmp/ccQATRFc.s:4622   .progmem.data:000004b1 cmd_help_xRec
-     /tmp/ccQATRFc.s:4627   .progmem.data:000004d7 cmd_xSend
-     /tmp/ccQATRFc.s:4632   .progmem.data:000004dd cmd_help_xSend
-     /tmp/ccQATRFc.s:4637   .progmem.data:00000500 cmd_xflash
-     /tmp/ccQATRFc.s:4642   .progmem.data:00000507 cmd_help_xflash
-     /tmp/ccQATRFc.s:4647   .progmem.data:0000053f cmd_dir_rf
-     /tmp/ccQATRFc.s:4652   .progmem.data:00000545 cmd_help_dir_rf
-     /tmp/ccQATRFc.s:4657   .progmem.data:00000559 cmd_create_rf
-     /tmp/ccQATRFc.s:4662   .progmem.data:0000055d cmd_help_create_rf
-     /tmp/ccQATRFc.s:4667   .progmem.data:00000579 cmd_erase_rf
-     /tmp/ccQATRFc.s:4672   .progmem.data:00000581 cmd_help_erase_rf
-     /tmp/ccQATRFc.s:4677   .progmem.data:000005a6 cmd_edit_rf
-     /tmp/ccQATRFc.s:4682   .progmem.data:000005ad cmd_help_edit_rf
-     /tmp/ccQATRFc.s:4687   .progmem.data:000005d7 cmd_read_rf
-     /tmp/ccQATRFc.s:4692   .progmem.data:000005de cmd_help_read_rf
-     /tmp/ccQATRFc.s:4697   .progmem.data:00000608 cmd_up
-     /tmp/ccQATRFc.s:4702   .progmem.data:0000060b cmd_help_up
-     /tmp/ccQATRFc.s:4707   .progmem.data:00000631 cmd_down
-     /tmp/ccQATRFc.s:4712   .progmem.data:00000636 cmd_help_down
-     /tmp/ccQATRFc.s:4717   .progmem.data:0000065e cmd_spa
-     /tmp/ccQATRFc.s:4722   .progmem.data:00000662 cmd_help_spa
-     /tmp/ccQATRFc.s:4727   .progmem.data:00000675 cmd_spb
-     /tmp/ccQATRFc.s:4732   .progmem.data:00000679 cmd_help_spb
-     /tmp/ccQATRFc.s:4737   .progmem.data:0000068c cmd_settime
-     /tmp/ccQATRFc.s:4742   .progmem.data:00000694 cmd_help_settime
-     /tmp/ccQATRFc.s:4747   .progmem.data:000006b6 cmd_ac
-     /tmp/ccQATRFc.s:4752   .progmem.data:000006b9 cmd_help_ac
-     /tmp/ccQATRFc.s:4757   .progmem.data:000006d9 cmd_enable
-     /tmp/ccQATRFc.s:4762   .progmem.data:000006e0 cmd_help_enable
-     /tmp/ccQATRFc.s:4767   .progmem.data:000006ec cmd_disable
-     /tmp/ccQATRFc.s:4772   .progmem.data:000006f4 cmd_help_disable
-     /tmp/ccQATRFc.s:4777   .progmem.data:000006fe cmd_configure
-     /tmp/ccQATRFc.s:4782   .progmem.data:00000705 cmd_help_configure
-     /tmp/ccQATRFc.s:4787   .progmem.data:00000714 cmd_conf_ip
-     /tmp/ccQATRFc.s:4792   .progmem.data:00000717 cmd_help_conf_ip
-     /tmp/ccQATRFc.s:4797   .progmem.data:0000073a cmd_conf_udp
-     /tmp/ccQATRFc.s:4802   .progmem.data:0000073e cmd_help_conf_udp
-     /tmp/ccQATRFc.s:4808   .progmem.data:0000078c cmd_conf_ip_mask
-     /tmp/ccQATRFc.s:4813   .progmem.data:00000791 cmd_conf_ip_mask_help
-     /tmp/ccQATRFc.s:4818   .progmem.data:000007a1 cmd_conf_ip_gw
-     /tmp/ccQATRFc.s:4823   .progmem.data:000007a4 cmd_conf_ip_gw_help
-     /tmp/ccQATRFc.s:4828   .progmem.data:000007cc cmd_conf_mac
-     /tmp/ccQATRFc.s:4833   .progmem.data:000007d0 cmd_help_conf_mac
-     /tmp/ccQATRFc.s:4838   .progmem.data:000007fe cmd_conf_save
-     /tmp/ccQATRFc.s:4843   .progmem.data:00000803 cmd_help_conf_save
-     /tmp/ccQATRFc.s:4848   .progmem.data:00000816 cmd_ustawR
-     /tmp/ccQATRFc.s:4853   .progmem.data:0000081b cmd_help_ustawR
-     /tmp/ccQATRFc.s:4858   .progmem.data:00000838 okStr
-     /tmp/ccQATRFc.s:4868   .progmem.data:00000840 BladBuforaPozostaloBajtowStr
+     /tmp/ccYTHQwi.s:4421   .progmem.data:000000ba errorOpenFile
+     /tmp/ccYTHQwi.s:1833   .text:00000868 editRamFileFunction
+     /tmp/ccYTHQwi.s:4506   .progmem.data:00000280 editRamFileIntroStr
+     /tmp/ccYTHQwi.s:1993   .text:00000968 eraseRamFileFunction
+     /tmp/ccYTHQwi.s:2036   .text:00000996 dodajRamPlikFunction
+     /tmp/ccYTHQwi.s:2088   .text:000009d0 rpingFunction
+     /tmp/ccYTHQwi.s:2155   .text:00000a1c flashExModuleFunction
+     /tmp/ccYTHQwi.s:2292   .text:00000ade goXmodemOdbierzFunction
+     /tmp/ccYTHQwi.s:5045   .progmem.data:000009bf __c.3664
+     /tmp/ccYTHQwi.s:2978   .text:00000ec6 debugFunction
+     /tmp/ccYTHQwi.s:5085   .progmem.data:00000a03 __c.3398
+     /tmp/ccYTHQwi.s:5081   .progmem.data:00000a00 __c.3400
+     /tmp/ccYTHQwi.s:5077   .progmem.data:000009fb __c.3402
+     /tmp/ccYTHQwi.s:5073   .progmem.data:000009f7 __c.3404
+     /tmp/ccYTHQwi.s:4541   .progmem.data:00000360 debugDisabledInfoStr
+     /tmp/ccYTHQwi.s:5069   .progmem.data:000009f3 __c.3406
+     /tmp/ccYTHQwi.s:5065   .progmem.data:000009ef __c.3408
+     /tmp/ccYTHQwi.s:5061   .progmem.data:000009ec __c.3410
+     /tmp/ccYTHQwi.s:5057   .progmem.data:000009e7 __c.3412
+     /tmp/ccYTHQwi.s:5053   .progmem.data:000009e3 __c.3414
+     /tmp/ccYTHQwi.s:4536   .progmem.data:0000034d debugEnabledInfoStr
+     /tmp/ccYTHQwi.s:5049   .progmem.data:000009df __c.3416
+     /tmp/ccYTHQwi.s:3269   .text:00001090 statusEncFunction
+     /tmp/ccYTHQwi.s:3295   .text:000010a0 readRamFIleFunction
+     /tmp/ccYTHQwi.s:4511   .progmem.data:000002a8 readRamFIleLenStr
+     /tmp/ccYTHQwi.s:4863   .progmem.data:0000083d nlStr
+     /tmp/ccYTHQwi.s:3494   .text:000011e6 writeRamFileFunction
+     /tmp/ccYTHQwi.s:3520   .text:000011f6 pokazCzasFunction
+     /tmp/ccYTHQwi.s:5089   .progmem.data:00000a07 __c.3368
+     /tmp/ccYTHQwi.s:3656   .text:000012e0 helpFunction
+     /tmp/ccYTHQwi.s:3680   .text:000012ea printStatus
+     /tmp/ccYTHQwi.s:5109   .progmem.data:00000a2c __c.3318
+     /tmp/ccYTHQwi.s:4426   .progmem.data:000000cf systemStateStr
+     /tmp/ccYTHQwi.s:4431   .progmem.data:000000df statusNumberOfTasksStr
+     /tmp/ccYTHQwi.s:4436   .progmem.data:000000f8 statusStaticHeapStateStr
+     /tmp/ccYTHQwi.s:4441   .progmem.data:00000122 statusDynamicHeapStateStr
+     /tmp/ccYTHQwi.s:4451   .progmem.data:00000179 statusTemperatureStr
+     /tmp/ccYTHQwi.s:4456   .progmem.data:00000194 statusVoltageStr
+     /tmp/ccYTHQwi.s:4446   .progmem.data:0000014c statusRamDiskStateStr
+     /tmp/ccYTHQwi.s:4461   .progmem.data:000001af systemRamConfigStr
+     /tmp/ccYTHQwi.s:4466   .progmem.data:000001c2 statusMacStr
+     /tmp/ccYTHQwi.s:5105   .progmem.data:00000a29 __c.3321
+     /tmp/ccYTHQwi.s:4471   .progmem.data:000001d7 statusIpStr
+     /tmp/ccYTHQwi.s:5101   .progmem.data:00000a26 __c.3323
+     /tmp/ccYTHQwi.s:4476   .progmem.data:000001ec statusIpMaskStr
+     /tmp/ccYTHQwi.s:5097   .progmem.data:00000a23 __c.3325
+     /tmp/ccYTHQwi.s:4481   .progmem.data:00000201 statusIpGwStr
+     /tmp/ccYTHQwi.s:5093   .progmem.data:00000a20 __c.3327
+     /tmp/ccYTHQwi.s:4486   .progmem.data:00000216 statusRs485listStr
+     /tmp/ccYTHQwi.s:4491   .progmem.data:00000231 statusNoRs485Dev
+     /tmp/ccYTHQwi.s:4496   .progmem.data:0000024b statusLockerSensorsStr
+     /tmp/ccYTHQwi.s:4501   .progmem.data:00000264 statusLockerSensorsDisStr
+     /tmp/ccYTHQwi.s:4196   .text:0000169a statusFunction
+     /tmp/ccYTHQwi.s:4330   .text:00001768 VtyInit
+     /tmp/ccYTHQwi.s:4366   .progmem.data:00000000 errorOK
+     /tmp/ccYTHQwi.s:4371   .progmem.data:00000009 errorNoFile
+     /tmp/ccYTHQwi.s:4376   .progmem.data:00000013 errorxModemFrameStartTimeout
+     /tmp/ccYTHQwi.s:4381   .progmem.data:00000016 errorxModemByteSendTimeout
+     /tmp/ccYTHQwi.s:4386   .progmem.data:00000019 errorxModemWrongFrameNo
+     /tmp/ccYTHQwi.s:4391   .progmem.data:0000001c errorxModemFrameFrameNoCorrectionNotMatch
+     /tmp/ccYTHQwi.s:4396   .progmem.data:0000001f errorxModemFrameCrc
+     /tmp/ccYTHQwi.s:4401   .progmem.data:00000032 errorxModemRemoteSideCan
+     /tmp/ccYTHQwi.s:4406   .progmem.data:00000059 errorxModemUnknownResponse
+     /tmp/ccYTHQwi.s:4411   .progmem.data:00000078 errorNoRemoteDevice
+     /tmp/ccYTHQwi.s:4416   .progmem.data:0000009b errorBootloaderNotResponding
+     /tmp/ccYTHQwi.s:4546   .progmem.data:00000374 cmd_help
+     /tmp/ccYTHQwi.s:4551   .progmem.data:00000379 cmd_help_help
+     /tmp/ccYTHQwi.s:4556   .progmem.data:0000038b cmd_status
+     /tmp/ccYTHQwi.s:4561   .progmem.data:00000392 cmd_help_status
+     /tmp/ccYTHQwi.s:4566   .progmem.data:000003c9 cmd_enc_stat
+     /tmp/ccYTHQwi.s:4571   .progmem.data:000003d1 cmd_help_enc_stat
+     /tmp/ccYTHQwi.s:4576   .progmem.data:000003eb cmd_time
+     /tmp/ccYTHQwi.s:4581   .progmem.data:000003f0 cmd_help_time
+     /tmp/ccYTHQwi.s:4586   .progmem.data:000003fb cmd_net_dbg
+     /tmp/ccYTHQwi.s:4591   .progmem.data:00000401 cmd_help_net_dbg
+     /tmp/ccYTHQwi.s:4597   .progmem.data:0000044a cmd_rping
+     /tmp/ccYTHQwi.s:4602   .progmem.data:00000450 cmd_help_rping
+     /tmp/ccYTHQwi.s:4607   .progmem.data:00000476 cmd_ping
+     /tmp/ccYTHQwi.s:4612   .progmem.data:0000047b cmd_help_ping
+     /tmp/ccYTHQwi.s:4617   .progmem.data:000004ac cmd_xRec
+     /tmp/ccYTHQwi.s:4622   .progmem.data:000004b1 cmd_help_xRec
+     /tmp/ccYTHQwi.s:4627   .progmem.data:000004d7 cmd_xSend
+     /tmp/ccYTHQwi.s:4632   .progmem.data:000004dd cmd_help_xSend
+     /tmp/ccYTHQwi.s:4637   .progmem.data:00000500 cmd_xflash
+     /tmp/ccYTHQwi.s:4642   .progmem.data:00000507 cmd_help_xflash
+     /tmp/ccYTHQwi.s:4647   .progmem.data:0000053f cmd_dir_rf
+     /tmp/ccYTHQwi.s:4652   .progmem.data:00000545 cmd_help_dir_rf
+     /tmp/ccYTHQwi.s:4657   .progmem.data:00000559 cmd_create_rf
+     /tmp/ccYTHQwi.s:4662   .progmem.data:0000055d cmd_help_create_rf
+     /tmp/ccYTHQwi.s:4667   .progmem.data:00000579 cmd_erase_rf
+     /tmp/ccYTHQwi.s:4672   .progmem.data:00000581 cmd_help_erase_rf
+     /tmp/ccYTHQwi.s:4677   .progmem.data:000005a6 cmd_edit_rf
+     /tmp/ccYTHQwi.s:4682   .progmem.data:000005ad cmd_help_edit_rf
+     /tmp/ccYTHQwi.s:4687   .progmem.data:000005d7 cmd_read_rf
+     /tmp/ccYTHQwi.s:4692   .progmem.data:000005de cmd_help_read_rf
+     /tmp/ccYTHQwi.s:4697   .progmem.data:00000608 cmd_up
+     /tmp/ccYTHQwi.s:4702   .progmem.data:0000060b cmd_help_up
+     /tmp/ccYTHQwi.s:4707   .progmem.data:00000631 cmd_down
+     /tmp/ccYTHQwi.s:4712   .progmem.data:00000636 cmd_help_down
+     /tmp/ccYTHQwi.s:4717   .progmem.data:0000065e cmd_spa
+     /tmp/ccYTHQwi.s:4722   .progmem.data:00000662 cmd_help_spa
+     /tmp/ccYTHQwi.s:4727   .progmem.data:00000675 cmd_spb
+     /tmp/ccYTHQwi.s:4732   .progmem.data:00000679 cmd_help_spb
+     /tmp/ccYTHQwi.s:4737   .progmem.data:0000068c cmd_settime
+     /tmp/ccYTHQwi.s:4742   .progmem.data:00000694 cmd_help_settime
+     /tmp/ccYTHQwi.s:4747   .progmem.data:000006b6 cmd_ac
+     /tmp/ccYTHQwi.s:4752   .progmem.data:000006b9 cmd_help_ac
+     /tmp/ccYTHQwi.s:4757   .progmem.data:000006d9 cmd_enable
+     /tmp/ccYTHQwi.s:4762   .progmem.data:000006e0 cmd_help_enable
+     /tmp/ccYTHQwi.s:4767   .progmem.data:000006ec cmd_disable
+     /tmp/ccYTHQwi.s:4772   .progmem.data:000006f4 cmd_help_disable
+     /tmp/ccYTHQwi.s:4777   .progmem.data:000006fe cmd_configure
+     /tmp/ccYTHQwi.s:4782   .progmem.data:00000705 cmd_help_configure
+     /tmp/ccYTHQwi.s:4787   .progmem.data:00000714 cmd_conf_ip
+     /tmp/ccYTHQwi.s:4792   .progmem.data:00000717 cmd_help_conf_ip
+     /tmp/ccYTHQwi.s:4797   .progmem.data:0000073a cmd_conf_udp
+     /tmp/ccYTHQwi.s:4802   .progmem.data:0000073e cmd_help_conf_udp
+     /tmp/ccYTHQwi.s:4808   .progmem.data:0000078c cmd_conf_ip_mask
+     /tmp/ccYTHQwi.s:4813   .progmem.data:00000791 cmd_conf_ip_mask_help
+     /tmp/ccYTHQwi.s:4818   .progmem.data:000007a1 cmd_conf_ip_gw
+     /tmp/ccYTHQwi.s:4823   .progmem.data:000007a4 cmd_conf_ip_gw_help
+     /tmp/ccYTHQwi.s:4828   .progmem.data:000007cc cmd_conf_mac
+     /tmp/ccYTHQwi.s:4833   .progmem.data:000007d0 cmd_help_conf_mac
+     /tmp/ccYTHQwi.s:4838   .progmem.data:000007fe cmd_conf_save
+     /tmp/ccYTHQwi.s:4843   .progmem.data:00000803 cmd_help_conf_save
+     /tmp/ccYTHQwi.s:4848   .progmem.data:00000816 cmd_ustawR
+     /tmp/ccYTHQwi.s:4853   .progmem.data:0000081b cmd_help_ustawR
+     /tmp/ccYTHQwi.s:4858   .progmem.data:00000838 okStr
+     /tmp/ccYTHQwi.s:4868   .progmem.data:00000840 BladBuforaPozostaloBajtowStr
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

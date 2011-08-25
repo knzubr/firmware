@@ -137,47 +137,48 @@
  104:main.c        ****   VtyInit(CLIStateSerialUsb, &usbStream);
  105:main.c        **** 
  106:main.c        ****   udpInit();
- 107:main.c        ****   socketInit();
- 108:main.c        ****   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
- 109:main.c        ****   VtyInit(CLIStateSerialUdp, &udpStream);
- 110:main.c        ****   
- 111:main.c        ****   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->
- 112:main.c        ****   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb)
- 113:main.c        ****   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp)
- 114:main.c        ****   //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                    
- 115:main.c        ****   vTaskStartScheduler();
- 116:main.c        ****   return 0;
- 117:main.c        **** }
- 118:main.c        **** /*-----------------------------------------------------------*/
- 119:main.c        **** 
- 120:main.c        **** void vApplicationIdleHook( void )
- 121:main.c        **** {
- 122:main.c        ****   for( ;; )
- 123:main.c        ****   {
- 124:main.c        ****     vCoRoutineSchedule();
- 125:main.c        ****   }
- 126:main.c        **** }
- 127:main.c        **** 
- 128:main.c        **** void vApplicationTickHook( void )
- 129:main.c        **** {
+ 107:main.c        ****   //socketInit();
+ 108:main.c        ****   socketInit6();
+ 109:main.c        ****   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
+ 110:main.c        ****   VtyInit(CLIStateSerialUdp, &udpStream);
+ 111:main.c        ****   
+ 112:main.c        ****   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->
+ 113:main.c        ****   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb)
+ 114:main.c        ****   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp)
+ 115:main.c        ****   //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                    
+ 116:main.c        ****   vTaskStartScheduler();
+ 117:main.c        ****   return 0;
+ 118:main.c        **** }
+ 119:main.c        **** /*-----------------------------------------------------------*/
+ 120:main.c        **** 
+ 121:main.c        **** void vApplicationIdleHook( void )
+ 122:main.c        **** {
+ 123:main.c        ****   for( ;; )
+ 124:main.c        ****   {
+ 125:main.c        ****     vCoRoutineSchedule();
+ 126:main.c        ****   }
+ 127:main.c        **** }
+ 128:main.c        **** 
+ 129:main.c        **** void vApplicationTickHook( void )
+ 130:main.c        **** {
  311               	.LM4:
  312               	.LFBB2:
  313               	/* prologue: function */
  314               	/* frame size = 0 */
- 130:main.c        ****   static uint8_t tickCntr = configTICK_RATE_HZ;
- 131:main.c        ****   if (--tickCntr == 0)
+ 131:main.c        ****   static uint8_t tickCntr = configTICK_RATE_HZ;
+ 132:main.c        ****   if (--tickCntr == 0)
  316               	.LM5:
- 317 0000 8091 0000 		lds r24,tickCntr.3152
+ 317 0000 8091 0000 		lds r24,tickCntr.3157
  318 0004 8150      		subi r24,lo8(-(-1))
- 319 0006 8093 0000 		sts tickCntr.3152,r24
+ 319 0006 8093 0000 		sts tickCntr.3157,r24
  320 000a 8823      		tst r24
  321 000c 01F4      		brne .L5
- 132:main.c        ****   {
- 133:main.c        ****     tickCntr = configTICK_RATE_HZ;
+ 133:main.c        ****   {
+ 134:main.c        ****     tickCntr = configTICK_RATE_HZ;
  323               	.LM6:
  324 000e 84E6      		ldi r24,lo8(100)
- 325 0010 8093 0000 		sts tickCntr.3152,r24
- 134:main.c        ****     arpTimer();    
+ 325 0010 8093 0000 		sts tickCntr.3157,r24
+ 135:main.c        ****     arpTimer();    
  327               	.LM7:
  328 0014 0E94 0000 		call arpTimer
  329               	.L5:
@@ -187,13 +188,13 @@
  339               	.global	vApplicationIdleHook
  341               	vApplicationIdleHook:
  342               		.stabd	46,0,0
- 121:main.c        **** {
+ 122:main.c        **** {
  344               	.LM8:
  345               	.LFBB3:
  346               	/* prologue: function */
  347               	/* frame size = 0 */
  348               	.L7:
- 124:main.c        ****     vCoRoutineSchedule();
+ 125:main.c        ****     vCoRoutineSchedule();
  350               	.LM9:
  351 001a 0E94 0000 		call vCoRoutineSchedule
  352 001e 00C0      		rjmp .L7
@@ -264,10 +265,10 @@
  106:main.c        ****   udpInit();
  422               	.LM21:
  423 0084 0E94 0000 		call udpInit
- 107:main.c        ****   socketInit();
+ 108:main.c        ****   socketInit6();
  425               	.LM22:
- 426 0088 0E94 0000 		call socketInit
- 108:main.c        ****   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
+ 426 0088 0E94 0000 		call socketInit6
+ 109:main.c        ****   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
  428               	.LM23:
  429 008c E091 0000 		lds r30,udpSocket
  430 0090 F091 0000 		lds r31,(udpSocket)+1
@@ -281,13 +282,13 @@
  438 00a2 60E0      		ldi r22,lo8(udpBuffers)
  439 00a4 70E0      		ldi r23,hi8(udpBuffers)
  440 00a6 0E94 0000 		call initQueueStream
- 109:main.c        ****   VtyInit(CLIStateSerialUdp, &udpStream);
+ 110:main.c        ****   VtyInit(CLIStateSerialUdp, &udpStream);
  442               	.LM24:
  443 00aa 8091 0000 		lds r24,CLIStateSerialUdp
  444 00ae 9091 0000 		lds r25,(CLIStateSerialUdp)+1
  445 00b2 B801      		movw r22,r16
  446 00b4 0E94 0000 		call VtyInit
- 111:main.c        ****   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->
+ 112:main.c        ****   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->
  448               	.LM25:
  449 00b8 E091 0000 		lds r30,CLIStateSerialUsb
  450 00bc F091 0000 		lds r31,(CLIStateSerialUsb)+1
@@ -309,7 +310,7 @@
  466 00de AA24      		clr r10
  467 00e0 BB24      		clr r11
  468 00e2 0E94 0000 		call xTaskGenericCreate
- 112:main.c        ****   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb)
+ 113:main.c        ****   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb)
  470               	.LM26:
  471 00e6 2091 0000 		lds r18,CLIStateSerialUsb
  472 00ea 3091 0000 		lds r19,(CLIStateSerialUsb)+1
@@ -325,7 +326,7 @@
  482 0100 F0E0      		ldi r31,hi8(xHandleVTY_USB)
  483 0102 FF2E      		mov r15,r31
  484 0104 0E94 0000 		call xTaskGenericCreate
- 113:main.c        ****   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp)
+ 114:main.c        ****   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp)
  486               	.LM27:
  487 0108 2091 0000 		lds r18,CLIStateSerialUdp
  488 010c 3091 0000 		lds r19,(CLIStateSerialUdp)+1
@@ -340,10 +341,10 @@
  497 0120 E0E0      		ldi r30,hi8(xHandleVTY_UDP)
  498 0122 FE2E      		mov r15,r30
  499 0124 0E94 0000 		call xTaskGenericCreate
- 115:main.c        ****   vTaskStartScheduler();
+ 116:main.c        ****   vTaskStartScheduler();
  501               	.LM28:
  502 0128 0E94 0000 		call vTaskStartScheduler
- 117:main.c        **** }
+ 118:main.c        **** }
  504               	.LM29:
  505 012c 80E0      		ldi r24,lo8(0)
  506 012e 90E0      		ldi r25,hi8(0)
@@ -365,7 +366,7 @@
  526               	timer100Hz:
  527 0000 00        		.skip 1,0
  528               		.data
- 531               	tickCntr.3152:
+ 531               	tickCntr.3157:
  532 0000 64        		.byte	100
  533               		.comm klastry,128,1
  534               		.comm wwwport,1,1
@@ -415,17 +416,17 @@
  623               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-     /tmp/cc62GkyQ.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc62GkyQ.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc62GkyQ.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc62GkyQ.s:5      *ABS*:00000034 __CCP__
-     /tmp/cc62GkyQ.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/cc62GkyQ.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/cc62GkyQ.s:280    .init4:00000000 initExternalMem
-     /tmp/cc62GkyQ.s:308    .text:00000000 vApplicationTickHook
-     /tmp/cc62GkyQ.s:531    .data:00000000 tickCntr.3152
-     /tmp/cc62GkyQ.s:341    .text:0000001a vApplicationIdleHook
-     /tmp/cc62GkyQ.s:360    .text:00000020 main
+     /tmp/cc9oGZlr.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc9oGZlr.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc9oGZlr.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc9oGZlr.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc9oGZlr.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc9oGZlr.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc9oGZlr.s:280    .init4:00000000 initExternalMem
+     /tmp/cc9oGZlr.s:308    .text:00000000 vApplicationTickHook
+     /tmp/cc9oGZlr.s:531    .data:00000000 tickCntr.3157
+     /tmp/cc9oGZlr.s:341    .text:0000001a vApplicationIdleHook
+     /tmp/cc9oGZlr.s:360    .text:00000020 main
                             *COM*:00000002 CLIStateSerialUsb
                             *COM*:00000002 CLIStateSerialUdp
                             *COM*:0000000e usbStream
@@ -435,7 +436,7 @@ DEFINED SYMBOLS
                             *COM*:00000002 xHandleEnc
                             *COM*:00000002 xHandleVTY_USB
                             *COM*:00000002 xHandleVTY_UDP
-     /tmp/cc62GkyQ.s:526    .bss:00000000 timer100Hz
+     /tmp/cc9oGZlr.s:526    .bss:00000000 timer100Hz
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers
@@ -484,7 +485,7 @@ loadConfiguration
 initQueueStreamUSB
 VtyInit
 udpInit
-socketInit
+socketInit6
 initQueueStream
 encTask
 xTaskGenericCreate

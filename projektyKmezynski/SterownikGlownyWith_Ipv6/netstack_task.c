@@ -84,6 +84,9 @@ void encTask ( void *pvParameters )
     #endif /*IPV6_SUPPORT*/
   fprintf_P(netstackDebug, PSTR("IP stack ready \r\n"));
   #endif /*IP_DEBUG*/
+  #if TCP_DEBUG
+  setTcpDebug6(netstackDebug, 4);
+  #endif /*TCP_DEBUG*/
   #if IPV6_SUPPORT
   ipv6Init();
   uip_netif_init();

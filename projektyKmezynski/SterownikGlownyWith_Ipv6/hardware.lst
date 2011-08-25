@@ -641,22 +641,22 @@
  354:hardware.c    ****   data = SPDR;
  671               	.LM57:
  672 00b0 8FB1      		in r24,47-32
- 673 00b2 8093 0000 		sts data.3308,r24
+ 673 00b2 8093 0000 		sts data.3312,r24
  355:hardware.c    ****   
  356:hardware.c    ****   xQueueSendFromISR(xSpiRx, &data, &xHigherPriorityTaskWoken);
  675               	.LM58:
  676 00b6 8091 0000 		lds r24,xSpiRx
  677 00ba 9091 0000 		lds r25,(xSpiRx)+1
- 678 00be 60E0      		ldi r22,lo8(data.3308)
- 679 00c0 70E0      		ldi r23,hi8(data.3308)
- 680 00c2 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.3307)
- 681 00c4 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.3307)
+ 678 00be 60E0      		ldi r22,lo8(data.3312)
+ 679 00c0 70E0      		ldi r23,hi8(data.3312)
+ 680 00c2 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.3311)
+ 681 00c4 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.3311)
  682 00c6 20E0      		ldi r18,lo8(0)
  683 00c8 0E94 0000 		call xQueueGenericSendFromISR
  357:hardware.c    **** 
  358:hardware.c    ****   if( xHigherPriorityTaskWoken )
  685               	.LM59:
- 686 00cc 8091 0000 		lds r24,xHigherPriorityTaskWoken.3307
+ 686 00cc 8091 0000 		lds r24,xHigherPriorityTaskWoken.3311
  687 00d0 8823      		tst r24
  688 00d2 01F0      		breq .L33
  359:hardware.c    ****   {
@@ -1294,8 +1294,8 @@
  1352      6F6C 6420 
  1352      2564 2C20 
  1352      4143 2076 
- 1353               		.lcomm data.3308,1
- 1354               		.lcomm xHigherPriorityTaskWoken.3307,1
+ 1353               		.lcomm data.3312,1
+ 1354               		.lcomm xHigherPriorityTaskWoken.3311,1
  1355               		.comm wwwport,1,1
  1356               		.comm klastry,128,1
  1357               		.comm rollers,2,1
@@ -1329,40 +1329,40 @@
  1420               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 hardware.c
-     /tmp/ccqH0WBG.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccqH0WBG.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccqH0WBG.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccqH0WBG.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccqH0WBG.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccqH0WBG.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccqH0WBG.s:280    .text:00000000 spiSendSpinBlock
-     /tmp/ccqH0WBG.s:318    .text:00000010 disableAllSpiDevices
-     /tmp/ccqH0WBG.s:354    .text:00000026 spiEnableEnc28j60
-     /tmp/ccqH0WBG.s:375    .text:0000002a spiDisableEnc28j60
-     /tmp/ccqH0WBG.s:396    .text:0000002e enableSpiSd
-     /tmp/ccqH0WBG.s:421    .text:0000003a disableSpiSd
-     /tmp/ccqH0WBG.s:446    .text:00000046 enableSpiMPC23S17
-     /tmp/ccqH0WBG.s:467    .text:0000004a disableSpiMPC23S17
-     /tmp/ccqH0WBG.s:488    .text:0000004e enableSpiMCP3008
-     /tmp/ccqH0WBG.s:514    .text:00000058 disableSpiMCP3008
-     /tmp/ccqH0WBG.s:540    .text:00000062 enableSpiMCP4150
-     /tmp/ccqH0WBG.s:566    .text:0000006c disableSpiMCP4150
-     /tmp/ccqH0WBG.s:592    .text:00000076 spiEnableDS1305
-     /tmp/ccqH0WBG.s:618    .text:00000080 spiDisableDS1305
-     /tmp/ccqH0WBG.s:644    .text:0000008a __vector_17
-                             .bss:00000000 data.3308
+     /tmp/ccge0LTS.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccge0LTS.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccge0LTS.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccge0LTS.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccge0LTS.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccge0LTS.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccge0LTS.s:280    .text:00000000 spiSendSpinBlock
+     /tmp/ccge0LTS.s:318    .text:00000010 disableAllSpiDevices
+     /tmp/ccge0LTS.s:354    .text:00000026 spiEnableEnc28j60
+     /tmp/ccge0LTS.s:375    .text:0000002a spiDisableEnc28j60
+     /tmp/ccge0LTS.s:396    .text:0000002e enableSpiSd
+     /tmp/ccge0LTS.s:421    .text:0000003a disableSpiSd
+     /tmp/ccge0LTS.s:446    .text:00000046 enableSpiMPC23S17
+     /tmp/ccge0LTS.s:467    .text:0000004a disableSpiMPC23S17
+     /tmp/ccge0LTS.s:488    .text:0000004e enableSpiMCP3008
+     /tmp/ccge0LTS.s:514    .text:00000058 disableSpiMCP3008
+     /tmp/ccge0LTS.s:540    .text:00000062 enableSpiMCP4150
+     /tmp/ccge0LTS.s:566    .text:0000006c disableSpiMCP4150
+     /tmp/ccge0LTS.s:592    .text:00000076 spiEnableDS1305
+     /tmp/ccge0LTS.s:618    .text:00000080 spiDisableDS1305
+     /tmp/ccge0LTS.s:644    .text:0000008a __vector_17
+                             .bss:00000000 data.3312
                             *COM*:00000002 xSpiRx
-     /tmp/ccqH0WBG.s:1353   .bss:00000001 xHigherPriorityTaskWoken.3307
-     /tmp/ccqH0WBG.s:727    .text:000000fe spiSend
-     /tmp/ccqH0WBG.s:771    .text:0000012c checkLockerSensors
+     /tmp/ccge0LTS.s:1353   .bss:00000001 xHigherPriorityTaskWoken.3311
+     /tmp/ccge0LTS.s:727    .text:000000fe spiSend
+     /tmp/ccge0LTS.s:771    .text:0000012c checkLockerSensors
                             *COM*:00000002 lockSensors
-     /tmp/ccqH0WBG.s:1011   .text:000002c0 printLockers
-     /tmp/ccqH0WBG.s:1336   .progmem.data:00000000 statusLockerSensDescStr
-     /tmp/ccqH0WBG.s:1351   .progmem.data:0000001d statusLockerSensAdditionalDescStr
-     /tmp/ccqH0WBG.s:1346   .progmem.data:00000014 statusLockerCloseStr
-     /tmp/ccqH0WBG.s:1341   .progmem.data:0000000b statusLockerOpenStr
-     /tmp/ccqH0WBG.s:1236   .text:00000420 LockersMemInit
-     /tmp/ccqH0WBG.s:1261   .text:00000432 hardwareInit
+     /tmp/ccge0LTS.s:1011   .text:000002c0 printLockers
+     /tmp/ccge0LTS.s:1336   .progmem.data:00000000 statusLockerSensDescStr
+     /tmp/ccge0LTS.s:1351   .progmem.data:0000001d statusLockerSensAdditionalDescStr
+     /tmp/ccge0LTS.s:1346   .progmem.data:00000014 statusLockerCloseStr
+     /tmp/ccge0LTS.s:1341   .progmem.data:0000000b statusLockerOpenStr
+     /tmp/ccge0LTS.s:1236   .text:00000420 LockersMemInit
+     /tmp/ccge0LTS.s:1261   .text:00000432 hardwareInit
                             *COM*:00000001 wwwport
                             *COM*:00000080 klastry
                             *COM*:00000002 rollers
