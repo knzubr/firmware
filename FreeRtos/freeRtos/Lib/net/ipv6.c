@@ -62,7 +62,11 @@ void netstackIPv6Process(void)
 	fprintf_P(debugStream, PSTR("\r\n"));
 	nicSend(86);
       }
-  
+      if(UIP_IP_BUF->proto==IP_PROTO_TCP)
+      {
+	fprintf_P(debugStream, PSTR("TCP packet in, \r\n"));    
+	netstackTCPIPProcess6();
+      }
   }
   else 
   {
@@ -178,6 +182,50 @@ void ipv6PrintConfig(FILE *stream, struct uip_netif* config)
   PRINT6ADDR(stream, &config->solicited_node_mcastaddr);    
 }
 
+void ipv6Send(uint8_t protocol, uint16_t len)
+{
+// make pointer to ethernet/IP header
+//#if IP_DEBUG
+  //if (debugStream != NULL)
+  {  
+    //if (IpMyConfig.dbgLevel > 2)
+      fprintf_P(debugStream, PSTR("Sending Ip packet\r\n"));
+  }
+//#endif
+  
+  //Exchange eth addresses
+  swithEthAddresses();
+
+  // adjust length to add IP header
+  //len += IP_HEADER_LEN;
+
+  // fill IP header
+  
+  uip_ip6addr_t *tmp_ipaddr;
+  tmp_ipaddr = xmalloc(sizeof(uip_ip6addr_t));
+  memcpy(tmp_ipaddr, &UIP_IP_BUF->srcipaddr, sizeof(uip_ip6addr_t));
+  memcpy(&UIP_IP_BUF->srcipaddr, &UIP_IP_BUF->destipaddr, sizeof(uip_ip6addr_t));
+  memcpy(&UIP_IP_BUF->destipaddr, tmp_ipaddr, sizeof(uip_ip6addr_t));
+    
+  
+  UIP_IP_BUF->vtc = 0x60;
+  UIP_IP_BUF->tcflow = 0;
+  UIP_IP_BUF->flow = 0;
+  UIP_IP_BUF->len[0] = (len & 0xFF00); /* more than 255 */
+  UIP_IP_BUF->len[1] = (len & 0x00FF);
+  UIP_IP_BUF->proto = protocol;
+  UIP_IP_BUF->ttl = IP_TIME_TO_LIVE;
+  
+  
+  ///UIP_TCP_BUF->tcpchksum = 0;
+  ///UIP_TCP_BUF->tcpchksum = 0;
+
+// adjust length to add ethernet and IPv6 header
+  len += ETH_HEADER_LEN + UIP_IPH_LEN;
+
+// send it
+  nicSend(len);
+}
 
 //void ipv6Send(uint32_t dstIpv6, uint8_t protocol, uint16_t len);
 //void netPrintIpv6Header(FILE *stream, struct netIpv6Header* ipheader);
