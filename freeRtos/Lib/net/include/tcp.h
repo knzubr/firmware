@@ -77,7 +77,7 @@ struct TcpIpSocket
   socket_state_t state;
   uint32_t       RemoteIpAddr;           /// Stored in network order
 #if IPV6_SUPPORT
-  uip_ipaddr_t   RemoteIpAddr6;
+  uip_ip6addr_t   RemoteIpAddr6;
 #endif /*IPV6_SUPPORT*/
   
   uint16_t       localPort;              /// Stored in network order

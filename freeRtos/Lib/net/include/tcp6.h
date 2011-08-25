@@ -37,6 +37,8 @@
 #include "queue.h"
 
 #include "ipv6.h"
+#include "../../freeRtos/Lib/net/include/ipv6.h"
+#include "tcp.h"
 
 #if TCP_DEBUG
 FILE *tcpDebugStream;
@@ -50,51 +52,8 @@ extern nicState_t nicState;
  * @param *stream - pointer to output debug stream
  * @param level   - debug intensity 0 - debug sidabled, 1 - basic short info, 2 - short info about all ewents, 3 - basic detailed info + short info about all ewents, 4 - detailed info about everything
  */
-void setTcpDebug(FILE *stream, uint8_t level);
+void setTcpDebug6(FILE *stream, uint8_t level);
 #endif
-
-/*
-typedef enum
-{
-  CLOSED,
-  LISTEN,
-  SYN_RECEIVED,
-  ESTABILISHED,
-  CLOSE_WAIT,
-  LAST_ACK,
-  SYN_SENT,
-  FIN_WAIT1,
-  FIN_WAIT2,
-  CLOSING,
-  TIMED_WAIT
-} socket_state_t;
-*/
-
-/*
-struct TcpIpSocket
-{
-  socket_state_t state;
-  uint32_t       RemoteIpAddr;           /// Stored in network order
-  uint16_t       localPort;              /// Stored in network order
-  uint16_t       remotePort;             /// Stored in network order 
-  
-  uint32_t       seqNoLastReceived;      /// Sequence number of last received packet
-  uint32_t       seqNoLastSent;          /// Sequence number of last sent packet
-  uint16_t       noOfNotAckBytes;        /// Number of received bytes without ack
-  
-  uint16_t       windowSize;  
-  uint8_t        timer;
-  
-  xQueueHandle   Rx;
-  xQueueHandle   Tx;
-    
-  //struct packetBackup packetBackupBuffer[4];
-  uint8_t        packetBackupBufferNotConfirmedPacketIdx;
-  uint8_t        packetBackupBufferWriteIdx;
-};
-
-struct TcpIpSocket *sockets;
-*/
 
 /**
  * Initialize socket structs

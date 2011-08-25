@@ -12,6 +12,7 @@
  */
 
 #include "tcp6.h"
+#include "include/ipv6.h"
 
 
 static struct TcpIpSocket* findConnectedSocket(void);
@@ -32,9 +33,9 @@ inline void socketInit6(void)
   struct TcpIpSocket *sck = sockets;
   for (i=0; i < NUMBER_OF_SOCKETS; i++)
   {
-//    sck->Rx = xQueueCreateExternal(255, 1, (void *)(ptr));
+    sck->Rx = xQueueCreateExternal(255, 1, (void *)(ptr));
     ptr+=256;
-//    sck->Tx = xQueueCreateExternal(255, 1, (void *)(ptr));
+    sck->Tx = xQueueCreateExternal(255, 1, (void *)(ptr));
     ptr+=256;
 
     sck->localPort     = (i<16) ? htons(MYTELNETPOERT + i) : (MYTELNETPOERT + 16);
@@ -47,11 +48,12 @@ inline void socketInit6(void)
 struct TcpIpSocket* findConnectedSocket6(void)
 {
   struct TcpIpSocket *result = sockets;
+  //UIP_TCP_BUF->
   uint8_t i;
   for (i=0; i<NUMBER_OF_SOCKETS; i++)
   {
     if ( ((result->state != LISTEN) && (result->state != CLOSED)) 
-      && (result->RemoteIpAddr == nicState.layer3.ip->srcipaddr) && (result->localPort == nicState.layer4.tcp->destport) && (result->remotePort == nicState.layer4.tcp->srcport))
+      && memcmp(&result->RemoteIpAddr6,&nicState.layer3.ipv6->srcipaddr, 128) && (result->localPort == UIP_TCP_BUF->destport) && (result->remotePort == UIP_TCP_BUF->srcport))
     {
 #if TCP_DEBUG
       if (tcpDebugStream != NULL)
@@ -66,7 +68,7 @@ struct TcpIpSocket* findConnectedSocket6(void)
   result = sockets;
   for (i=0; i<NUMBER_OF_SOCKETS; i++)
   {
-    if ((result->state == LISTEN) && (result->localPort == nicState.layer4.tcp->destport))
+    if ((result->state == LISTEN) && (result->localPort == UIP_TCP_BUF->destport))
     {
 #if TCP_DEBUG
       if (tcpDebugStream != NULL)
@@ -80,33 +82,40 @@ struct TcpIpSocket* findConnectedSocket6(void)
 #if TCP_DEBUG
   if (tcpDebugStream != NULL)
     if (tcpDebugLevel > 2)
-      fprintf_P(tcpDebugStream, PSTR("Can't find TCP socket with localPort %d\r\n"), htons(nicState.layer4.tcp->destport));
+      fprintf_P(tcpDebugStream, PSTR("Can't find TCP socket with localPort %d\r\n"), htons(UIP_TCP_BUF->destport));
 #endif
   return NULL;
 }
 
 static inline void tcpAcceptConn6(struct TcpIpSocket *sck)
 {
+  //UIP_TCP_BUF->
   sck->state        = SYN_RECEIVED;
-  sck->remotePort   = nicState.layer4.tcp->srcport;
-  sck->RemoteIpAddr = nicState.layer3.ip->srcipaddr;
+            fprintf_P(tcpDebugStream, PSTR("TCP PORTS src %04x ; dest %04x\r\n"), UIP_TCP_BUF->srcport, UIP_TCP_BUF->destport);
+  uint16_t tempPort = UIP_TCP_BUF->destport;
+  sck->remotePort   = UIP_TCP_BUF->srcport;
+  sck->localPort = tempPort;
+  //memcpy(&sck->RemoteIpAddr6, &nicState.layer3.ip->srcipaddr, 128)
+  sck->RemoteIpAddr6 = nicState.layer3.ipv6->srcipaddr;  
 }
 
 inline uint8_t processTcpPacket6(void)
 {
-  struct TcpIpSocket *socket = findConnectedSocket6();
+  ///struct TcpIpSocket *socket = findConnectedSocket6();
+  //UIP_TCP_BUF->
   
-  if (socket == NULL)
-    return 1;
+  ///if (socket == NULL)
+    ///return 1;
   
-  
-  socket->seqNoLastReceived = htonl(nicState.layer4.tcp->seqno);
+  struct TcpIpSocket *socket = &sockets[0];
+   
+  socket->seqNoLastReceived = htonl( (struct netTcpHeader *)UIP_TCP_BUF->seqno);
   
   if (socket->state == LISTEN)
   {
-    if (nicState.layer4.tcp->flags & TCP_FLAGS_SYN)
+    if (UIP_TCP_BUF->flags & TCP_FLAGS_SYN)
     {
-//      uint16_t len = nicState.layer4.tcp->tcpoffset>>4;
+//      uint16_t len = UIP_TCP_BUF->tcpoffset>>4;
 //      len *=4;
 #if TCP_DEBUG
       if (tcpDebugStream != NULL)
@@ -115,19 +124,21 @@ inline uint8_t processTcpPacket6(void)
 #endif
       tcpAcceptConn6(socket);
       //Preparing response
-      nicState.layer4.tcp->srcport   = socket->localPort;
-      nicState.layer4.tcp->destport  = socket->remotePort;
-      nicState.layer4.tcp->seqno     = htonl(socket->seqNoLastSent);
-      nicState.layer4.tcp->ackno     = htonl(socket->seqNoLastReceived+1);
-      nicState.layer4.tcp->tcpoffset = 5<<4;
-      nicState.layer4.tcp->flags     = TCP_FLAGS_ACK+TCP_FLAGS_SYN;
-      nicState.layer4.tcp->wnd       = htons(100);
-      nicState.layer4.tcp->tcpchksum = 0;
-      nicState.layer4.tcp->urgp      = 0;
-      calculateTcpChecksun(TCP_HEADER_LEN);
+      UIP_TCP_BUF->srcport   = socket->localPort;
+      UIP_TCP_BUF->destport  = socket->remotePort;
+      UIP_TCP_BUF->seqno     = htonl(socket->seqNoLastSent);
+      UIP_TCP_BUF->ackno     = htonl(socket->seqNoLastReceived+1);
+      UIP_TCP_BUF->tcpoffset = 5<<4;
+      UIP_TCP_BUF->flags     = TCP_FLAGS_ACK+TCP_FLAGS_SYN;
+      UIP_TCP_BUF->wnd       = htons(100);
+      UIP_TCP_BUF->tcpchksum = 0;
+      UIP_TCP_BUF->urgp      = 0;
+      calculateTcpChecksum6(TCP_HEADER_LEN);
 
       socket->seqNoLastSent++;
-      ipSend(socket->RemoteIpAddr, IP_PROTO_TCP, TCP_HEADER_LEN);
+      fprintf_P(tcpDebugStream, PSTR("Sending SYN_ACK\r\n"));
+      ipv6Send(IP_PROTO_TCP, TCP_HEADER_LEN);
+      fprintf_P(tcpDebugStream, PSTR("Sent SYN_ACK\r\n"));
     }
 #if TCP_DEBUG
     else
@@ -142,9 +153,11 @@ inline uint8_t processTcpPacket6(void)
   
   if (socket->state == SYN_RECEIVED)
   {
-    if (nicState.layer4.tcp->flags & TCP_FLAGS_ACK)
+    fprintf_P(tcpDebugStream, PSTR("SYN_RECEIVED\r\n"));
+    if (UIP_TCP_BUF->flags & TCP_FLAGS_ACK)
     {
       socket->state    = ESTABILISHED;
+      fprintf_P(tcpDebugStream, PSTR("ESTABILISHED\r\n"));
 #if TCP_DEBUG
     if (tcpDebugStream != NULL)
       if (tcpDebugLevel > 2)
@@ -167,24 +180,26 @@ inline uint8_t processTcpPacket6(void)
   
   if (socket->state == ESTABILISHED)
   {
-    if (nicState.layer4.tcp->flags & TCP_FLAGS_FIN)  //ESTABILISHED -> CLOSE_WAIT -> closed
+    if (UIP_TCP_BUF->flags & TCP_FLAGS_FIN)  //ESTABILISHED -> CLOSE_WAIT -> closed
     {
       socket->timer              = timer100Hz;
-      nicState.layer4.tcp->flags = TCP_FLAGS_ACK;
+      UIP_TCP_BUF->flags = TCP_FLAGS_ACK;
       
       uint8_t dataFromBufLen;
-      uint8_t *dataPtr = (uint8_t *)(nicState.layer4.tcp+1);
+      uint8_t *dataPtr = (uint8_t *)(UIP_TCP_BUF+1);
 //      while (xQueueReceive(socket->Tx, dataPtr, 0) == pdTRUE)
 //      {
 //        dataFromBufLen++;
 //        dataPtr++;
 //      }
-      ipSend(socket->RemoteIpAddr, IP_PROTO_TCP, TCP_HEADER_LEN + dataFromBufLen);
+      calculateTcpChecksum6(TCP_HEADER_LEN);
+      ipv6Send(IP_PROTO_TCP, TCP_HEADER_LEN + dataFromBufLen);
       socket->state    = CLOSE_WAIT;
       
       
-      nicState.layer4.tcp->flags = TCP_FLAGS_FIN;
-      ipSend(socket->RemoteIpAddr, IP_PROTO_TCP, TCP_HEADER_LEN);
+      UIP_TCP_BUF->flags = TCP_FLAGS_FIN;
+      calculateTcpChecksum6(TCP_HEADER_LEN);
+      ipv6Send(IP_PROTO_TCP, TCP_HEADER_LEN);
       socket->state    = LAST_ACK;
     }
     return 0;
@@ -197,8 +212,8 @@ inline uint8_t processTcpPacket6(void)
 
 void calculateTcpChecksum6(uint16_t tcpLen)
 {
-  nicState.layer4.tcp->tcpchksum = 0;
-  nicState.layer4.tcp->tcpchksum = netChecksum(nicState.layer4.tcp, tcpLen); //TODO finish it
+  UIP_TCP_BUF->tcpchksum = 0;
+  UIP_TCP_BUF->tcpchksum = netChecksum(UIP_TCP_BUF, tcpLen); //TODO finish it
 }
 
 
@@ -211,7 +226,7 @@ uint8_t sendTcBuffer6(uint8_t socketNo)
 
 void netstackTCPIPProcess6(void)
 {
-  if (nicState.layer4.tcp->destport == htons(80))
+  if (UIP_TCP_BUF->destport == htons(80))
   {
 #if TCP_DEBUG
     if (tcpDebugStream != NULL)
@@ -221,7 +236,7 @@ void netstackTCPIPProcess6(void)
   }
   else
   {
-    processTcpPacket();
+    processTcpPacket6();
   }
 }
 
