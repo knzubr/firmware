@@ -11,7 +11,7 @@
 #define ICMP_DEBUG 1
 #define TCP_DEBUG  1
 #define IPV6_DEBUG  1
-#define DEBUG_PRINT_NET_PACKET 0 //prints all received packet
+#define DEBUG_PRINT_NET_PACKET 1 //prints all received packet
 
 /* IPv6 support  - for more conf check ipv6Conf.h*/
 #define IPV6_SUPPORT 1

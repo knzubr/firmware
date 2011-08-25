@@ -122,16 +122,16 @@
  406               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 configuration.c
-     /tmp/ccZ36Ids.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccZ36Ids.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccZ36Ids.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccZ36Ids.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccZ36Ids.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccZ36Ids.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccZ36Ids.s:277    .text:00000000 saveConfiguration
-     /tmp/ccZ36Ids.s:304    .text:0000000e loadConfiguration
+     /tmp/ccbrgcHB.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccbrgcHB.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccbrgcHB.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccbrgcHB.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccbrgcHB.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccbrgcHB.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccbrgcHB.s:277    .text:00000000 saveConfiguration
+     /tmp/ccbrgcHB.s:304    .text:0000000e loadConfiguration
                             *COM*:00000002 lockSensors
-     /tmp/ccZ36Ids.s:331    .eeprom:00000000 lockerSensorsEEP
+     /tmp/ccbrgcHB.s:331    .eeprom:00000000 lockerSensorsEEP
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers
