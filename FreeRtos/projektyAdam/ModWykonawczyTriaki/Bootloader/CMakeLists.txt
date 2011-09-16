@@ -32,14 +32,14 @@ SET(CMAKE_CXX_FLAGS ${CXXFLAGS})
 SET(FORMAT          "ihex")
 
 
-add_executable(${IMAGENAME} bootloader.c flash.c serial.c)
+add_executable(${IMAGENAME}.elf bootloader.c flash.c serial.c)
 
 
 ADD_CUSTOM_COMMAND(
     OUTPUT ${IMAGENAME}.hex
-    COMMENT "Create hex file"
     COMMAND avr-objcopy -O ${FORMAT} -R .eeprom ${IMAGENAME}.elf ${IMAGENAME}.hex
     DEPENDS ${IMAGENAME}.elf
+    COMMENT "Create hex file"
 )
  
 ADD_CUSTOM_COMMAND(
@@ -50,9 +50,10 @@ ADD_CUSTOM_COMMAND(
 )
 
 add_custom_target(install
-    COMMAND @avr-size -A ${IMAGENAME}
-    COMMAND avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c stk500v2 -U flash:w:${IMAGENAME}.hex -U eeprom:w:${IMAGENAME}.eep
-    COMMENT "Programming device"
-    DEPENDS ${IMAGENAME}
+    COMMAND @avr-size -A ${IMAGENAME}.elf
+    COMMAND avr-objcopy -O ${FORMAT} -R .eeprom ${IMAGENAME}.elf ${IMAGENAME}.hex
+    COMMAND avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c stk500v2 -U flash:w:${IMAGENAME}.hex
+    DEPENDS ${IMAGENAME}.elf
     COMMENT "Upload firmware to microcontroller"
+    COMMENT "Programming device"
 )
