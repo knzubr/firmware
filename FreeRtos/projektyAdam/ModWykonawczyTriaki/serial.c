@@ -23,12 +23,12 @@ static uint8_t wiadomosc;
 
 
 static xSemaphoreHandle xSemaphore;
-static portBASE_TYPE xHigherPriorityTaskWoken; 
 
 static uint8_t crcLo;
 static uint8_t crcHi;
 static uint16_t crc;
 
+#if 1
 static uint8_t wykonajRozkaz(void)
 {
 //  static  portBASE_TYPE   xResult;
@@ -42,8 +42,10 @@ static uint8_t wykonajRozkaz(void)
       break;
 
     case rOpuscRolete2:
-//    wiadomosc = 0x3F;
-//    wysylac = 3;
+#if X2
+      wiadomosc = 0x3F;
+      wysylac = 3;
+#endif
       break;
 
     case rPodniesRolete1:
@@ -52,8 +54,10 @@ static uint8_t wykonajRozkaz(void)
       break;
 
     case rPodniesRolete2:
-//    wiadomosc = 0xBF;
-//    wysylac = 3;
+#if X2
+      wiadomosc = 0xBF;
+      wysylac = 3;
+#endif
       break;
 
     case rZatrzymajRolete1:
@@ -62,8 +66,10 @@ static uint8_t wykonajRozkaz(void)
       break;
 
     case rZatrzymajRolete2:
-//    wiadomosc = 0x40;
-//    wysylac = 3;
+#if X2
+      wiadomosc = 0x40;
+      wysylac = 3;
+#endif
       break;
 
     case rPING:
@@ -79,6 +85,8 @@ static uint8_t wykonajRozkaz(void)
   return wysylac;
 }
 
+#endif
+
 void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
   (void) uxIndex;
@@ -92,22 +100,31 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   static uint8_t         rezultat;
   stan = s_sync;
   
-/*
+#if 0
   for ( ;; )
   {
-    static uint8_t tmp = 'C';
+    static uint8_t tmp;
+    
+    tmp= 'C';
     crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
+    tmp = 'D';
+    crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
+    tmp = 'E';
+    crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
+    
     TxStart();
     vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
     crDELAY(xHandle, 100);
 
+    tmp = 'Z';
     crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
-    Led1Off();
     TxStart();
     vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
     crDELAY(xHandle, 100);
   }
-*/
+
+#endif
+#if 1
   for( ;; )
   {
     if (stan == s_sync)
@@ -265,14 +282,18 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
             (*((void(*)(void))BOOT_START))();            //reboot
           }
         }
+#if 0        
         else if (rezultat == 2)
         {
           crQUEUE_SEND(xHandle, xRoleta[0], (void *)(&wiadomosc), 0, &xResult); 
         }
+#endif
+#if X2
         else if (rezultat == 3)
         {
           crQUEUE_SEND(xHandle, xRoleta[1], (void *)(&wiadomosc), 0, &xResult); 
         }
+#endif
         else if (rezultat == 4)
         {
           //SYNC
@@ -312,6 +333,7 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       }
     }
   }
+#endif
   crEND();
 }
 
@@ -343,7 +365,6 @@ ISR(USART_RX_vect)
 {
   signed portCHAR cChar;
   cChar = UDR0;
-//  Led2Toggle();
   crQUEUE_SEND_FROM_ISR( xRxedChars, &cChar, pdFALSE );
 }
 /*-----------------------------------------------------------*/
@@ -355,6 +376,7 @@ ISR(USART_UDRE_vect)
   if( xQueueReceiveFromISR( xCharsForTx, &cChar, &cTaskWoken ) == pdTRUE )
   {
     /* Send the next character queued for Tx. */
+    TxStart();
     UDR0 = cChar;
   }
   else
@@ -368,8 +390,6 @@ ISR(USART_TX_vect)
 {
   if (!vIsInterruptOn())
   {
-      TxStop();
-      xHigherPriorityTaskWoken = pdFALSE;
-//      xSemaphoreGiveFromISR( xSemaphore, &xHigherPriorityTaskWoken);
+    TxStop();
   }
 }

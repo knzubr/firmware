@@ -114,4 +114,8 @@ uint8_t czytKlawiszRol1wDol(void);
 uint8_t czytKlawiszRol2wDol(void);
 
 
+void powerOn(void);
+void powerOff(void);
+
+
 #endif

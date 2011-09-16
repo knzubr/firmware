@@ -52,6 +52,10 @@
 #include "main.h"
 #include "../../freeRtos/Lib/include/protocol1.h"
 #include <avr/eeprom.h>
+#include "hardware.h"
+#include <util/delay.h>
+
+
 
 /**
  * Proces odpowiedzialny za obsługę klawiszy
@@ -99,16 +103,21 @@ portSHORT main( void )
 #endif
   
   hardwareInit();
-  xSerialPortInitMinimal(16);
+  
+  powerOn();
+  
+  xSerialPortInitMinimal(32);
 
   xRoleta[0] = xQueueCreate(4, 1);
+#if X2
   xRoleta[1] = xQueueCreate(4, 1);
-
+#endif
   xCoRoutineCreate(vProtocol, 0, 0);
-  xCoRoutineCreate(vKlawisze, 0, 0);
-  xCoRoutineCreate(vRoleta, 0, 0);
+//  xCoRoutineCreate(vKlawisze, 0, 0);
+//  xCoRoutineCreate(vRoleta, 0, 0);
+#if X2
   xCoRoutineCreate(vRoleta, 0, 1);
-
+#endif
   vTaskStartScheduler();
   return 0;
 }
@@ -129,12 +138,13 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
     {
       crQUEUE_SEND(xHandle, xRoleta[0], &wiadomosc, 10, &xResult);
     }
-
+#if X2
     wiadomosc = (uint8_t) (automatStanowKlawiszy(czytKlawiszRol2wGore(), czytKlawiszRol2wDol(), &roleta[1]));
     if (wiadomosc)
     {
       crQUEUE_SEND(xHandle, xRoleta[1], &wiadomosc, 10, &xResult);
     }
+#endif
   }
   crEND();
 }
