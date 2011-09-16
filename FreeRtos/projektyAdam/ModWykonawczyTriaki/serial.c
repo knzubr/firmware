@@ -28,7 +28,6 @@ static uint8_t crcLo;
 static uint8_t crcHi;
 static uint16_t crc;
 
-#if 1
 static uint8_t wykonajRozkaz(void)
 {
 //  static  portBASE_TYPE   xResult;
@@ -85,8 +84,6 @@ static uint8_t wykonajRozkaz(void)
   return wysylac;
 }
 
-#endif
-
 void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
   (void) uxIndex;
@@ -100,31 +97,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   static uint8_t         rezultat;
   stan = s_sync;
   
-#if 0
-  for ( ;; )
-  {
-    static uint8_t tmp;
-    
-    tmp= 'C';
-    crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
-    tmp = 'D';
-    crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
-    tmp = 'E';
-    crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
-    
-    TxStart();
-    vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
-    crDELAY(xHandle, 100);
-
-    tmp = 'Z';
-    crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
-    TxStart();
-    vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
-    crDELAY(xHandle, 100);
-  }
-
-#endif
-#if 1
   for( ;; )
   {
     if (stan == s_sync)
@@ -282,12 +254,10 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
             (*((void(*)(void))BOOT_START))();            //reboot
           }
         }
-#if 0        
         else if (rezultat == 2)
         {
           crQUEUE_SEND(xHandle, xRoleta[0], (void *)(&wiadomosc), 0, &xResult); 
         }
-#endif
 #if X2
         else if (rezultat == 3)
         {
@@ -325,7 +295,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         if (kodRozkazu == rFLASH)
         {
           DISABLE_RX();
-          //TODO disable RX buffer
           crDELAY(xHandle, 1000);
           ENABLE_RX();
         }
@@ -333,7 +302,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       }
     }
   }
-#endif
   crEND();
 }
 
