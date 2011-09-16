@@ -21,7 +21,7 @@
 #include "falsh.h"
 #include "serial.h"
 
-uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 7, 0xFF , 0xFF, 'b', '0', '.', '6', '2'};   //rHELLO response
+uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 7, 0xFF , 0xFF, 'b', '0', '.', '6', '3'};   //rHELLO response
 uint8_t         pingBuf[HDR_LEN+PROT_BUF_LEN] = {SYNC, 0, rPING, 8};                                          //rPING  response
 uint8_t         noCommandBuf[]                = {SYNC, 0, rUNKNOWN, 0};                                       //unknown command response
 
@@ -52,7 +52,6 @@ void resetStateMachine(void)
   stan        = sync;
   crc         = 0;
   protDaneWsk = 0;
-  cnt         = TimeOutCnt; 
 }
 
 void sendBuf(uint8_t *buf, uint8_t len)
@@ -82,7 +81,6 @@ void wykonajRozkaz(void)
     return;
   }
   stan = sync;
-  cnt         = TimeOutCnt;
   if (adres != protAddr)
   {
     if (protRozkaz == rFLASH)
@@ -135,8 +133,8 @@ int main(void)
   DDRD  = 0x0A; //0 - RXD, 1 - TXD, 3 - TxEn, 6 -  
   PORTD = 0x00;
 
-  adres =  PINC & 0x38;
-  adres |= ((PINB & 0x38)<<1);
+  adres =  PINC & 0x03;
+  adres |= ((PINB & 0x38)>>1);
 
   //initialize serial port UART0
   UCSR0A = 0;
