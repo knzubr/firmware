@@ -20,7 +20,10 @@
 #ifndef _BOOTLDR_H_
 #define _BOOTLDR_H_        1
 
+#include "falsh.h"
+
 #include <avr/io.h>
+
 #include <avr/boot.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
@@ -141,8 +144,7 @@
 #define XMODEM_EOF         0x1A
 #define XMODEM_RWC         'C'
 
-#define RS485Enable()      (PORTD |=  0x08)
-#define RS485Disable()     (PORTD &=  0xF7)
+
 
 //#define DataInCom()        (UCSRAREG(COMPORTNo) & (1 << RXCBIT(COMPORTNo)))
 #define DataInCom()        (UCSR0A & (1 << RXC0))
@@ -175,6 +177,8 @@ void quit(void)         __attribute__((noreturn));
  * Wait for a tame of different device flashing and leave next bootloader mode
  */
 void waitAndQuit(void)  __attribute__((noreturn));
+
+uint8_t ReadCom_withLimitedWaiting(void);
 
 //@}
 #endif

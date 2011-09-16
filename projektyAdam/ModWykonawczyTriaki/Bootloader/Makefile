@@ -35,7 +35,7 @@ HEX_EEPROM_FLAGS += --set-section-flags=.eeprom="alloc,load"
 HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 ## Objects that must be built in order to link
-OBJECTS = bootloader.o 
+OBJECTS = bootloader.o serial.o flash.o
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -44,8 +44,11 @@ LINKONLYOBJECTS =
 all: $(TARGET).elf bootloader.hex bootloader.eep size
 
 ## Compile
-bootloader.o: bootloader.c
-	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+%.o : %.c
+	@echo
+	@echo $(MSG_COMPILING) $<
+	$(CC) -c $(INCLUDES) $(CFLAGS) $< -o $@
+
 
 ##Link
 $(TARGET).elf: $(OBJECTS)

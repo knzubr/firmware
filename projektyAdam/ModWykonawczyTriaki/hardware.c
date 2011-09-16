@@ -11,9 +11,8 @@ void hardwareInit(void)
   /*Ustalanie adresu
     bit 7, 6 = 0 dla sterowników rolet i światła
    */
-//  adres =  PINC & 0x38;
-//  adres |= ((PINB & 0x38)<<1);
-  adres=31;
+  adres =  PINC & 0x03;
+  adres |= ((PINB & 0x38)>>1);
   wczytajUstawienia(0x88);
 }
 

@@ -86,7 +86,7 @@ void vApplicationIdleHook( void );
 
 /* Device address on RS 485 bus */
 uint8_t adres;
-char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r', 0, 'v', '0', '.', '5', '1'};
+char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r', 0, 'v', '0', '.', '0', '2'};
 
 t_stan_klawiszy	roleta[2] = {{0, 0, 0, 0, bezczynny}, {0, 0, 0, 0, bezczynny}};
 
@@ -113,8 +113,8 @@ portSHORT main( void )
   xRoleta[1] = xQueueCreate(4, 1);
 #endif
   xCoRoutineCreate(vProtocol, 0, 0);
-//  xCoRoutineCreate(vKlawisze, 0, 0);
-//  xCoRoutineCreate(vRoleta, 0, 0);
+  xCoRoutineCreate(vKlawisze, 0, 0);
+  xCoRoutineCreate(vRoleta, 0, 0);
 #if X2
   xCoRoutineCreate(vRoleta, 0, 1);
 #endif

@@ -75,8 +75,10 @@ ADD_CUSTOM_COMMAND(
 )
 
 add_custom_target(install
+    COMMAND @avr-size -A ${IMAGENAME}.elf
     COMMAND avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c stk500v2 -U flash:w:${IMAGENAME}.hex -U eeprom:w:${IMAGENAME}.eep
     COMMENT "Programming device"
+    DEPENDS ${IMAGENAME}.elf
     DEPENDS ${IMAGENAME}.hex
     DEPENDS ${IMAGENAME}.eep
     COMMENT "Upload firmware to microcontroller"
