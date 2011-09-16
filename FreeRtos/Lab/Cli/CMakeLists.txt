@@ -7,24 +7,6 @@ SET(PROGRAMMER_DEV    /dev/avrMultiTool)
 
 SET(IMAGENAME         firmware)
 
-ADD_CUSTOM_COMMAND(
-    OUTPUT ${IMAGENAME}.hex
-    COMMAND avr-objcopy -O ${FORMAT} -R .eeprom ${IMAGENAME} ${IMAGENAME}.hex
-    DEPENDS ${IMAGENAME}
-)
- 
-ADD_CUSTOM_COMMAND(
-    OUTPUT ${IMAGENAME}.eep
-    COMMAND avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ${FORMAT} ${IMAGENAME} ${IMAGENAME}.eep
-    DEPENDS ${IMAGENAME}
-)
-
-add_custom_target(program
-    COMMAND avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c jtag1 -U flash:w:${IMAGENAME}.hex -U eeprom:w:${IMAGENAME}.eep
-    DEPENDS ${IMAGENAME}.hex ${IMAGENAME}.eep
-    COMMENT "Upload firmware to microcontroller"
-)
-
 SET(CMAKE_C_COMPILER avr-gcc)
 SET(CMAKE_CXX_COMPILER avr-g++)
 
@@ -140,3 +122,21 @@ add_custom_target(Filesystem      DEPENDS
                         ${LIB_DIR}/ff.c                         ${LIB_DIR}/include/ff.h                 # Obsługa systemu plików Fat32
                         ${LIB_DIR}/include/integer.h                               
                  )
+
+ADD_CUSTOM_COMMAND(
+    OUTPUT ${IMAGENAME}.hex
+    COMMAND avr-objcopy -O ${FORMAT} -R .eeprom ${IMAGENAME} ${IMAGENAME}.hex
+    DEPENDS ${IMAGENAME}
+)
+ 
+ADD_CUSTOM_COMMAND(
+    OUTPUT ${IMAGENAME}.eep
+    COMMAND avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ${FORMAT} ${IMAGENAME} ${IMAGENAME}.eep
+    DEPENDS ${IMAGENAME}
+)
+
+add_custom_target(install
+    COMMAND avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c jtag1 -U flash:w:${IMAGENAME}.hex -U eeprom:w:${IMAGENAME}.eep
+    DEPENDS ${IMAGENAME}.hex ${IMAGENAME}.eep
+    COMMENT "Upload firmware to microcontroller"
+)

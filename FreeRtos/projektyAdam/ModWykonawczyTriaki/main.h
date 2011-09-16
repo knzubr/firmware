@@ -19,6 +19,8 @@
 #define mainCHECK_PERIOD 100
 #define mainRESET_COUNT_ADDRESS			( ( void * ) 0x50 )
 
+#define DO_INCR_RST 0
+
 #define STR_V1 '0'
 #define STR_V2 '.'
 #define STR_V3 '0'

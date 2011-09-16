@@ -51,6 +51,7 @@
 
 #include "main.h"
 #include "../../freeRtos/Lib/include/protocol1.h"
+#include <avr/eeprom.h>
 
 /**
  * Proces odpowiedzialny za obsługę klawiszy
@@ -64,7 +65,15 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
  */
 static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
 
-static void prvIncrementResetCount( void );
+#if DO_INCR_RST
+static void prvIncrementResetCount( void )
+{
+  unsigned portCHAR ucCount;
+  eeprom_read_block( &ucCount, mainRESET_COUNT_ADDRESS, sizeof( ucCount ) );
+  ucCount++;
+  eeprom_write_byte( mainRESET_COUNT_ADDRESS, ucCount );
+}
+#endif
 
 void vApplicationIdleHook( void );
 
@@ -85,8 +94,10 @@ xQueueHandle xRoleta[2];
 
 portSHORT main( void )
 {
-//prvIncrementResetCount();
-
+#if DO_INCR_RST
+  prvIncrementResetCount();
+#endif
+  
   hardwareInit();
   xSerialPortInitMinimal(16);
 
@@ -175,13 +186,3 @@ void vApplicationIdleHook( void )
     vCoRoutineSchedule();
   }
 }
-
-#if 0
-static void prvIncrementResetCount( void )
-{
-	unsigned portCHAR ucCount;
-	eeprom_read_block( &ucCount, mainRESET_COUNT_ADDRESS, sizeof( ucCount ) );
-	ucCount++;
-	eeprom_write_byte( mainRESET_COUNT_ADDRESS, ucCount );
-}
-#endif
