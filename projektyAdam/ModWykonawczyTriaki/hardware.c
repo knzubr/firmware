@@ -11,8 +11,9 @@ void hardwareInit(void)
   /*Ustalanie adresu
     bit 7, 6 = 0 dla sterowników rolet i światła
    */
-  adres =  PINC & 0x38;
-  adres |= ((PINB & 0x38)<<1);
+//  adres =  PINC & 0x38;
+//  adres |= ((PINB & 0x38)<<1);
+  adres=31;
   wczytajUstawienia(0x88);
 }
 
@@ -149,4 +150,14 @@ void wczytajUstawienia(uint8_t konfiguracja)
     sterowanie[1].gora = roleta2wDol;
     sterowanie[1].dol  = roleta2wGore;
   }
+}
+
+inline void powerOn()
+{
+  PORTB |= 0x01;
+}
+
+inline void powerOff()
+{
+  PORTB &= (~0x01);
 }

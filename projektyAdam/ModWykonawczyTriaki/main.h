@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#define X2 0
+
 
 #include <stdlib.h>
 #include <avr/interrupt.h>
