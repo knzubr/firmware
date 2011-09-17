@@ -35,7 +35,7 @@ HEX_EEPROM_FLAGS += --set-section-flags=.eeprom="alloc,load"
 HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
 ## Objects that must be built in order to link
-OBJECTS = bootloader.o serial.o flash.o
+OBJECTS = bootloader.o
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
@@ -70,18 +70,17 @@ size: $(TARGET).hex
 # Program the device.
 AVRDUDE             = avrdude
 AVRDUDE_PROGRAMMER  = stk500v2
-#AVRDUDE_PORT = /dev/avrStk500v2prog	   # Stk500v2 on dedicated PCB
-AVRDUDE_PORT = /dev/avrMultiTool          # Stk500v2 on multi PCB
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex -U lfuse:w:0xff:m -U hfuse:w:0xdf:m 
-#-U efuse:w:0xf8:m 
+AVRDUDE_PORT = /dev/avrStk500v2prog	   # Stk500v2 on dedicated PCB
+#AVRDUDE_PORT = /dev/avrMultiTool          # Stk500v2 on multi PCB
+AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
-AVR_DUDE_WRITE_FUSES = -U lfuse:w:0xff:m -U hfuse:w:0xdf:m 
+AVR_DUDE_WRITE_FUSES = -U lfuse:w:0xff:m -U hfuse:w:0xdf:m
 #-U efuse:w:0xf8:m something is not working with fuse extended. Please enable bootloader manualy.
 
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVR_DUDE_WRITE_FUSES)
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVR_DUDE_WRITE_FUSES) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 ## Clean target
 .PHONY: clean
