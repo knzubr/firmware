@@ -18,8 +18,6 @@
 */
 
 #include "bootloader.h"
-#include "falsh.h"
-#include "serial.h"
 
 uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 7, 0xFF , 0xFF, 'b', '0', '.', '6', '3'};   //rHELLO response
 uint8_t         pingBuf[HDR_LEN+PROT_BUF_LEN] = {SYNC, 0, rPING, 8};                                          //rPING  response
@@ -27,6 +25,7 @@ uint8_t         noCommandBuf[]                = {SYNC, 0, rUNKNOWN, 0};         
 
 uint8_t         buf[BUFSIZE];                                                                                 // xModem receive buffer
 uint8_t         bufptr;
+uint8_t         pagptr;
 uint8_t         ch;
 uint8_t         cl;
 uint16_t        FlashAddr;
@@ -46,12 +45,59 @@ uint8_t         protCrcLo;                     // Odebrany mniej znaczący bajt 
 uint8_t         protDaneWsk;                   // Licznik odebranych danych
 
 
+inline void write_one_page(unsigned char *buf) //Uaktualnianie strony z pamięcią flash
+{
+  boot_page_erase(FlashAddr);                  //Kasowanie strony
+  boot_spm_busy_wait();                        //Czekanie na wykonanie operacji
+  
+  uint16_t *tmpPtr = (uint16_t *)(buf);        //kompilator musi być little bit endian
+  for(pagptr = 0; pagptr < SPM_PAGESIZE; pagptr += 2)
+  {
+    boot_page_fill(pagptr, *tmpPtr);          //brzydkie rzutowanie 2X uint8_t na uint16_t
+    tmpPtr++;                                 //wskaźnik zwiększa się o 2
+  }
+  boot_page_write(FlashAddr);                  //Zapis strony
+  boot_spm_busy_wait();                        //Czekanie na wykonanie operacji
+}
+
+//send data to comport
+void WriteCom(unsigned char dat)
+{
+  RS485Enable();
+  UDRREG(COMPORTNo) = dat;
+  while(!(UCSR0A & (1<<TXCBIT(COMPORTNo))))
+    ;    //wait for send finish
+
+  UCSR0A |= (1 << TXCBIT(COMPORTNo));
+  RS485Disable();
+}
+
+uint8_t ReadCom_withLimitedWaiting()
+{
+  uint8_t cnt2 = 30;
+  while(!DataInCom())
+  {
+    if(TIFRREG & (1<<OCF1A))    // Sprawdzanie przepełnienie timera T1
+    {
+      TIFRREG |= (1 << OCF1A);  // Zerowanie flagi przepełnienia
+
+      cnt2--;                    // Odliczanie w dół. Jak dojdzie do zera to nastąpi wyjście z xModemu
+      if(cnt2 == 0)              // Sprawdzanie czy nie nastąpił timeout
+      {
+        quit();                 // Opuszczenie bootloadera
+      }
+    }
+  }
+  return UDR0;
+}
+
 
 void resetStateMachine(void)
 {
   stan        = sync;
   crc         = 0;
   protDaneWsk = 0;
+//cnt         = TimeOutCnt; 
 }
 
 void sendBuf(uint8_t *buf, uint8_t len)
@@ -81,6 +127,7 @@ void wykonajRozkaz(void)
     return;
   }
   stan = sync;
+//cnt         = TimeOutCnt;
   if (adres != protAddr)
   {
     if (protRozkaz == rFLASH)
@@ -126,11 +173,11 @@ int main(void)
   
   resetStateMachine();               // initialize state machine
 
-  DDRB  = 0x01;
-  PORTB = 0x3E; //3 - Adr2, 4 - Adr3, 5 - Adr4
-  DDRC  = 0x3C;
+  DDRB  = 0x00;
+  PORTB = 0x38;
+  DDRC  = 0x00;
   PORTC = 0x03;
-  DDRD  = 0x0A; //0 - RXD, 1 - TXD, 3 - TxEn, 6 -  
+  DDRD  = 0x6C;
   PORTD = 0x00;
 
   adres =  PINC & 0x03;
@@ -155,6 +202,7 @@ int main(void)
       TIFRREG |= (1 << OCF1A);  // Zerowanie
 
       cnt--;                    // Odliczanie w dół. Jak dojdzie do zera to nastąpi wyjście z xModemu
+      PORTD ^= (uint8_t)(0x40); // Miganie diodą
       if(cnt == 0)              // Sprawdzanie czy nie nastąpił timeout
       {
         quit();                 // Opuszczenie bootloadera
@@ -255,13 +303,13 @@ int main(void)
         buf[bufptr++] = tmp;                                     // write to temporary buffer
         crc = _crc_xmodem_update(crc, tmp);                      // calculate CRC
       }
-
       crch = ReadCom_withLimitedWaiting();                       // get checksum Hi
       crcl = ReadCom_withLimitedWaiting();                       // get checksum Lo
       ch = crc / 256;
       cl = crc % 256;
       if ((crch == ch) && (crcl == cl))
       {
+        PORTD |= (uint8_t)(0x40);
         packNO++;
         while(bufptr > 0)                                        // receive one frame, write multi pages
         {
@@ -278,6 +326,7 @@ int main(void)
       {
         //ask resend
         WriteCom(XMODEM_NAK);
+        PORTD |= (uint8_t)(0x20);
         cnt++;
       }
     }
@@ -285,11 +334,13 @@ int main(void)
     {
       //ask resend
       WriteCom(XMODEM_NAK);
+      PORTD |= (uint8_t)(0x20);
       cnt++;
     }
     //too much error, update abort
     if(cnt > 3)
     {
+      PORTD |= (uint8_t)(0x20);
       break;
     }
     tmp = ReadCom_withLimitedWaiting();
@@ -313,6 +364,7 @@ void quit(void)
 //! wait 1 minute and jump to user's application
 void waitAndQuit(void)
 {
+//  PORTD = 0x20;                               //LED 1 and 2 on
   cnt=120;
   while(1)
   {

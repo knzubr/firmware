@@ -52,8 +52,14 @@ ADD_CUSTOM_COMMAND(
 add_custom_target(install
     COMMAND @avr-size -A ${IMAGENAME}.elf
     COMMAND avr-objcopy -O ${FORMAT} -R .eeprom ${IMAGENAME}.elf ${IMAGENAME}.hex
-    COMMAND avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c stk500v2 -U flash:w:${IMAGENAME}.hex
+    COMMAND @avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c stk500v2 -U flash:w:${IMAGENAME}.hex
+#    COMMAND @avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c stk500v2 -U lfuse:w:0xfD:m -U hfuse:w:0xdf:m
+#    COMMAND @avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c stk500v2 -U efuse:w:0xf8:m
     DEPENDS ${IMAGENAME}.elf
     COMMENT "Upload firmware to microcontroller"
     COMMENT "Programming device"
+)
+
+add_custom_target(fuse
+    COMMAND @avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c stk500v2 -U lfuse:w:0xfD:m -U hfuse:w:0xdf:m -U efuse:w:0xf8:m
 )

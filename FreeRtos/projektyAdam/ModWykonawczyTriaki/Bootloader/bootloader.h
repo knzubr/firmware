@@ -20,8 +20,6 @@
 #ifndef _BOOTLDR_H_
 #define _BOOTLDR_H_        1
 
-#include "falsh.h"
-
 #include <avr/io.h>
 
 #include <avr/boot.h>
@@ -58,6 +56,9 @@
 #define LEDPORTNo          5                  /// Pin that is connected to the diode 1
 #define LED2PORTNo         6                  /// Pin that is connected to the diode 2
 
+
+#define RS485Enable()      (PORTD |=  0x08)
+#define RS485Disable()     (PORTD &=  0xF7)
 
 //receive buffer' size will not smaller than SPM_PAGESIZE
 #if BUFFERSIZE < SPM_PAGESIZE
