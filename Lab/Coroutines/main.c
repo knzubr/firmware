@@ -1,73 +1,50 @@
-/*
-	FreeRTOS.org V5.2.0 - Copyright (C) 2003-2009 Richard Barry.
-	This file is part of the FreeRTOS.org distribution.
-	FreeRTOS.org is free software; you can redistribute it and/or modify it 
-	under the terms of the GNU General Public License (version 2) as published
-	by the Free Software Foundation and modified by the FreeRTOS exception.
-	FreeRTOS.org is distributed in the hope that it will be useful,	but WITHOUT
-	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-	FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
-	more details.
-	You should have received a copy of the GNU General Public License along 
-	with FreeRTOS.org; if not, write to the Free Software Foundation, Inc., 59 
-	Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-	A special exception to the GPL is included to allow you to distribute a 
-	combined work that includes FreeRTOS.org without being obliged to provide
-	the source code for any proprietary components.  See the licensing section
-	of http://www.FreeRTOS.org for full details.
-	***************************************************************************
-	*                                                                         *
-	* Get the FreeRTOS eBook!  See http://www.FreeRTOS.org/Documentation      *
-	*                                                                         *
-	* This is a concise, step by step, 'hands on' guide that describes both   *
-	* general multitasking concepts and FreeRTOS specifics. It presents and   *
-	* explains numerous examples that are written using the FreeRTOS API.     *
-	* Full source code for all the examples is provided in an accompanying    *
-	* .zip file.                                                              *
-	*                                                                         *
-	***************************************************************************
-	1 tab == 4 spaces!
-	Please ensure to read the configuration and relevant port sections of the
-	online documentation.
-	http://www.FreeRTOS.org - Documentation, latest information, license and
-	contact details.
-	   http://www.SafeRTOS.com - A version that is certified for use in safety
-	critical systems.
-	http://www.OpenRTOS.com - Commercial support, development, porting,
-	licensing and training services.
-*/
-
 #include "main.h"
 
 /**
- * Coroutine, that is responsible for reading keys
- * @param pvParameters ignorowane parametry
+ * Korutyna odpowiedzialna za sprawdzanie stanu przycisków.
+ * @param xHandle uchwyt do korutyny umożliwiający zastosowanie makr. Programista nie może go używać bezpośrednio.
+ * @param uxIndex indeks korutyny. Umożliwia wykonywanie tej samej funkcji przez kilka korutyn. 
+ *                W przypadku tej funkcji, parametr nie jest wykorzystywany.
+ *                By uniknąć ostrzeżeń, należy na początku funkcji wpisać (void) uxIndex;
  */
 static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
 
 /**
- * Coroutine function, that is responsible for Diode
- * @param pvParameters ignorowane parametry
+ * Korutyna odpowiedzialna za sterowanie diodami.
+ * @param xHandle uchwyt do korutyny umożliwiający zastosowanie makr. Programista nie może go używać bezpośrednio.
+ * @param uxIndex indeks korutyny. Umożliwia wykonywanie tej samej funkcji przez kilka korutyn. W zależności od indeksu korytyna może sterować inną diodą
  */
 static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
 
+/**
+ * Funkcja wykonywana w procesie bezczynności. W poniższym programie obsługuje ona korutyny. System wykonuje tylko 1 proces - proces bezczynności, nie ma innych zadań.
+ */
 void vApplicationIdleHook( void );
 
 
 /*-----------------------------------------------------------*/
 
-/* Device address on RS 485 bus */
+/**
+ * Adres modułu wykonawczego.
+ * Moduły wykonawcze podłączone są do wpólnej magistrali Rs485.
+ * Każdy z nich ma inny adres, co umożliwia wydanie polecenia do określonego modułu.
+ * Adres określany jest na podstawie stanu zworek urządzenia.
+ * Umożliwia to wgranie do każdego urządzenia takiego samego programu.
+ */
 uint8_t address;
 
 
 portSHORT main( void )
 {
+  /// Konfiguracja portów, określanie adresu urządzenia, konfiguracja portu szeregowego.
   hardwareInit();
 
+  /// Dodawanie korutyn. Można tutaj uruchomić kolejne korutyny
   xCoRoutineCreate(vKlawisze, 0, 0);
   xCoRoutineCreate(vDioda, 0, 0);
   xCoRoutineCreate(vDioda, 0, 1);
 
+  /// Uruchomienie planisty. Od tego momentu działa wielozadaniowy system operacyjny.
   vTaskStartScheduler();
   return 0;
 }
@@ -86,7 +63,7 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 }
 
 static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
-{
+{ 
   crSTART( xHandle );
   for (;;)
   {
@@ -95,6 +72,7 @@ static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   crEND();
 }
 
+// Tej funkcji nie należy modyfikować.
 void vApplicationIdleHook( void )
 {
   for( ;; )

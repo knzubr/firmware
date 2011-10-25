@@ -45,14 +45,17 @@ char readKey(uint8_t keyNo);
  * Switch on (enable) Led 1
  */
 void led1on(void);
+
 /**
  * Switch off (disable) Led 1
  */
 void led1off(void);
+
 /**
  * Toggle (change state) Led 1
  */
 void led1toggle(void);
+
 /**
  * Read key #1
  */
@@ -62,14 +65,17 @@ char readKey1(void);
  * Switch on (enable) Led 2
  */
 void led2on(void);
+
 /**
  * Switch off (disable) Led 2
  */
 void led2off(void);
+
 /**
  * Toggle (change state) Led 2
  */
 void led2toggle(void);
+
 /**
  * Read key #2
  */
@@ -79,14 +85,17 @@ char readKey2(void);
  * Switch on (enable) Led 3
  */
 void led3on(void);
+
 /**
  * Switch off (disable) Led 3
  */
 void led3off(void);
+
 /**
  * Toggle (change state) Led 3
  */
 void led3toggle(void);
+
 /**
  * Read key #3
  */
@@ -96,14 +105,17 @@ char readKey3(void);
  * Switch on (enable) Led 4
  */
 void led4on(void);
+
 /**
  * Switch off (disable) Led 4
  */
 void led4off(void);
+
 /**
  * Toggle (change state) Led 4
  */
 void led4toggle(void);
+
 /**
  * Read key #4
  */
