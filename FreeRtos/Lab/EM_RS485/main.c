@@ -7,15 +7,9 @@
 xQueueHandle xDiodesOn[4];
 
 /**
- * Coroutine, that is responsible for reading keys
- * @param pvParameters ignorowane parametry
+ * Deklaracje funkcji wykonywanych przez korutyny.
  */
 static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
-
-/**
- * Coroutine function, that is responsible for Diode
- * @param pvParameters ignorowane parametry
- */
 static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
 
 void vApplicationIdleHook( void );

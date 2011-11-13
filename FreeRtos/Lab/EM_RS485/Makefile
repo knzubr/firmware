@@ -52,7 +52,6 @@ PORT_MEM   = ../../freeRtos/portable/MemMang
 SRC	= \
 main.c \
 hardware.c\
-serial.c\
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \
