@@ -3,13 +3,11 @@
 
 #include <avr/io.h>
 #include "main.h"
-#include "../../freeRtos/Lib/include/protocol1.h"
 
-#define TxStart() (PORTD |=  0x0C)
-#define TxStop()  (PORTD &=  0xF3)
+#define TxStart() (PORTD |=  0x0C) /* Podłączenie nadajnika RS 485 do magistrali */
+#define TxStop()  (PORTD &=  0xF3) /* Odłączenie nadajnika RS 485 od magistrali */
 
-extern uint8_t address;
-extern char bHelloResp[];
+//extern uint8_t address;
 
 /**
  * Herdware initialization
