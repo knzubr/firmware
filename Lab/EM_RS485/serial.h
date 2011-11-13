@@ -50,9 +50,7 @@
 
 #define MAX_DATA_LEN 14
 
-extern uint8_t address;
-extern char bHelloResp[];
-extern xQueueHandle xRoleta[2];
+
 
 typedef enum
 {
