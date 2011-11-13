@@ -64,8 +64,8 @@
  * Wyjątkiem jest wysyłanie danych. Po umieszczeniu ich w buforze nadawczym, 
  * należy włączyć obsługę przerwania "miejsce w sprzętowym buforze nadawczym".
  */
-static xQueueHandle xRxedChars;       /// Bufor, który przechowuje odebrane znaki z magistrali RS 485
-static xQueueHandle xCharsForTx;      /// Bufor, który przechowuje znaki do wysłania przez magistralę RS 485
+xQueueHandle xRxedChars;       /// Bufor, który przechowuje odebrane znaki z magistrali RS 485
+xQueueHandle xCharsForTx;      /// Bufor, który przechowuje znaki do wysłania przez magistralę RS 485
 
 static uint8_t wykonajRozkaz(void)
 {
