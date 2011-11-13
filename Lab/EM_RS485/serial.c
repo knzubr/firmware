@@ -69,7 +69,7 @@ static xQueueHandle xCharsForTx;      /// Bufor, który przechowuje znaki do wys
 
 static uint8_t wykonajRozkaz(void)
 {
-  ;
+  return 0;
 }
 
 void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
@@ -79,6 +79,7 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   crSTART( xHandle );
   for( ;; )
   {
+    wykonajRozkaz();
     crDELAY(xHandle, 100);
   }
   crEND();
@@ -150,7 +151,7 @@ ISR(USART_UDRE_vect)
 {
   signed portCHAR tempToSend;
 
-  if( xQueueReceiveFromISR(xCharsForTx, &cChar, NULL) == pdTRUE )
+  if( xQueueReceiveFromISR(xCharsForTx, &tempToSend, NULL) == pdTRUE )
   {                    /// Odczytana wiadomość zapisane jest w zmiennej tempToSend
     UDR0 = tempToSend; /// Umieszczenie bajtu z danymi w sprzętowym buforze nadawczym
   }
