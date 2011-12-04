@@ -12,8 +12,8 @@ void hardwareInit(void)
   /*Reading Rs485 address
     bit 7, 6 = 0 dla sterowników rolet i światła
    */
-  //address =  (PINB & 0x38) >> 1;
-  //address |= (PINC & 0x03);
+  adres =  (PINB & 0x38) >> 1;
+  adres |= (PINC & 0x03);
 }
 
 void ledOn(uint8_t ledNo)

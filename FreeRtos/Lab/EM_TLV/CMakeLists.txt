@@ -1,5 +1,5 @@
 PROJECT(Korutyny)
-SET(CMAKE_SYSTEM_NAME "Korutyny i magistrala Rs485")
+SET(CMAKE_SYSTEM_NAME "Korutyny i Prot TLV")
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -41,7 +41,7 @@ SET(CMAKE_CXX_FLAGS ${CXXFLAGS})
 
 
 add_executable(${IMAGENAME}
-                        main.c hardware.c 
+                        main.c hardware.c serial.c
                         ${SOURCE_DIR}/tasks.c ${SOURCE_DIR}/queue.c ${SOURCE_DIR}/list.c ${SOURCE_DIR}/croutine.c 
                         ${PORT_MEM}/heap_avr.c
                         ${PORT_DIR}/port.c )

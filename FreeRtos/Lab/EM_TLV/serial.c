@@ -86,44 +86,9 @@ static uint8_t wykonajRozkaz(void)
 
   switch (kodRozkazu)
   {
-    case rOpuscRolete1:
-      wiadomosc = 0x3F;
-      wysylac = 2;
-      break;
-
-    case rOpuscRolete2:
-      wiadomosc = 0x3F;
-      wysylac = 3;
-      break;
-
-    case rPodniesRolete1:
-      wiadomosc = 0xBF;
-      wysylac = 2;
-      break;
-
-    case rPodniesRolete2:
-      wiadomosc = 0xBF;
-      wysylac = 3;
-      break;
-
-    case rZatrzymajRolete1:
-      wiadomosc = 0x40;
-      wysylac = 2;
-      break;
-
-    case rZatrzymajRolete2:
-      wiadomosc = 0x40;
-      wysylac = 3;
-      break;
-
-    case rPING:
-      wysylac = 1;
-      break;
-    case rHELLO:
-      wysylac = 4;
-      break;
-    case rFLASH:
-      wysylac = 1;
+    case 0:                  //TODO określić jaką wartość ma mieć rozkaz zapal diodę
+      wysylac   = bDane[0];  //Odczyt informacji o numerze diody, jaką chcemy zapalić
+      wiadomosc = bDane[1];  //Odczyt informacji o czasie, przez jaki ma być zapalona. Xsłoźrnir 8 bitowa wartość określa czas świecenia 
       break;
   }
   return wysylac;
@@ -142,23 +107,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   static uint8_t         rezultat;
   stan = s_sync;
   
-/*
-  for ( ;; )
-  {
-    static uint8_t tmp = 'C';
-    crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
-    Led1On();
-    TxStart();
-    vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
-    crDELAY(xHandle, 100);
-
-    crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&tmp), 0, &xResult);
-    Led1Off();
-    TxStart();
-    vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
-    crDELAY(xHandle, 100);
-  }
-*/
   for( ;; )
   {
     if (stan == s_sync)
@@ -191,8 +139,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
     }
     if (stan == s_rozkaz)
     {
-      Led1On();
-      Led2Off();
       crQUEUE_RECEIVE(xHandle, xRxedChars, (void *)(&kodRozkazu), 1, &xResult);
       if (xResult == pdPASS)
       {
@@ -206,16 +152,12 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
     }
     if (stan == s_len)
     {
-      Led1Off();
-      Led2On();
       crQUEUE_RECEIVE(xHandle, xRxedChars, (void *)(&dlDanych), 1, &xResult);
       if (xResult == pdPASS)
       {
         crc = _crc_xmodem_update(crc, dlDanych);
         lOdebrDanych = 0;
         stan = s_dane;
-        Led1On();
-        Led2On();
       }
       else
       {
@@ -241,7 +183,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         }
         else
         {
-          Led1Off();
           stan = s_sync;
         }
       }
@@ -255,7 +196,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       }
       else
       {
-        Led1Off();
         stan = s_sync;
       }    
     }
@@ -266,7 +206,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       {
         if ((crcHi != (uint8_t)(crc >> 8)) || (crcLo != (uint8_t)(crc & 0xFF)))
         {
-          Led1Off();
           stan = s_sync;
         }
         else
@@ -282,8 +221,13 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
         if (lOdebrDanych > MAX_DATA_LEN)
           lOdebrDanych = MAX_DATA_LEN;
         rezultat = wykonajRozkaz();
-        if (rezultat == 1)
+        if (rezultat < 4)
         {
+          crQUEUE_SEND(xHandle, xDiodesOn[rezultat], (void *)(&wiadomosc), 0, &xResult); 
+        }
+        else  //Ten fragment kodu nie jest teraz potrzebny. Przyda się gdy będziemy implementować polecenie PING
+        {
+          
           //SYNC
           uint8_t temp;
           temp = SYNC;
@@ -320,65 +264,7 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
             TxStart();
           }
           vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
-        
-          if (kodRozkazu == rFLASH)
-          {
-            Led1On();
-            Led2On();
-            crDELAY(xHandle, 10);
-            Led1Off();
-            Led2Off();
-            (*((void(*)(void))BOOT_START))();            //reboot
-          }
         }
-        else if (rezultat == 2)
-        {
-          crQUEUE_SEND(xHandle, xRoleta[0], (void *)(&wiadomosc), 0, &xResult); 
-        }
-        else if (rezultat == 3)
-        {
-          crQUEUE_SEND(xHandle, xRoleta[1], (void *)(&wiadomosc), 0, &xResult); 
-        }
-        else if (rezultat == 4)
-        {
-          //SYNC
-          crc = 0;
-          uint8_t temp;
-          
-          //Dane 
-          for (temp = 0; temp < 11; temp++)
-          {
-            crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&bHelloResp[temp]), 1, &xResult);
-            crc = _crc_xmodem_update(crc, bHelloResp[temp]);
-          }
-  
-          temp = (uint8_t)(crc>>8);
-          crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&temp), 1, &xResult);
-          temp = (uint8_t)(crc & 0xFF);
-          crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&temp), 1, &xResult);
-
-          if (xResult == pdPASS)
-          {
-            TxStart();
-          }
-          vInterruptOn();  //W przypadku błędu wysyłamy wszystko z bufora przy wyłączonym nadajniku
-        }
-        Led1Off();
-        Led2Off();
-        stan = s_sync;
-      }
-      else //Zły adres
-      {
-        if (kodRozkazu == rFLASH)
-        {
-          DISABLE_RX();
-          Led1On();
-          Led2On();
-          //TODO disable RX buffer
-          crDELAY(xHandle, 1000);
-          ENABLE_RX();
-        }
-        Led1Off();
         stan = s_sync;
       }
     }

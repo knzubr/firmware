@@ -25,4 +25,7 @@
 #define STR_V4 '0'
 #define STR_V5 '0'
 
+
+uint8_t adres;
+
 #endif
