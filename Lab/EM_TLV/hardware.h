@@ -7,7 +7,7 @@
 #define TxStart() (PORTD |=  0x0C) /* Podłączenie nadajnika RS 485 do magistrali */
 #define TxStop()  (PORTD &=  0xF3) /* Odłączenie nadajnika RS 485 od magistrali */
 
-//extern uint8_t address;
+extern uint8_t address;
 
 /**
  * Herdware initialization

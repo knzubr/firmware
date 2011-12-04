@@ -1,167 +1,94 @@
-/*
-	FreeRTOS.org V5.2.0 - Copyright (C) 2003-2009 Richard Barry.
-
-	This file is part of the FreeRTOS.org distribution.
-
-	FreeRTOS.org is free software; you can redistribute it and/or modify it 
-	under the terms of the GNU General Public License (version 2) as published
-	by the Free Software Foundation and modified by the FreeRTOS exception.
-
-	FreeRTOS.org is distributed in the hope that it will be useful,	but WITHOUT
-	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-	FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
-	more details.
-
-	You should have received a copy of the GNU General Public License along 
-	with FreeRTOS.org; if not, write to the Free Software Foundation, Inc., 59 
-	Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-
-	A special exception to the GPL is included to allow you to distribute a 
-	combined work that includes FreeRTOS.org without being obliged to provide
-	the source code for any proprietary components.  See the licensing section
-	of http://www.FreeRTOS.org for full details.
-
-
-	***************************************************************************
-	*                                                                         *
-	* Get the FreeRTOS eBook!  See http://www.FreeRTOS.org/Documentation      *
-	*                                                                         *
-	* This is a concise, step by step, 'hands on' guide that describes both   *
-	* general multitasking concepts and FreeRTOS specifics. It presents and   *
-	* explains numerous examples that are written using the FreeRTOS API.     *
-	* Full source code for all the examples is provided in an accompanying    *
-	* .zip file.                                                              *
-	*                                                                         *
-	***************************************************************************
-
-	1 tab == 4 spaces!
-
-	Please ensure to read the configuration and relevant port sections of the
-	online documentation.
-
-	http://www.FreeRTOS.org - Documentation, latest information, license and
-	contact details.
-
-	http://www.SafeRTOS.com - A version that is certified for use in safety
-	critical systems.
-
-	http://www.OpenRTOS.com - Commercial support, development, porting,
-	licensing and training services.
-*/
-
 #include "main.h"
-#include "../../freeRtos/Lib/include/protocol1.h"
+#include "hardware.h"
 
 /**
- * Proces odpowiedzialny za obsługę klawiszy
- * @param pvParameters ignorowane parametry
+ * Tablica buforów, za pomocą których komunikują się korutyny obsługujące diody
+ */
+xQueueHandle xDiodesOn[4];
+
+/**
+ * Deklaracje funkcji wykonywanych przez korutyny.
  */
 static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
-
-/**
- * Proces odpowiedzialny za obsługę rolety
- * @param pvParameters ignorowane parametry
- */
-static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
-
-static void prvIncrementResetCount( void );
+static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex);
 
 void vApplicationIdleHook( void );
 
-
-/*-----------------------------------------------------------*/
-
-/* Device address on RS 485 bus */
-uint8_t adres;
-char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r', 0, 'v', '0', '.', '5', '1'};
-
-t_stan_klawiszy	roleta1 = {0, 0, 0, 0, bezczynny};
-t_stan_klawiszy	roleta2 = {0, 0, 0, 0, bezczynny};
-
-extern xQueueHandle xRxedChars;
-extern xQueueHandle xCharsForTx; 
-
-xQueueHandle xRoleta[2];
-
 portSHORT main( void )
 {
-//prvIncrementResetCount();
-
+  /// Utworzenie kolejek
+  xDiodesOn[0] = xQueueCreate( 4, 1);
+  xDiodesOn[1] = xQueueCreate( 4, 1);
+  xDiodesOn[2] = xQueueCreate( 4, 1);
+  xDiodesOn[3] = xQueueCreate( 4, 1);
+  
   hardwareInit();
-  xSerialPortInitMinimal(16);
-
-  xRoleta[0] = xQueueCreate(4, 1);
-  xRoleta[1] = xQueueCreate(4, 1);
+  
+  /// Utworzenie korutyn
+  xCoRoutineCreate(vKlawisze, 0, 0);
+  xCoRoutineCreate(vDioda, 0, 0);
+  xCoRoutineCreate(vDioda, 0, 1);
+  xCoRoutineCreate(vDioda, 0, 2);
+  xCoRoutineCreate(vDioda, 0, 3);
 
   xCoRoutineCreate(vProtocol, 0, 0);
-  xCoRoutineCreate(vKlawisze, 0, 0);
-  xCoRoutineCreate(vRoleta, 0, 0);
-  xCoRoutineCreate(vRoleta, 0, 1);
 
+  
+  /// Uruchomienie planisty. Rozpoczyna się praca systemu FreeRtos
   vTaskStartScheduler();
   return 0;
 }
-/*-----------------------------------------------------------*/
 
 static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
+  /**
+   * Jest tylko jedna korutyna do obsługi klawiszy. 
+   * Zatem nie wykorzystyjemy zmiennej uxIndex.
+   * By pozbyć się ostrzeżenia po kompilacji należy rzutować tą zmienną na void.
+   */
   (void) uxIndex;
-  static portBASE_TYPE xResult;
 
+  static uint8_t czasSwiecenia = 200;                /// Dioda zostanie zapalona na 4 sekundy
+  static uint8_t klawiszNr = 0;
+  static int16_t result;
+  
   crSTART( xHandle );
   for( ;; )
   {
-    crDELAY( xHandle, 1);
-    uint8_t wiadomosc;
-    wiadomosc = (uint8_t) (automatStanowKlawiszy(czytKlawiszRol1wGore(), czytKlawiszRol1wDol(), &roleta1));
-    if (wiadomosc)
-    {
-      crQUEUE_SEND(xHandle, xRoleta[0], &wiadomosc, 10, &xResult);
-    }
-    wiadomosc = (uint8_t)(automatStanowKlawiszy(czytKlawiszRol2wGore(), czytKlawiszRol2wDol(), &roleta2));
-    if (wiadomosc)
-    {
-      crQUEUE_SEND(xHandle, xRoleta[1], &wiadomosc, 10, &xResult);
-    }
-  }
+    if (readKey(klawiszNr) == 0)
+    {                                                /// 0 oznacza, że klawisz został wciśnięty
+      crQUEUE_SEND(xHandle, xDiodesOn[klawiszNr], (void *) (&czasSwiecenia), 0, &result); ///Wysyłanie wiadomości do odpowiedniej kolejki
+    }                                                /// by zapalić diodę. Operacja ta z parametrem ticksToWait = 0 nie przełącza korutyny
+
+    klawiszNr++;                                     /// Nie ma potrzeby w pętli for robić kolejnej pętli
+    klawiszNr &= 0x03;                               /// Operacja %4 zrealizowana za pomoca iloczynu bitowego (klawiszNr = klawiszNr % 4)
+    
+    crDELAY( xHandle, 0);                            /// Wymuszenie przełączenia korutyny.
+  }                                                  /// Makro crQUEUE_SEND z parametrem ticksToWait równym 0 nie przełącza korutyny
   crEND();
 }
 
-static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
+static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 {
-  static uint8_t	rozkaz[2];
-  static uint16_t	czasAkcji[2];
-  czasAkcji[uxIndex]  = portMAX_DELAY;
-  static portBASE_TYPE xResult[2];
+  static uint8_t czasy[4];
+  static int16_t czasyCzekania[4] = {0, 0, 0, 0};    // UWAGA: Te zmienne muszą być 16 bitowe
+  static int16_t odebrano[4];                        // UWAGA: Te zmienne muszą być 16 bitowe
+
   crSTART( xHandle );
   for (;;)
   {
-    crQUEUE_RECEIVE(xHandle, xRoleta[uxIndex], &rozkaz[uxIndex], czasAkcji[uxIndex], &xResult[uxIndex]);
-
-    if (xResult[uxIndex] == pdTRUE)
-    {
-      uint8_t tmp = rozkaz[uxIndex] & 0x3F;
-      if (tmp == 0)
-        czasAkcji[uxIndex] = portMAX_DELAY;
-      else
-        czasAkcji[uxIndex] = tmp*20;
-      if (rozkaz[uxIndex] & 0x40)
-      {
-        roletaStop(uxIndex);
-      }
-      else
-      {
-        if (rozkaz[uxIndex] & 0x80)
-          roletawGore(uxIndex);
-        else
-          roletawDol(uxIndex);
-      }
-    }
+    if (czasyCzekania[uxIndex] > 0)
+      ledOn(uxIndex);
     else
-    {
-      czasAkcji[uxIndex] = portMAX_DELAY;
-      roletaStop(uxIndex);
-    }
+      ledOff(uxIndex);
+
+    crQUEUE_RECEIVE(xHandle, xDiodesOn[uxIndex], (void *) (&czasy[uxIndex]), czasyCzekania[uxIndex], &odebrano[uxIndex]);
+    if (odebrano[uxIndex] == pdPASS)
+      czasyCzekania[uxIndex] = czasy[uxIndex];
+    else
+      czasyCzekania[uxIndex] = 0;
+
+    crDELAY(xHandle, 0);                             // Wymuszenie przełączenia korutyny
   }
   crEND();
 }
@@ -173,13 +100,3 @@ void vApplicationIdleHook( void )
     vCoRoutineSchedule();
   }
 }
-
-#if 0
-static void prvIncrementResetCount( void )
-{
-	unsigned portCHAR ucCount;
-	eeprom_read_block( &ucCount, mainRESET_COUNT_ADDRESS, sizeof( ucCount ) );
-	ucCount++;
-	eeprom_write_byte( mainRESET_COUNT_ADDRESS, ucCount );
-}
-#endif
