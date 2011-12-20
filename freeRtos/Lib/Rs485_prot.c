@@ -460,8 +460,6 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr, FILE *debugStr
    
   while (nrBloku <= liczbaBlokow)
   {
-    if (debugStr != NULL)
-      fputc('#', debugStr);
     crc = 0;
     uartRs485SendByte(SOH);
     uartRs485SendByte(nrBloku);
@@ -481,6 +479,9 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr, FILE *debugStr
     if(rs485Receive(&data, 100) != pdTRUE)
     {
       blad = 250;
+      if (debugStr != NULL)
+        fputc('#', debugStr);
+      data = 0;
     }
      
     flushRs485RecBuffer();
@@ -489,17 +490,40 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr, FILE *debugStr
     {
       nrBloku ++;
       lRetransmisji = 0;
+      blad = 0;
+      if (debugStr != NULL)
+      {
+        fputc('.', debugStr);
+        if ((nrBloku & 0x0F) == 0)
+        {
+          fputc('\r', debugStr);
+          fputc('\n', debugStr);      
+        }
+      }
       continue;
     }
  
     if (data == CAN)
+    {
+      if (debugStr != NULL)
+        fputc('C', debugStr);
       blad = 249;
- 
+      break;
+    }
+    
+    if (debugStr != NULL)
+    {
+      if (data == NAK)
+        fputc('N', debugStr);
+      if (data != 0)
+        fprintf(debugStr, "data 0x%x ", data);                    
+    }
+    
     lRetransmisji ++;
      
     if (lRetransmisji == 3)
     {
-      blad = 249;
+      blad = 248;
       break;
     }
   }
@@ -516,12 +540,10 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr, FILE *debugStr
       }
     }
   }
-  if (debugStr != NULL)
-    fprintf_P(debugStr, PSTR("\r\nOK\r\n"));
 
   flushRs485RecBuffer();  
   releaseRs485();
-  return 0;
+  return blad;
 }
 
 uint8_t rs485curtainUp(uint8_t deviceAddr, uint8_t curtainNo, uint8_t pos)
