@@ -94,6 +94,9 @@ uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr, FILE *debStr);
  */
 uint8_t rs485curtainUp(uint8_t deviceAddr, uint8_t curtainNo, uint8_t pos);
 
+uint8_t rs485Led(uint8_t deviceAddr, uint8_t ledNo, uint8_t time);
+
+
 /**
  * Move curtain down
  * @param deviceAddr - remote module address
