@@ -575,6 +575,28 @@ uint8_t rs485curtainUp(uint8_t deviceAddr, uint8_t curtainNo, uint8_t pos)
   return 0;
 }
 
+uint8_t rs485Led(uint8_t deviceAddr, uint8_t ledNo, uint8_t time)
+{
+  uint16_t crc = 0;
+  
+  crc = _crc_xmodem_update(crc, SYNC);
+  uartRs485SendByte(SYNC);
+
+  crc = _crc_xmodem_update(crc, deviceAddr);
+  uartRs485SendByte(deviceAddr);
+
+  crc = _crc_xmodem_update(crc, ledNo);
+  
+  crc = _crc_xmodem_update(crc, 1);    uartRs485SendByte(1);
+  crc = _crc_xmodem_update(crc, time);  uartRs485SendByte(time);
+  
+  uartRs485SendByte((uint8_t)(crc>>8));
+  uartRs485SendByte((uint8_t)(crc & 0xFF));
+  
+  return 0;
+}
+
+
 uint8_t rs485curtainDown(uint8_t deviceAddr, uint8_t curtainNo, uint8_t pos)
 {
   uint16_t crc = 0;
