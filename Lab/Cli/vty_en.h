@@ -52,6 +52,7 @@ prog_char debugDisabledInfoStr[]      = "Disabled %s debug\r\n";
 // *************************** Command Strings *****************************************************
 
 prog_char cmd_help[]        = "help";             prog_char cmd_help_help[]        = "Print help string";
+prog_char cmd_reset[]      = "reset";            prog_char cmd_help_reset[]      = "Resets FreeRtos";
 prog_char cmd_status[]      = "status";           prog_char cmd_help_status[]      = "{filename} Print device status on VTY or write to file";
 prog_char cmd_enc_stat[]    = "encstat";          prog_char cmd_help_enc_stat[]    = "Print Enc 28j60 registers";
 prog_char cmd_time[]        = "time";             prog_char cmd_help_time[]        = "Print time";
