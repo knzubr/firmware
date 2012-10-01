@@ -1,0 +1,21 @@
+bootloader.sizeelf  :
+section             size       addr
+.data               0xe4   0x800100
+.text              0x49c    0x1e000
+.bootloader       0x10e4        0x0
+.bss               0x588   0x8001e4
+.stab              0x828        0x0
+.stabstr            0x83        0x0
+.debug_aranges     0x1a8        0x0
+.debug_pubnames    0x51c        0x0
+.debug_info       0x198d        0x0
+.debug_abbrev      0xa87        0x0
+.debug_line       0x16c0        0x0
+.debug_frame       0x2f0        0x0
+.debug_str         0x8a6        0x0
+.debug_loc         0xacd        0x0
+.debug_ranges      0x2b8        0x0
+Total             0x7f4a
+
+
+BL_CODE_START  0x1E580

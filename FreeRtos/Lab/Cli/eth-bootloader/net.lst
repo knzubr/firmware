@@ -1,0 +1,171 @@
+   1               		.file	"net.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  15               	.Ltext0:
+  16               	.global	hton16
+  18               	hton16:
+  19               	.LFB2:
+  20               	.LM1:
+  21               	.LVL0:
+  22               	/* prologue: function */
+  23               	/* frame size = 0 */
+  24               	.LVL1:
+  25               	/* epilogue start */
+  26               	.LM2:
+  27 0000 0895      		ret
+  28               	.LFE2:
+  30               	.global	hton32
+  32               	hton32:
+  33               	.LFB3:
+  34               	.LM3:
+  35               	.LVL2:
+  36               	/* prologue: function */
+  37               	/* frame size = 0 */
+  38               	.LVL3:
+  39               	/* epilogue start */
+  40               	.LM4:
+  41 0002 0895      		ret
+  42               	.LFE3:
+  44               	.global	net_get_checksum
+  46               	net_get_checksum:
+  47               	.LFB4:
+  48               	.LM5:
+  49               	.LVL4:
+  50 0004 CF93      		push r28
+  51 0006 DF93      		push r29
+  52               	/* prologue: function */
+  53               	/* frame size = 0 */
+  54 0008 DC01      		movw r26,r24
+  55 000a EB01      		movw r28,r22
+  56               	.LM6:
+  57 000c 4115      		cp r20,__zero_reg__
+  58 000e 5105      		cpc r21,__zero_reg__
+  59 0010 01F0      		breq .L16
+  60               	.LVL5:
+  61               	.LM7:
+  62 0012 CB01      		movw r24,r22
+  63 0014 820F      		add r24,r18
+  64 0016 911D      		adc r25,__zero_reg__
+  65 0018 9C01      		movw r18,r24
+  66               	.LVL6:
+  67               	.LM8:
+  68 001a 4150      		subi r20,lo8(-(-1))
+  69 001c 5040      		sbci r21,hi8(-(-1))
+  70               	.LVL7:
+  71 001e 460F      		add r20,r22
+  72 0020 571F      		adc r21,r23
+  73               	.LM9:
+  74 0022 6417      		cp r22,r20
+  75 0024 7507      		cpc r23,r21
+  76 0026 00F4      		brsh .L14
+  77               	.LVL8:
+  78 0028 FB01      		movw r30,r22
+  79               	.LVL9:
+  80               	.L11:
+  81               	.LM10:
+  82 002a E217      		cp r30,r18
+  83 002c F307      		cpc r31,r19
+  84 002e 01F0      		breq .L10
+  85               	.LM11:
+  86 0030 7081      		ld r23,Z
+  87 0032 60E0      		ldi r22,lo8(0)
+  88 0034 8181      		ldd r24,Z+1
+  89               	.LVL10:
+  90 0036 90E0      		ldi r25,lo8(0)
+  91 0038 862B      		or r24,r22
+  92 003a 972B      		or r25,r23
+  93               	.LVL11:
+  94               	.LM12:
+  95 003c A80F      		add r26,r24
+  96 003e B91F      		adc r27,r25
+  97               	.LM13:
+  98 0040 A817      		cp r26,r24
+  99 0042 B907      		cpc r27,r25
+ 100 0044 00F4      		brsh .L10
+ 101               	.LM14:
+ 102 0046 1196      		adiw r26,1
+ 103               	.LVL12:
+ 104               	.L10:
+ 105               	.LM15:
+ 106 0048 3296      		adiw r30,2
+ 107 004a E417      		cp r30,r20
+ 108 004c F507      		cpc r31,r21
+ 109 004e 00F0      		brlo .L11
+ 110               	.LM16:
+ 111 0050 CE01      		movw r24,r28
+ 112               	.LVL13:
+ 113 0052 8095      		com r24
+ 114 0054 9095      		com r25
+ 115 0056 840F      		add r24,r20
+ 116 0058 951F      		adc r25,r21
+ 117 005a 8E7F      		andi r24,lo8(-2)
+ 118 005c 0296      		adiw r24,2
+ 119 005e C80F      		add r28,r24
+ 120 0060 D91F      		adc r29,r25
+ 121               	.LVL14:
+ 122               	.L14:
+ 123 0062 9D01      		movw r18,r26
+ 124               	.LVL15:
+ 125               	.LM17:
+ 126 0064 C417      		cp r28,r20
+ 127 0066 D507      		cpc r29,r21
+ 128 0068 01F0      		breq .L17
+ 129               	.LVL16:
+ 130               	.L7:
+ 131               	.LM18:
+ 132 006a C901      		movw r24,r18
+ 133               	.LVL17:
+ 134               	/* epilogue start */
+ 135 006c DF91      		pop r29
+ 136 006e CF91      		pop r28
+ 137               	.LVL18:
+ 138 0070 0895      		ret
+ 139               	.LVL19:
+ 140               	.L16:
+ 141               	.LM19:
+ 142 0072 9C01      		movw r18,r24
+ 143               	.LVL20:
+ 144               	.LM20:
+ 145 0074 C901      		movw r24,r18
+ 146 0076 DF91      		pop r29
+ 147 0078 CF91      		pop r28
+ 148               	.LVL21:
+ 149 007a 0895      		ret
+ 150               	.LVL22:
+ 151               	.L17:
+ 152               	.LM21:
+ 153 007c 9881      		ld r25,Y
+ 154               	.LVL23:
+ 155 007e 80E0      		ldi r24,lo8(0)
+ 156               	.LVL24:
+ 157               	.LM22:
+ 158 0080 9C01      		movw r18,r24
+ 159 0082 2A0F      		add r18,r26
+ 160 0084 3B1F      		adc r19,r27
+ 161               	.LM23:
+ 162 0086 2817      		cp r18,r24
+ 163 0088 3907      		cpc r19,r25
+ 164 008a 00F4      		brsh .L7
+ 165               	.LM24:
+ 166 008c 2F5F      		subi r18,lo8(-(1))
+ 167 008e 3F4F      		sbci r19,hi8(-(1))
+ 168 0090 00C0      		rjmp .L7
+ 169               	.LFE4:
+ 211               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 net.c
+     /tmp/ccsnXNfM.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccsnXNfM.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccsnXNfM.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccsnXNfM.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccsnXNfM.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccsnXNfM.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccsnXNfM.s:18     .text:00000000 hton16
+     /tmp/ccsnXNfM.s:32     .text:00000002 hton32
+     /tmp/ccsnXNfM.s:46     .text:00000004 net_get_checksum
+
+NO UNDEFINED SYMBOLS
