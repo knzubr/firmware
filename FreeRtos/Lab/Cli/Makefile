@@ -29,6 +29,10 @@
 # To rebuild project do "make clean" then "make all".
 #
 
+#for tftp bootloader
+#address
+include eth-bootloader/atmega128/makefile.in.IP
+#
 
 # MCU name
 MCU = atmega128
@@ -205,13 +209,14 @@ AVRDUDE_PROGRAMMER  = jtag1
 AVRDUDE_PORT        = /dev/avrMultiTool
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
+AVRDUDE_WRITE_FLASH_BOOTLOADER = -U flash:w:$(BOOTLAODER_TARGET_IMAGE).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 AVRDUDE_READ_EEPROM  = -U eeprom:r:$(TARGET)_readed.eep
 AVRDUDE_WRITE_FUSES_H = -U hfuse:w:0x90:m
 AVRDUDE_READ_FUSES_H  = -U hfuse:r:$(TARGET).hfuse:i
 AVRDUDE_WRITE_FUSES_L = -U lfuse:w:0xff:m
 AVRDUDE_READ_FUSES_L  = -U lfuse:r:$(TARGET).lfuse:i
-AVRDUDE_WRITE_FUSES_E = -U efuse:w:0xff:m
+AVRDUDE_WRITE_FUSES_E = -U efuse:w:0xef:m
 AVRDUDE_READ_FUSES_E  = -U efuse:r:$(TARGET).efuse:i
 
 
@@ -222,7 +227,7 @@ AVRDUDE_READ_FUSES_E  = -U efuse:r:$(TARGET).efuse:i
 
 # Uncomment the following if you do /not/ wish a verification to be
 # performed after programming the device.
-#AVRDUDE_FLAGS += -V
+AVRDUDE_FLAGS += -V
 
 # Increase verbosity level.  Please use this when submitting bug
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude> 
@@ -312,7 +317,6 @@ gccversion :
 
 
 
-
 # Convert ELF to COFF for use in debugging / simulating in
 # AVR Studio or VMLAB.
 COFFCONVERT=$(OBJCOPY) --debugging \
@@ -333,7 +337,28 @@ extcoff: $(TARGET).elf
 	@echo $(MSG_EXTENDED_COFF) $(TARGET).cof
 	$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
 
+#bootloader combining
+DO_hex_with_bootloader = ./combine.sh
+BOOTLAODER_IMAGE= bootloader
+BOOTLAODER_TARGET_IMAGE=firmware+bootloader
+BOOTLAODER_IMAGE_PATH= eth-bootloader/atmega128/
+bootloader: $(TARGET).hex $(TARGET).eep
+	$(DO_hex_with_bootloader) $(TARGET).hex $(BOOTLAODER_IMAGE_PATH)$(BOOTLAODER_IMAGE).hex $(BOOTLAODER_TARGET_IMAGE).hex
+programbootloader: bootloader
+	$(AVRDUDE) $(AVRDUDE_FLAGS)  $(AVRDUDE_WRITE_FLASH_BOOTLOADER) $(AVRDUDE_WRITE_EEPROM)
 
+DO_TFTP_BOOTLOAD= ./send_firmware.sh
+tftp: $(TARGET).hex $(TARGET).eep 
+	$(DO_TFTP_BOOTLOAD) $(EMB_IPADDRESSa).$(EMB_IPADDRESSb).$(EMB_IPADDRESSc).$(EMB_IPADDRESSd) $(TARGET).hex $(TARGET).eep
+DO_TFTP_BOOTLOAD= ./send_firmware.sh
+tftp-flash: $(TARGET).hex $(TARGET).eep 
+	$(DO_TFTP_BOOTLOAD) $(EMB_IPADDRESSa).$(EMB_IPADDRESSb).$(EMB_IPADDRESSc).$(EMB_IPADDRESSd) $(TARGET).hex
+DO_TFTP_BOOTLOAD= ./send_firmware.sh
+tftp-eeprom: $(TARGET).hex $(TARGET).eep 
+	$(DO_TFTP_BOOTLOAD) $(EMB_IPADDRESSa).$(EMB_IPADDRESSb).$(EMB_IPADDRESSc).$(EMB_IPADDRESSd) $(TARGET).eep
+
+eth-bootloader/atmega128/makefile.in.IP:
+	@echo "*** Please set IP for Bootloader !! ***"
 
 
 # Program the device.  
@@ -341,7 +366,12 @@ flash:  $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+	$(AVRDUDE) $(AVRDUDE_FLAGS)  $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+
+eeprom: $(TARGET).hex $(TARGET).eep
+	$(AVRDUDE) $(AVRDUDE_FLAGS)  $(AVRDUDE_WRITE_EEPROM)
+
+#$(AVRDUDE_WRITE_EEPROM)
 
 readfuses:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_READ_FUSES_L) $(AVRDUDE_READ_FUSES_H) $(AVRDUDE_READ_FUSES_E)
@@ -428,8 +458,12 @@ clean_list :
 	$(REMOVE) $(LST)
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
-
-
+	$(REMOVE) $(BOOTLAODER_TARGET_IMAGE).hex
+clean_list1 :
+	@echo
+	@echo $(MSG_CLEANING)
+	$(REMOVE) $(TARGET).hex
+	$(REMOVE) $(TARGET).eep
 # Automatically generate C source code dependencies. 
 # (Code originally taken from the GNU make user manual and modified 
 # (See README.txt Credits).)
@@ -452,4 +486,5 @@ clean_list :
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion coff extcoff \
 	clean clean_list program
+
 

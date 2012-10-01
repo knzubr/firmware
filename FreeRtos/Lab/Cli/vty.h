@@ -79,3 +79,8 @@ enum errorType
 typedef enum errorType errorType_t;
 
 #endif
+//for wdt
+void watchdogInit(void);
+void watchdogTask(void *pvParameters);
+
+//
