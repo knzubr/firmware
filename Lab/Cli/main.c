@@ -43,8 +43,9 @@
 	licensing and training services.
 */
 
+#define miejsce   while (!(UCSR1A & (1<<UDRE1))); 	UDR1 = 'B';
 #include "main.h"
-
+#include "avr/wdt.h"
 uint8_t timer100Hz = 0;
 
 xQueueHandle xVtyTx;
@@ -69,6 +70,7 @@ xTaskHandle xHandleVTY_USB;
 xTaskHandle xHandleVTY_UDP;
 xTaskHandle xHandleEnc;
 xTaskHandle xHandleSensors;
+xTaskHandle xHandleWatchdog;
 
 void initExternalMem(void)
 {
@@ -85,18 +87,23 @@ streamBuffers_t udpBuffers;
 
 portSHORT main( void )
 {
-  ramDyskInit();                                     // Ram disc initialization (Fat 8 filesystem)
-  hardwareInit();                                    // Hardware initialization (set ports directions)
-  spiInit(disableAllSpiDevices);                     // Spi bus initialization
+ //  watchdogInit();
 
+  ramDyskInit();              //Inicjalizacja Ram dysku
+  hardwareInit();
+  spiInit(disableAllSpiDevices);
+  //watchdogInit();
+  
+  
 // VTY on serial  
-  xSerialPortInitMinimal();                          // Initialize UART0 and UART1
-  CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));  // Create CLI instance
-  CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));  // Create CLI instance
+  xSerialPortInitMinimal(); 
+  CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
+  CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
 
+  
 
 //  cmdStateClear(newCmdState);
-
+  
   sensorsTaskInit();
   loadConfiguration();
 
@@ -107,16 +114,26 @@ portSHORT main( void )
   socketInit();
   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
   VtyInit(CLIStateSerialUdp, &udpStream);
-  
-  //xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  0, &xHandleEnc);
+ 
+  xTaskCreate(watchdogTask,    NULL /*"watchdog reset"*/,150,   NULL,                                   1, &xHandleWatchdog);
+  xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  1, &xHandleEnc);
+  xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
-  //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
-  //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
+  xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
+   watchdogInit();
   vTaskStartScheduler();
   return 0;
 }
 /*-----------------------------------------------------------*/
 
+void vApplicationIdleHook( void )
+{
+  for( ;; )
+  {
+    
+    vCoRoutineSchedule();
+  }
+}
 
 void vApplicationTickHook( void )
 {

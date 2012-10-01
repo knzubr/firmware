@@ -13,6 +13,7 @@
 #include "arp.h"
 #include "softwareConfig.h"
 #include "mcp4150.h"
+#include "avr/wdt.h"
 
 #if LANG_EN
 #include "vty_en.h"
@@ -26,8 +27,13 @@
 #error "Vty Language not defined"
 #endif
 
-
+  void reboot() {
+  wdt_disable();  
+  wdt_enable(WDTO_15MS);
+  while (1) {}
+}
 static cliExRes_t helpFunction           (cmdState_t *state);
+static cliExRes_t resetFunction          (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
 static cliExRes_t statusEncFunction      (cmdState_t *state);
 static cliExRes_t curtainDownFunction    (cmdState_t *state);
@@ -94,6 +100,7 @@ prog_char __ATTR_PROGMEM__ *errorStrings[] = {
 command_t __ATTR_PROGMEM__ cmdListNormal[] =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
+  {cmd_reset,     cmd_help_reset,     resetFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_time,      cmd_help_time,      pokazCzasFunction},  
   {cmd_rping,     cmd_help_rping,     rpingFunction},
@@ -107,6 +114,7 @@ command_t __ATTR_PROGMEM__ cmdListNormal[] =
 command_t __ATTR_PROGMEM__ cmdListEnable[] =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
+  {cmd_reset,	  cmd_help_reset,     resetFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_enc_stat,  cmd_help_enc_stat,  statusEncFunction},
   {cmd_time,      cmd_help_time,      pokazCzasFunction},
@@ -142,6 +150,7 @@ command_t __ATTR_PROGMEM__ cmdListEnable[] =
 command_t __ATTR_PROGMEM__ cmdListConfigure[] =
 {
   {cmd_help,         cmd_help_help,         helpFunction},
+  {cmd_reset,        cmd_help_reset,        resetFunction},
   {cmd_status,       cmd_help_status,       statusFunction},
   {cmd_time,         cmd_help_time,         pokazCzasFunction},
   {cmd_settime,      cmd_help_settime,      setTimeFunction},
@@ -262,7 +271,12 @@ void printStatus(FILE *stream)
 
 
 // ************************** CLI Functions *********************************************************************************
-
+static cliExRes_t resetFunction(cmdState_t *state)
+  {
+     //asm volatile ("call 0x01E000");
+    wdt_enable(WDTO_15MS);
+    for(;;);
+  }
 static cliExRes_t statusFunction(cmdState_t *state)
 {
   if (state->argc < 1)
@@ -389,6 +403,8 @@ static cliExRes_t debugFunction          (cmdState_t *state)
 
 static cliExRes_t setTimeFunction(cmdState_t *state)
 {
+
+  while(1);
   uint8_t godzina =  cmdlineGetArgInt(1, state);
   uint8_t minuta  =  cmdlineGetArgInt(2, state);
   uint8_t sekunda =  cmdlineGetArgInt(3, state);
@@ -956,4 +972,17 @@ static cliExRes_t testPamZewFunction(cmdState_t *state)
 }
 #endif
 
-
+void watchdogInit(void)
+{
+ wdt_reset(); 
+ wdt_enable(WDTO_2S);  
+}
+void watchdogTask(void* pvParameters)
+{
+      for( ;; )
+      {
+	  wdt_reset(); 
+	  vTaskDelay(100);
+	  continue;
+      }
+}
