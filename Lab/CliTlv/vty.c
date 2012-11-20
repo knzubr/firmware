@@ -571,10 +571,10 @@ static cliExRes_t lightFunction(cmdState_t *state)
   if ((wartosc > 0) && (wartosc <=100))
     fprintf_P(state->myStdInOut, movingCurtainPosStr, wartosc);
 
-  uint8_t result = rs485Led(nrSterownika, nrDiody, wartosc);
+  //uint8_t result = rs485Led(nrSterownika, nrDiody, wartosc);
   
-  if (result == 0)
-    return OK_INFORM;
+//  if (result == 0)
+//    return OK_INFORM;
   
   return ERROR_SILENT;
 }
