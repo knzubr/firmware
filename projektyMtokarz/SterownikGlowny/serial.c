@@ -45,7 +45,7 @@ void xSerialPortInitMinimal(void)
     vSemaphoreCreateBinary(xSemaphoreRs485); 
   }
   portEXIT_CRITICAL();
-  
+  /*
   UBRR0L = 7;
   UBRR0H = 0;
 
@@ -54,8 +54,9 @@ void xSerialPortInitMinimal(void)
 
   UCSR0B = ((1<<TXCIE0)|(1<<RXCIE0)|(1<<TXEN0)|(1<<RXEN0));
   UCSR0C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */
-  UCSR1B = ((1<<RXCIE1)|(1<<TXEN1)|(1<<RXEN1));
-  UCSR1C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */
+  //UCSR1B = ((1<<RXCIE1)|(1<<TXEN1)|(1<<RXEN1));
+  //UCSR1C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */
+  
   return;
 }
 

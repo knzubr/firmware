@@ -50,8 +50,8 @@ uint8_t timer100Hz = 0;
 xQueueHandle xVtyTx;
 xQueueHandle xVtyRec;
 
-xQueueHandle xRs485Tx;
-xQueueHandle xRs485Rec;
+//xQueueHandle xRs485Tx;
+//xQueueHandle xRs485Rec;
 
 
 volatile uint8_t temperature;
@@ -69,12 +69,13 @@ xTaskHandle xHandleVTY_USB;
 xTaskHandle xHandleVTY_UDP;
 xTaskHandle xHandleEnc;
 xTaskHandle xHandleSensors;
+xTaskHandle xHandleUSB;
 
-void initExternalMem(void)
-{
-  MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
-  MCUCR |= 0x0E;
-}
+//void initExternalMem(void)
+//{
+  //MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
+  //MCUCR |= 0x0E;
+//}
 
 cmdState_t *CLIStateSerialUsb;
 cmdState_t *CLIStateSerialUdp;
@@ -85,33 +86,51 @@ streamBuffers_t udpBuffers;
 
 portSHORT main( void )
 {
-  ramDyskInit();              //Inicjalizacja Ram dysku
-  hardwareInit();
-  spiInit(disableAllSpiDevices);
+  //ramDyskInit();              //Inicjalizacja Ram dysku
+  //hardwareInit();
+  //spiInit(disableAllSpiDevices);
+  // MOJE
+  /* konfiguracja zewnętrznego kwarcu, bez PLL, Pres ABCD=1*/
+	OSC.XOSCCTRL=0b1101011;
+	OSC.CTRL=0b00001000;
+	while(!(OSC.STATUS & OSC_XOSCEN_bm));
+	CCP = CCP_IOREG_gc;
+	CLK.CTRL=CLK_SCLKSEL_XOSC_gc;
+	// Koniec konfuguracji, Zew kwarc 16MHz
+	PORTD.OUT=0xFF; //ok
+	PORTD.DIR=PIN3_bm;//ok
+	PORTD.DIRCLR = PIN2_bm;//ok
+	USARTD0.CTRLC=0b00000011;//ok
+	USARTD0.BAUDCTRLA=0b01100111;//12;
+	USARTD0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
+	USARTD0.CTRLB=0b00011000;
+  
+  //MOJE
 
 // VTY on serial  
-  xSerialPortInitMinimal(); 
+  //xSerialPortInitMinimal(); 
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
   CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
 
 
 //  cmdStateClear(newCmdState);
   
-  sensorsTaskInit();
-  loadConfiguration();
+ // sensorsTaskInit();
+  //loadConfiguration();
 
-  initQueueStreamUSB(&usbStream);
-  VtyInit(CLIStateSerialUsb, &usbStream);
+ // initQueueStreamUSB(&usbStream);
+ // VtyInit(CLIStateSerialUsb, &usbStream);
 
-  udpInit();
-  socketInit();
-  initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
-  VtyInit(CLIStateSerialUdp, &udpStream);
+ // udpInit();
+ // socketInit();
+ // initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
+ // VtyInit(CLIStateSerialUdp, &udpStream);
   
 //xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  0, &xHandleEnc);
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
 //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
 //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
+  xTaskCreate(vTaskUSB,NULL,100,NULL,0,&xHandleUSB);
   vTaskStartScheduler();
   return 0;
 }
@@ -127,7 +146,7 @@ void vApplicationIdleHook( void )
 
 void vApplicationTickHook( void )
 {
-  static uint8_t tickCntr = configTICK_RATE_HZ;
+  static uint16_t tickCntr = configTICK_RATE_HZ;
   if (--tickCntr == 0)
   {
     tickCntr = configTICK_RATE_HZ;

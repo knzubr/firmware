@@ -31,7 +31,7 @@
 
 
 # MCU name
-MCU = atmega128
+MCU = atxmega128a1
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -48,7 +48,7 @@ OPT = s
 SOURCE_DIR  = ../../freeRtos/Source
 LIB_DIR     = ../../freeRtos/Lib
 LIB_NET_DIR = ../../freeRtos/Lib/net
-PORT_DIR    = ../../freeRtos/portable/GCC/ATMega64
+PORT_DIR    = ../../freeRtos/portable/GCC/ATXmega
 PORT_MEM    = ../../freeRtos/portable/MemMang
 
 SRC	= \
@@ -134,7 +134,7 @@ $(WARNINGS) \
 -Wa,-adhlns=$(<:.c=.lst) \
 $(patsubst %,-I%,$(EXTRAINCDIRS))
 
-CFLAGS += -DF_CPU=14745600UL 
+CFLAGS += -DF_CPU=16000000UL 
 
 # Set a "language standard" compiler flag.
 #   Unremark just one line below to set the language standard to use.
