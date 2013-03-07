@@ -3,7 +3,7 @@ PROJECT("Główny Sterownik")
 PROJECT("Main Controller Template")
 SET(CMAKE_SYSTEM_NAME "Główny Sterownik")
 
-SET(MCU               atmega128)
+SET(MCU               atxmega128a1)
 SET(PROGRAMMER_DEV    /dev/avrMultiTool)
 
 SET(IMAGENAME         firmware)
@@ -21,7 +21,7 @@ SET(TARGET_NAME  ${IMAGENAME})
 SET(SOURCE_DIR   "../../freeRtos/Source")
 SET(LIB_DIR      "../../freeRtos/Lib")
 SET(LIB_NET_DIR  "../../freeRtos/Lib/net")
-SET(PORT_DIR     "../../freeRtos/portable/GCC/ATMega64")
+SET(PORT_DIR     "../../freeRtos/portable/GCC/ATXmega")
 SET(PORT_MEM     "../../freeRtos/portable/MemMang")
 
 include_directories("./" "${SOURCE_DIR}/include" "${LIB_DIR}/include" "${LIB_NET_DIR}/include" "${PORT_DIR}")
@@ -33,7 +33,7 @@ SET(CTUNING      "-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enu
 SET(COPT         "-Os")
 SET(CINCS        "-I. -I${SOURCE_DIR}/include -I${LIB_DIR}/include -I${LIB_NET_DIR}/include")
 SET(CMCU         "-mmcu=${MCU}")
-SET(CDEFS        "-DF_CPU=14745600")
+SET(CDEFS        "-DF_CPU=16000000")
 
 SET(CFLAGS "${CMCU} ${CDEBUG} ${CDEFS} ${CINCS} ${COPT} ${CWARN} ${CSTANDARD} ${CEXTRA}")
 SET(CXXFLAGS "${CMCU} ${CDEFS} ${CINCS} ${COPT}")

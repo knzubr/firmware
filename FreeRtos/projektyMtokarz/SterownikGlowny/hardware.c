@@ -17,57 +17,68 @@ void hardwareInit(void)
   xSpiRx          = xQueueCreate(1, 1);
   portEXIT_CRITICAL();
 
-  DDRB = 0xF7;
-  PORTB = 0xD1;
-  /*
-   0 - Sl_RST
-   1 - SCK
-   2 - MOSI
-   3 - MISO
-   4 - External SPI ASR 4
-   5 - External SPI ASR 5 (DS1305)     0 - off; 1 - on 
-   6 - External SPI ASR 6 (MCP3008)    0 - on;  1 - off
-   7 - External SPI ASR 7 (MPC23S17)   0 - on;  1 - off
-  */
-  
-  //DDRC = 0x00;  //External Memory
-
-  DDRD = 0x00;
-  /*
-   0 - SCL
-   1 - SDA
-   2 - RxD USB
-   3 - TxD USB
-   4 - External SPI ASR 0
-   5 - External SPI ASR 1
-   6 - External SPI ASR 2
-   7 - External SPI ASR 3
-   */
-
-  DDRE  = 0x0E;
-  PORTE = 0x0C;
-  /*
-   0 - RxD Rs485
-   1 - TxD Rs485
-   2 - ENC RST
-   3 - ENC CS
-   4 - INT 4
-   5 - INT 5
-   6 - INT 6
-   7 - INT Enc28j60
-  */
-  DDRF = 0x00;    //JTAG and A/C
-  DDRG = 0x1F;
-  /*
-   0 - WR
-   1 - RD
-   2 - ALE
-   3 - SD CS
-   4 - RS485 TxEn
-   5 - 
-   6 - 
-   7 - 
-   */
+ //DDRA = 0x00;  //External Memory
+  portENTER_CRITICAL();
+  xSpiRx          = xQueueCreate(1, 1);
+  portEXIT_CRITICAL();
+  /* Port B
+7- JTAG TD0
+6- JTAG TCK
+5- JTAG TDI
+4- JTAG TMS
+5:2 - LCD D4:D7
+0 - ENC28J60 CS
+*/
+PORTB.DIR=0x01;
+/* Port C
+7- ENC28J60 SCK
+6- ENC28J60 SO
+5- ENC28J60 SI
+4- SD_card CS
+3- ST2378 OE
+1- I2C SCL
+0- I2C SDA
+*/
+PORTC.DIR=0xA0;
+/* PORTD
+7- SD SCK
+6- SD S0
+5- SD SI
+4- ZL SPI SLRST
+3- FT232 TXT-WY
+2- FT232 RXT-WE
+1- ENC28J60 RST
+0- ENC28J60 INT
+*/
+PORTD.DIR=0xBA;
+/* PORTE
+7:0- ZL SPI A7:A0
+*/
+PORTE.DIR=0xFF;
+/* PORTF
+7- INT
+6- INT
+5- RS485 DE/RE
+4- INT
+3- RS485 TXD
+2- RS485 RXD
+*/
+PORTF.DIR=0x28;
+/* PORTH
+6:4- EBI A18:A16
+2-   EBI ALE
+1-   EBI RE
+0-   EBI WE
+*/
+PORTH.DIR=0xFF;
+/* PORTJ
+7:0- EBI D7:D0/A0:A7
+*/
+PORTJ.DIR=0xFF;
+/* PORTK
+7:0- EBI A8:A15
+*/
+PORTK.DIR=0xFF;
 }
 
 void LockersMemInit(void)

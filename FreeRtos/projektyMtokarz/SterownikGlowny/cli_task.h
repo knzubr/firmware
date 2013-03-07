@@ -17,6 +17,7 @@ extern xQueueHandle         xVtyTx;
  * @param *cliStatePtr wskaźnik do struktury przechowującej stan interpretera poleceń
  */
 void vTaskVTYusb(void *cliStatePtr);
+void vTaskUSB(void *cliStatePtr);
 
 
 /**

@@ -16,6 +16,15 @@ void vTaskVTYusb(void *cliStatePtr)
     }  
   }
 }
+void vTaskUSB(void *cliStatePtr)
+{
+ //null cliStatePtr; 
+ for(;;)
+ {
+  vTaskDelay(200);
+  USARTD0.DATA='a';
+ }
+}
 
 void vTaskVTYsocket(void *cliStatePtr)
 {
