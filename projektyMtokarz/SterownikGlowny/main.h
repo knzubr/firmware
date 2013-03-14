@@ -31,7 +31,7 @@
 #include "ramdysk.h"
 #include "ff.h"
 #include "sd_diskio.h"
-#include "rtc.h"
+//#include "rtc.h"
 
 #include "sensors_task.h"
 #include "netstack_task.h"

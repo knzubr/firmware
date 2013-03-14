@@ -15,8 +15,8 @@
 #include "mcp3008.h"
 #include "spi.h"
 
-#define Rs485TxStart() (PORTG |=  0x10)
-#define Rs485TxStop()  (PORTG &=  0xEF)
+#define Rs485TxStart() (PORTF.OUT |=  0x20)
+#define Rs485TxStop()  (PORTF.OUT &=  0xDF)
 
 struct lockerSensor
 {
