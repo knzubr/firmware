@@ -200,7 +200,8 @@ LDFLAGS += -lm
 
 # Programming support using avrdude.
 AVRDUDE             = avrdude
-AVRDUDE_PROGRAMMER  = jtag1
+AVRDUDE_PROGRAMMER  = pdi 
+# jtag1
 #AVRDUDE_PORT        = /dev/jtag
 AVRDUDE_PORT        = /dev/avrMultiTool
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)

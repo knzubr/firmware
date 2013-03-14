@@ -155,14 +155,15 @@ void checkLockerSensors(void)
 uint8_t spiSend(uint8_t data)
 {
   uint8_t result;
-  SPDR = data;
+  SPIC.DATA = data;
   xQueueReceive(xSpiRx, &result, 10); 
   return result;
 }
 
 uint8_t spiSendSpinBlock(uint8_t data)
 {
-  SPDR = data;
+  //SPDR = data;
+  SPIC.DATA=data;
   SPCR &= ~(1<<SPIE);                //Disable SPI interrupt
   while(!(SPSR&(1<<SPIF)));
   data = SPSR;                       //Clearing interrupt flag
@@ -173,57 +174,57 @@ uint8_t spiSendSpinBlock(uint8_t data)
 
 void disableAllSpiDevices(void)
 { 
-#if disableSpiPORTA_OR != 0
+#if disableSpiPORTJ_OR != 0
 #error Port A is memory bus
-  PORTA |= disableSpiPORTA_OR;
+  PORTJ.OUT |= disableSpiPORTJ_OR;
 #endif
-#if disableSpiPORTA_AND != 0xFF
+#if disableSpiPORTJ_AND != 0xFF
 #error Port A is memory bus
-  PORTA &= disableSpiPORTA_AND;
+  PORTJ.OUT &= disableSpiPORTJ_AND;
 #endif
 
 #if disableSpiPORTB_OR != 0
-  PORTB |= disableSpiPORTB_OR;
+  PORTB.OUT |= disableSpiPORTB_OR;
 #endif
 #if disableSpiPORTB_AND != 0xFF
-  PORTB &= disableSpiPORTB_AND;
+  PORTB.OUT &= disableSpiPORTB_AND;
 #endif
 
 #if disableSpiPORTC_OR != 0
 #error Port C is memory bus
-  PORTC |= disableSpiPORTC_OR;
+  PORTC.OUT |= disableSpiPORTC_OR;
 #endif
 #if disableSpiPORTC_AND != 0xFF
 #error Port C is memory bus
-  PORTC &= disableSpiPORTC_AND;
+  PORTC.OUT &= disableSpiPORTC_AND;
 #endif
 
 #if disableSpiPORTD_OR != 0
-  PORTD |= disableSpiPORTD_OR;
+  PORTD.OUT |= disableSpiPORTD_OR;
 #endif
 #if disableSpiPORTD_AND != 0xFF
-  PORTD &= disableSpiPORTD_AND;
+  PORTD.OUT &= disableSpiPORTD_AND;
 #endif
 #if disableSpiPORTE_OR != 0
-  PORTE |= disableSpiPORTE_OR;
+  PORTE.OUT |= disableSpiPORTE_OR;
 #endif
 #if disableSpiPORTE_AND != 0xFF
-  PORTE &= disableSpiPORTE_AND;
+  PORTE.OUT &= disableSpiPORTE_AND;
 #endif
 
 #if disableSpiPORTF_OR != 0
-  PORTF |= disableSpiPORTF_OR;
+  PORTF.OUT |= disableSpiPORTF_OR;
 #endif
 #if disableSpiPORTF_AND != 0xFF
-  PORTF &= disableSpiPORTF_AND;
+  PORTF.OUT &= disableSpiPORTF_AND;
 #endif
-
+/* Tego nie ma PORTC 
 #if disableSpiPORTG_OR != 0
-  PORTG |= disableSpiPORTG_OR;
+  PORTG.OUT |= disableSpiPORTG_OR;
 #endif
 #if disableSpiPORTG_AND != 0xFF
-  PORTG &= disableSpiPORTG_AND;
-#endif
+  PORTG.OUT &= disableSpiPORTG_AND;
+#endif*/
 }
 
 void spiEnableEnc28j60(void)

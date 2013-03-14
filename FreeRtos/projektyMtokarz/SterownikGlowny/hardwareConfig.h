@@ -90,53 +90,53 @@
 
 //Konfiguracja biblioteki ds1305.h
 #define USE_DECODED_TIME_STRUCT 1
-
+//tu zaczynam zmieniac
 //Konfiguracja Sterownika ethenretowego Enc28j60
-//CS jest na PORT E.3
-#define ENC_SPI_CS_PORT              PORTE
+//CS jest na PORT B.0
+#define ENC_SPI_CS_PORT              PORTB.OUT //B0 TU CHUBA PORTB.OUT
 #define ENC_SPI_CS_EN_MASK_OR        0x00
-#define ENC_SPI_CS_EN_MASK_AND       0xF7
+#define ENC_SPI_CS_EN_MASK_AND       0xFE
 
 //Konfiguracja Karty SD
-//CS jest na PORT G.3
-#define SD_SPI_CS_PORT               PORTG
+//CS jest na PORT C.4
+#define SD_SPI_CS_PORT               PORTC.OUT // PORTC.OUT
 #define SD_SPI_CS_EN_MASK_OR         0x00
-#define SD_SPI_CS_EN_MASK_AND        0xF7
+#define SD_SPI_CS_EN_MASK_AND        0x6F
 
 //Konfiguracja portu równoległego MPC23S17
-//CS jest na PORT B.7
-#define MPC23S17_SPI_CS_PORT         PORTB
+//CS jest na PORT E.7 ADR7
+#define MPC23S17_SPI_CS_PORT         PORTE.OUT
 #define MPC23S17_SPI_CS_EN_MASK_OR   0x00
 #define MPC23S17_SPI_CS_EN_MASK_AND  0x7F
 
 //Konfiguracja Układu analogowo cyfrowego MPC3008
-//CS jest na PORT B.6
-#define MCP3008_SPI_CS_PORT          PORTB
+//CS jest na PORT E.6
+#define MCP3008_SPI_CS_PORT          PORTE.OUT
 #define MCP3008_SPI_CS_EN_MASK_OR    0x00
 #define MCP3008_SPI_CS_EN_MASK_AND   0xBF
 
 //Konfiguracja rezystora cyfrowego MCP4150
-//CS jest na PORT B.6
-#define MCP4150_SPI_CS_PORT          PORTB
+//CS jest na PORT E.6
+#define MCP4150_SPI_CS_PORT          PORTE.OUT
 #define MCP4150_SPI_CS_EN_MASK_OR    0x00
 #define MCP4150_SPI_CS_EN_MASK_AND   0xBF
 
 
 //Konfiguracja Zegara czasu rzeczywistego DS1305
 //CE jest na PORT B.5
-#define DS1305_SPI_CS_PORT           PORTB
+#define DS1305_SPI_CS_PORT           PORTE.OUT
 #define DS1305_SPI_CS_EN_MASK_OR     0x20
 #define DS1305_SPI_CS_EN_MASK_AND    0xFF
 
-
+//tu zakonczylem
 
 //konfiguracja wyłączania wszystkich urządzeń SPI
 
-//PORT A: Zewnętrzna pamięć
-#define disableSpiPORTA_OR           0x00
-#define disableSpiPORTA_AND          0xFF
+//PORT J: Zewnętrzna pamięć
+#define disableSpiPORTJ_OR           0x00 //bylo portA
+#define disableSpiPORTJ_AND          0xFF
 
-//PORT B: SPICS na PB4-PB7
+//PORT B: SPICS na PB4-PB7 E
 // PB4 - brak
 // PB5 - DS1305     0 - off, 1 - on
 // PB6 - MCP3008    0 - on.  1 - off
@@ -161,9 +161,9 @@
 #define disableSpiPORTF_OR           0x00
 #define disableSpiPORTF_AND          0xFF
 
-//PORT G
-// PG3 - SD
-#define disableSpiPORTG_OR           0x08
+//PORT C
+// PC4 - SD
+#define disableSpiPORTG_OR           0x10//0x08
 #define disableSpiPORTG_AND          0xFF
 
 #endif

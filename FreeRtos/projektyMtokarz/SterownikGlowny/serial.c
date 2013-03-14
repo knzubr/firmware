@@ -46,6 +46,24 @@ void xSerialPortInitMinimal(void)
   }
   portEXIT_CRITICAL();
   /*
+   * PORTD.OUT=0xFF; //ok
+	PORTD.DIR=PIN3_bm;//ok
+	PORTD.DIRCLR = PIN2_bm;//ok
+	USARTD0.CTRLC=0b00000011;//ok
+	USARTD0.BAUDCTRLA=0b01100111;//12;
+	USARTD0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
+	USARTD0.CTRLB=0b00011000;
+	
+	PORTF.OUT=0xFF; //ok
+	PORTF.DIR=PIN3_bm;//ok
+	PORTF.DIRCLR = PIN2_bm;//ok
+	USARTF0.CTRLC=0b00000011;//ok
+	USARTF0.BAUDCTRLA=0b01100111;//12;
+	USARTF0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
+	USARTF0.CTRLB=0b00011000;
+   * 
+   * */
+  /*
   UBRR0L = 7;
   UBRR0H = 0;
 
@@ -53,9 +71,9 @@ void xSerialPortInitMinimal(void)
   UBRR1H = 0;
 
   UCSR0B = ((1<<TXCIE0)|(1<<RXCIE0)|(1<<TXEN0)|(1<<RXEN0));
-  UCSR0C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */
+  UCSR0C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );      Set the data bits to 8. */
   //UCSR1B = ((1<<RXCIE1)|(1<<TXEN1)|(1<<RXEN1));
-  //UCSR1C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */
+  //UCSR1C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );      Set the data bits to 8. */
   
   return;
 }
@@ -66,7 +84,7 @@ ISR(USART0_RX_vect)
   static signed portBASE_TYPE xHigherPriorityTaskWoken = pdTRUE; 
   signed portCHAR cChar;
 
-  cChar = UDR0;
+  cChar = USARTF0.DATA;//UDR0;
 
   xHigherPriorityTaskWoken = pdFALSE;
 
@@ -89,14 +107,14 @@ uint8_t rs485Receive(uint8_t *c, uint8_t timeout)
   return xQueueReceive(xRs485Rec, c, timeout);
 }
 
-ISR(USART0_UDRE_vect)
+ISR(USARTF0_UDRE_vect) //   USART0_UDRE_vect
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
   static char data;
   if(xQueueReceiveFromISR(xRs485Tx, (void *)(&data), &xHigherPriorityTaskWoken) == pdTRUE)
   {
     Rs485TxStart();
-    UDR0 = data; 
+    USARTF0.DATA = data; 
   }
   else
   {
@@ -109,7 +127,7 @@ ISR(USART0_UDRE_vect)
   }
 }
 
-ISR(USART0_TX_vect)
+ISR(USARTF0_TXC_vect) //  USART0_TX_vect
 {
   if (!vIsInterruptRs485On())
     Rs485TxStop();
@@ -138,18 +156,19 @@ void    releaseRs485(void)
 void InterruptVtyOn(void)
 {                                  
   unsigned portCHAR ucByte;                                       
-  ucByte = UCSR1B;                 
+  ucByte = USARTD0.STATUS;//UCSR1B;                 
   ucByte |= serDATA_INT_ENABLE;    
-  UCSR1B = ucByte;                 
+ // UCSR1B = ucByte;       
+  USARTD0.STATUS=ucByte;
 }
 
 /*-----------------------------------------------------------*/
-ISR(USART1_RX_vect)
+ISR(USARTD0_RXC_vect)//  USART1_RX_vect
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
   signed portCHAR cChar;
 
-  cChar = UDR1;
+  cChar = USARTD0.DATA;//UDR1;
 //  xQueueSendFromISR(xVtyRec, &cChar, NULL);
 
   xHigherPriorityTaskWoken = pdFALSE;
@@ -166,13 +185,13 @@ void uartVtySendByte(uint8_t data)
   vInterruptVtyOn();
 }
 
-ISR(USART1_UDRE_vect)
+ISR(USARTD0_DRE_vect) // USART1_UDRE_vect
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
   static char data;
   if(xQueueReceiveFromISR(xVtyTx, &data, &xHigherPriorityTaskWoken) == pdTRUE)
   {
-    UDR1 = data; 
+    USARTD0.DATA = data; 
   }
   else
   {
