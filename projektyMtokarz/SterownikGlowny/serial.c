@@ -79,7 +79,7 @@ void xSerialPortInitMinimal(void)
 }
 
 /*-----------------------------------------------------------*/
-ISR(USART0_RX_vect)
+ISR(USARTF0_RX_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken = pdTRUE; 
   signed portCHAR cChar;

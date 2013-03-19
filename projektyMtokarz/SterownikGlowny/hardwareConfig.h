@@ -101,7 +101,7 @@
 //CS jest na PORT C.4
 #define SD_SPI_CS_PORT               PORTC.OUT // PORTC.OUT
 #define SD_SPI_CS_EN_MASK_OR         0x00
-#define SD_SPI_CS_EN_MASK_AND        0x6F
+#define SD_SPI_CS_EN_MASK_AND        0xEF
 
 //Konfiguracja portu równoległego MPC23S17
 //CS jest na PORT E.7 ADR7
@@ -123,47 +123,47 @@
 
 
 //Konfiguracja Zegara czasu rzeczywistego DS1305
-//CE jest na PORT B.5
+//CE jest na PORT E.5 E 5
 #define DS1305_SPI_CS_PORT           PORTE.OUT
 #define DS1305_SPI_CS_EN_MASK_OR     0x20
 #define DS1305_SPI_CS_EN_MASK_AND    0xFF
 
-//tu zakonczylem
 
 //konfiguracja wyłączania wszystkich urządzeń SPI
+// PORT A : brak SPI
+#define disableSpiPORTA_OR	      0x00
+#define disableSpiPORTA_AND          0xFF
+// PORT B : ENC28j60  0 - on,  1 - off
+#define disableSpiPORTB_OR           0x01
+#define disableSpiPORTB_AND          0xFE
+// PORT C : SPICS SD_CARD PC.4
+#define disableSpiPORTC_OR           0x10
+#define disableSpiPORTC_AND          0xEF
+// PORT D : brak SPI SS
+#define disableSpiPORTD_OR           0x00
+#define disableSpiPORTD_AND          0xFF
+
+//PORT E: SPICS na PE4-PE7 
+// PE4 - brak
+// PE5 - DS1305     0 - off, 1 - on
+// PE6 - MCP3008    0 - on.  1 - off
+// PE7 - MCP23S17   0 - on,  1 - off
+#define disableSpiPORTE_OR           0xC0
+#define disableSpiPORTE_AND          0xDF
+//PORT F : brak SPI SS
+#define disableSpiPORTF_OR           0x00
+#define disableSpiPORTF_AND          0xFF
 
 //PORT J: Zewnętrzna pamięć
 #define disableSpiPORTJ_OR           0x00 //bylo portA
 #define disableSpiPORTJ_AND          0xFF
+//PORT K: Zewnętrzna pamięć
+#define disableSpiPORTK_OR	      0x00
+#define disableSpiPORTK_AND	      0xFF
 
-//PORT B: SPICS na PB4-PB7 E
-// PB4 - brak
-// PB5 - DS1305     0 - off, 1 - on
-// PB6 - MCP3008    0 - on.  1 - off
-// PB7 - MCP23S17   0 - on,  1 - off
-#define disableSpiPORTB_OR           0xC0
-#define disableSpiPORTB_AND          0xDF
+//PORT H: Zewnetrzna pamiec A18-16
+#define disableSpiPORTH_OR	      0x00
+#define disableSpiPORTH_AND	      0xFF
 
-//PORT C: Zewnętrzna pamięć
-#define disableSpiPORTC_OR           0x00
-#define disableSpiPORTC_AND          0xFF
-
-//PORD D: brak SPI SS
-#define disableSpiPORTD_OR           0x00
-#define disableSpiPORTD_AND          0xFF
-
-//PORT E
-// PE3 - ENC28j60  0 - on,  1 - off
-#define disableSpiPORTE_OR           0x08
-#define disableSpiPORTE_AND          0xFF
-
-//PORT F - brak SPI SS
-#define disableSpiPORTF_OR           0x00
-#define disableSpiPORTF_AND          0xFF
-
-//PORT C
-// PC4 - SD
-#define disableSpiPORTG_OR           0x10//0x08
-#define disableSpiPORTG_AND          0xFF
 
 #endif
