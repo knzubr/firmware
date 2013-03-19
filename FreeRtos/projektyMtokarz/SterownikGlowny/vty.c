@@ -691,8 +691,9 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
   for ( ; ; )
   {
     fputc('C'              , state->myStdInOut);
-    while(!(UCSR1A & (1 << TXC1)));                              //Czekanie na opróżnienie bufora
-
+   // while(!(UCSR1A & (1 << TXC1)));                              //Czekanie na opróżnienie bufora
+//od usartD0
+    while(!(USARTD0.STATUS & USART_TXCIF_bm));
     if(xQueueReceive(xVtyRec, &c, 100))
       if (c == SOH)
         break;                                                   //Rozpoczynamy transmisje

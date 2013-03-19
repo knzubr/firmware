@@ -154,8 +154,17 @@ void checkLockerSensors(void)
 
 uint8_t spiSend(uint8_t data)
 {
-  uint8_t result;
+  uint8_t result; 
   SPIC.DATA = data;
+  SPID.DATA = data; 
+  xQueueReceive(xSpiRx, &result, 10); 
+  return result;
+}
+uint8_t spiSendENC(uint8_t data)
+{
+  uint8_t result; 
+  SPIC.DATA = data;
+  //SPID.DATA = data; 
   xQueueReceive(xSpiRx, &result, 10); 
   return result;
 }
@@ -163,48 +172,60 @@ uint8_t spiSend(uint8_t data)
 uint8_t spiSendSpinBlock(uint8_t data)
 {
   //SPDR = data;
-  SPIC.DATA=data;
-  SPCR &= ~(1<<SPIE);                //Disable SPI interrupt
-  while(!(SPSR&(1<<SPIF)));
-  data = SPSR;                       //Clearing interrupt flag
-  data = SPDR;                       //Resfing DPI buffer register
-  SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
+ // SPIC.DATA=data;
+  //SPCR &= ~(1<<SPIE);                
+  //SPIC.INTCTRL=0x00; //Disable SPI interrupt
+  while(!(SPID.STATUS&(0x80))); //(SPSR&(1<<SPIF)));
+  data = SPID.DATA;//SPSR;                       Clearing interrupt flag
+  data = SPID.DATA; //SPDR;                      Resfing DPI buffer register
+  //SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
+  SPID.INTCTRL|=0x01; //low level
   return data;                     
 }
-
+uint8_t spiSendSpinBlockENC(uint8_t data)
+{
+  //SPDR = data;
+  SPIC.DATA=data;
+  //SPCR &= ~(1<<SPIE);                
+  SPIC.INTCTRL=0x00; //Disable SPI interrupt
+  while(!(SPIC.STATUS&(0x80))); //(SPSR&(1<<SPIF)));
+  data = SPIC.DATA;//SPSR;                       Clearing interrupt flag
+  data = SPIC.DATA; //SPDR;                      Resfing DPI buffer register
+  //SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
+  SPIC.INTCTRL|=0x01; //low level
+  return data;                     
+}
+//tu duzo zmienic i hardwareconfig.h
 void disableAllSpiDevices(void)
 { 
-#if disableSpiPORTJ_OR != 0
-#error Port A is memory bus
-  PORTJ.OUT |= disableSpiPORTJ_OR;
+#if disableSpiPORTA_OR !=0
+  PORTA.OUT |= disableSpiPORTA_OR;
 #endif
-#if disableSpiPORTJ_AND != 0xFF
-#error Port A is memory bus
-  PORTJ.OUT &= disableSpiPORTJ_AND;
+#if disableSpiPORTB_AND !=0xFF
+  PORTA.OUT &= disableSpiPORTB_AND;
 #endif
-
+  
 #if disableSpiPORTB_OR != 0
   PORTB.OUT |= disableSpiPORTB_OR;
 #endif
-#if disableSpiPORTB_AND != 0xFF
+#if disableSpiPORTB_AND != 0xFF 
   PORTB.OUT &= disableSpiPORTB_AND;
 #endif
-
-#if disableSpiPORTC_OR != 0
-#error Port C is memory bus
+  
+#if disableSpiPORTC_OR !=0
   PORTC.OUT |= disableSpiPORTC_OR;
 #endif
-#if disableSpiPORTC_AND != 0xFF
-#error Port C is memory bus
-  PORTC.OUT &= disableSpiPORTC_AND;
+#if disableSpiPORTC_AND !=0xFF
+  PORTC.OUT |= disableSpiPORTC_AND;
 #endif
-
+  
 #if disableSpiPORTD_OR != 0
   PORTD.OUT |= disableSpiPORTD_OR;
 #endif
 #if disableSpiPORTD_AND != 0xFF
   PORTD.OUT &= disableSpiPORTD_AND;
 #endif
+  
 #if disableSpiPORTE_OR != 0
   PORTE.OUT |= disableSpiPORTE_OR;
 #endif
@@ -218,13 +239,34 @@ void disableAllSpiDevices(void)
 #if disableSpiPORTF_AND != 0xFF
   PORTF.OUT &= disableSpiPORTF_AND;
 #endif
-/* Tego nie ma PORTC 
-#if disableSpiPORTG_OR != 0
-  PORTG.OUT |= disableSpiPORTG_OR;
+
+  #if disableSpiPORTJ_OR != 0
+#error Port J is memory bus
+  PORTJ.OUT |= disableSpiPORTJ_OR;
 #endif
-#if disableSpiPORTG_AND != 0xFF
-  PORTG.OUT &= disableSpiPORTG_AND;
-#endif*/
+#if disableSpiPORTJ_AND != 0xFF
+#error Port J is memory bus
+  PORTJ.OUT &= disableSpiPORTJ_AND;
+#endif
+  
+#if disableSpiPORTK_OR != 0
+#error Port K is memory bus
+  PORTK.OUT |= disableSpiPORTK_OR;
+#endif
+#if disableSpiPORTK_AND != 0xFF
+#error Port K is memory bus
+  PORTK.OUT &= disableSpiPORTK_AND;
+#endif
+  
+  #if disableSpiPORTH_OR != 0
+#error Port H is memory bus
+  PORTK.OUT |= disableSpiPORTG_OR;
+#endif
+#if disableSpiPORTH_AND != 0xFF
+#error Port H is memory bus
+  PORTH.OUT &= disableSpiPORTG_AND;
+#endif
+
 }
 
 void spiEnableEnc28j60(void)
@@ -287,10 +329,11 @@ void disableSpiMPC23S17(void)
 #endif
 }
 
-#define MCP3008_SPCR_OR_MASK ((1<<SPR1)|(1<<SPR0))
+#define MCP3008_SPCR_OR_MASK  0b00000011
+//((1<<SPR1)|(1<<SPR0))
 void enableSpiMCP3008(void)
 {
-  SPCR |= MCP3008_SPCR_OR_MASK;
+  SPID.CTRL|= MCP3008_SPCR_OR_MASK;
 #if MCP3008_SPI_CS_EN_MASK_OR != 0
   MCP3008_SPI_CS_PORT |= MCP3008_SPI_CS_EN_MASK_OR;
 #endif
@@ -302,7 +345,8 @@ void enableSpiMCP3008(void)
 
 void disableSpiMCP3008(void)
 {
-  SPCR &= ~MCP3008_SPCR_OR_MASK;
+  //SPCR
+  SPID.CTRL&= ~MCP3008_SPCR_OR_MASK;
   #if MCP3008_SPI_CS_EN_MASK_OR != 0
   MCP3008_SPI_CS_PORT &= (~MCP3008_SPI_CS_EN_MASK_OR);
 #endif
@@ -312,10 +356,12 @@ void disableSpiMCP3008(void)
 }
 
 
-#define MCP4150_SPCR_OR_MASK ((1<<SPR1)|(1<<SPR0))
+#define MCP4150_SPCR_OR_MASK  0b00000011
+//((1<<SPR1)|(1<<SPR0))
 void enableSpiMCP4150(void)
 {
-  SPCR |= MCP4150_SPCR_OR_MASK;
+ // SPCR
+ SPID.CTRL|= MCP4150_SPCR_OR_MASK;
 #if MCP4150_SPI_CS_EN_MASK_OR != 0
   MCP4150_SPI_CS_PORT |= MCP4150_SPI_CS_EN_MASK_OR;
 #endif
@@ -325,7 +371,8 @@ void enableSpiMCP4150(void)
 }
 void disableSpiMCP4150(void) 
 {
-  SPCR &= ~MCP4150_SPCR_OR_MASK;
+  //SPCR
+  SPID.CTRL&= ~MCP4150_SPCR_OR_MASK;
   #if MCP4150_SPI_CS_EN_MASK_OR != 0
   MCP4150_SPI_CS_PORT &= (~MCP4150_SPI_CS_EN_MASK_OR);
 #endif
@@ -334,11 +381,13 @@ void disableSpiMCP4150(void)
 #endif  
 }
 
-#define DS_SPCR_OR_MASK ((1<<CPHA)|(1<<SPR0))
+#define DS_SPCR_OR_MASK 0b00000101
+//((1<<CPHA)|(1<<SPR0))
 
 void spiEnableDS1305(void)
 {
-  SPCR |= DS_SPCR_OR_MASK;
+  //SPCR 
+  SPID.CTRL|= DS_SPCR_OR_MASK;
 #if DS1305_SPI_CS_EN_MASK_OR != 0
   DS1305_SPI_CS_PORT |= DS1305_SPI_CS_EN_MASK_OR;
 #endif
@@ -349,7 +398,8 @@ void spiEnableDS1305(void)
 
 void spiDisableDS1305(void)
 {
-  SPCR &= (~(DS_SPCR_OR_MASK));
+  //SPCR
+  SPID.CTRL &= (~(DS_SPCR_OR_MASK));
 #if DS1305_SPI_CS_EN_MASK_OR != 0
   DS1305_SPI_CS_PORT &= (~(DS1305_SPI_CS_EN_MASK_OR));
 #endif
@@ -363,7 +413,7 @@ ISR(SPI_STC_vect)
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
 
   static uint8_t data;
-  data = SPDR;
+  data = SPID.DATA;//SPDR;
   
   xQueueSendFromISR(xSpiRx, &data, &xHigherPriorityTaskWoken);
 
