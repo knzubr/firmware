@@ -6,7 +6,8 @@ SET(CMAKE_C_COMPILER   avr-gcc)
 SET(CMAKE_CXX_COMPILER avr-g++)
 
 SET(MCU             atmega168)
-SET(PROGRAMMER_DEV  /dev/avrStk500v2prog)
+#SET(PROGRAMMER_DEV  /dev/avrStk500v2prog)
+SET(PROGRAMMER_DEV  usb)
 
 SET(IMAGENAME       "firmware")
 

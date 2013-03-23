@@ -200,7 +200,7 @@ LDFLAGS += -lm
 
 # Programming support using avrdude.
 AVRDUDE             = avrdude
-AVRDUDE_PROGRAMMER  = pdi 
+AVRDUDE_PROGRAMMER  = avrispmkII 
 # jtag1
 #AVRDUDE_PORT        = /dev/jtag
 AVRDUDE_PORT        = usb

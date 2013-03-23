@@ -49,18 +49,18 @@
 
 
 // hello response: slave->master
-//  +------+------+---------+--------+--------+--------+-------+-------+-------+-------+-------+-------+-------+
-//  | SYNC | type | address | length | data1  | data2  | data3 | data4 | data5 | data6 | data7 | CrcHi | CrcLo |
-//  | 0x5A | 0x82 |    0    |    7   | state1 | state2 |version|version|version|version|version|       |       |
-//  |      |      |         |        |        |        |'v'/'b'|       |  '.'  |       |       |       |       |
-//  +------+------+---------+--------+--------+--------+-------+-------+-------+-------+-------+-------+-------+
+//  +------+------+---------+--------+--------+--------+-------+-------+-------+-------+-------+-------+-------+-------+
+//  | SYNC | type | address | length | data1  | data2  | data3 | data4 | data5 | data6 | data7 | data8 | CrcHi | CrcLo |
+//  | 0x5A | 0x82 |    0    |    7   | state1 | state2 |setting|version|version|version|version|Version|       |       |
+//  |      |      |         |        |        |        |       |'v'/'b'|       |  '.'  |       |       |       |       |
+//  +------+------+---------+--------+--------+--------+-------+-------+-------+-------+-------+-------+-------+-------+
 
 //offsets of hello response data field 
 #define HELLO_RESP_STATE1  0
 #define HELLO_RESP_STATE2  1
 #define HELLO_RESP_VER     2
 #define HELLO_RESP_VER_LEN 5
-#define HELLO_RESP_LEN     2+HELLO_RESP_VER_LEN
+#define HELLO_RESP_LEN     3+HELLO_RESP_VER_LEN
 
 
 
@@ -85,6 +85,13 @@
 
 // *********************************** Roller 2 stop     ***********************************************************
 #define rZatrzymajRolete2 0x31
+
+// *********************************** Configure module ************************************************************
+#define rUstaw 0x40
+
+// *********************************** Write module Settings********************************************************
+#define rZapiszUstawienia 0x41
+
 
 // *********************************** Unknown message  ************************************************************
 #define rUNKNOWN          0xFF

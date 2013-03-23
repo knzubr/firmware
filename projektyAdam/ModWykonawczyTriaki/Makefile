@@ -151,8 +151,8 @@ LDFLAGS += -lm
 
 # Programming support using avrdude.
 AVRDUDE = avrdude
-AVRDUDE_PROGRAMMER = stk500v2
-AVRDUDE_PORT = /dev/avrStk500v2prog	   # Stk500v2 on dedicated PCB
+AVRDUDE_PROGRAMMER = avrispmkII
+AVRDUDE_PORT = 	usb   # Stk500v2 on dedicated PCB
 #AVRDUDE_PORT = /dev/avrMultiTool          # Stk500v2 on multi PCB
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex

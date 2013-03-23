@@ -13,7 +13,6 @@ void hardwareInit(void)
    */
   adres =  PINC & 0x03;
   adres |= ((PINB & 0x38)>>1);
-  wczytajUstawienia(0x88);
 }
 
 void roleta1wGore(void)
@@ -74,14 +73,24 @@ void wczytajUstawienia(uint8_t konfiguracja)
 {
   if (konfiguracja & 0x80)
     sterowanie[1].wlaczona = 1;
-
+  else
+  {
+    sterowanie[1].wlaczona = 0;
+    roleta1Stop();
+  }
+  
   if (konfiguracja & 0x08)
     sterowanie[0].wlaczona = 1;
+  else
+  {
+    sterowanie[0].wlaczona = 0;
+    roleta2Stop();
+  } 
 
   sterowanie[0].stop = roleta1Stop;
   sterowanie[1].stop = roleta2Stop;
   
-  if (konfiguracja & 0x44)
+  if (konfiguracja & 0x44 == 0)
   {
     if (konfiguracja & 0x01)
     {
@@ -151,12 +160,3 @@ void wczytajUstawienia(uint8_t konfiguracja)
   }
 }
 
-inline void powerOn()
-{
-  PORTB |= 0x01;
-}
-
-inline void powerOff()
-{
-  PORTB &= (~0x01);
-}
