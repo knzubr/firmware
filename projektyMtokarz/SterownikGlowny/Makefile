@@ -60,7 +60,7 @@ sensors_task.c \
 vty.c \
 netstack_task.c \
 cli_task.c \
-$(LIB_DIR)/spi.c \
+$(LIB_DIR)/spiXmega.c \
 $(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
@@ -203,7 +203,7 @@ AVRDUDE             = avrdude
 AVRDUDE_PROGRAMMER  = pdi 
 # jtag1
 #AVRDUDE_PORT        = /dev/jtag
-AVRDUDE_PORT        = /dev/avrMultiTool
+AVRDUDE_PORT        = usb
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep

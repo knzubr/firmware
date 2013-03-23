@@ -50,8 +50,8 @@ uint8_t timer100Hz = 0;
 xQueueHandle xVtyTx;
 xQueueHandle xVtyRec;
 
-//xQueueHandle xRs485Tx;
-//xQueueHandle xRs485Rec;
+xQueueHandle xRs485Tx;
+xQueueHandle xRs485Rec;
 
 
 volatile uint8_t temperature;

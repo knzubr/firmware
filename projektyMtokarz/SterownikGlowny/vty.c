@@ -71,12 +71,12 @@ static cliExRes_t testPamZewFunction     (cmdState_t *state);
 
 struct ramPlikFd    fdVty;  //TODO move it to CLI struct
 
-prog_char okStr[] = "OK\r\n";
-prog_char nlStr[] = "\r\n";
-prog_char BladBuforaPozostaloBajtowStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
+const char okStr[] PROGMEM = "OK\r\n";
+const char nlStr[] PROGMEM = "\r\n";
+const char BladBuforaPozostaloBajtowStr[] PROGMEM = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
 
 
-prog_char __ATTR_PROGMEM__ *errorStrings[] = {
+const const char* const errorStrings[] PROGMEM = {
   errorOK,
   errorNoFile,
   errorxModemFrameStartTimeout,
@@ -91,7 +91,7 @@ prog_char __ATTR_PROGMEM__ *errorStrings[] = {
   errorOpenFile
 };
 
-command_t __ATTR_PROGMEM__ cmdListNormal[] =
+const command_t cmdListNormal[] PROGMEM =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
@@ -104,7 +104,7 @@ command_t __ATTR_PROGMEM__ cmdListNormal[] =
   {NULL, NULL, NULL}
 };
 
-command_t __ATTR_PROGMEM__ cmdListEnable[] =
+const command_t cmdListEnable[] =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
@@ -139,7 +139,7 @@ command_t __ATTR_PROGMEM__ cmdListEnable[] =
   {NULL, NULL, NULL}
 };
 
-command_t __ATTR_PROGMEM__ cmdListConfigure[] =
+const command_t cmdListConfigure[] PROGMEM =
 {
   {cmd_help,         cmd_help_help,         helpFunction},
   {cmd_status,       cmd_help_status,       statusFunction},

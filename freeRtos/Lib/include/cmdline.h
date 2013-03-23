@@ -27,7 +27,7 @@
 
 #include <stdio.h>
 #include <avr/io.h>         // editor recognizes now types like uint8_t 
-#include <avr/pgmspace.h>
+
 
 #include "softwareConfig.h"
 
@@ -108,9 +108,9 @@ struct cmdState
 
 struct command
 {
-  prog_char           *commandStr;           /// Command string
-  prog_char           *commandHelpStr;       /// Command help string
-  CmdlineFuncPtrType  commandFun;            /// Command function pointer
+  const char           *commandStr;          /// Command string
+  const char           *commandHelpStr;      /// Command help string
+  CmdlineFuncPtrType   commandFun;           /// Command function pointer
 };
 
 
