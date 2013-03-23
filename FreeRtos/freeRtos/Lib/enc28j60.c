@@ -240,10 +240,9 @@ void enc28j60Init(uint8_t* macaddr)
   // perform system reset
   
   //ENC28j60 reset is on PE2 TODO add in hardware.c macros for that.
-  PORTE &= ~0x04;
+  ENC_RST_ON;   // PORTE &= ~0x04;
   vTaskDelay(5); // 50ms
-  PORTE |= 0x04;
-  
+  ENC_RST_OFF;  //PORTE |= 0x04; 
   vTaskDelay(5); // 50ms
 
   // check CLKRDY bit to see if reset is complete

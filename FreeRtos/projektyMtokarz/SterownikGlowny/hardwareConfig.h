@@ -27,6 +27,9 @@
 #define LOCK_SENS_4_THR   900
 #define LOCK_SENS_4_ENA   1
 
+#define ENC_RST_ON   // PORTE &= ~0x04;
+#define ENC_RST_OFF  // PORTE |= ~0x04; 
+
 
 // --------------------- Konfiguracja pamięci ------------------------------------
 //

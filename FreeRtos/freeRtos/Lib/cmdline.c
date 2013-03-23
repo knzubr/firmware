@@ -37,11 +37,11 @@
 
 
 // Constans Strings
-char PROGMEM CmdlinePromptNormal[]      = "DomOs>";
-char PROGMEM CmdlinePromptEnable[]      = "DomOs#";
-char PROGMEM CmdlinePromptConfigure[]   = "DomOs@";
-char PROGMEM CmdlineNotice[]            = "cmdline: ";
-char PROGMEM CmdlineCmdNotFound[]       = "# nk";
+const char CmdlinePromptNormal[]    PROGMEM  = "DomOs>";
+const char CmdlinePromptEnable[]    PROGMEM  = "DomOs#";
+const char CmdlinePromptConfigure[] PROGMEM  = "DomOs@";
+const char CmdlineNotice[]          PROGMEM  = "cmdline: ";
+const char CmdlineCmdNotFound[]     PROGMEM  = "# nk";
 
 
 // internal commands

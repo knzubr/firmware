@@ -1,9 +1,10 @@
 #ifndef LANG_HARDWARE
 #define LANG_HARDWARE EN
+#include <avr/pgmspace.h>
 
-prog_char statusLockerSensDescStr[]           = " locker %d";
-prog_char statusLockerOpenStr[]               = " open   ";
-prog_char statusLockerCloseStr[]              = " locked ";
-prog_char statusLockerSensAdditionalDescStr[] = " (threshold %d, AC value %d)\r\n";
+const char statusLockerSensDescStr[]           PROGMEM = " locker %d";
+const char statusLockerOpenStr[]               PROGMEM = " open   ";
+const char statusLockerCloseStr[]              PROGMEM = " locked ";
+const char statusLockerSensAdditionalDescStr[] PROGMEM = " (threshold %d, AC value %d)\r\n";
 
 #endif

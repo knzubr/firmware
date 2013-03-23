@@ -14,8 +14,8 @@ void spiInit(void (*disableAllSpiDevicesFun)(void))
   portENTER_CRITICAL();
   vSemaphoreCreateBinary(xSemaphoreSpiSS); 
 
-  SPCR  = (1<<SPE)|(1<<MSTR)|(1<<SPIE);  //TODO Adam: użyć odpowiednich nazw rejestrów
-  SPSR |= (1<<SPI2X);
+  //SPCR  = (1<<SPE)|(1<<MSTR)|(1<<SPIE);  //TODO Adam: użyć odpowiednich nazw rejestrów
+  //SPSR |= (1<<SPI2X);
  
   portEXIT_CRITICAL();
   
@@ -24,22 +24,22 @@ void spiInit(void (*disableAllSpiDevicesFun)(void))
 
 void spiSetCPHA(void)
 {
-  SPCR |= (1<<CPHA);
+  //SPCR |= (1<<CPHA);
 }
 
 void spiClearCPHA(void)
 {
-  SPCR &= ~(1<<CPHA);
+  //SPCR &= ~(1<<CPHA);
 }
 
 void spiSetCPOL(void)
 {
-  SPCR |= (1<<CPOL);
+  //SPCR |= (1<<CPOL);
 }
 
 void spiClearCPOL(void)
 {
-  SPCR &= ~(1<<CPOL);
+  //SPCR &= ~(1<<CPOL);
 }
 
 void spiTake(void)
@@ -55,3 +55,4 @@ void spiGive(void)
 uint8_t spiSend(uint8_t data)          { data = 0;  return 0; }
 uint8_t spiSendSpinBlock(uint8_t data) { data = 0;  return 0; }
 
+// 

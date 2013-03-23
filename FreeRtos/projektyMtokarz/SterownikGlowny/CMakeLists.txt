@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
-PROJECT("Główny Sterownik")
-PROJECT("Main Controller Template")
-SET(CMAKE_SYSTEM_NAME "Główny Sterownik")
+PROJECT("Główny Sterownik atXmega")
+PROJECT("Main Controller Template atXmega")
+SET(CMAKE_SYSTEM_NAME "Główny Sterownik atXmega")
 
 SET(MCU               atxmega128a1)
-SET(PROGRAMMER_DEV    /dev/avrMultiTool)
+SET(PROGRAMMER_DEV    usb)
 
 SET(IMAGENAME         firmware)
 
@@ -44,7 +44,7 @@ SET(CMAKE_CXX_FLAGS ${CXXFLAGS})
 
 add_executable(${IMAGENAME}
                         main.c configuration.c serial.c hardware.c sensors_task.c vty.c netstack_task.c cli_task.c 
-                        ${LIB_DIR}/spi.c ${LIB_DIR}/memory_x.c ${LIB_DIR}/ramdysk.c ${LIB_DIR}/cmdline.c ${LIB_DIR}/xmodem.c 
+                        ${LIB_DIR}/spiXmega.c ${LIB_DIR}/memory_x.c ${LIB_DIR}/ramdysk.c ${LIB_DIR}/cmdline.c ${LIB_DIR}/xmodem.c 
                         ${LIB_DIR}/vt100.c ${LIB_DIR}/ds1305.c ${LIB_DIR}/mpc23s17.c ${LIB_DIR}/mcp3008.c ${LIB_DIR}/mcp4150.c
                         ${LIB_DIR}/enc28j60.c ${LIB_DIR}/queueStream.c 
                         ${LIB_NET_DIR}/nic.c ${LIB_NET_DIR}/net.c ${LIB_NET_DIR}/ip.c ${LIB_NET_DIR}/icmp.c ${LIB_NET_DIR}/arp.c 
@@ -98,7 +98,7 @@ add_custom_target(FreeRtos        DEPENDS
                  )
 
 add_custom_target(Hardware        DEPENDS
-                        ${LIB_DIR}/spi.c                        ${LIB_DIR}/include/spi.h                # Obsługa magistrali SPI
+                        ${LIB_DIR}/spiXmega.c                   ${LIB_DIR}/include/spiXmega.h           # Obsługa magistrali SPI
                         ${LIB_DIR}/memory_x.c                   ${LIB_DIR}/include/memory_x.h           # Obsługa malloc. Zlicza wolną i zajętą pamięć na stercie.
                         ${LIB_DIR}/mpc23s17.c                   ${LIB_DIR}/include/mpc23s17.h           # Obsługa ekspandera portu
                         ${LIB_DIR}/mcp3008.c                    ${LIB_DIR}/include/mcp3008.h            # Obsługa przetwornika A/C
