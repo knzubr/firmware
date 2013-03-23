@@ -2,11 +2,18 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 
 [CMake]
-BuildDirs[$e]=$HOME/akme/FreeRtos/projektyAdam/SterownikGlowny/build
-CMakeDir=/Modules
-CurrentBuildDir=file:///home/adam/akme/FreeRtos/projektyAdam/SterownikGlowny/build
-CurrentInstallDir=
+Build Directory Count=1
+CMakeDir=/usr/share/cmake-2.8/Modules
+Current Build Directory Index=0
 ProjectRootRelative=./
+
+[CMake][CMake Build Directory 0]
+Build Directory Path=file:///home/adam/Dokumenty/akme/FreeRtos/projektyAdam/SterownikGlowny/build
+Build Type=Debug
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=
 
 [MakeBuilder]
 Number Of Jobs=1

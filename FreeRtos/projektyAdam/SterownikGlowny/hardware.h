@@ -18,6 +18,9 @@
 #define Rs485TxStart() (PORTG |=  0x10)
 #define Rs485TxStop()  (PORTG &=  0xEF)
 
+#define ENC_RST_ON  PORTE &= ~0x04;
+#define ENC_RST_OFF PORTE |= 0x04; 
+
 struct lockerSensor
 {
   uint8_t  enabled;

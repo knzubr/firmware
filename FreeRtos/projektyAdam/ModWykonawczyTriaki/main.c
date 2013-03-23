@@ -54,7 +54,7 @@
 #include <avr/eeprom.h>
 #include "hardware.h"
 #include <util/delay.h>
-
+#include <avr/eeprom.h> 
 
 
 /**
@@ -85,8 +85,11 @@ void vApplicationIdleHook( void );
 /*-----------------------------------------------------------*/
 
 /* Device address on RS 485 bus */
+
+uint8_t settingsEep EEMEM = 0x88; 
+
 uint8_t adres;
-char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 'r', 0, 'v', '0', '.', '0', '2'};
+char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 0, 0, 0, 'v', '0', '.', '0', '2'};
 
 t_stan_klawiszy	roleta[2] = {{0, 0, 0, 0, bezczynny}, {0, 0, 0, 0, bezczynny}};
 
@@ -101,10 +104,13 @@ portSHORT main( void )
 #if DO_INCR_RST
   prvIncrementResetCount();
 #endif
-  
   hardwareInit();
   
-  powerOn();
+
+  wczytajUstawienia(settings);
+  settings = eeprom_read_byte(settingsEep);
+  
+  POWER_ON
   
   xSerialPortInitMinimal(32);
 
@@ -174,6 +180,9 @@ static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       }
       else
       {
+        sterowanie[uxIndex].stop();
+        crDELAY(xHandle, 10);
+
         if (rozkaz & 0x80)
           sterowanie[uxIndex].gora();
         else

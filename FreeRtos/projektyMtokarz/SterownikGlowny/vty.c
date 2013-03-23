@@ -76,7 +76,7 @@ const char nlStr[] PROGMEM = "\r\n";
 const char BladBuforaPozostaloBajtowStr[] PROGMEM = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
 
 
-const const char* const errorStrings[] PROGMEM = {
+const char* const errorStrings[] PROGMEM = {
   errorOK,
   errorNoFile,
   errorxModemFrameStartTimeout,

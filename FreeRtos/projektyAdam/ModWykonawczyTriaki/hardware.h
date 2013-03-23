@@ -33,6 +33,14 @@
 #define TxStart() (PORTD |=  0x08)
 #define TxStop()  (PORTD &=  0xF7)
 
+#if X2
+#define POWER_ON 
+#define POWER_OFF
+#else
+#define POWER_ON    PORTB |= 0x01;
+#define POWER_OFF   PORTB &= (~0x01);
+#endif
+
 struct funkcje
 {
   uint8_t wlaczona;
@@ -45,6 +53,7 @@ struct funkcje
 
 
 extern uint8_t adres;
+extern uint8_t settings;
 extern char bHelloResp[];
 struct funkcje sterowanie[2];
 
@@ -57,11 +66,12 @@ void hardwareInit(void);
  * Wczytuje ustawienia
  * @param konfiguracja Roleta 1 (bity 3-0), Roleta 2 (bity 7-4)
  *         - bit 7 (3) - włączona obsługa rolety 2 (1)
- *         - bit 6 i 2 - zamiana klawiszy rolet roletę 1 obsługują klawisze od rolety 2 i odwrotnie
+ *         - bit 6 (2) - zamiana klawiszy rolet roletę 1 obsługują klawisze od rolety 2 i odwrotnie
  *         - bit 5 (1) - odwrócenie faz silnika w rolecie 2 (1)
  *         - bit 4 (0) - odwrócenie klawisze góra/dół w rolecie 2 (1)
  */
 void wczytajUstawienia(uint8_t konfiguracja);
+
 
 /**
  * Włącznenie triaka - rozpoczęcie podnoszenia rolety 1

@@ -80,6 +80,15 @@ static uint8_t wykonajRozkaz(void)
     case rFLASH:
       wysylac = 1;
       break;
+      
+    case rUstaw:
+      wczytajUstawienia(bDane[0]);
+      settings = bDane[0];
+      break;
+      
+    case rZapiszUstawienia:
+      eeprom_write_byte(settingsEep, settings);	
+      break;
   }
   return wysylac;
 }
@@ -271,7 +280,10 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
           uint8_t temp;
           
           //Dane 
-          for (temp = 0; temp < 11; temp++)
+          bHelloResp[HDR_LEN]   = 0;
+          bHelloResp[HDR_LEN+1] = 0;
+          bHelloResp[HDR_LEN+2] = settings;
+          for (temp = 0; temp < HELLO_RESP_LEN+HDR_LEN; temp++)
           {
             crQUEUE_SEND(xHandle, xCharsForTx, (void *)(&bHelloResp[temp]), 1, &xResult);
             crc = _crc_xmodem_update(crc, bHelloResp[temp]);

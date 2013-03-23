@@ -1,13 +1,14 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define X2 0
+#define X2 1
 
 
 #include <stdlib.h>
 #include <avr/interrupt.h>
 #include <util/crc16.h>
 #include <string.h>
+#include <avr/eeprom.h> 
 #include "FreeRTOS.h"
 #include "croutine.h"
 #include "queue.h"
@@ -28,5 +29,7 @@
 #define STR_V3 '0'
 #define STR_V4 '0'
 #define STR_V5 '0'
+
+uint8_t settings;
 
 #endif

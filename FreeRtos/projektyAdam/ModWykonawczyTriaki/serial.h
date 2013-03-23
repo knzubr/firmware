@@ -53,6 +53,8 @@
 extern uint8_t adres;
 extern char bHelloResp[];
 extern xQueueHandle xRoleta[2];
+extern uint8_t settings;
+extern uint8_t settingsEep EEMEM; 
 
 typedef enum
 {
