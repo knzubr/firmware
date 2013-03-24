@@ -87,7 +87,7 @@ static uint8_t wykonajRozkaz(void)
       break;
       
     case rZapiszUstawienia:
-      eeprom_write_byte(settingsEep, settings);	
+      eeprom_write_byte(&settingsEep, settings);	
       break;
   }
   return wysylac;
@@ -280,8 +280,6 @@ void vProtocol(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
           uint8_t temp;
           
           //Dane 
-          bHelloResp[HDR_LEN]   = 0;
-          bHelloResp[HDR_LEN+1] = 0;
           bHelloResp[HDR_LEN+2] = settings;
           for (temp = 0; temp < HELLO_RESP_LEN+HDR_LEN; temp++)
           {

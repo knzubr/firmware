@@ -19,11 +19,11 @@
 
 #include "bootloader.h"
 
-uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 7, 0xFF , 0xFF, 'b', '0', '.', '6', '3'};   //rHELLO response
-uint8_t         pingBuf[HDR_LEN+PROT_BUF_LEN] = {SYNC, 0, rPING, 8};                                          //rPING  response
-uint8_t         noCommandBuf[]                = {SYNC, 0, rUNKNOWN, 0};                                       //unknown command response
+uint8_t         helloBuf[]                    = {SYNC, 0, rHELLO, 8, 0x00 , 0x00, 0x00, 'b', '0', '.', '7', '0'};   //rHELLO response
+uint8_t         pingBuf[HDR_LEN+PROT_BUF_LEN] = {SYNC, 0, rPING, 8};                                                //rPING  response
+uint8_t         noCommandBuf[]                = {SYNC, 0, rUNKNOWN, 0};                                             //unknown command response
 
-uint8_t         buf[BUFSIZE];                                                                                 // xModem receive buffer
+uint8_t         buf[BUFSIZE];                                                                                       // xModem receive buffer
 uint8_t         bufptr;
 uint8_t         pagptr;
 uint8_t         ch;
@@ -143,7 +143,7 @@ void wykonajRozkaz(void)
   }
   if (protRozkaz == rHELLO)
   {
-    sendBuf(helloBuf, HDR_LEN+7);
+    sendBuf(helloBuf, HDR_LEN+8);
     return;
   }
   if (protRozkaz == rPING)
@@ -173,13 +173,17 @@ int main(void)
   
   resetStateMachine();               // initialize state machine
 
-  DDRB  = 0x00;
-  PORTB = 0x38;
-  DDRC  = 0x00;
+  DDRB  = 0x01;
+  PORTB = 0x3E; //3 - Adr2, 4 - Adr3, 5 - Adr4
+  DDRC  = 0x3C;
   PORTC = 0x03;
-  DDRD  = 0x6C;
+  DDRD  = 0x0A; //0 - RXD, 1 - TXD, 3 - TxEn, 6 -  
   PORTD = 0x00;
-
+  
+  /**
+   * Ustalanie adresu
+   * bit 7, 6 = 0 dla sterowników rolet i światła
+   */
   adres =  PINC & 0x03;
   adres |= ((PINB & 0x38)>>1);
 
