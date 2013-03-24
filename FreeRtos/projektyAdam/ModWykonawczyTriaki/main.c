@@ -53,8 +53,6 @@
 #include "../../freeRtos/Lib/include/protocol1.h"
 #include <avr/eeprom.h>
 #include "hardware.h"
-#include <util/delay.h>
-#include <avr/eeprom.h> 
 
 
 /**
@@ -87,7 +85,6 @@ void vApplicationIdleHook( void );
 /* Device address on RS 485 bus */
 
 uint8_t settingsEep EEMEM = 0x88; 
-
 uint8_t adres;
 char bHelloResp[HELLO_RESP_LEN+HDR_LEN] = {SYNC, 0, rHELLO, HELLO_RESP_LEN, 0, 0, 0, 'v', '0', '.', '0', '2'};
 
@@ -108,7 +105,7 @@ portSHORT main( void )
   
 
   wczytajUstawienia(settings);
-  settings = eeprom_read_byte(settingsEep);
+  settings = eeprom_read_byte(&settingsEep);
   
   POWER_ON
   
@@ -181,16 +178,26 @@ static void vRoleta(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
       else
       {
         sterowanie[uxIndex].stop();
+        
+        bHelloResp[HDR_LEN+2]
         crDELAY(xHandle, 10);
+        bHelloResp[HDR_LEN+uxIndex] &= 0x3F;
 
         if (rozkaz & 0x80)
+        {
+          bHelloResp[HDR_LEN+uxIndex] |= 0x80;
           sterowanie[uxIndex].gora();
+        }
         else
+        {
+          bHelloResp[HDR_LEN+uxIndex] |= 0x40;
           sterowanie[uxIndex].dol();
+        }
       }
     }
     else
     {
+      bHelloResp[HDR_LEN+uxIndex] &= 0x3F;
       czasAkcji = portMAX_DELAY;
       sterowanie[uxIndex].stop();
     }

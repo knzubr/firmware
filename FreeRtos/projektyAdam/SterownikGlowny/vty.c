@@ -47,6 +47,9 @@ static cliExRes_t ustawPortExtAFunction  (cmdState_t *state);
 static cliExRes_t ustawPortExtBFunction  (cmdState_t *state);
 static cliExRes_t ustawPortRezystor      (cmdState_t *state);
 
+static cliExRes_t ustawModWykFunction    (cmdState_t *state);
+static cliExRes_t zapiszModWykFunction   (cmdState_t *state);
+
 static cliExRes_t pokazCzasFunction      (cmdState_t *state);
 static cliExRes_t debugFunction          (cmdState_t *state);
 static cliExRes_t czytajAC_Function      (cmdState_t *state);
@@ -136,6 +139,8 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_ac,        cmd_help_ac,        czytajAC_Function},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {cmd_configure, cmd_help_configure, configureModeFunction},
+  {cmd_ustawMW,   cmd_help_ustawMW,   ustawModWykFunction},
+  {cmd_zapiszMW,  cmd_help_zapiszMW,  zapiszModWykFunction},
   {NULL, NULL, NULL}
 };
 
@@ -473,6 +478,28 @@ static cliExRes_t setIpGwFunction(cmdState_t *state)
                 (((uint32_t)(cmdlineGetArgInt(3, state)))<<16)  +
                 (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
   ipSetConfigGw(gw);
+  return OK_SILENT;
+}
+
+static cliExRes_t ustawModWykFunction(cmdState_t *state)
+{
+  if (state->argc < 2)
+    return SYNTAX_ERROR;
+  
+  uint8_t adres =   cmdlineGetArgInt(1, state);
+  uint8_t wartosc = cmdlineGetArgHex(2, state);
+
+  sendSettings(adres, wartosc);
+
+  return OK_SILENT;
+}
+static cliExRes_t zapiszModWykFunction(cmdState_t *state)
+{
+  if (state->argc < 1)
+    return SYNTAX_ERROR;
+  
+  uint8_t adres =  cmdlineGetArgInt(1, state);
+  saveSettings(adres);
   return OK_SILENT;
 }
 

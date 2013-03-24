@@ -90,5 +90,7 @@ const char cmd_conf_mac[]     PROGMEM = "mac";              const char cmd_help_
 const char cmd_conf_save[]    PROGMEM = "save";             const char cmd_help_conf_save[]    PROGMEM = "Save configuration";
 const char cmd_ustawR[]       PROGMEM = "setr";             const char cmd_help_ustawR[]       PROGMEM = "[value] set resistance value";
 
+const char cmd_ustawMW[]      PROGMEM = "rset";             const char cmd_help_ustawMW[]      PROGMEM = "[A] [C] set execution module";
+const char cmd_zapiszMW[]     PROGMEM = "rsave";            const char cmd_help_zapiszMW[]     PROGMEM = "[A] save execution module settings"; 
 
 #endif

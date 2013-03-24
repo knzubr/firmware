@@ -29,6 +29,46 @@ uint8_t flushRs485RecBuffer(void)                 {return 1;}
 
 
 // ********************* Hiden Functions ***************************************************
+void sendSettings(uint8_t addr, uint8_t value)
+{
+  uint16_t crc = _crc_xmodem_update(0, SYNC);
+  uartRs485SendByte(SYNC);
+
+  crc = _crc_xmodem_update(crc, addr);
+  uartRs485SendByte(addr);
+
+  crc = _crc_xmodem_update(crc, rUstaw);
+  uartRs485SendByte(rUstaw);
+
+  crc = _crc_xmodem_update(crc, 1);
+  uartRs485SendByte(1);
+
+  crc = _crc_xmodem_update(crc, value);
+  uartRs485SendByte(value);
+
+  uartRs485SendByte((uint8_t)(crc >> 8));
+  uartRs485SendByte((uint8_t)(crc & 0xFF));
+}
+
+void saveSettings(uint8_t addr)
+{
+  uint16_t crc = _crc_xmodem_update(0, SYNC);
+  uartRs485SendByte(SYNC);
+
+  crc = _crc_xmodem_update(crc, addr);
+  uartRs485SendByte(addr);
+
+  crc = _crc_xmodem_update(crc, rZapiszUstawienia);
+  uartRs485SendByte(rZapiszUstawienia);
+
+  crc = _crc_xmodem_update(crc, 0);
+  uartRs485SendByte(0);
+
+  uartRs485SendByte((uint8_t)(crc >> 8));
+  uartRs485SendByte((uint8_t)(crc & 0xFF));
+}
+
+
 void sendPing(uint8_t addr, uint8_t pingLen)
 {
   uint16_t crc = _crc_xmodem_update(0, SYNC);
@@ -216,6 +256,7 @@ uint8_t printRs485devices(FILE *stream)
     if (rolTmp->address != 0)
     {
       fprintf_P(stream, statusRollerDescStr, rolTmp->address, rolTmp->response.parsed.stateRoller1 & 0x3F, rolTmp->response.parsed.stateRoller2 & 0x3F);
+      fprintf_P(stream, statusRollerDescStrConf, rolTmp->response.parsed.settings);      
       fprintf_P(stream, statusRollerDescStr2, rolTmp->response.parsed.firmware);
       result++;
     }

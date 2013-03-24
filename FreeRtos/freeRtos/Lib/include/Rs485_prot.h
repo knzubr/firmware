@@ -20,6 +20,7 @@ struct helloRespParsed
 {
   uint8_t stateRoller1;      //7 - moving up, 6 - moving down, 5-0 - position
   uint8_t stateRoller2;      //7 - moving up, 6 0 moving down, 5-0 - position
+  uint8_t settings;
   char    firmware[5];
 };
   
@@ -69,6 +70,11 @@ uint8_t printRs485devices(FILE *stream);
  * @return 0 - All OK
  */
 uint8_t rs485ping(uint8_t devAddr);
+
+
+void sendSettings(uint8_t addr, uint8_t value);
+
+void saveSettings(uint8_t addr);
 
 /**
  * Sends Hello message to the roller driver and reads its response
