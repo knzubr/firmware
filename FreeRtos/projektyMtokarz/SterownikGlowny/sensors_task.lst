@@ -1,0 +1,250 @@
+   1               		.file	"sensors_task.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 559               	.global	sensorsTaskInit
+ 561               	sensorsTaskInit:
+ 562               		.stabd	46,0,0
+   1:sensors_task.c **** /*********************************************
+   2:sensors_task.c ****  * vim:sw=8:ts=8:si:et
+   3:sensors_task.c ****  * To use the above modeline in vim you must have "set modeline" in your .vimrc
+   4:sensors_task.c ****  * Author: Guido Socher
+   5:sensors_task.c ****  * Copyright: GPL V2
+   6:sensors_task.c ****  * See http://www.gnu.org/licenses/gpl.html
+   7:sensors_task.c ****  *
+   8:sensors_task.c ****  * Ethernet remote device and sensor
+   9:sensors_task.c ****  * UDP and HTTP interface
+  10:sensors_task.c ****         url looks like this http://baseurl/password/command
+  11:sensors_task.c ****         or http://baseurl/password/
+  12:sensors_task.c ****  *
+  13:sensors_task.c ****  * Chip type           : Atmega88 or Atmega168 or Atmega328 with ENC28J60
+  14:sensors_task.c ****  * Note: there is a version number in the text. Search for tuxgraphics
+  15:sensors_task.c ****  *********************************************/
+  16:sensors_task.c **** #include <avr/io.h>
+  17:sensors_task.c **** #include <stdlib.h>
+  18:sensors_task.c **** #include <string.h>
+  19:sensors_task.c **** #include <stdio.h>
+  20:sensors_task.c **** #include <avr/pgmspace.h>
+  21:sensors_task.c **** #include "sensors_task.h"
+  22:sensors_task.c **** #include "memory_x.h"
+  23:sensors_task.c **** #include "main.h"
+  24:sensors_task.c **** #include "Rs485_prot.h"
+  25:sensors_task.c **** #include "protocol1.h"
+  26:sensors_task.c **** #include "mpc23s17.h"
+  27:sensors_task.c **** 
+  28:sensors_task.c **** 
+  29:sensors_task.c **** 
+  30:sensors_task.c **** void sensorsTaskInit(void)
+  31:sensors_task.c **** {
+ 564               	.LM0:
+ 565               	.LFBB1:
+ 566               	/* prologue: function */
+ 567               	/* frame size = 0 */
+ 568               	/* stack size = 0 */
+ 569               	.L__stack_usage = 0
+  32:sensors_task.c ****   LockersMemInit();
+ 571               	.LM1:
+ 572 0000 0E94 0000 		call LockersMemInit
+  33:sensors_task.c ****   rollersMemInit();
+ 574               	.LM2:
+ 575 0004 0E94 0000 		call rollersMemInit
+ 576               	/* epilogue start */
+  34:sensors_task.c **** }
+ 578               	.LM3:
+ 579 0008 0895      		ret
+ 581               	.Lscope1:
+ 583               		.stabd	78,0,0
+ 586               	.global	sensorsTask
+ 588               	sensorsTask:
+ 589               		.stabd	46,0,0
+  35:sensors_task.c **** 
+  36:sensors_task.c **** void sensorsTask(void* pvParameters)
+  37:sensors_task.c **** {
+ 591               	.LM4:
+ 592               	.LFBB2:
+ 593 000a 1F93      		push r17
+ 594 000c CF93      		push r28
+ 595 000e DF93      		push r29
+ 596               	/* prologue: function */
+ 597               	/* frame size = 0 */
+ 598               	/* stack size = 3 */
+ 599               	.L__stack_usage = 3
+  38:sensors_task.c ****   pvParameters = NULL;
+  39:sensors_task.c ****   uint8_t addr = 255;
+  40:sensors_task.c **** //  uint8_t i;
+  41:sensors_task.c **** 
+  42:sensors_task.c ****   MPC23s17SetDirA(0x00, 0);
+ 601               	.LM5:
+ 602 0010 80E0      		ldi r24,lo8(0)
+ 603 0012 60E0      		ldi r22,lo8(0)
+ 604 0014 0E94 0000 		call MPC23s17SetDirA
+  43:sensors_task.c ****   
+  44:sensors_task.c ****   MPC23s17SetDirB(0x00, 0);
+ 606               	.LM6:
+ 607 0018 80E0      		ldi r24,lo8(0)
+ 608 001a 60E0      		ldi r22,lo8(0)
+ 609 001c 0E94 0000 		call MPC23s17SetDirB
+ 610               	.LBB2:
+  45:sensors_task.c **** 
+  46:sensors_task.c ****   for( ; ; )
+  47:sensors_task.c ****   {
+  48:sensors_task.c ****     uint16_t tmp;
+  49:sensors_task.c ****     //Read power suply voltage
+  50:sensors_task.c ****     tmp = MCP3008_getSampleSingle(0);
+  51:sensors_task.c ****     voltage = (uint8_t)(tmp>>5);
+  52:sensors_task.c ****     vTaskDelay(10);
+  53:sensors_task.c ****       
+  54:sensors_task.c ****     //Read temperature inside chasis
+  55:sensors_task.c ****     tmp = MCP3008_getSampleSingle(1);
+  56:sensors_task.c ****     tmp *=10;
+  57:sensors_task.c ****     temperature = (uint8_t)(tmp / 24);
+ 612               	.LM7:
+ 613 0020 C8E1      		ldi r28,lo8(24)
+ 614 0022 D0E0      		ldi r29,hi8(24)
+ 615               	.L4:
+  50:sensors_task.c ****     tmp = MCP3008_getSampleSingle(0);
+ 617               	.LM8:
+ 618 0024 80E0      		ldi r24,lo8(0)
+ 619 0026 0E94 0000 		call MCP3008_getSampleSingle
+  51:sensors_task.c ****     voltage = (uint8_t)(tmp>>5);
+ 621               	.LM9:
+ 622 002a 65E0      		ldi r22,5
+ 623 002c 9695      	1:	lsr r25
+ 624 002e 8795      		ror r24
+ 625 0030 6A95      		dec r22
+ 626 0032 01F4      		brne 1b
+ 627 0034 8093 0000 		sts voltage,r24
+  52:sensors_task.c ****     vTaskDelay(10);
+ 629               	.LM10:
+ 630 0038 8AE0      		ldi r24,lo8(10)
+ 631 003a 90E0      		ldi r25,hi8(10)
+ 632 003c 0E94 0000 		call vTaskDelay
+  55:sensors_task.c ****     tmp = MCP3008_getSampleSingle(1);
+ 634               	.LM11:
+ 635 0040 81E0      		ldi r24,lo8(1)
+ 636 0042 0E94 0000 		call MCP3008_getSampleSingle
+  56:sensors_task.c ****     tmp *=10;
+ 638               	.LM12:
+ 639 0046 9C01      		movw r18,r24
+ 640 0048 880F      		lsl r24
+ 641 004a 991F      		rol r25
+ 642 004c 43E0      		ldi r20,3
+ 643 004e 220F      	1:	lsl r18
+ 644 0050 331F      		rol r19
+ 645 0052 4A95      		dec r20
+ 646 0054 01F4      		brne 1b
+ 647 0056 820F      		add r24,r18
+ 648 0058 931F      		adc r25,r19
+ 650               	.LM13:
+ 651 005a BE01      		movw r22,r28
+ 652 005c 0E94 0000 		call __udivmodhi4
+ 653 0060 6093 0000 		sts temperature,r22
+  58:sensors_task.c ****     vTaskDelay(10);
+ 655               	.LM14:
+ 656 0064 8AE0      		ldi r24,lo8(10)
+ 657 0066 90E0      		ldi r25,hi8(10)
+ 658 0068 0E94 0000 		call vTaskDelay
+  59:sensors_task.c ****       
+  60:sensors_task.c ****     //read lock
+  61:sensors_task.c ****     checkLockerSensors();
+ 660               	.LM15:
+ 661 006c 0E94 0000 		call checkLockerSensors
+  62:sensors_task.c **** 
+  63:sensors_task.c ****     for (addr = FIRST_ROLLER_DRIVER_ADDR; addr <= LAST_ROLLER_DRIVER_ADDR; addr++)
+ 663               	.LM16:
+ 664 0070 11E0      		ldi r17,lo8(1)
+ 665               	.L3:
+  64:sensors_task.c ****     {
+  65:sensors_task.c ****       rs485rollerHello(addr);
+ 667               	.LM17:
+ 668 0072 812F      		mov r24,r17
+ 669 0074 0E94 0000 		call rs485rollerHello
+  66:sensors_task.c ****       vTaskDelay(10);
+ 671               	.LM18:
+ 672 0078 8AE0      		ldi r24,lo8(10)
+ 673 007a 90E0      		ldi r25,hi8(10)
+ 674 007c 0E94 0000 		call vTaskDelay
+  63:sensors_task.c ****     for (addr = FIRST_ROLLER_DRIVER_ADDR; addr <= LAST_ROLLER_DRIVER_ADDR; addr++)
+ 676               	.LM19:
+ 677 0080 1F5F      		subi r17,lo8(-(1))
+ 678 0082 1032      		cpi r17,lo8(32)
+ 679 0084 01F4      		brne .L3
+ 680 0086 00C0      		rjmp .L4
+ 681               	.LBE2:
+ 686               	.Lscope2:
+ 688               		.stabd	78,0,0
+ 689               		.comm klastry,128,1
+ 690               		.comm wwwport,1,1
+ 691               		.comm rollers,2,1
+ 692               		.comm xSemaphoreSpiSS,2,1
+ 693               		.comm portA,1,1
+ 694               		.comm portB,1,1
+ 695               		.comm lockSensors,2,1
+ 696               		.comm xSemaphoreRs485,2,1
+ 697               		.comm nicState,14,1
+ 698               		.comm plen,2,1
+ 699               		.comm IpMyConfig,15,1
+ 700               		.comm arpDebug,2,1
+ 701               		.comm arpDebugLevel,1,1
+ 702               		.comm icmpDebug,2,1
+ 703               		.comm icmpDebugLevel,1,1
+ 704               		.comm udpSocket,2,1
+ 705               		.comm udpDbgStream,2,1
+ 706               		.comm udpDbgLevel,1,1
+ 707               		.comm tcpDebugStream,2,1
+ 708               		.comm tcpDebugLevel,1,1
+ 709               		.comm sockets,2,1
+ 710               		.comm czasRtc,7,1
+ 734               	.Letext0:
+ 735               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 sensors_task.c
+     /tmp/ccx1R8HJ.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccx1R8HJ.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccx1R8HJ.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccx1R8HJ.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccx1R8HJ.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccx1R8HJ.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccx1R8HJ.s:561    .text:00000000 sensorsTaskInit
+     /tmp/ccx1R8HJ.s:588    .text:0000000a sensorsTask
+                            *COM*:00000080 klastry
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 lockSensors
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:00000002 plen
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+
+UNDEFINED SYMBOLS
+LockersMemInit
+rollersMemInit
+MPC23s17SetDirA
+MPC23s17SetDirB
+MCP3008_getSampleSingle
+voltage
+vTaskDelay
+__udivmodhi4
+temperature
+checkLockerSensors
+rs485rollerHello
+__do_clear_bss

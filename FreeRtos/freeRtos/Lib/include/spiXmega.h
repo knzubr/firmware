@@ -17,11 +17,17 @@ xSemaphoreHandle  xSemaphoreSpiSS;    /// Flaga blokująca jednoczesny dostęp d
  * Inicjalizacja magistrali SPI, utworzenie semaforów
  */
 void    spiInit( void (*disableAllSpiDevicesFun)(void));
+void    spiInitENC( void (*disableAllSpiDevicesFun)(void));
 
 void spiSetCPHA(void);
 void spiClearCPHA(void);
 void spiSetCPOL(void);
 void spiClearCPOL(void);
+
+void spiSetCPHAENC(void);
+void spiClearCPHAENC(void);
+void spiSetCPOLENC(void);
+void spiClearCPOLENC(void);
 
 /**
  * Wyślij do magistrali SPI. Po rozpoczęciu transmisji przełączany jest wątek.

@@ -1,0 +1,3270 @@
+   1               		.file	"Rs485_prot.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 562               	_crc_xmodem_update:
+ 563               		.stabd	46,0,0
+ 565               	.Ltext1:
+   1:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** /* Copyright (c) 2002, 2003, 2004  Marek Michalkiewicz
+   2:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****    Copyright (c) 2005, 2007 Joerg Wunsch
+   3:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****    All rights reserved.
+   4:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+   5:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+   8:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  11:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****      distribution.
+  15:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  16:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****      from this software without specific prior written permission.
+  19:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  20:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  32:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** /* $Id: crc16.h 2136 2010-06-08 12:03:38Z joerg_wunsch $ */
+  33:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  34:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** #ifndef _UTIL_CRC16_H_
+  35:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** #define _UTIL_CRC16_H_
+  36:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  37:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** #include <stdint.h>
+  38:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  39:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** /** \file */
+  40:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** /** \defgroup util_crc <util/crc16.h>: CRC Computations
+  41:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \code#include <util/crc16.h>\endcode
+  42:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  43:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     This header file provides a optimized inline functions for calculating
+  44:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     cyclic redundancy checks (CRC) using common polynomials.
+  45:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  46:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \par References:
+  47:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  48:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \par
+  49:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  50:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     See the Dallas Semiconductor app note 27 for 8051 assembler example and
+  51:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     general CRC optimization suggestions. The table on the last page of the
+  52:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     app note is the key to understanding these implementations.
+  53:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  54:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \par
+  55:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  56:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     Jack Crenshaw's "Implementing CRCs" article in the January 1992 isue of \e
+  57:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     Embedded \e Systems \e Programming. This may be difficult to find, but it
+  58:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     explains CRC's in very clear and concise terms. Well worth the effort to
+  59:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     obtain a copy.
+  60:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  61:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     A typical application would look like:
+  62:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  63:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \code
+  64:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     // Dallas iButton test vector.
+  65:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     uint8_t serno[] = { 0x02, 0x1c, 0xb8, 0x01, 0, 0, 0, 0xa2 };
+  66:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  67:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     int
+  68:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     checkcrc(void)
+  69:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     {
+  70:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	uint8_t crc = 0, i;
+  71:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  72:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	for (i = 0; i < sizeof serno / sizeof serno[0]; i++)
+  73:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	    crc = _crc_ibutton_update(crc, serno[i]);
+  74:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  75:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	return crc; // must be 0
+  76:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     }
+  77:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \endcode
+  78:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** */
+  79:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  80:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** /** \ingroup util_crc
+  81:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     Optimized CRC-16 calculation.
+  82:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  83:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     Polynomial: x^16 + x^15 + x^2 + 1 (0xa001)<br>
+  84:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     Initial value: 0xffff
+  85:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  86:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     This CRC is normally used in disk-drive controllers.
+  87:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  88:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     The following is the equivalent functionality written in C.
+  89:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  90:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \code
+  91:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     uint16_t
+  92:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     crc16_update(uint16_t crc, uint8_t a)
+  93:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     {
+  94:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	int i;
+  95:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+  96:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	crc ^= a;
+  97:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	for (i = 0; i < 8; ++i)
+  98:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	{
+  99:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	    if (crc & 1)
+ 100:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		crc = (crc >> 1) ^ 0xA001;
+ 101:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	    else
+ 102:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		crc = (crc >> 1);
+ 103:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	}
+ 104:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 105:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	return crc;
+ 106:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     }
+ 107:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 108:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \endcode */
+ 109:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 110:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** static __inline__ uint16_t
+ 111:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** _crc16_update(uint16_t __crc, uint8_t __data)
+ 112:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** {
+ 113:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	uint8_t __tmp;
+ 114:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	uint16_t __ret;
+ 115:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 116:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	__asm__ __volatile__ (
+ 117:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"eor %A0,%2" "\n\t"
+ 118:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"mov %1,%A0" "\n\t"
+ 119:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"swap %1" "\n\t"
+ 120:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"eor %1,%A0" "\n\t"
+ 121:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"mov __tmp_reg__,%1" "\n\t"
+ 122:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"lsr %1" "\n\t"
+ 123:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"lsr %1" "\n\t"
+ 124:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"eor %1,__tmp_reg__" "\n\t"
+ 125:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"mov __tmp_reg__,%1" "\n\t"
+ 126:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"lsr %1" "\n\t"
+ 127:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"eor %1,__tmp_reg__" "\n\t"
+ 128:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"andi %1,0x07" "\n\t"
+ 129:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"mov __tmp_reg__,%A0" "\n\t"
+ 130:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"mov %A0,%B0" "\n\t"
+ 131:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"lsr %1" "\n\t"
+ 132:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"ror __tmp_reg__" "\n\t"
+ 133:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"ror %1" "\n\t"
+ 134:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"mov %B0,__tmp_reg__" "\n\t"
+ 135:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"eor %A0,%1" "\n\t"
+ 136:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"lsr __tmp_reg__" "\n\t"
+ 137:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"ror %1" "\n\t"
+ 138:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"eor %B0,__tmp_reg__" "\n\t"
+ 139:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		"eor %A0,%1"
+ 140:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		: "=r" (__ret), "=d" (__tmp)
+ 141:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		: "r" (__data), "0" (__crc)
+ 142:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 		: "r0"
+ 143:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	);
+ 144:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 	return __ret;
+ 145:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** }
+ 146:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 147:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** /** \ingroup util_crc
+ 148:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     Optimized CRC-XMODEM calculation.
+ 149:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 150:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     Polynomial: x^16 + x^12 + x^5 + 1 (0x1021)<br>
+ 151:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     Initial value: 0x0
+ 152:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 153:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     This is the CRC used by the Xmodem-CRC protocol.
+ 154:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 155:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     The following is the equivalent functionality written in C.
+ 156:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 157:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \code
+ 158:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     uint16_t
+ 159:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     crc_xmodem_update (uint16_t crc, uint8_t data)
+ 160:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     {
+ 161:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         int i;
+ 162:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 163:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         crc = crc ^ ((uint16_t)data << 8);
+ 164:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         for (i=0; i<8; i++)
+ 165:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         {
+ 166:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****             if (crc & 0x8000)
+ 167:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****                 crc = (crc << 1) ^ 0x1021;
+ 168:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****             else
+ 169:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****                 crc <<= 1;
+ 170:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         }
+ 171:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 172:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         return crc;
+ 173:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     }
+ 174:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     \endcode */
+ 175:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 176:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** static __inline__ uint16_t
+ 177:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** _crc_xmodem_update(uint16_t __crc, uint8_t __data)
+ 178:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** {
+ 567               	.LM0:
+ 568               	.LFBB1:
+ 569               	/* prologue: function */
+ 570               	/* frame size = 0 */
+ 571               	/* stack size = 0 */
+ 572               	.L__stack_usage = 0
+ 179:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     uint16_t __ret;             /* %B0:%A0 (alias for __crc) */
+ 180:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     uint8_t __tmp1;             /* %1 */
+ 181:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     uint8_t __tmp2;             /* %2 */
+ 182:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****                                 /* %3  __data */
+ 183:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 184:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     __asm__ __volatile__ (
+ 574               	.LM1:
+ 575 0000 9C01      		movw r18,r24
+ 576               	/* #APP */
+ 577               	 ;  184 "/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h" 1
+ 578 0002 3627      		eor    r19,r22
+ 579 0004 032E      		mov    __tmp_reg__,r19
+ 580 0006 0294      		swap   __tmp_reg__
+ 581 0008 802D      		mov    r24,__tmp_reg__
+ 582 000a 8F70      		andi   r24,0x0f
+ 583 000c 8327      		eor    r24,r19
+ 584 000e 632F      		mov    r22,r19
+ 585 0010 6025      		eor    r22,__tmp_reg__
+ 586 0012 660F      		lsl    r22
+ 587 0014 607E      		andi   r22,0xe0
+ 588 0016 8627      		eor    r24,r22
+ 589 0018 602D      		mov    r22,__tmp_reg__
+ 590 001a 6327      		eor    r22,r19
+ 591 001c 607F      		andi   r22,0xf0
+ 592 001e 6695      		lsr    r22
+ 593 0020 032E      		mov    __tmp_reg__,r19
+ 594 0022 000C      		lsl    __tmp_reg__
+ 595 0024 661F      		rol    r22
+ 596 0026 3695      		lsr    r19
+ 597 0028 3695      		lsr    r19
+ 598 002a 3695      		lsr    r19
+ 599 002c 3F71      		andi   r19,0x1f
+ 600 002e 3627      		eor    r19,r22
+ 601 0030 3227      		eor    r19,r18
+ 602 0032 282F      		mov    r18,r24
+ 603               		
+ 604               	 ;  0 "" 2
+ 185:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "eor    %B0,%3"          "\n\t" /* crc.hi ^ data */
+ 186:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "mov    __tmp_reg__,%B0" "\n\t"
+ 187:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "swap   __tmp_reg__"     "\n\t" /* swap(crc.hi ^ data) */
+ 188:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 189:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         /* Calculate the ret.lo of the CRC. */
+ 190:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "mov    %1,__tmp_reg__"  "\n\t"
+ 191:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "andi   %1,0x0f"         "\n\t"
+ 192:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "eor    %1,%B0"          "\n\t"
+ 193:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "mov    %2,%B0"          "\n\t"
+ 194:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "eor    %2,__tmp_reg__"  "\n\t"
+ 195:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "lsl    %2"              "\n\t"
+ 196:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "andi   %2,0xe0"         "\n\t"
+ 197:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "eor    %1,%2"           "\n\t" /* __tmp1 is now ret.lo. */
+ 198:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** 
+ 199:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         /* Calculate the ret.hi of the CRC. */
+ 200:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "mov    %2,__tmp_reg__"  "\n\t"
+ 201:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "eor    %2,%B0"          "\n\t"
+ 202:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "andi   %2,0xf0"         "\n\t"
+ 203:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "lsr    %2"              "\n\t"
+ 204:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "mov    __tmp_reg__,%B0" "\n\t"
+ 205:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "lsl    __tmp_reg__"     "\n\t"
+ 206:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "rol    %2"              "\n\t"
+ 207:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "lsr    %B0"             "\n\t"
+ 208:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "lsr    %B0"             "\n\t"
+ 209:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "lsr    %B0"             "\n\t"
+ 210:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "andi   %B0,0x1f"        "\n\t"
+ 211:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "eor    %B0,%2"          "\n\t"
+ 212:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "eor    %B0,%A0"         "\n\t" /* ret.hi is now ready. */
+ 213:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         "mov    %A0,%1"          "\n\t" /* ret.lo is now ready. */
+ 214:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         : "=d" (__ret), "=d" (__tmp1), "=d" (__tmp2)
+ 215:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         : "r" (__data), "0" (__crc)
+ 216:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****         : "r0"
+ 217:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     );
+ 218:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h ****     return __ret;
+ 219:/usr/lib/gcc/avr/4.5.3/../../../avr/include/util/crc16.h **** }
+ 606               	.LM2:
+ 607               	/* #NOAPP */
+ 608 0034 C901      		movw r24,r18
+ 609               	/* epilogue start */
+ 610 0036 0895      		ret
+ 612               	.Lscope1:
+ 614               		.stabd	78,0,0
+ 616               		.weak	takeRs485
+ 618               	takeRs485:
+ 619               		.stabd	46,0,0
+ 621               	.Ltext2:
+   1:../../freeRtos/Lib/Rs485_prot.c **** #include "Rs485_prot.h"
+   2:../../freeRtos/Lib/Rs485_prot.c **** #include <util/crc16.h>
+   3:../../freeRtos/Lib/Rs485_prot.c **** #include <stdio.h>
+   4:../../freeRtos/Lib/Rs485_prot.c **** 
+   5:../../freeRtos/Lib/Rs485_prot.c **** #if LANG_EN
+   6:../../freeRtos/Lib/Rs485_prot.c **** #include "Rs485_prot_en.h"
+   7:../../freeRtos/Lib/Rs485_prot.c **** #define PRINT_RS485_DEVICE 1
+   8:../../freeRtos/Lib/Rs485_prot.c **** #endif
+   9:../../freeRtos/Lib/Rs485_prot.c **** 
+  10:../../freeRtos/Lib/Rs485_prot.c **** #if LANG_PL
+  11:../../freeRtos/Lib/Rs485_prot.c **** #include "Rs485_prot_pl.h"
+  12:../../freeRtos/Lib/Rs485_prot.c **** #define PRINT_RS485_DEVICE 1
+  13:../../freeRtos/Lib/Rs485_prot.c **** #endif
+  14:../../freeRtos/Lib/Rs485_prot.c **** 
+  15:../../freeRtos/Lib/Rs485_prot.c **** static void    sendPing(uint8_t addr, uint8_t pingLen);
+  16:../../freeRtos/Lib/Rs485_prot.c **** static uint8_t receivePong(uint8_t addr, uint8_t pingLen);
+  17:../../freeRtos/Lib/Rs485_prot.c **** static void    sendHello(uint8_t addr);
+  18:../../freeRtos/Lib/Rs485_prot.c **** static uint8_t receiveHello(uint8_t* response, uint8_t maxSize);
+  19:../../freeRtos/Lib/Rs485_prot.c **** 
+  20:../../freeRtos/Lib/Rs485_prot.c **** // ********************* Those function have to be implemented in your project *************
+  21:../../freeRtos/Lib/Rs485_prot.c **** void takeRs485(void)                              { }
+ 623               	.LM3:
+ 624               	.LFBB2:
+ 625               	/* prologue: function */
+ 626               	/* frame size = 0 */
+ 627               	/* stack size = 0 */
+ 628               	.L__stack_usage = 0
+ 629               	/* epilogue start */
+ 631               	.LM4:
+ 632 0038 0895      		ret
+ 634               	.Lscope2:
+ 636               		.stabd	78,0,0
+ 638               		.weak	releaseRs485
+ 640               	releaseRs485:
+ 641               		.stabd	46,0,0
+  22:../../freeRtos/Lib/Rs485_prot.c **** void releaseRs485(void)                           { }
+ 643               	.LM5:
+ 644               	.LFBB3:
+ 645               	/* prologue: function */
+ 646               	/* frame size = 0 */
+ 647               	/* stack size = 0 */
+ 648               	.L__stack_usage = 0
+ 649               	/* epilogue start */
+ 651               	.LM6:
+ 652 003a 0895      		ret
+ 654               	.Lscope3:
+ 656               		.stabd	78,0,0
+ 659               		.weak	uartRs485SendByte
+ 661               	uartRs485SendByte:
+ 662               		.stabd	46,0,0
+  23:../../freeRtos/Lib/Rs485_prot.c **** void uartRs485SendByte(uint8_t c)                 { c=0; }
+ 664               	.LM7:
+ 665               	.LFBB4:
+ 666               	/* prologue: function */
+ 667               	/* frame size = 0 */
+ 668               	/* stack size = 0 */
+ 669               	.L__stack_usage = 0
+ 670               	/* epilogue start */
+ 672               	.LM8:
+ 673 003c 0895      		ret
+ 675               	.Lscope4:
+ 677               		.stabd	78,0,0
+ 681               		.weak	rs485Receive
+ 683               	rs485Receive:
+ 684               		.stabd	46,0,0
+  24:../../freeRtos/Lib/Rs485_prot.c **** uint8_t rs485Receive(uint8_t *c, uint8_t timeout) {  timeout = 0; c = NULL; return 1; }
+ 686               	.LM9:
+ 687               	.LFBB5:
+ 688               	/* prologue: function */
+ 689               	/* frame size = 0 */
+ 690               	/* stack size = 0 */
+ 691               	.L__stack_usage = 0
+ 693               	.LM10:
+ 694 003e 81E0      		ldi r24,lo8(1)
+ 695               	/* epilogue start */
+ 696 0040 0895      		ret
+ 698               	.Lscope5:
+ 700               		.stabd	78,0,0
+ 702               		.weak	flushRs485RecBuffer
+ 704               	flushRs485RecBuffer:
+ 705               		.stabd	46,0,0
+  25:../../freeRtos/Lib/Rs485_prot.c **** uint8_t flushRs485RecBuffer(void)                 {return 1;}
+ 707               	.LM11:
+ 708               	.LFBB6:
+ 709               	/* prologue: function */
+ 710               	/* frame size = 0 */
+ 711               	/* stack size = 0 */
+ 712               	.L__stack_usage = 0
+ 714               	.LM12:
+ 715 0042 81E0      		ldi r24,lo8(1)
+ 716               	/* epilogue start */
+ 717 0044 0895      		ret
+ 719               	.Lscope6:
+ 721               		.stabd	78,0,0
+ 725               	.global	sendSettings
+ 727               	sendSettings:
+ 728               		.stabd	46,0,0
+  26:../../freeRtos/Lib/Rs485_prot.c **** 
+  27:../../freeRtos/Lib/Rs485_prot.c **** 
+  28:../../freeRtos/Lib/Rs485_prot.c **** 
+  29:../../freeRtos/Lib/Rs485_prot.c **** 
+  30:../../freeRtos/Lib/Rs485_prot.c **** 
+  31:../../freeRtos/Lib/Rs485_prot.c **** // ********************* Hiden Functions ***************************************************
+  32:../../freeRtos/Lib/Rs485_prot.c **** void sendSettings(uint8_t addr, uint8_t value)
+  33:../../freeRtos/Lib/Rs485_prot.c **** {
+ 730               	.LM13:
+ 731               	.LFBB7:
+ 732 0046 EF92      		push r14
+ 733 0048 FF92      		push r15
+ 734 004a 0F93      		push r16
+ 735 004c 1F93      		push r17
+ 736 004e DF93      		push r29
+ 737 0050 CF93      		push r28
+ 738 0052 0F92      		push __tmp_reg__
+ 739 0054 CDB7      		in r28,__SP_L__
+ 740 0056 DEB7      		in r29,__SP_H__
+ 741               	/* prologue: function */
+ 742               	/* frame size = 1 */
+ 743               	/* stack size = 7 */
+ 744               	.L__stack_usage = 7
+ 745 0058 082F      		mov r16,r24
+ 746 005a 162F      		mov r17,r22
+  34:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = _crc_xmodem_update(0, SYNC);
+ 748               	.LM14:
+ 749 005c 80E0      		ldi r24,lo8(0)
+ 750 005e 90E0      		ldi r25,hi8(0)
+ 751 0060 6AE5      		ldi r22,lo8(90)
+ 752 0062 0E94 0000 		call _crc_xmodem_update
+ 753 0066 7C01      		movw r14,r24
+  35:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(SYNC);
+ 755               	.LM15:
+ 756 0068 8AE5      		ldi r24,lo8(90)
+ 757 006a 0E94 0000 		call uartRs485SendByte
+  36:../../freeRtos/Lib/Rs485_prot.c **** 
+  37:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, addr);
+ 759               	.LM16:
+ 760 006e C701      		movw r24,r14
+ 761 0070 602F      		mov r22,r16
+ 762 0072 0E94 0000 		call _crc_xmodem_update
+ 763 0076 7C01      		movw r14,r24
+  38:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(addr);
+ 765               	.LM17:
+ 766 0078 802F      		mov r24,r16
+ 767 007a 0E94 0000 		call uartRs485SendByte
+  39:../../freeRtos/Lib/Rs485_prot.c **** 
+  40:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, rUstaw);
+ 769               	.LM18:
+ 770 007e C701      		movw r24,r14
+ 771 0080 60E4      		ldi r22,lo8(64)
+ 772 0082 0E94 0000 		call _crc_xmodem_update
+ 773 0086 7C01      		movw r14,r24
+  41:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(rUstaw);
+ 775               	.LM19:
+ 776 0088 80E4      		ldi r24,lo8(64)
+ 777 008a 0E94 0000 		call uartRs485SendByte
+  42:../../freeRtos/Lib/Rs485_prot.c **** 
+  43:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, 1);
+ 779               	.LM20:
+ 780 008e C701      		movw r24,r14
+ 781 0090 61E0      		ldi r22,lo8(1)
+ 782 0092 0E94 0000 		call _crc_xmodem_update
+ 783 0096 7C01      		movw r14,r24
+  44:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(1);
+ 785               	.LM21:
+ 786 0098 81E0      		ldi r24,lo8(1)
+ 787 009a 0E94 0000 		call uartRs485SendByte
+  45:../../freeRtos/Lib/Rs485_prot.c **** 
+  46:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, value);
+ 789               	.LM22:
+ 790 009e C701      		movw r24,r14
+ 791 00a0 612F      		mov r22,r17
+ 792 00a2 0E94 0000 		call _crc_xmodem_update
+ 793 00a6 082F      		mov r16,r24
+  47:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(value);
+ 795               	.LM23:
+ 796 00a8 812F      		mov r24,r17
+ 797 00aa 9983      		std Y+1,r25
+ 798 00ac 0E94 0000 		call uartRs485SendByte
+  48:../../freeRtos/Lib/Rs485_prot.c **** 
+  49:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc >> 8));
+ 800               	.LM24:
+ 801 00b0 9981      		ldd r25,Y+1
+ 802 00b2 892F      		mov r24,r25
+ 803 00b4 0E94 0000 		call uartRs485SendByte
+  50:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 805               	.LM25:
+ 806 00b8 802F      		mov r24,r16
+ 807 00ba 0E94 0000 		call uartRs485SendByte
+ 808               	/* epilogue start */
+  51:../../freeRtos/Lib/Rs485_prot.c **** }
+ 810               	.LM26:
+ 811 00be 0F90      		pop __tmp_reg__
+ 812 00c0 CF91      		pop r28
+ 813 00c2 DF91      		pop r29
+ 814 00c4 1F91      		pop r17
+ 815 00c6 0F91      		pop r16
+ 816 00c8 FF90      		pop r15
+ 817 00ca EF90      		pop r14
+ 818 00cc 0895      		ret
+ 820               	.Lscope7:
+ 822               		.stabd	78,0,0
+ 825               	.global	saveSettings
+ 827               	saveSettings:
+ 828               		.stabd	46,0,0
+  52:../../freeRtos/Lib/Rs485_prot.c **** 
+  53:../../freeRtos/Lib/Rs485_prot.c **** void saveSettings(uint8_t addr)
+  54:../../freeRtos/Lib/Rs485_prot.c **** {
+ 830               	.LM27:
+ 831               	.LFBB8:
+ 832 00ce EF92      		push r14
+ 833 00d0 FF92      		push r15
+ 834 00d2 1F93      		push r17
+ 835 00d4 DF93      		push r29
+ 836 00d6 CF93      		push r28
+ 837 00d8 0F92      		push __tmp_reg__
+ 838 00da CDB7      		in r28,__SP_L__
+ 839 00dc DEB7      		in r29,__SP_H__
+ 840               	/* prologue: function */
+ 841               	/* frame size = 1 */
+ 842               	/* stack size = 6 */
+ 843               	.L__stack_usage = 6
+ 844 00de 182F      		mov r17,r24
+  55:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = _crc_xmodem_update(0, SYNC);
+ 846               	.LM28:
+ 847 00e0 80E0      		ldi r24,lo8(0)
+ 848 00e2 90E0      		ldi r25,hi8(0)
+ 849 00e4 6AE5      		ldi r22,lo8(90)
+ 850 00e6 0E94 0000 		call _crc_xmodem_update
+ 851 00ea 7C01      		movw r14,r24
+  56:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(SYNC);
+ 853               	.LM29:
+ 854 00ec 8AE5      		ldi r24,lo8(90)
+ 855 00ee 0E94 0000 		call uartRs485SendByte
+  57:../../freeRtos/Lib/Rs485_prot.c **** 
+  58:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, addr);
+ 857               	.LM30:
+ 858 00f2 C701      		movw r24,r14
+ 859 00f4 612F      		mov r22,r17
+ 860 00f6 0E94 0000 		call _crc_xmodem_update
+ 861 00fa 7C01      		movw r14,r24
+  59:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(addr);
+ 863               	.LM31:
+ 864 00fc 812F      		mov r24,r17
+ 865 00fe 0E94 0000 		call uartRs485SendByte
+  60:../../freeRtos/Lib/Rs485_prot.c **** 
+  61:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, rZapiszUstawienia);
+ 867               	.LM32:
+ 868 0102 C701      		movw r24,r14
+ 869 0104 61E4      		ldi r22,lo8(65)
+ 870 0106 0E94 0000 		call _crc_xmodem_update
+ 871 010a 7C01      		movw r14,r24
+  62:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(rZapiszUstawienia);
+ 873               	.LM33:
+ 874 010c 81E4      		ldi r24,lo8(65)
+ 875 010e 0E94 0000 		call uartRs485SendByte
+  63:../../freeRtos/Lib/Rs485_prot.c **** 
+  64:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, 0);
+ 877               	.LM34:
+ 878 0112 C701      		movw r24,r14
+ 879 0114 60E0      		ldi r22,lo8(0)
+ 880 0116 0E94 0000 		call _crc_xmodem_update
+ 881 011a 182F      		mov r17,r24
+  65:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(0);
+ 883               	.LM35:
+ 884 011c 80E0      		ldi r24,lo8(0)
+ 885 011e 9983      		std Y+1,r25
+ 886 0120 0E94 0000 		call uartRs485SendByte
+  66:../../freeRtos/Lib/Rs485_prot.c **** 
+  67:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc >> 8));
+ 888               	.LM36:
+ 889 0124 9981      		ldd r25,Y+1
+ 890 0126 892F      		mov r24,r25
+ 891 0128 0E94 0000 		call uartRs485SendByte
+  68:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 893               	.LM37:
+ 894 012c 812F      		mov r24,r17
+ 895 012e 0E94 0000 		call uartRs485SendByte
+ 896               	/* epilogue start */
+  69:../../freeRtos/Lib/Rs485_prot.c **** }
+ 898               	.LM38:
+ 899 0132 0F90      		pop __tmp_reg__
+ 900 0134 CF91      		pop r28
+ 901 0136 DF91      		pop r29
+ 902 0138 1F91      		pop r17
+ 903 013a FF90      		pop r15
+ 904 013c EF90      		pop r14
+ 905 013e 0895      		ret
+ 907               	.Lscope8:
+ 909               		.stabd	78,0,0
+ 911               	.global	rollersMemInit
+ 913               	rollersMemInit:
+ 914               		.stabd	46,0,0
+  70:../../freeRtos/Lib/Rs485_prot.c **** 
+  71:../../freeRtos/Lib/Rs485_prot.c **** 
+  72:../../freeRtos/Lib/Rs485_prot.c **** void sendPing(uint8_t addr, uint8_t pingLen)
+  73:../../freeRtos/Lib/Rs485_prot.c **** {
+  74:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = _crc_xmodem_update(0, SYNC);
+  75:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(SYNC);
+  76:../../freeRtos/Lib/Rs485_prot.c **** 
+  77:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, addr);
+  78:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(addr);
+  79:../../freeRtos/Lib/Rs485_prot.c **** 
+  80:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, rPING);
+  81:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(rPING);
+  82:../../freeRtos/Lib/Rs485_prot.c **** 
+  83:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, pingLen);
+  84:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(pingLen);
+  85:../../freeRtos/Lib/Rs485_prot.c ****   
+  86:../../freeRtos/Lib/Rs485_prot.c ****   for (uint8_t i=0; i < pingLen; i++)
+  87:../../freeRtos/Lib/Rs485_prot.c ****   {
+  88:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, i);
+  89:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(i);
+  90:../../freeRtos/Lib/Rs485_prot.c ****   }
+  91:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc >> 8));
+  92:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+  93:../../freeRtos/Lib/Rs485_prot.c **** }
+  94:../../freeRtos/Lib/Rs485_prot.c **** 
+  95:../../freeRtos/Lib/Rs485_prot.c **** uint8_t receivePong(uint8_t addr, uint8_t dataLen)
+  96:../../freeRtos/Lib/Rs485_prot.c **** { 
+  97:../../freeRtos/Lib/Rs485_prot.c ****   addr = 0;
+  98:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t data;
+  99:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc;
+ 100:../../freeRtos/Lib/Rs485_prot.c ****    
+ 101:../../freeRtos/Lib/Rs485_prot.c ****   //SYNC
+ 102:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 20) == pdFALSE)
+ 103:../../freeRtos/Lib/Rs485_prot.c ****     return 1;
+ 104:../../freeRtos/Lib/Rs485_prot.c ****   
+ 105:../../freeRtos/Lib/Rs485_prot.c ****   if (data != SYNC)
+ 106:../../freeRtos/Lib/Rs485_prot.c ****     return 2;
+ 107:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(0, data);
+ 108:../../freeRtos/Lib/Rs485_prot.c **** 
+ 109:../../freeRtos/Lib/Rs485_prot.c ****   //Adres ma być wartość 0
+ 110:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == 0)
+ 111:../../freeRtos/Lib/Rs485_prot.c ****     return 3;
+ 112:../../freeRtos/Lib/Rs485_prot.c **** 
+ 113:../../freeRtos/Lib/Rs485_prot.c ****   if (data != 0)
+ 114:../../freeRtos/Lib/Rs485_prot.c ****     return 4;
+ 115:../../freeRtos/Lib/Rs485_prot.c ****   
+ 116:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 117:../../freeRtos/Lib/Rs485_prot.c **** 
+ 118:../../freeRtos/Lib/Rs485_prot.c ****   //Kod rozkazu. Ma być rPING
+ 119:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == pdFALSE)
+ 120:../../freeRtos/Lib/Rs485_prot.c ****     return 5;
+ 121:../../freeRtos/Lib/Rs485_prot.c ****   if (data != rPING)
+ 122:../../freeRtos/Lib/Rs485_prot.c ****     return 6;
+ 123:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 124:../../freeRtos/Lib/Rs485_prot.c **** 
+ 125:../../freeRtos/Lib/Rs485_prot.c ****   //Długość odpowiedzi
+ 126:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == pdFALSE)
+ 127:../../freeRtos/Lib/Rs485_prot.c ****     return 7;
+ 128:../../freeRtos/Lib/Rs485_prot.c ****   if (data != dataLen)
+ 129:../../freeRtos/Lib/Rs485_prot.c ****     return 8;
+ 130:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 131:../../freeRtos/Lib/Rs485_prot.c **** 
+ 132:../../freeRtos/Lib/Rs485_prot.c ****   
+ 133:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t temp;
+ 134:../../freeRtos/Lib/Rs485_prot.c ****   for (temp=0; temp < dataLen; temp++)
+ 135:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 136:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 5) == pdFALSE)
+ 137:../../freeRtos/Lib/Rs485_prot.c ****       return 2*temp+9;
+ 138:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, data);
+ 139:../../freeRtos/Lib/Rs485_prot.c ****     if (data != temp)
+ 140:../../freeRtos/Lib/Rs485_prot.c ****       return 2*temp+10; 
+ 141:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 142:../../freeRtos/Lib/Rs485_prot.c **** 
+ 143:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t crcHi;
+ 144:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t crcLo;
+ 145:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&crcHi, 1) != pdTRUE)
+ 146:../../freeRtos/Lib/Rs485_prot.c ****     return 2*temp+11;
+ 147:../../freeRtos/Lib/Rs485_prot.c ****   
+ 148:../../freeRtos/Lib/Rs485_prot.c ****   if(xQueueReceive(xRs485Rec, &crcLo, 1) != pdTRUE)
+ 149:../../freeRtos/Lib/Rs485_prot.c ****     return 2*temp+12;
+ 150:../../freeRtos/Lib/Rs485_prot.c **** 
+ 151:../../freeRtos/Lib/Rs485_prot.c ****   if (crcHi != (uint8_t)(crc>>8))
+ 152:../../freeRtos/Lib/Rs485_prot.c ****     return 254;
+ 153:../../freeRtos/Lib/Rs485_prot.c ****   if (crcLo != (uint8_t)(crc & 0xFF))
+ 154:../../freeRtos/Lib/Rs485_prot.c ****     return 255;
+ 155:../../freeRtos/Lib/Rs485_prot.c ****   
+ 156:../../freeRtos/Lib/Rs485_prot.c ****   return 0; 
+ 157:../../freeRtos/Lib/Rs485_prot.c **** }
+ 158:../../freeRtos/Lib/Rs485_prot.c **** 
+ 159:../../freeRtos/Lib/Rs485_prot.c **** static void    sendHello(uint8_t addr)
+ 160:../../freeRtos/Lib/Rs485_prot.c **** {
+ 161:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = _crc_xmodem_update(0, SYNC);
+ 162:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(SYNC);
+ 163:../../freeRtos/Lib/Rs485_prot.c **** 
+ 164:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, addr);
+ 165:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(addr);
+ 166:../../freeRtos/Lib/Rs485_prot.c **** 
+ 167:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, rHELLO);
+ 168:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(rHELLO);
+ 169:../../freeRtos/Lib/Rs485_prot.c **** 
+ 170:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, 0);
+ 171:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(0);
+ 172:../../freeRtos/Lib/Rs485_prot.c ****   
+ 173:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc >> 8));
+ 174:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 175:../../freeRtos/Lib/Rs485_prot.c **** }
+ 176:../../freeRtos/Lib/Rs485_prot.c **** 
+ 177:../../freeRtos/Lib/Rs485_prot.c **** static uint8_t receiveHello(uint8_t* response, uint8_t maxSize)
+ 178:../../freeRtos/Lib/Rs485_prot.c **** {
+ 179:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc;
+ 180:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t data; 
+ 181:../../freeRtos/Lib/Rs485_prot.c ****   //SYNC
+ 182:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 20) == pdFALSE)
+ 183:../../freeRtos/Lib/Rs485_prot.c ****     return 8;
+ 184:../../freeRtos/Lib/Rs485_prot.c ****   
+ 185:../../freeRtos/Lib/Rs485_prot.c ****   if (data != SYNC)
+ 186:../../freeRtos/Lib/Rs485_prot.c ****     return 2;
+ 187:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(0, data);
+ 188:../../freeRtos/Lib/Rs485_prot.c **** 
+ 189:../../freeRtos/Lib/Rs485_prot.c ****   //Adres ma być wartość 0
+ 190:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == 0)
+ 191:../../freeRtos/Lib/Rs485_prot.c ****     return 3;
+ 192:../../freeRtos/Lib/Rs485_prot.c **** 
+ 193:../../freeRtos/Lib/Rs485_prot.c ****   if (data != 0)
+ 194:../../freeRtos/Lib/Rs485_prot.c ****     return 4;
+ 195:../../freeRtos/Lib/Rs485_prot.c ****   
+ 196:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 197:../../freeRtos/Lib/Rs485_prot.c **** 
+ 198:../../freeRtos/Lib/Rs485_prot.c ****   //Kod rozkazu. Ma być rHELLO
+ 199:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == pdFALSE)
+ 200:../../freeRtos/Lib/Rs485_prot.c ****     return 5;
+ 201:../../freeRtos/Lib/Rs485_prot.c ****   if (data != rHELLO)
+ 202:../../freeRtos/Lib/Rs485_prot.c ****     return 6;
+ 203:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 204:../../freeRtos/Lib/Rs485_prot.c **** 
+ 205:../../freeRtos/Lib/Rs485_prot.c ****   //Długość odpowiedzi
+ 206:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == pdFALSE)
+ 207:../../freeRtos/Lib/Rs485_prot.c ****     return 7;
+ 208:../../freeRtos/Lib/Rs485_prot.c ****   if (data > maxSize)
+ 209:../../freeRtos/Lib/Rs485_prot.c ****     return 1;
+ 210:../../freeRtos/Lib/Rs485_prot.c ****   
+ 211:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 212:../../freeRtos/Lib/Rs485_prot.c ****   memset(response, 0, maxSize);
+ 213:../../freeRtos/Lib/Rs485_prot.c ****   maxSize = data;
+ 214:../../freeRtos/Lib/Rs485_prot.c ****   
+ 215:../../freeRtos/Lib/Rs485_prot.c ****   for (data=0; data < maxSize; data++)
+ 216:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 217:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(response, 5) == pdFALSE)
+ 218:../../freeRtos/Lib/Rs485_prot.c ****       return 20;
+ 219:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, *((uint8_t *)(response)));
+ 220:../../freeRtos/Lib/Rs485_prot.c ****     response++; 
+ 221:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 222:../../freeRtos/Lib/Rs485_prot.c **** 
+ 223:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t crcHi;
+ 224:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t crcLo;
+ 225:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&crcHi, 1) != pdTRUE)
+ 226:../../freeRtos/Lib/Rs485_prot.c ****     return 21;
+ 227:../../freeRtos/Lib/Rs485_prot.c ****   
+ 228:../../freeRtos/Lib/Rs485_prot.c ****   if(xQueueReceive(xRs485Rec, &crcLo, 1) != pdTRUE)
+ 229:../../freeRtos/Lib/Rs485_prot.c ****     return 22;
+ 230:../../freeRtos/Lib/Rs485_prot.c **** 
+ 231:../../freeRtos/Lib/Rs485_prot.c ****   if (crcHi != (uint8_t)(crc>>8))
+ 232:../../freeRtos/Lib/Rs485_prot.c ****     return 254;
+ 233:../../freeRtos/Lib/Rs485_prot.c ****   if (crcLo != (uint8_t)(crc & 0xFF))
+ 234:../../freeRtos/Lib/Rs485_prot.c ****     return 255;
+ 235:../../freeRtos/Lib/Rs485_prot.c ****   
+ 236:../../freeRtos/Lib/Rs485_prot.c ****   return 0; 
+ 237:../../freeRtos/Lib/Rs485_prot.c **** }
+ 238:../../freeRtos/Lib/Rs485_prot.c **** 
+ 239:../../freeRtos/Lib/Rs485_prot.c **** // ************************ Rs485 API ************************************
+ 240:../../freeRtos/Lib/Rs485_prot.c **** 
+ 241:../../freeRtos/Lib/Rs485_prot.c **** void rollersMemInit(void)
+ 242:../../freeRtos/Lib/Rs485_prot.c **** {
+ 916               	.LM39:
+ 917               	.LFBB9:
+ 918               	/* prologue: function */
+ 919               	/* frame size = 0 */
+ 920               	/* stack size = 0 */
+ 921               	.L__stack_usage = 0
+ 243:../../freeRtos/Lib/Rs485_prot.c ****   rollers = xmalloc(MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
+ 923               	.LM40:
+ 924 0140 8EE6      		ldi r24,lo8(110)
+ 925 0142 90E0      		ldi r25,hi8(110)
+ 926 0144 0E94 0000 		call xmalloc
+ 927 0148 8093 0000 		sts rollers,r24
+ 928 014c 9093 0000 		sts rollers+1,r25
+ 244:../../freeRtos/Lib/Rs485_prot.c ****   memset(rollers, 0, MAX_NUMBER_OF_ROLLERS * sizeof(struct sterRolet));
+ 930               	.LM41:
+ 931 0150 FC01      		movw r30,r24
+ 932 0152 8EE6      		ldi r24,lo8(110)
+ 933 0154 DF01      		movw r26,r30
+ 934 0156 1D92      		st X+,__zero_reg__
+ 935 0158 8A95      	        dec r24
+ 936 015a 01F4      		brne .-6
+ 937               	/* epilogue start */
+ 245:../../freeRtos/Lib/Rs485_prot.c **** }
+ 939               	.LM42:
+ 940 015c 0895      		ret
+ 942               	.Lscope9:
+ 944               		.stabd	78,0,0
+ 947               	.global	printRs485devices
+ 949               	printRs485devices:
+ 950               		.stabd	46,0,0
+ 246:../../freeRtos/Lib/Rs485_prot.c **** 
+ 247:../../freeRtos/Lib/Rs485_prot.c **** #ifdef PRINT_RS485_DEVICE
+ 248:../../freeRtos/Lib/Rs485_prot.c **** uint8_t printRs485devices(FILE *stream)
+ 249:../../freeRtos/Lib/Rs485_prot.c **** {
+ 952               	.LM43:
+ 953               	.LFBB10:
+ 954 015e AF92      		push r10
+ 955 0160 BF92      		push r11
+ 956 0162 CF92      		push r12
+ 957 0164 DF92      		push r13
+ 958 0166 EF92      		push r14
+ 959 0168 FF92      		push r15
+ 960 016a 0F93      		push r16
+ 961 016c 1F93      		push r17
+ 962 016e CF93      		push r28
+ 963 0170 DF93      		push r29
+ 964               	/* prologue: function */
+ 965               	/* frame size = 0 */
+ 966               	/* stack size = 10 */
+ 967               	.L__stack_usage = 10
+ 968 0172 8C01      		movw r16,r24
+ 250:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t result = 0;
+ 251:../../freeRtos/Lib/Rs485_prot.c ****   struct sterRolet *rolTmp = rollers;
+ 970               	.LM44:
+ 971 0174 C091 0000 		lds r28,rollers
+ 972 0178 D091 0000 		lds r29,rollers+1
+ 973 017c 2AE0      		ldi r18,lo8(10)
+ 974 017e A22E      		mov r10,r18
+ 250:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t result = 0;
+ 976               	.LM45:
+ 977 0180 BB24      		clr r11
+ 978               	.LBB7:
+ 252:../../freeRtos/Lib/Rs485_prot.c ****   
+ 253:../../freeRtos/Lib/Rs485_prot.c ****   //Print RollerDrivers
+ 254:../../freeRtos/Lib/Rs485_prot.c ****   for (uint8_t i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+ 255:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 256:../../freeRtos/Lib/Rs485_prot.c ****     if (rolTmp->address != 0)
+ 257:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 258:../../freeRtos/Lib/Rs485_prot.c ****       fprintf_P(stream, statusRollerDescStr, rolTmp->address, rolTmp->response.parsed.stateRoller1 
+ 980               	.LM46:
+ 981 0182 90E0      		ldi r25,lo8(statusRollerDescStr)
+ 982 0184 E92E      		mov r14,r25
+ 983 0186 90E0      		ldi r25,hi8(statusRollerDescStr)
+ 984 0188 F92E      		mov r15,r25
+ 259:../../freeRtos/Lib/Rs485_prot.c ****      // fprintf_P(stream, statusRollerDescStrConf, rolTmp->response.parsed.settings);      
+ 260:../../freeRtos/Lib/Rs485_prot.c ****       fprintf_P(stream, statusRollerDescStr2, rolTmp->response.parsed.firmware);
+ 986               	.LM47:
+ 987 018a 80E0      		ldi r24,lo8(statusRollerDescStr2)
+ 988 018c C82E      		mov r12,r24
+ 989 018e 80E0      		ldi r24,hi8(statusRollerDescStr2)
+ 990 0190 D82E      		mov r13,r24
+ 991               	.L13:
+ 256:../../freeRtos/Lib/Rs485_prot.c ****     if (rolTmp->address != 0)
+ 993               	.LM48:
+ 994 0192 8981      		ldd r24,Y+1
+ 995 0194 8823      		tst r24
+ 996 0196 01F0      		breq .L11
+ 258:../../freeRtos/Lib/Rs485_prot.c ****       fprintf_P(stream, statusRollerDescStr, rolTmp->address, rolTmp->response.parsed.stateRoller1 
+ 998               	.LM49:
+ 999 0198 2DB7      		in r18,__SP_L__
+ 1000 019a 3EB7      		in r19,__SP_H__
+ 1001 019c 2A50      		subi r18,lo8(-(-10))
+ 1002 019e 3040      		sbci r19,hi8(-(-10))
+ 1003 01a0 2DBF      		out __SP_L__,r18
+ 1004 01a2 3EBF      		out __SP_H__,r19
+ 1005 01a4 EDB7      		in r30,__SP_L__
+ 1006 01a6 FEB7      		in r31,__SP_H__
+ 1007 01a8 3196      		adiw r30,1
+ 1008 01aa ADB7      		in r26,__SP_L__
+ 1009 01ac BEB7      		in r27,__SP_H__
+ 1010 01ae 1196      		adiw r26,1
+ 1011 01b0 0D93      		st X+,r16
+ 1012 01b2 1C93      		st X,r17
+ 1013 01b4 1297      		sbiw r26,1+1
+ 1014 01b6 E282      		std Z+2,r14
+ 1015 01b8 F382      		std Z+3,r15
+ 1016 01ba 8483      		std Z+4,r24
+ 1017 01bc 1582      		std Z+5,__zero_reg__
+ 1018 01be 2A81      		ldd r18,Y+2
+ 1019 01c0 30E0      		ldi r19,lo8(0)
+ 1020 01c2 2F73      		andi r18,lo8(63)
+ 1021 01c4 3070      		andi r19,hi8(63)
+ 1022 01c6 2683      		std Z+6,r18
+ 1023 01c8 3783      		std Z+7,r19
+ 1024 01ca 2B81      		ldd r18,Y+3
+ 1025 01cc 30E0      		ldi r19,lo8(0)
+ 1026 01ce 2F73      		andi r18,lo8(63)
+ 1027 01d0 3070      		andi r19,hi8(63)
+ 1028 01d2 2087      		std Z+8,r18
+ 1029 01d4 3187      		std Z+9,r19
+ 1030 01d6 0E94 0000 		call fprintf_P
+ 1032               	.LM50:
+ 1033 01da 0F90      		pop __tmp_reg__
+ 1034 01dc 0F90      		pop __tmp_reg__
+ 1035 01de 0F90      		pop __tmp_reg__
+ 1036 01e0 0F90      		pop __tmp_reg__
+ 1037 01e2 EDB7      		in r30,__SP_L__
+ 1038 01e4 FEB7      		in r31,__SP_H__
+ 1039 01e6 3196      		adiw r30,1
+ 1040 01e8 ADB7      		in r26,__SP_L__
+ 1041 01ea BEB7      		in r27,__SP_H__
+ 1042 01ec 1196      		adiw r26,1
+ 1043 01ee 0D93      		st X+,r16
+ 1044 01f0 1C93      		st X,r17
+ 1045 01f2 1297      		sbiw r26,1+1
+ 1046 01f4 C282      		std Z+2,r12
+ 1047 01f6 D382      		std Z+3,r13
+ 1048 01f8 CE01      		movw r24,r28
+ 1049 01fa 0596      		adiw r24,5
+ 1050 01fc 8483      		std Z+4,r24
+ 1051 01fe 9583      		std Z+5,r25
+ 1052 0200 0E94 0000 		call fprintf_P
+ 261:../../freeRtos/Lib/Rs485_prot.c ****       result++;
+ 1054               	.LM51:
+ 1055 0204 B394      		inc r11
+ 1056 0206 2DB7      		in r18,__SP_L__
+ 1057 0208 3EB7      		in r19,__SP_H__
+ 1058 020a 2A5F      		subi r18,lo8(-(6))
+ 1059 020c 3F4F      		sbci r19,hi8(-(6))
+ 1060 020e 2DBF      		out __SP_L__,r18
+ 1061 0210 3EBF      		out __SP_H__,r19
+ 1062               	.L11:
+ 1063 0212 AA94      		dec r10
+ 254:../../freeRtos/Lib/Rs485_prot.c ****   for (uint8_t i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+ 1065               	.LM52:
+ 1066 0214 01F0      		breq .L12
+ 262:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 263:../../freeRtos/Lib/Rs485_prot.c ****     rolTmp++;
+ 1068               	.LM53:
+ 1069 0216 2B96      		adiw r28,11
+ 1070 0218 00C0      		rjmp .L13
+ 1071               	.L12:
+ 1072               	.LBE7:
+ 264:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 265:../../freeRtos/Lib/Rs485_prot.c ****   
+ 266:../../freeRtos/Lib/Rs485_prot.c ****   
+ 267:../../freeRtos/Lib/Rs485_prot.c ****   return result;
+ 268:../../freeRtos/Lib/Rs485_prot.c **** }
+ 1074               	.LM54:
+ 1075 021a 8B2D      		mov r24,r11
+ 1076               	/* epilogue start */
+ 1077 021c DF91      		pop r29
+ 1078 021e CF91      		pop r28
+ 1079 0220 1F91      		pop r17
+ 1080 0222 0F91      		pop r16
+ 1081 0224 FF90      		pop r15
+ 1082 0226 EF90      		pop r14
+ 1083 0228 DF90      		pop r13
+ 1084 022a CF90      		pop r12
+ 1085 022c BF90      		pop r11
+ 1086 022e AF90      		pop r10
+ 1087 0230 0895      		ret
+ 1093               	.Lscope10:
+ 1095               		.stabd	78,0,0
+ 1098               	.global	rs485ping
+ 1100               	rs485ping:
+ 1101               		.stabd	46,0,0
+ 269:../../freeRtos/Lib/Rs485_prot.c **** #endif /*PRINT_RS485_DEVICE*/
+ 270:../../freeRtos/Lib/Rs485_prot.c **** 
+ 271:../../freeRtos/Lib/Rs485_prot.c **** uint8_t rs485ping(uint8_t devAddr)
+ 272:../../freeRtos/Lib/Rs485_prot.c **** {
+ 1103               	.LM55:
+ 1104               	.LFBB11:
+ 1105 0232 CF92      		push r12
+ 1106 0234 DF92      		push r13
+ 1107 0236 EF92      		push r14
+ 1108 0238 FF92      		push r15
+ 1109 023a 0F93      		push r16
+ 1110 023c 1F93      		push r17
+ 1111 023e DF93      		push r29
+ 1112 0240 CF93      		push r28
+ 1113 0242 00D0      		rcall .
+ 1114 0244 0F92      		push __tmp_reg__
+ 1115 0246 CDB7      		in r28,__SP_L__
+ 1116 0248 DEB7      		in r29,__SP_H__
+ 1117               	/* prologue: function */
+ 1118               	/* frame size = 4 */
+ 1119               	/* stack size = 12 */
+ 1120               	.L__stack_usage = 12
+ 1121 024a F82E      		mov r15,r24
+ 273:../../freeRtos/Lib/Rs485_prot.c ****   takeRs485();
+ 1123               	.LM56:
+ 1124 024c 0E94 0000 		call takeRs485
+ 1125               	.LBB13:
+ 1126               	.LBB14:
+  74:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = _crc_xmodem_update(0, SYNC);
+ 1128               	.LM57:
+ 1129 0250 80E0      		ldi r24,lo8(0)
+ 1130 0252 90E0      		ldi r25,hi8(0)
+ 1131 0254 6AE5      		ldi r22,lo8(90)
+ 1132 0256 0E94 0000 		call _crc_xmodem_update
+ 1133 025a 8C01      		movw r16,r24
+  75:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(SYNC);
+ 1135               	.LM58:
+ 1136 025c 8AE5      		ldi r24,lo8(90)
+ 1137 025e 0E94 0000 		call uartRs485SendByte
+  77:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, addr);
+ 1139               	.LM59:
+ 1140 0262 C801      		movw r24,r16
+ 1141 0264 6F2D      		mov r22,r15
+ 1142 0266 0E94 0000 		call _crc_xmodem_update
+ 1143 026a 8C01      		movw r16,r24
+  78:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(addr);
+ 1145               	.LM60:
+ 1146 026c 8F2D      		mov r24,r15
+ 1147 026e 0E94 0000 		call uartRs485SendByte
+  80:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, rPING);
+ 1149               	.LM61:
+ 1150 0272 C801      		movw r24,r16
+ 1151 0274 60E8      		ldi r22,lo8(-128)
+ 1152 0276 0E94 0000 		call _crc_xmodem_update
+ 1153 027a 8C01      		movw r16,r24
+  81:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(rPING);
+ 1155               	.LM62:
+ 1156 027c 80E8      		ldi r24,lo8(-128)
+ 1157 027e 0E94 0000 		call uartRs485SendByte
+  83:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, pingLen);
+ 1159               	.LM63:
+ 1160 0282 C801      		movw r24,r16
+ 1161 0284 68E0      		ldi r22,lo8(8)
+ 1162 0286 0E94 0000 		call _crc_xmodem_update
+ 1163 028a F82E      		mov r15,r24
+  84:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(pingLen);
+ 1165               	.LM64:
+ 1166 028c 88E0      		ldi r24,lo8(8)
+ 1167 028e 9C83      		std Y+4,r25
+ 1168 0290 0E94 0000 		call uartRs485SendByte
+  86:../../freeRtos/Lib/Rs485_prot.c ****   for (uint8_t i=0; i < pingLen; i++)
+ 1170               	.LM65:
+ 1171 0294 00E0      		ldi r16,lo8(0)
+ 1172 0296 9C81      		ldd r25,Y+4
+ 1173               	.L15:
+ 1174               	.LBB15:
+  88:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, i);
+ 1176               	.LM66:
+ 1177 0298 8F2D      		mov r24,r15
+ 1178 029a 602F      		mov r22,r16
+ 1179 029c 0E94 0000 		call _crc_xmodem_update
+ 1180 02a0 F82E      		mov r15,r24
+  89:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(i);
+ 1182               	.LM67:
+ 1183 02a2 802F      		mov r24,r16
+ 1184 02a4 9C83      		std Y+4,r25
+ 1185 02a6 0E94 0000 		call uartRs485SendByte
+  86:../../freeRtos/Lib/Rs485_prot.c ****   for (uint8_t i=0; i < pingLen; i++)
+ 1187               	.LM68:
+ 1188 02aa 0F5F      		subi r16,lo8(-(1))
+ 1189 02ac 9C81      		ldd r25,Y+4
+ 1190 02ae 0830      		cpi r16,lo8(8)
+ 1191 02b0 01F4      		brne .L15
+ 1192               	.LBE15:
+  91:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc >> 8));
+ 1194               	.LM69:
+ 1195 02b2 892F      		mov r24,r25
+ 1196 02b4 0E94 0000 		call uartRs485SendByte
+  92:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 1198               	.LM70:
+ 1199 02b8 8F2D      		mov r24,r15
+ 1200 02ba 0E94 0000 		call uartRs485SendByte
+ 1201               	.LBE14:
+ 1202               	.LBE13:
+ 1203               	.LBB16:
+ 1204               	.LBB17:
+ 102:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 20) == pdFALSE)
+ 1206               	.LM71:
+ 1207 02be 8E01      		movw r16,r28
+ 1208 02c0 0F5F      		subi r16,lo8(-(1))
+ 1209 02c2 1F4F      		sbci r17,hi8(-(1))
+ 1210 02c4 C801      		movw r24,r16
+ 1211 02c6 64E1      		ldi r22,lo8(20)
+ 1212 02c8 0E94 0000 		call rs485Receive
+ 1213 02cc 8823      		tst r24
+ 1214 02ce 01F4      		brne .+2
+ 1215 02d0 00C0      		rjmp .L20
+ 105:../../freeRtos/Lib/Rs485_prot.c ****   if (data != SYNC)
+ 1217               	.LM72:
+ 1218 02d2 8981      		ldd r24,Y+1
+ 1219 02d4 8A35      		cpi r24,lo8(90)
+ 1220 02d6 01F0      		breq .+2
+ 1221 02d8 00C0      		rjmp .L21
+ 107:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(0, data);
+ 1223               	.LM73:
+ 1224 02da 80E0      		ldi r24,lo8(0)
+ 1225 02dc 90E0      		ldi r25,hi8(0)
+ 1226 02de 6AE5      		ldi r22,lo8(90)
+ 1227 02e0 0E94 0000 		call _crc_xmodem_update
+ 1228 02e4 7C01      		movw r14,r24
+ 110:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == 0)
+ 1230               	.LM74:
+ 1231 02e6 C801      		movw r24,r16
+ 1232 02e8 61E0      		ldi r22,lo8(1)
+ 1233 02ea 0E94 0000 		call rs485Receive
+ 1234 02ee 8823      		tst r24
+ 1235 02f0 01F4      		brne .+2
+ 1236 02f2 00C0      		rjmp .L22
+ 113:../../freeRtos/Lib/Rs485_prot.c ****   if (data != 0)
+ 1238               	.LM75:
+ 1239 02f4 8981      		ldd r24,Y+1
+ 1240 02f6 8823      		tst r24
+ 1241 02f8 01F0      		breq .+2
+ 1242 02fa 00C0      		rjmp .L23
+ 116:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 1244               	.LM76:
+ 1245 02fc C701      		movw r24,r14
+ 1246 02fe 60E0      		ldi r22,lo8(0)
+ 1247 0300 0E94 0000 		call _crc_xmodem_update
+ 1248 0304 7C01      		movw r14,r24
+ 119:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == pdFALSE)
+ 1250               	.LM77:
+ 1251 0306 C801      		movw r24,r16
+ 1252 0308 61E0      		ldi r22,lo8(1)
+ 1253 030a 0E94 0000 		call rs485Receive
+ 1254 030e 8823      		tst r24
+ 1255 0310 01F4      		brne .+2
+ 1256 0312 00C0      		rjmp .L24
+ 121:../../freeRtos/Lib/Rs485_prot.c ****   if (data != rPING)
+ 1258               	.LM78:
+ 1259 0314 8981      		ldd r24,Y+1
+ 1260 0316 8038      		cpi r24,lo8(-128)
+ 1261 0318 01F0      		breq .+2
+ 1262 031a 00C0      		rjmp .L25
+ 123:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 1264               	.LM79:
+ 1265 031c C701      		movw r24,r14
+ 1266 031e 60E8      		ldi r22,lo8(-128)
+ 1267 0320 0E94 0000 		call _crc_xmodem_update
+ 1268 0324 7C01      		movw r14,r24
+ 126:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == pdFALSE)
+ 1270               	.LM80:
+ 1271 0326 C801      		movw r24,r16
+ 1272 0328 61E0      		ldi r22,lo8(1)
+ 1273 032a 0E94 0000 		call rs485Receive
+ 1274 032e 8823      		tst r24
+ 1275 0330 01F4      		brne .+2
+ 1276 0332 00C0      		rjmp .L26
+ 128:../../freeRtos/Lib/Rs485_prot.c ****   if (data != dataLen)
+ 1278               	.LM81:
+ 1279 0334 8981      		ldd r24,Y+1
+ 1280 0336 8830      		cpi r24,lo8(8)
+ 1281 0338 01F0      		breq .+2
+ 1282 033a 00C0      		rjmp .L27
+ 130:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 1284               	.LM82:
+ 1285 033c C701      		movw r24,r14
+ 1286 033e 68E0      		ldi r22,lo8(8)
+ 1287 0340 0E94 0000 		call _crc_xmodem_update
+ 1288 0344 7C01      		movw r14,r24
+ 134:../../freeRtos/Lib/Rs485_prot.c ****   for (temp=0; temp < dataLen; temp++)
+ 1290               	.LM83:
+ 1291 0346 DD24      		clr r13
+ 136:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 5) == pdFALSE)
+ 1293               	.LM84:
+ 1294 0348 C02E      		mov r12,r16
+ 1295 034a 012F      		mov r16,r17
+ 1296               	.L19:
+ 1297 034c 8C2D      		mov r24,r12
+ 1298 034e 902F      		mov r25,r16
+ 1299 0350 65E0      		ldi r22,lo8(5)
+ 1300 0352 0E94 0000 		call rs485Receive
+ 1301 0356 8823      		tst r24
+ 1302 0358 01F4      		brne .L17
+ 137:../../freeRtos/Lib/Rs485_prot.c ****       return 2*temp+9;
+ 1304               	.LM85:
+ 1305 035a 0D2D      		mov r16,r13
+ 1306 035c 000F      		lsl r16
+ 1307 035e 075F      		subi r16,lo8(-(9))
+ 1308 0360 00C0      		rjmp .L16
+ 1309               	.L17:
+ 138:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, data);
+ 1311               	.LM86:
+ 1312 0362 C701      		movw r24,r14
+ 1313 0364 6981      		ldd r22,Y+1
+ 1314 0366 0E94 0000 		call _crc_xmodem_update
+ 1315 036a 7C01      		movw r14,r24
+ 139:../../freeRtos/Lib/Rs485_prot.c ****     if (data != temp)
+ 1317               	.LM87:
+ 1318 036c 8981      		ldd r24,Y+1
+ 1319 036e 8D15      		cp r24,r13
+ 1320 0370 01F0      		breq .L18
+ 140:../../freeRtos/Lib/Rs485_prot.c ****       return 2*temp+10; 
+ 1322               	.LM88:
+ 1323 0372 0D2D      		mov r16,r13
+ 1324 0374 000F      		lsl r16
+ 1325 0376 065F      		subi r16,lo8(-(10))
+ 1326 0378 00C0      		rjmp .L16
+ 1327               	.L18:
+ 134:../../freeRtos/Lib/Rs485_prot.c ****   for (temp=0; temp < dataLen; temp++)
+ 1329               	.LM89:
+ 1330 037a D394      		inc r13
+ 1331 037c 8D2D      		mov r24,r13
+ 1332 037e 8830      		cpi r24,lo8(8)
+ 1333 0380 01F4      		brne .L19
+ 145:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&crcHi, 1) != pdTRUE)
+ 1335               	.LM90:
+ 1336 0382 CE01      		movw r24,r28
+ 1337 0384 0296      		adiw r24,2
+ 1338 0386 61E0      		ldi r22,lo8(1)
+ 1339 0388 0E94 0000 		call rs485Receive
+ 1340 038c 8130      		cpi r24,lo8(1)
+ 1341 038e 01F4      		brne .L28
+ 148:../../freeRtos/Lib/Rs485_prot.c ****   if(xQueueReceive(xRs485Rec, &crcLo, 1) != pdTRUE)
+ 1343               	.LM91:
+ 1344 0390 8091 0000 		lds r24,xRs485Rec
+ 1345 0394 9091 0000 		lds r25,xRs485Rec+1
+ 1346 0398 BE01      		movw r22,r28
+ 1347 039a 6D5F      		subi r22,lo8(-(3))
+ 1348 039c 7F4F      		sbci r23,hi8(-(3))
+ 1349 039e 41E0      		ldi r20,lo8(1)
+ 1350 03a0 50E0      		ldi r21,hi8(1)
+ 1351 03a2 20E0      		ldi r18,lo8(0)
+ 1352 03a4 0E94 0000 		call xQueueGenericReceive
+ 1353 03a8 8130      		cpi r24,lo8(1)
+ 1354 03aa 01F4      		brne .L29
+ 151:../../freeRtos/Lib/Rs485_prot.c ****   if (crcHi != (uint8_t)(crc>>8))
+ 1356               	.LM92:
+ 1357 03ac 8A81      		ldd r24,Y+2
+ 1358 03ae 8F15      		cp r24,r15
+ 1359 03b0 01F4      		brne .L30
+ 153:../../freeRtos/Lib/Rs485_prot.c ****   if (crcLo != (uint8_t)(crc & 0xFF))
+ 1361               	.LM93:
+ 1362 03b2 8B81      		ldd r24,Y+3
+ 1363 03b4 8E15      		cp r24,r14
+ 1364 03b6 01F0      		breq .L31
+ 154:../../freeRtos/Lib/Rs485_prot.c ****     return 255;
+ 1366               	.LM94:
+ 1367 03b8 0FEF      		ldi r16,lo8(-1)
+ 1368 03ba 00C0      		rjmp .L16
+ 1369               	.L20:
+ 103:../../freeRtos/Lib/Rs485_prot.c ****     return 1;
+ 1371               	.LM95:
+ 1372 03bc 01E0      		ldi r16,lo8(1)
+ 1373 03be 00C0      		rjmp .L16
+ 1374               	.L21:
+ 106:../../freeRtos/Lib/Rs485_prot.c ****     return 2;
+ 1376               	.LM96:
+ 1377 03c0 02E0      		ldi r16,lo8(2)
+ 1378 03c2 00C0      		rjmp .L16
+ 1379               	.L22:
+ 111:../../freeRtos/Lib/Rs485_prot.c ****     return 3;
+ 1381               	.LM97:
+ 1382 03c4 03E0      		ldi r16,lo8(3)
+ 1383 03c6 00C0      		rjmp .L16
+ 1384               	.L23:
+ 114:../../freeRtos/Lib/Rs485_prot.c ****     return 4;
+ 1386               	.LM98:
+ 1387 03c8 04E0      		ldi r16,lo8(4)
+ 1388 03ca 00C0      		rjmp .L16
+ 1389               	.L24:
+ 120:../../freeRtos/Lib/Rs485_prot.c ****     return 5;
+ 1391               	.LM99:
+ 1392 03cc 05E0      		ldi r16,lo8(5)
+ 1393 03ce 00C0      		rjmp .L16
+ 1394               	.L25:
+ 122:../../freeRtos/Lib/Rs485_prot.c ****     return 6;
+ 1396               	.LM100:
+ 1397 03d0 06E0      		ldi r16,lo8(6)
+ 1398 03d2 00C0      		rjmp .L16
+ 1399               	.L26:
+ 127:../../freeRtos/Lib/Rs485_prot.c ****     return 7;
+ 1401               	.LM101:
+ 1402 03d4 07E0      		ldi r16,lo8(7)
+ 1403 03d6 00C0      		rjmp .L16
+ 1404               	.L27:
+ 129:../../freeRtos/Lib/Rs485_prot.c ****     return 8;
+ 1406               	.LM102:
+ 1407 03d8 08E0      		ldi r16,lo8(8)
+ 1408 03da 00C0      		rjmp .L16
+ 1409               	.L28:
+ 146:../../freeRtos/Lib/Rs485_prot.c ****     return 2*temp+11;
+ 1411               	.LM103:
+ 1412 03dc 0BE1      		ldi r16,lo8(27)
+ 1413 03de 00C0      		rjmp .L16
+ 1414               	.L29:
+ 149:../../freeRtos/Lib/Rs485_prot.c ****     return 2*temp+12;
+ 1416               	.LM104:
+ 1417 03e0 0CE1      		ldi r16,lo8(28)
+ 1418 03e2 00C0      		rjmp .L16
+ 1419               	.L30:
+ 152:../../freeRtos/Lib/Rs485_prot.c ****     return 254;
+ 1421               	.LM105:
+ 1422 03e4 0EEF      		ldi r16,lo8(-2)
+ 1423 03e6 00C0      		rjmp .L16
+ 1424               	.L31:
+ 156:../../freeRtos/Lib/Rs485_prot.c ****   return 0; 
+ 1426               	.LM106:
+ 1427 03e8 00E0      		ldi r16,lo8(0)
+ 1428               	.L16:
+ 1429               	.LBE17:
+ 1430               	.LBE16:
+ 274:../../freeRtos/Lib/Rs485_prot.c ****   const int len = 8;    
+ 275:../../freeRtos/Lib/Rs485_prot.c ****   sendPing(devAddr, len);
+ 276:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t result = receivePong(devAddr, len);
+ 277:../../freeRtos/Lib/Rs485_prot.c ****   flushRs485RecBuffer();
+ 1432               	.LM107:
+ 1433 03ea 0E94 0000 		call flushRs485RecBuffer
+ 278:../../freeRtos/Lib/Rs485_prot.c **** 
+ 279:../../freeRtos/Lib/Rs485_prot.c ****   releaseRs485();
+ 1435               	.LM108:
+ 1436 03ee 0E94 0000 		call releaseRs485
+ 280:../../freeRtos/Lib/Rs485_prot.c ****   return result;
+ 281:../../freeRtos/Lib/Rs485_prot.c **** }
+ 1438               	.LM109:
+ 1439 03f2 802F      		mov r24,r16
+ 1440               	/* epilogue start */
+ 1441 03f4 2496      		adiw r28,4
+ 1442 03f6 CDBF      		out __SP_L__,r28
+ 1443 03f8 DEBF      		out __SP_H__,r29
+ 1444 03fa CF91      		pop r28
+ 1445 03fc DF91      		pop r29
+ 1446 03fe 1F91      		pop r17
+ 1447 0400 0F91      		pop r16
+ 1448 0402 FF90      		pop r15
+ 1449 0404 EF90      		pop r14
+ 1450 0406 DF90      		pop r13
+ 1451 0408 CF90      		pop r12
+ 1452 040a 0895      		ret
+ 1466               	.Lscope11:
+ 1468               		.stabd	78,0,0
+ 1471               	.global	rs485rollerHello
+ 1473               	rs485rollerHello:
+ 1474               		.stabd	46,0,0
+ 282:../../freeRtos/Lib/Rs485_prot.c **** 
+ 283:../../freeRtos/Lib/Rs485_prot.c **** uint8_t rs485rollerHello(uint8_t devAddr)
+ 284:../../freeRtos/Lib/Rs485_prot.c **** {
+ 1476               	.LM110:
+ 1477               	.LFBB12:
+ 1478 040c CF92      		push r12
+ 1479 040e DF92      		push r13
+ 1480 0410 EF92      		push r14
+ 1481 0412 FF92      		push r15
+ 1482 0414 0F93      		push r16
+ 1483 0416 1F93      		push r17
+ 1484 0418 DF93      		push r29
+ 1485 041a CF93      		push r28
+ 1486 041c 00D0      		rcall .
+ 1487 041e 0F92      		push __tmp_reg__
+ 1488 0420 CDB7      		in r28,__SP_L__
+ 1489 0422 DEB7      		in r29,__SP_H__
+ 1490               	/* prologue: function */
+ 1491               	/* frame size = 4 */
+ 1492               	/* stack size = 12 */
+ 1493               	.L__stack_usage = 12
+ 1494 0424 C82E      		mov r12,r24
+ 285:../../freeRtos/Lib/Rs485_prot.c ****   struct sterRolet *tmp = NULL;
+ 286:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t i;
+ 287:../../freeRtos/Lib/Rs485_prot.c ****   for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+ 288:../../freeRtos/Lib/Rs485_prot.c ****     if (rollers[i].address == devAddr)
+ 289:../../freeRtos/Lib/Rs485_prot.c ****       tmp = &rollers[i];
+ 290:../../freeRtos/Lib/Rs485_prot.c ****     
+ 291:../../freeRtos/Lib/Rs485_prot.c ****   if (rs485ping(devAddr)==0)
+ 292:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 293:../../freeRtos/Lib/Rs485_prot.c ****     if (tmp == NULL)
+ 294:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 295:../../freeRtos/Lib/Rs485_prot.c ****       for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+ 296:../../freeRtos/Lib/Rs485_prot.c ****       {
+ 297:../../freeRtos/Lib/Rs485_prot.c ****         if (rollers[i].address == 0)
+ 298:../../freeRtos/Lib/Rs485_prot.c ****         {
+ 299:../../freeRtos/Lib/Rs485_prot.c ****           tmp = &rollers[i];
+ 300:../../freeRtos/Lib/Rs485_prot.c ****           tmp->address = devAddr;
+ 301:../../freeRtos/Lib/Rs485_prot.c ****           break;
+ 302:../../freeRtos/Lib/Rs485_prot.c ****         }
+ 303:../../freeRtos/Lib/Rs485_prot.c ****       }
+ 304:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 305:../../freeRtos/Lib/Rs485_prot.c ****     if (tmp != NULL)
+ 306:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 307:../../freeRtos/Lib/Rs485_prot.c ****       tmp->state &= (~NOT_DETECTED);
+ 308:../../freeRtos/Lib/Rs485_prot.c ****       tmp->address = devAddr;
+ 309:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 310:../../freeRtos/Lib/Rs485_prot.c ****     else
+ 311:../../freeRtos/Lib/Rs485_prot.c ****       return 1;
+ 1496               	.LM111:
+ 1497 0426 E091 0000 		lds r30,rollers
+ 1498 042a F091 0000 		lds r31,rollers+1
+ 288:../../freeRtos/Lib/Rs485_prot.c ****     if (rollers[i].address == devAddr)
+ 1500               	.LM112:
+ 1501 042e 8AE0      		ldi r24,lo8(10)
+ 285:../../freeRtos/Lib/Rs485_prot.c ****   struct sterRolet *tmp = NULL;
+ 1503               	.LM113:
+ 1504 0430 00E0      		ldi r16,lo8(0)
+ 1505 0432 10E0      		ldi r17,hi8(0)
+ 1506               	.L36:
+ 288:../../freeRtos/Lib/Rs485_prot.c ****     if (rollers[i].address == devAddr)
+ 1508               	.LM114:
+ 1509 0434 9181      		ldd r25,Z+1
+ 1510 0436 9C15      		cp r25,r12
+ 1511 0438 01F4      		brne .L35
+ 289:../../freeRtos/Lib/Rs485_prot.c ****       tmp = &rollers[i];
+ 1513               	.LM115:
+ 1514 043a 0E2F      		mov r16,r30
+ 1515 043c 1F2F      		mov r17,r31
+ 1516               	.L35:
+ 288:../../freeRtos/Lib/Rs485_prot.c ****     if (rollers[i].address == devAddr)
+ 1518               	.LM116:
+ 1519 043e 8150      		subi r24,lo8(-(-1))
+ 1520 0440 3B96      		adiw r30,11
+ 287:../../freeRtos/Lib/Rs485_prot.c ****   for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+ 1522               	.LM117:
+ 1523 0442 8823      		tst r24
+ 1524 0444 01F4      		brne .L36
+ 291:../../freeRtos/Lib/Rs485_prot.c ****   if (rs485ping(devAddr)==0)
+ 1526               	.LM118:
+ 1527 0446 8C2D      		mov r24,r12
+ 1528 0448 0E94 0000 		call rs485ping
+ 1529 044c 8823      		tst r24
+ 1530 044e 01F4      		brne .L37
+ 293:../../freeRtos/Lib/Rs485_prot.c ****     if (tmp == NULL)
+ 1532               	.LM119:
+ 1533 0450 0115      		cp r16,__zero_reg__
+ 1534 0452 1105      		cpc r17,__zero_reg__
+ 1535 0454 01F4      		brne .L38
+ 1536 0456 E091 0000 		lds r30,rollers
+ 1537 045a F091 0000 		lds r31,rollers+1
+ 1538               	.L40:
+ 1539 045e 8F01      		movw r16,r30
+ 297:../../freeRtos/Lib/Rs485_prot.c ****         if (rollers[i].address == 0)
+ 1541               	.LM120:
+ 1542 0460 9181      		ldd r25,Z+1
+ 1543 0462 9923      		tst r25
+ 1544 0464 01F4      		brne .L39
+ 300:../../freeRtos/Lib/Rs485_prot.c ****           tmp->address = devAddr;
+ 1546               	.LM121:
+ 1547 0466 C182      		std Z+1,r12
+ 301:../../freeRtos/Lib/Rs485_prot.c ****           break;
+ 1549               	.LM122:
+ 1550 0468 00C0      		rjmp .L38
+ 1551               	.L39:
+ 295:../../freeRtos/Lib/Rs485_prot.c ****       for (i=0; i< MAX_NUMBER_OF_ROLLERS; i++)
+ 1553               	.LM123:
+ 1554 046a 8F5F      		subi r24,lo8(-(1))
+ 1555 046c 3B96      		adiw r30,11
+ 1556 046e 8A30      		cpi r24,lo8(10)
+ 1557 0470 01F4      		brne .L40
+ 1558 0472 00C0      		rjmp .L47
+ 1559               	.L38:
+ 305:../../freeRtos/Lib/Rs485_prot.c ****     if (tmp != NULL)
+ 1561               	.LM124:
+ 1562 0474 0115      		cp r16,__zero_reg__
+ 1563 0476 1105      		cpc r17,__zero_reg__
+ 1564 0478 01F4      		brne .+2
+ 1565 047a 00C0      		rjmp .L47
+ 307:../../freeRtos/Lib/Rs485_prot.c ****       tmp->state &= (~NOT_DETECTED);
+ 1567               	.LM125:
+ 1568 047c D801      		movw r26,r16
+ 1569 047e 8C91      		ld r24,X
+ 1570 0480 8E7F      		andi r24,lo8(-2)
+ 1571 0482 8C93      		st X,r24
+ 308:../../freeRtos/Lib/Rs485_prot.c ****       tmp->address = devAddr;
+ 1573               	.LM126:
+ 1574 0484 1196      		adiw r26,1
+ 1575 0486 CC92      		st X,r12
+ 1576 0488 1197      		sbiw r26,1
+ 1577 048a 00C0      		rjmp .L42
+ 1578               	.L37:
+ 312:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 313:../../freeRtos/Lib/Rs485_prot.c ****   else
+ 314:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 315:../../freeRtos/Lib/Rs485_prot.c ****     if (tmp != NULL)
+ 1580               	.LM127:
+ 1581 048c 0115      		cp r16,__zero_reg__
+ 1582 048e 1105      		cpc r17,__zero_reg__
+ 1583 0490 01F0      		breq .L42
+ 316:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 317:../../freeRtos/Lib/Rs485_prot.c ****       if (tmp->state & NOT_DETECTED)
+ 1585               	.LM128:
+ 1586 0492 F801      		movw r30,r16
+ 1587 0494 8081      		ld r24,Z
+ 1588 0496 80FD      		sbrc r24,0
+ 318:../../freeRtos/Lib/Rs485_prot.c ****       {
+ 319:../../freeRtos/Lib/Rs485_prot.c ****         tmp->address = 0;
+ 1590               	.LM129:
+ 1591 0498 1182      		std Z+1,__zero_reg__
+ 1592               	.L43:
+ 320:../../freeRtos/Lib/Rs485_prot.c ****       }
+ 321:../../freeRtos/Lib/Rs485_prot.c ****       tmp->state |= NOT_DETECTED;
+ 1594               	.LM130:
+ 1595 049a 8160      		ori r24,lo8(1)
+ 1596 049c D801      		movw r26,r16
+ 1597 049e 8C93      		st X,r24
+ 322:../../freeRtos/Lib/Rs485_prot.c ****       return 2;
+ 1599               	.LM131:
+ 1600 04a0 82E0      		ldi r24,lo8(2)
+ 1601 04a2 00C0      		rjmp .L41
+ 1602               	.L42:
+ 323:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 324:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 325:../../freeRtos/Lib/Rs485_prot.c ****   
+ 326:../../freeRtos/Lib/Rs485_prot.c ****   takeRs485();
+ 1604               	.LM132:
+ 1605 04a4 0E94 0000 		call takeRs485
+ 1606               	.LBB22:
+ 1607               	.LBB23:
+ 161:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = _crc_xmodem_update(0, SYNC);
+ 1609               	.LM133:
+ 1610 04a8 80E0      		ldi r24,lo8(0)
+ 1611 04aa 90E0      		ldi r25,hi8(0)
+ 1612 04ac 6AE5      		ldi r22,lo8(90)
+ 1613 04ae 0E94 0000 		call _crc_xmodem_update
+ 1614 04b2 7C01      		movw r14,r24
+ 162:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(SYNC);
+ 1616               	.LM134:
+ 1617 04b4 8AE5      		ldi r24,lo8(90)
+ 1618 04b6 0E94 0000 		call uartRs485SendByte
+ 164:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, addr);
+ 1620               	.LM135:
+ 1621 04ba C701      		movw r24,r14
+ 1622 04bc 6C2D      		mov r22,r12
+ 1623 04be 0E94 0000 		call _crc_xmodem_update
+ 1624 04c2 7C01      		movw r14,r24
+ 165:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(addr);
+ 1626               	.LM136:
+ 1627 04c4 8C2D      		mov r24,r12
+ 1628 04c6 0E94 0000 		call uartRs485SendByte
+ 167:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, rHELLO);
+ 1630               	.LM137:
+ 1631 04ca C701      		movw r24,r14
+ 1632 04cc 62E8      		ldi r22,lo8(-126)
+ 1633 04ce 0E94 0000 		call _crc_xmodem_update
+ 1634 04d2 7C01      		movw r14,r24
+ 168:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(rHELLO);
+ 1636               	.LM138:
+ 1637 04d4 82E8      		ldi r24,lo8(-126)
+ 1638 04d6 0E94 0000 		call uartRs485SendByte
+ 170:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, 0);
+ 1640               	.LM139:
+ 1641 04da C701      		movw r24,r14
+ 1642 04dc 60E0      		ldi r22,lo8(0)
+ 1643 04de 0E94 0000 		call _crc_xmodem_update
+ 1644 04e2 F82E      		mov r15,r24
+ 171:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(0);
+ 1646               	.LM140:
+ 1647 04e4 80E0      		ldi r24,lo8(0)
+ 1648 04e6 9C83      		std Y+4,r25
+ 1649 04e8 0E94 0000 		call uartRs485SendByte
+ 173:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc >> 8));
+ 1651               	.LM141:
+ 1652 04ec 9C81      		ldd r25,Y+4
+ 1653 04ee 892F      		mov r24,r25
+ 1654 04f0 0E94 0000 		call uartRs485SendByte
+ 174:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 1656               	.LM142:
+ 1657 04f4 8F2D      		mov r24,r15
+ 1658 04f6 0E94 0000 		call uartRs485SendByte
+ 1659               	.LBE23:
+ 1660               	.LBE22:
+ 1661               	.LBB24:
+ 1662               	.LBB25:
+ 182:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 20) == pdFALSE)
+ 1664               	.LM143:
+ 1665 04fa 7E01      		movw r14,r28
+ 1666 04fc 0894      		sec
+ 1667 04fe E11C      		adc r14,__zero_reg__
+ 1668 0500 F11C      		adc r15,__zero_reg__
+ 1669 0502 C701      		movw r24,r14
+ 1670 0504 64E1      		ldi r22,lo8(20)
+ 1671 0506 0E94 0000 		call rs485Receive
+ 1672 050a 8823      		tst r24
+ 1673 050c 01F4      		brne .+2
+ 1674 050e 00C0      		rjmp .L48
+ 185:../../freeRtos/Lib/Rs485_prot.c ****   if (data != SYNC)
+ 1676               	.LM144:
+ 1677 0510 8981      		ldd r24,Y+1
+ 1678 0512 8A35      		cpi r24,lo8(90)
+ 1679 0514 01F0      		breq .+2
+ 1680 0516 00C0      		rjmp .L49
+ 187:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(0, data);
+ 1682               	.LM145:
+ 1683 0518 80E0      		ldi r24,lo8(0)
+ 1684 051a 90E0      		ldi r25,hi8(0)
+ 1685 051c 6AE5      		ldi r22,lo8(90)
+ 1686 051e 0E94 0000 		call _crc_xmodem_update
+ 1687 0522 6C01      		movw r12,r24
+ 190:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == 0)
+ 1689               	.LM146:
+ 1690 0524 C701      		movw r24,r14
+ 1691 0526 61E0      		ldi r22,lo8(1)
+ 1692 0528 0E94 0000 		call rs485Receive
+ 1693 052c 8823      		tst r24
+ 1694 052e 01F4      		brne .+2
+ 1695 0530 00C0      		rjmp .L50
+ 193:../../freeRtos/Lib/Rs485_prot.c ****   if (data != 0)
+ 1697               	.LM147:
+ 1698 0532 8981      		ldd r24,Y+1
+ 1699 0534 8823      		tst r24
+ 1700 0536 01F0      		breq .+2
+ 1701 0538 00C0      		rjmp .L51
+ 196:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 1703               	.LM148:
+ 1704 053a C601      		movw r24,r12
+ 1705 053c 60E0      		ldi r22,lo8(0)
+ 1706 053e 0E94 0000 		call _crc_xmodem_update
+ 1707 0542 6C01      		movw r12,r24
+ 199:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == pdFALSE)
+ 1709               	.LM149:
+ 1710 0544 C701      		movw r24,r14
+ 1711 0546 61E0      		ldi r22,lo8(1)
+ 1712 0548 0E94 0000 		call rs485Receive
+ 1713 054c 8823      		tst r24
+ 1714 054e 01F4      		brne .+2
+ 1715 0550 00C0      		rjmp .L52
+ 201:../../freeRtos/Lib/Rs485_prot.c ****   if (data != rHELLO)
+ 1717               	.LM150:
+ 1718 0552 8981      		ldd r24,Y+1
+ 1719 0554 8238      		cpi r24,lo8(-126)
+ 1720 0556 01F0      		breq .+2
+ 1721 0558 00C0      		rjmp .L53
+ 203:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 1723               	.LM151:
+ 1724 055a C601      		movw r24,r12
+ 1725 055c 62E8      		ldi r22,lo8(-126)
+ 1726 055e 0E94 0000 		call _crc_xmodem_update
+ 1727 0562 6C01      		movw r12,r24
+ 206:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 1) == pdFALSE)
+ 1729               	.LM152:
+ 1730 0564 C701      		movw r24,r14
+ 1731 0566 61E0      		ldi r22,lo8(1)
+ 1732 0568 0E94 0000 		call rs485Receive
+ 1733 056c 8823      		tst r24
+ 1734 056e 01F4      		brne .+2
+ 1735 0570 00C0      		rjmp .L54
+ 208:../../freeRtos/Lib/Rs485_prot.c ****   if (data > maxSize)
+ 1737               	.LM153:
+ 1738 0572 6981      		ldd r22,Y+1
+ 1739 0574 6930      		cpi r22,lo8(9)
+ 1740 0576 00F0      		brlo .+2
+ 1741 0578 00C0      		rjmp .L55
+ 1742               	.LBE25:
+ 1743               	.LBE24:
+ 327:../../freeRtos/Lib/Rs485_prot.c ****   sendHello(devAddr);
+ 328:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t result = receiveHello((tmp->response.data), HELLO_RESP_LEN); 
+ 1745               	.LM154:
+ 1746 057a 0E5F      		subi r16,lo8(-(2))
+ 1747 057c 1F4F      		sbci r17,hi8(-(2))
+ 1748               	.LBB27:
+ 1749               	.LBB26:
+ 211:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, data);
+ 1751               	.LM155:
+ 1752 057e C601      		movw r24,r12
+ 1753 0580 0E94 0000 		call _crc_xmodem_update
+ 1754 0584 E82E      		mov r14,r24
+ 1755 0586 C92E      		mov r12,r25
+ 212:../../freeRtos/Lib/Rs485_prot.c ****   memset(response, 0, maxSize);
+ 1757               	.LM156:
+ 1758 0588 88E0      		ldi r24,lo8(8)
+ 1759 058a D801      		movw r26,r16
+ 1760 058c 1D92      		st X+,__zero_reg__
+ 1761 058e 8A95      	        dec r24
+ 1762 0590 01F4      		brne .-6
+ 213:../../freeRtos/Lib/Rs485_prot.c ****   maxSize = data;
+ 1764               	.LM157:
+ 1765 0592 F980      		ldd r15,Y+1
+ 215:../../freeRtos/Lib/Rs485_prot.c ****   for (data=0; data < maxSize; data++)
+ 1767               	.LM158:
+ 1768 0594 1982      		std Y+1,__zero_reg__
+ 1769 0596 00C0      		rjmp .L45
+ 1770               	.L46:
+ 217:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(response, 5) == pdFALSE)
+ 1772               	.LM159:
+ 1773 0598 C801      		movw r24,r16
+ 1774 059a 65E0      		ldi r22,lo8(5)
+ 1775 059c 0E94 0000 		call rs485Receive
+ 1776 05a0 8823      		tst r24
+ 1777 05a2 01F0      		breq .L56
+ 219:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, *((uint8_t *)(response)));
+ 1779               	.LM160:
+ 1780 05a4 8E2D      		mov r24,r14
+ 1781 05a6 9C2D      		mov r25,r12
+ 1782 05a8 F801      		movw r30,r16
+ 1783 05aa 6191      		ld r22,Z+
+ 1784 05ac 8F01      		movw r16,r30
+ 1785 05ae 0E94 0000 		call _crc_xmodem_update
+ 1786 05b2 E82E      		mov r14,r24
+ 1787 05b4 C92E      		mov r12,r25
+ 215:../../freeRtos/Lib/Rs485_prot.c ****   for (data=0; data < maxSize; data++)
+ 1789               	.LM161:
+ 1790 05b6 8981      		ldd r24,Y+1
+ 1791 05b8 8F5F      		subi r24,lo8(-(1))
+ 1792 05ba 8983      		std Y+1,r24
+ 1793               	.L45:
+ 1794 05bc 8981      		ldd r24,Y+1
+ 1795 05be 8F15      		cp r24,r15
+ 1796 05c0 00F0      		brlo .L46
+ 225:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&crcHi, 1) != pdTRUE)
+ 1798               	.LM162:
+ 1799 05c2 CE01      		movw r24,r28
+ 1800 05c4 0296      		adiw r24,2
+ 1801 05c6 61E0      		ldi r22,lo8(1)
+ 1802 05c8 0E94 0000 		call rs485Receive
+ 1803 05cc 8130      		cpi r24,lo8(1)
+ 1804 05ce 01F4      		brne .L57
+ 228:../../freeRtos/Lib/Rs485_prot.c ****   if(xQueueReceive(xRs485Rec, &crcLo, 1) != pdTRUE)
+ 1806               	.LM163:
+ 1807 05d0 8091 0000 		lds r24,xRs485Rec
+ 1808 05d4 9091 0000 		lds r25,xRs485Rec+1
+ 1809 05d8 BE01      		movw r22,r28
+ 1810 05da 6D5F      		subi r22,lo8(-(3))
+ 1811 05dc 7F4F      		sbci r23,hi8(-(3))
+ 1812 05de 41E0      		ldi r20,lo8(1)
+ 1813 05e0 50E0      		ldi r21,hi8(1)
+ 1814 05e2 20E0      		ldi r18,lo8(0)
+ 1815 05e4 0E94 0000 		call xQueueGenericReceive
+ 1816 05e8 8130      		cpi r24,lo8(1)
+ 1817 05ea 01F4      		brne .L58
+ 231:../../freeRtos/Lib/Rs485_prot.c ****   if (crcHi != (uint8_t)(crc>>8))
+ 1819               	.LM164:
+ 1820 05ec 8A81      		ldd r24,Y+2
+ 1821 05ee 8C15      		cp r24,r12
+ 1822 05f0 01F4      		brne .L59
+ 233:../../freeRtos/Lib/Rs485_prot.c ****   if (crcLo != (uint8_t)(crc & 0xFF))
+ 1824               	.LM165:
+ 1825 05f2 8B81      		ldd r24,Y+3
+ 1826 05f4 8E15      		cp r24,r14
+ 1827 05f6 01F0      		breq .L60
+ 234:../../freeRtos/Lib/Rs485_prot.c ****     return 255;
+ 1829               	.LM166:
+ 1830 05f8 8FEF      		ldi r24,lo8(-1)
+ 1831 05fa 00C0      		rjmp .L44
+ 1832               	.L48:
+ 183:../../freeRtos/Lib/Rs485_prot.c ****     return 8;
+ 1834               	.LM167:
+ 1835 05fc 88E0      		ldi r24,lo8(8)
+ 1836 05fe 00C0      		rjmp .L44
+ 1837               	.L49:
+ 186:../../freeRtos/Lib/Rs485_prot.c ****     return 2;
+ 1839               	.LM168:
+ 1840 0600 82E0      		ldi r24,lo8(2)
+ 1841 0602 00C0      		rjmp .L44
+ 1842               	.L50:
+ 191:../../freeRtos/Lib/Rs485_prot.c ****     return 3;
+ 1844               	.LM169:
+ 1845 0604 83E0      		ldi r24,lo8(3)
+ 1846 0606 00C0      		rjmp .L44
+ 1847               	.L51:
+ 194:../../freeRtos/Lib/Rs485_prot.c ****     return 4;
+ 1849               	.LM170:
+ 1850 0608 84E0      		ldi r24,lo8(4)
+ 1851 060a 00C0      		rjmp .L44
+ 1852               	.L52:
+ 200:../../freeRtos/Lib/Rs485_prot.c ****     return 5;
+ 1854               	.LM171:
+ 1855 060c 85E0      		ldi r24,lo8(5)
+ 1856 060e 00C0      		rjmp .L44
+ 1857               	.L53:
+ 202:../../freeRtos/Lib/Rs485_prot.c ****     return 6;
+ 1859               	.LM172:
+ 1860 0610 86E0      		ldi r24,lo8(6)
+ 1861 0612 00C0      		rjmp .L44
+ 1862               	.L54:
+ 207:../../freeRtos/Lib/Rs485_prot.c ****     return 7;
+ 1864               	.LM173:
+ 1865 0614 87E0      		ldi r24,lo8(7)
+ 1866 0616 00C0      		rjmp .L44
+ 1867               	.L55:
+ 209:../../freeRtos/Lib/Rs485_prot.c ****     return 1;
+ 1869               	.LM174:
+ 1870 0618 81E0      		ldi r24,lo8(1)
+ 1871 061a 00C0      		rjmp .L44
+ 1872               	.L56:
+ 218:../../freeRtos/Lib/Rs485_prot.c ****       return 20;
+ 1874               	.LM175:
+ 1875 061c 84E1      		ldi r24,lo8(20)
+ 1876 061e 00C0      		rjmp .L44
+ 1877               	.L57:
+ 226:../../freeRtos/Lib/Rs485_prot.c ****     return 21;
+ 1879               	.LM176:
+ 1880 0620 85E1      		ldi r24,lo8(21)
+ 1881 0622 00C0      		rjmp .L44
+ 1882               	.L58:
+ 229:../../freeRtos/Lib/Rs485_prot.c ****     return 22;
+ 1884               	.LM177:
+ 1885 0624 86E1      		ldi r24,lo8(22)
+ 1886 0626 00C0      		rjmp .L44
+ 1887               	.L59:
+ 232:../../freeRtos/Lib/Rs485_prot.c ****     return 254;
+ 1889               	.LM178:
+ 1890 0628 8EEF      		ldi r24,lo8(-2)
+ 1891 062a 00C0      		rjmp .L44
+ 1892               	.L60:
+ 236:../../freeRtos/Lib/Rs485_prot.c ****   return 0; 
+ 1894               	.LM179:
+ 1895 062c 80E0      		ldi r24,lo8(0)
+ 1896               	.L44:
+ 1897               	.LBE26:
+ 1898               	.LBE27:
+ 329:../../freeRtos/Lib/Rs485_prot.c ****   releaseRs485();
+ 1900               	.LM180:
+ 1901 062e 8C83      		std Y+4,r24
+ 1902 0630 0E94 0000 		call releaseRs485
+ 330:../../freeRtos/Lib/Rs485_prot.c ****   return result;
+ 1904               	.LM181:
+ 1905 0634 8C81      		ldd r24,Y+4
+ 1906 0636 00C0      		rjmp .L41
+ 1907               	.L47:
+ 311:../../freeRtos/Lib/Rs485_prot.c ****       return 1;
+ 1909               	.LM182:
+ 1910 0638 81E0      		ldi r24,lo8(1)
+ 1911               	.L41:
+ 1912               	/* epilogue start */
+ 331:../../freeRtos/Lib/Rs485_prot.c **** }
+ 1914               	.LM183:
+ 1915 063a 2496      		adiw r28,4
+ 1916 063c CDBF      		out __SP_L__,r28
+ 1917 063e DEBF      		out __SP_H__,r29
+ 1918 0640 CF91      		pop r28
+ 1919 0642 DF91      		pop r29
+ 1920 0644 1F91      		pop r17
+ 1921 0646 0F91      		pop r16
+ 1922 0648 FF90      		pop r15
+ 1923 064a EF90      		pop r14
+ 1924 064c DF90      		pop r13
+ 1925 064e CF90      		pop r12
+ 1926 0650 0895      		ret
+ 1950               	.Lscope12:
+ 1952               		.stabd	78,0,0
+ 1953               		.data
+ 1954               	.LC0:
+ 1955 0000 6461 7461 		.string	"data 0x%x "
+ 1955      2030 7825 
+ 1955      7820 00
+ 1956               		.text
+ 1961               	.global	rs485xModemFlash
+ 1963               	rs485xModemFlash:
+ 1964               		.stabd	46,0,0
+ 332:../../freeRtos/Lib/Rs485_prot.c **** 
+ 333:../../freeRtos/Lib/Rs485_prot.c **** 
+ 334:../../freeRtos/Lib/Rs485_prot.c **** uint8_t rs485xModemFlash(struct ramPlikFd *file, uint8_t devAddr, FILE *debugStr)
+ 335:../../freeRtos/Lib/Rs485_prot.c **** {
+ 1966               	.LM184:
+ 1967               	.LFBB13:
+ 1968 0652 4F92      		push r4
+ 1969 0654 5F92      		push r5
+ 1970 0656 7F92      		push r7
+ 1971 0658 8F92      		push r8
+ 1972 065a 9F92      		push r9
+ 1973 065c AF92      		push r10
+ 1974 065e BF92      		push r11
+ 1975 0660 CF92      		push r12
+ 1976 0662 DF92      		push r13
+ 1977 0664 EF92      		push r14
+ 1978 0666 FF92      		push r15
+ 1979 0668 0F93      		push r16
+ 1980 066a 1F93      		push r17
+ 1981 066c DF93      		push r29
+ 1982 066e CF93      		push r28
+ 1983 0670 00D0      		rcall .
+ 1984 0672 CDB7      		in r28,__SP_L__
+ 1985 0674 DEB7      		in r29,__SP_H__
+ 1986               	/* prologue: function */
+ 1987               	/* frame size = 3 */
+ 1988               	/* stack size = 18 */
+ 1989               	.L__stack_usage = 18
+ 1990 0676 2C01      		movw r4,r24
+ 1991 0678 C62E      		mov r12,r22
+ 1992 067a 8A01      		movw r16,r20
+ 336:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc;
+ 337:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t  blad = 0;
+ 338:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t  data;
+ 339:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t  nrBloku;
+ 340:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t  lRetransmisji;
+ 341:../../freeRtos/Lib/Rs485_prot.c ****   
+ 342:../../freeRtos/Lib/Rs485_prot.c ****   takeRs485();                                  // Zajmowanie magistrali Rs485
+ 1994               	.LM185:
+ 1995 067c 0E94 0000 		call takeRs485
+ 343:../../freeRtos/Lib/Rs485_prot.c **** 
+ 344:../../freeRtos/Lib/Rs485_prot.c ****   // Wysyłanie polecenia restartu
+ 345:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(0, SYNC);            uartRs485SendByte(SYNC);
+ 1997               	.LM186:
+ 1998 0680 80E0      		ldi r24,lo8(0)
+ 1999 0682 90E0      		ldi r25,hi8(0)
+ 2000 0684 6AE5      		ldi r22,lo8(90)
+ 2001 0686 0E94 0000 		call _crc_xmodem_update
+ 2002 068a 7C01      		movw r14,r24
+ 2003 068c 8AE5      		ldi r24,lo8(90)
+ 2004 068e 0E94 0000 		call uartRs485SendByte
+ 346:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, devAddr);       uartRs485SendByte(devAddr);
+ 2006               	.LM187:
+ 2007 0692 C701      		movw r24,r14
+ 2008 0694 6C2D      		mov r22,r12
+ 2009 0696 0E94 0000 		call _crc_xmodem_update
+ 2010 069a 7C01      		movw r14,r24
+ 2011 069c 8C2D      		mov r24,r12
+ 2012 069e 0E94 0000 		call uartRs485SendByte
+ 347:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, rFLASH);        uartRs485SendByte(rFLASH);
+ 2014               	.LM188:
+ 2015 06a2 C701      		movw r24,r14
+ 2016 06a4 61E8      		ldi r22,lo8(-127)
+ 2017 06a6 0E94 0000 		call _crc_xmodem_update
+ 2018 06aa 7C01      		movw r14,r24
+ 2019 06ac 81E8      		ldi r24,lo8(-127)
+ 2020 06ae 0E94 0000 		call uartRs485SendByte
+ 348:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, 1);             uartRs485SendByte(1);
+ 2022               	.LM189:
+ 2023 06b2 C701      		movw r24,r14
+ 2024 06b4 61E0      		ldi r22,lo8(1)
+ 2025 06b6 0E94 0000 		call _crc_xmodem_update
+ 2026 06ba 7C01      		movw r14,r24
+ 2027 06bc 81E0      		ldi r24,lo8(1)
+ 2028 06be 0E94 0000 		call uartRs485SendByte
+ 349:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, devAddr);       uartRs485SendByte(devAddr);
+ 2030               	.LM190:
+ 2031 06c2 C701      		movw r24,r14
+ 2032 06c4 6C2D      		mov r22,r12
+ 2033 06c6 0E94 0000 		call _crc_xmodem_update
+ 2034 06ca E82E      		mov r14,r24
+ 2035 06cc 8C2D      		mov r24,r12
+ 2036 06ce 9B83      		std Y+3,r25
+ 2037 06d0 0E94 0000 		call uartRs485SendByte
+ 350:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc>>8));
+ 2039               	.LM191:
+ 2040 06d4 9B81      		ldd r25,Y+3
+ 2041 06d6 892F      		mov r24,r25
+ 2042 06d8 0E94 0000 		call uartRs485SendByte
+ 351:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 2044               	.LM192:
+ 2045 06dc 8E2D      		mov r24,r14
+ 2046 06de 0E94 0000 		call uartRs485SendByte
+ 352:../../freeRtos/Lib/Rs485_prot.c ****  
+ 353:../../freeRtos/Lib/Rs485_prot.c **** 
+ 354:../../freeRtos/Lib/Rs485_prot.c ****   // Odbieranie odpowiedzi po wysłaniu polecenia restartu
+ 355:../../freeRtos/Lib/Rs485_prot.c ****   //Odbieranie SYNC lub C
+ 356:../../freeRtos/Lib/Rs485_prot.c ****   if(rs485Receive(&data, 100) != pdTRUE)
+ 2048               	.LM193:
+ 2049 06e2 CE01      		movw r24,r28
+ 2050 06e4 0196      		adiw r24,1
+ 2051 06e6 64E6      		ldi r22,lo8(100)
+ 2052 06e8 0E94 0000 		call rs485Receive
+ 2053 06ec 8130      		cpi r24,lo8(1)
+ 2054 06ee 01F0      		breq .L98
+ 357:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 358:../../freeRtos/Lib/Rs485_prot.c ****     blad = 1;                                  // Timeout
+ 359:../../freeRtos/Lib/Rs485_prot.c ****     if (debugStr != NULL)
+ 2056               	.LM194:
+ 2057 06f0 0115      		cp r16,__zero_reg__
+ 2058 06f2 1105      		cpc r17,__zero_reg__
+ 2059 06f4 01F0      		breq .L99
+ 360:../../freeRtos/Lib/Rs485_prot.c ****       fprintf_P(debugStr, PSTR("rFLASH timeout\r\n"));
+ 2061               	.LM195:
+ 2062 06f6 00D0      		rcall .
+ 2063 06f8 0F92      		push __tmp_reg__
+ 2064 06fa ADB7      		in r26,__SP_L__
+ 2065 06fc BEB7      		in r27,__SP_H__
+ 2066 06fe 1196      		adiw r26,1
+ 2067 0700 0D93      		st X+,r16
+ 2068 0702 1C93      		st X,r17
+ 2069 0704 1297      		sbiw r26,1+1
+ 2070 0706 80E0      		ldi r24,lo8(__c.5027)
+ 2071 0708 90E0      		ldi r25,hi8(__c.5027)
+ 2072 070a 1396      		adiw r26,3
+ 2073 070c 8D93      		st X+,r24
+ 2074 070e 9C93      		st X,r25
+ 2075 0710 1497      		sbiw r26,3+1
+ 2076 0712 0E94 0000 		call fprintf_P
+ 2077 0716 0F90      		pop __tmp_reg__
+ 2078 0718 0F90      		pop __tmp_reg__
+ 2079 071a 0F90      		pop __tmp_reg__
+ 2080 071c 0F90      		pop __tmp_reg__
+ 2081 071e 00C0      		rjmp .L99
+ 2082               	.L98:
+ 337:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t  blad = 0;
+ 2084               	.LM196:
+ 2085 0720 AA24      		clr r10
+ 2086 0722 00C0      		rjmp .L64
+ 2087               	.L99:
+ 358:../../freeRtos/Lib/Rs485_prot.c ****     blad = 1;                                  // Timeout
+ 2089               	.LM197:
+ 2090 0724 AA24      		clr r10
+ 2091 0726 A394      		inc r10
+ 2092               	.L64:
+ 361:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 362:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(0, data);
+ 2094               	.LM198:
+ 2095 0728 80E0      		ldi r24,lo8(0)
+ 2096 072a 90E0      		ldi r25,hi8(0)
+ 2097 072c 6981      		ldd r22,Y+1
+ 2098 072e 0E94 0000 		call _crc_xmodem_update
+ 2099 0732 7C01      		movw r14,r24
+ 363:../../freeRtos/Lib/Rs485_prot.c ****  
+ 364:../../freeRtos/Lib/Rs485_prot.c ****   if ((blad == 0) && (data == 'C'))
+ 2101               	.LM199:
+ 2102 0734 AA20      		tst r10
+ 2103 0736 01F4      		brne .L65
+ 2105               	.LM200:
+ 2106 0738 8981      		ldd r24,Y+1
+ 2107 073a 8334      		cpi r24,lo8(67)
+ 2108 073c 01F4      		brne .L65
+ 365:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 366:../../freeRtos/Lib/Rs485_prot.c ****     blad = 253;                                //Na urządzeniu jest wgrany tylko bootloader
+ 367:../../freeRtos/Lib/Rs485_prot.c ****     if (debugStr != NULL)
+ 2110               	.LM201:
+ 2111 073e 0115      		cp r16,__zero_reg__
+ 2112 0740 1105      		cpc r17,__zero_reg__
+ 2113 0742 01F4      		brne .+2
+ 2114 0744 00C0      		rjmp .L95
+ 368:../../freeRtos/Lib/Rs485_prot.c ****       fprintf_P(debugStr, PSTR("na urzadzeniu wgrany jest tylko bootloader\r\n"));    
+ 2116               	.LM202:
+ 2117 0746 00D0      		rcall .
+ 2118 0748 0F92      		push __tmp_reg__
+ 2119 074a EDB7      		in r30,__SP_L__
+ 2120 074c FEB7      		in r31,__SP_H__
+ 2121 074e 0183      		std Z+1,r16
+ 2122 0750 1283      		std Z+2,r17
+ 2123 0752 80E0      		ldi r24,lo8(__c.5029)
+ 2124 0754 90E0      		ldi r25,hi8(__c.5029)
+ 2125 0756 8383      		std Z+3,r24
+ 2126 0758 9483      		std Z+4,r25
+ 2127 075a 0E94 0000 		call fprintf_P
+ 2128 075e 0F90      		pop __tmp_reg__
+ 2129 0760 0F90      		pop __tmp_reg__
+ 2130 0762 0F90      		pop __tmp_reg__
+ 2131 0764 0F90      		pop __tmp_reg__
+ 2132 0766 00C0      		rjmp .L95
+ 2133               	.L65:
+ 369:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 370:../../freeRtos/Lib/Rs485_prot.c ****   else
+ 371:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 372:../../freeRtos/Lib/Rs485_prot.c ****     if (data != SYNC)
+ 2135               	.LM203:
+ 2136 0768 8981      		ldd r24,Y+1
+ 2137 076a 8A35      		cpi r24,lo8(90)
+ 2138 076c 01F0      		breq .+2
+ 2139 076e 00C0      		rjmp .L94
+ 373:../../freeRtos/Lib/Rs485_prot.c ****       blad = 2;
+ 374:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 375:../../freeRtos/Lib/Rs485_prot.c ****  
+ 376:../../freeRtos/Lib/Rs485_prot.c ****   //Odbieranie odpowiedzi programu. Program zresetuje się by uruchomić bootloadera.
+ 377:../../freeRtos/Lib/Rs485_prot.c ****   //Odbieranie adresu
+ 378:../../freeRtos/Lib/Rs485_prot.c ****   if (blad == 0)  //Odbieranie adresu (powinno być 0)
+ 2141               	.LM204:
+ 2142 0770 AA20      		tst r10
+ 2143 0772 01F0      		breq .+2
+ 2144 0774 00C0      		rjmp .L94
+ 379:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 380:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 1) != pdTRUE)
+ 2146               	.LM205:
+ 2147 0776 CE01      		movw r24,r28
+ 2148 0778 0196      		adiw r24,1
+ 2149 077a 61E0      		ldi r22,lo8(1)
+ 2150 077c 0E94 0000 		call rs485Receive
+ 2151 0780 8130      		cpi r24,lo8(1)
+ 2152 0782 01F4      		brne .L103
+ 381:../../freeRtos/Lib/Rs485_prot.c ****       blad = 3;
+ 382:../../freeRtos/Lib/Rs485_prot.c ****     else
+ 383:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 384:../../freeRtos/Lib/Rs485_prot.c ****       if (data != 0)
+ 2154               	.LM206:
+ 2155 0784 8981      		ldd r24,Y+1
+ 2156 0786 8823      		tst r24
+ 2157 0788 01F4      		brne .L104
+ 2158 078a 00C0      		rjmp .L68
+ 2159               	.L103:
+ 381:../../freeRtos/Lib/Rs485_prot.c ****       blad = 3;
+ 2161               	.LM207:
+ 2162 078c 33E0      		ldi r19,lo8(3)
+ 2163 078e A32E      		mov r10,r19
+ 2164 0790 00C0      		rjmp .L68
+ 2165               	.L104:
+ 385:../../freeRtos/Lib/Rs485_prot.c ****         blad = 4;
+ 2167               	.LM208:
+ 2168 0792 24E0      		ldi r18,lo8(4)
+ 2169 0794 A22E      		mov r10,r18
+ 2170               	.L68:
+ 386:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 387:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, data);
+ 2172               	.LM209:
+ 2173 0796 C701      		movw r24,r14
+ 2174 0798 6981      		ldd r22,Y+1
+ 2175 079a 0E94 0000 		call _crc_xmodem_update
+ 2176 079e 7C01      		movw r14,r24
+ 388:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 389:../../freeRtos/Lib/Rs485_prot.c ****    
+ 390:../../freeRtos/Lib/Rs485_prot.c ****   //Odbieranie kodu rozkazu
+ 391:../../freeRtos/Lib/Rs485_prot.c ****   if (blad == 0)
+ 2178               	.LM210:
+ 2179 07a0 AA20      		tst r10
+ 2180 07a2 01F0      		breq .+2
+ 2181 07a4 00C0      		rjmp .L94
+ 392:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 393:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 1) != pdTRUE)
+ 2183               	.LM211:
+ 2184 07a6 CE01      		movw r24,r28
+ 2185 07a8 0196      		adiw r24,1
+ 2186 07aa 61E0      		ldi r22,lo8(1)
+ 2187 07ac 0E94 0000 		call rs485Receive
+ 2188 07b0 8130      		cpi r24,lo8(1)
+ 2189 07b2 01F4      		brne .L105
+ 394:../../freeRtos/Lib/Rs485_prot.c ****       blad = 5;
+ 395:../../freeRtos/Lib/Rs485_prot.c ****     else
+ 396:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 397:../../freeRtos/Lib/Rs485_prot.c ****       if (data != rFLASH)
+ 2191               	.LM212:
+ 2192 07b4 8981      		ldd r24,Y+1
+ 2193 07b6 8138      		cpi r24,lo8(-127)
+ 2194 07b8 01F4      		brne .L106
+ 2195 07ba 00C0      		rjmp .L70
+ 2196               	.L105:
+ 394:../../freeRtos/Lib/Rs485_prot.c ****       blad = 5;
+ 2198               	.LM213:
+ 2199 07bc 95E0      		ldi r25,lo8(5)
+ 2200 07be A92E      		mov r10,r25
+ 2201 07c0 00C0      		rjmp .L70
+ 2202               	.L106:
+ 398:../../freeRtos/Lib/Rs485_prot.c ****         blad = 6;
+ 2204               	.LM214:
+ 2205 07c2 86E0      		ldi r24,lo8(6)
+ 2206 07c4 A82E      		mov r10,r24
+ 2207               	.L70:
+ 399:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 400:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, data);
+ 2209               	.LM215:
+ 2210 07c6 C701      		movw r24,r14
+ 2211 07c8 6981      		ldd r22,Y+1
+ 2212 07ca 0E94 0000 		call _crc_xmodem_update
+ 2213 07ce 7C01      		movw r14,r24
+ 401:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 402:../../freeRtos/Lib/Rs485_prot.c ****  
+ 403:../../freeRtos/Lib/Rs485_prot.c ****   //Odbieranie długości danych w rozkazie
+ 404:../../freeRtos/Lib/Rs485_prot.c ****   if (blad == 0)
+ 2215               	.LM216:
+ 2216 07d0 AA20      		tst r10
+ 2217 07d2 01F0      		breq .+2
+ 2218 07d4 00C0      		rjmp .L94
+ 405:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 406:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 1) != pdTRUE)
+ 2220               	.LM217:
+ 2221 07d6 CE01      		movw r24,r28
+ 2222 07d8 0196      		adiw r24,1
+ 2223 07da 61E0      		ldi r22,lo8(1)
+ 2224 07dc 0E94 0000 		call rs485Receive
+ 2225 07e0 8130      		cpi r24,lo8(1)
+ 2226 07e2 01F4      		brne .L107
+ 407:../../freeRtos/Lib/Rs485_prot.c ****       blad = 7;
+ 408:../../freeRtos/Lib/Rs485_prot.c ****     else
+ 409:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 410:../../freeRtos/Lib/Rs485_prot.c ****       if (data != 1)
+ 2228               	.LM218:
+ 2229 07e4 8981      		ldd r24,Y+1
+ 2230 07e6 8130      		cpi r24,lo8(1)
+ 2231 07e8 01F4      		brne .L108
+ 2232 07ea 00C0      		rjmp .L72
+ 2233               	.L107:
+ 407:../../freeRtos/Lib/Rs485_prot.c ****       blad = 7;
+ 2235               	.LM219:
+ 2236 07ec B7E0      		ldi r27,lo8(7)
+ 2237 07ee AB2E      		mov r10,r27
+ 2238 07f0 00C0      		rjmp .L72
+ 2239               	.L108:
+ 411:../../freeRtos/Lib/Rs485_prot.c ****         blad = 8;
+ 2241               	.LM220:
+ 2242 07f2 A8E0      		ldi r26,lo8(8)
+ 2243 07f4 AA2E      		mov r10,r26
+ 2244               	.L72:
+ 412:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 413:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, data);
+ 2246               	.LM221:
+ 2247 07f6 C701      		movw r24,r14
+ 2248 07f8 6981      		ldd r22,Y+1
+ 2249 07fa 0E94 0000 		call _crc_xmodem_update
+ 2250 07fe 7C01      		movw r14,r24
+ 414:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 415:../../freeRtos/Lib/Rs485_prot.c ****  
+ 416:../../freeRtos/Lib/Rs485_prot.c ****   //Odbieranie danych w rozkazie
+ 417:../../freeRtos/Lib/Rs485_prot.c ****   if (blad == 0)
+ 2252               	.LM222:
+ 2253 0800 AA20      		tst r10
+ 2254 0802 01F4      		brne .L94
+ 418:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 419:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 1) != pdTRUE)
+ 2256               	.LM223:
+ 2257 0804 CE01      		movw r24,r28
+ 2258 0806 0196      		adiw r24,1
+ 2259 0808 61E0      		ldi r22,lo8(1)
+ 2260 080a 0E94 0000 		call rs485Receive
+ 2261 080e 8130      		cpi r24,lo8(1)
+ 2262 0810 01F4      		brne .L109
+ 420:../../freeRtos/Lib/Rs485_prot.c ****       blad = 9;
+ 421:../../freeRtos/Lib/Rs485_prot.c ****     else
+ 422:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 423:../../freeRtos/Lib/Rs485_prot.c ****       if (data != devAddr)
+ 2264               	.LM224:
+ 2265 0812 8981      		ldd r24,Y+1
+ 2266 0814 8C15      		cp r24,r12
+ 2267 0816 01F4      		brne .L110
+ 2268 0818 00C0      		rjmp .L74
+ 2269               	.L109:
+ 420:../../freeRtos/Lib/Rs485_prot.c ****       blad = 9;
+ 2271               	.LM225:
+ 2272 081a F9E0      		ldi r31,lo8(9)
+ 2273 081c AF2E      		mov r10,r31
+ 2274 081e 00C0      		rjmp .L74
+ 2275               	.L110:
+ 424:../../freeRtos/Lib/Rs485_prot.c ****         blad = 10;
+ 2277               	.LM226:
+ 2278 0820 EAE0      		ldi r30,lo8(10)
+ 2279 0822 AE2E      		mov r10,r30
+ 2280               	.L74:
+ 425:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 426:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, data);
+ 2282               	.LM227:
+ 2283 0824 C701      		movw r24,r14
+ 2284 0826 6981      		ldd r22,Y+1
+ 2285 0828 0E94 0000 		call _crc_xmodem_update
+ 2286 082c 982E      		mov r9,r24
+ 2287 082e 892E      		mov r8,r25
+ 427:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 428:../../freeRtos/Lib/Rs485_prot.c ****    
+ 429:../../freeRtos/Lib/Rs485_prot.c ****   //Odbieranie CRC Hi
+ 430:../../freeRtos/Lib/Rs485_prot.c ****   if (blad == 0)
+ 2289               	.LM228:
+ 2290 0830 AA20      		tst r10
+ 2291 0832 01F4      		brne .L94
+ 431:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 432:../../freeRtos/Lib/Rs485_prot.c ****     if (rs485Receive(&nrBloku, 1) != pdTRUE)
+ 2293               	.LM229:
+ 2294 0834 72E0      		ldi r23,lo8(2)
+ 2295 0836 E72E      		mov r14,r23
+ 2296 0838 F12C      		mov r15,__zero_reg__
+ 2297 083a EC0E      		add r14,r28
+ 2298 083c FD1E      		adc r15,r29
+ 2299 083e C701      		movw r24,r14
+ 2300 0840 61E0      		ldi r22,lo8(1)
+ 2301 0842 0E94 0000 		call rs485Receive
+ 2302 0846 8130      		cpi r24,lo8(1)
+ 2303 0848 01F4      		brne .L94
+ 433:../../freeRtos/Lib/Rs485_prot.c ****       blad = 11;
+ 434:../../freeRtos/Lib/Rs485_prot.c ****     else
+ 435:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 436:../../freeRtos/Lib/Rs485_prot.c ****       if ((uint8_t)(crc>>8) != nrBloku)
+ 2305               	.LM230:
+ 2306 084a 8A81      		ldd r24,Y+2
+ 2307 084c 8815      		cp r24,r8
+ 2308 084e 01F4      		brne .L94
+ 2309 0850 00C0      		rjmp .L121
+ 2310               	.L124:
+ 437:../../freeRtos/Lib/Rs485_prot.c ****         blad = 12;
+ 438:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 439:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 440:../../freeRtos/Lib/Rs485_prot.c ****    
+ 441:../../freeRtos/Lib/Rs485_prot.c ****   //Odbieranie CRC Lo
+ 442:../../freeRtos/Lib/Rs485_prot.c ****   if (blad == 0)
+ 443:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 444:../../freeRtos/Lib/Rs485_prot.c ****     if (rs485Receive(&nrBloku, 1) != pdTRUE)
+ 445:../../freeRtos/Lib/Rs485_prot.c ****       blad = 13;
+ 446:../../freeRtos/Lib/Rs485_prot.c ****     else
+ 447:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 448:../../freeRtos/Lib/Rs485_prot.c ****       if ((uint8_t)(crc & 0xFF) != nrBloku)
+ 2312               	.LM231:
+ 2313 0852 8A81      		ldd r24,Y+2
+ 2314 0854 8915      		cp r24,r9
+ 2315 0856 01F4      		brne .+2
+ 2316 0858 00C0      		rjmp .L77
+ 2317               	.L94:
+ 449:../../freeRtos/Lib/Rs485_prot.c ****         blad = 14;
+ 450:../../freeRtos/Lib/Rs485_prot.c ****     }    
+ 451:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 452:../../freeRtos/Lib/Rs485_prot.c ****    
+ 453:../../freeRtos/Lib/Rs485_prot.c ****   if ((blad != 0) && (blad != 253))
+ 454:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 455:../../freeRtos/Lib/Rs485_prot.c ****     releaseRs485();
+ 2319               	.LM232:
+ 2320 085a 0E94 0000 		call releaseRs485
+ 456:../../freeRtos/Lib/Rs485_prot.c ****     flushRs485RecBuffer();  
+ 2322               	.LM233:
+ 2323 085e 0E94 0000 		call flushRs485RecBuffer
+ 2324 0862 00C0      		rjmp .L120
+ 2325               	.L95:
+ 457:../../freeRtos/Lib/Rs485_prot.c ****     return 1;
+ 458:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 459:../../freeRtos/Lib/Rs485_prot.c **** 
+ 460:../../freeRtos/Lib/Rs485_prot.c **** // Wysyłanie polecenia do bootloadera
+ 461:../../freeRtos/Lib/Rs485_prot.c ****   if (blad == 0)
+ 462:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 463:../../freeRtos/Lib/Rs485_prot.c ****     vTaskDelay(100);
+ 464:../../freeRtos/Lib/Rs485_prot.c ****      
+ 465:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(0, SYNC);            uartRs485SendByte(SYNC);
+ 466:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, devAddr);       uartRs485SendByte(devAddr);
+ 467:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, rFLASH);        uartRs485SendByte(rFLASH);
+ 468:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, 1);             uartRs485SendByte(1);
+ 469:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, devAddr);       uartRs485SendByte(devAddr);
+ 470:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte((uint8_t)(crc>>8));
+ 471:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 472:../../freeRtos/Lib/Rs485_prot.c ****  
+ 473:../../freeRtos/Lib/Rs485_prot.c ****     //Odbieranie odpowiedzi od Bootloadera
+ 474:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 150) != pdTRUE)
+ 475:../../freeRtos/Lib/Rs485_prot.c ****       blad = 15;
+ 476:../../freeRtos/Lib/Rs485_prot.c **** 
+ 477:../../freeRtos/Lib/Rs485_prot.c ****     if (data != 'C')
+ 478:../../freeRtos/Lib/Rs485_prot.c ****       blad = 16;
+ 479:../../freeRtos/Lib/Rs485_prot.c ****     else
+ 480:../../freeRtos/Lib/Rs485_prot.c ****       blad = 0;
+ 481:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 482:../../freeRtos/Lib/Rs485_prot.c ****   else
+ 483:../../freeRtos/Lib/Rs485_prot.c ****     blad = 0;
+ 484:../../freeRtos/Lib/Rs485_prot.c ****   
+ 485:../../freeRtos/Lib/Rs485_prot.c ****    
+ 486:../../freeRtos/Lib/Rs485_prot.c ****   if (blad != 0)
+ 487:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 488:../../freeRtos/Lib/Rs485_prot.c ****     releaseRs485();
+ 489:../../freeRtos/Lib/Rs485_prot.c ****     flushRs485RecBuffer();  
+ 490:../../freeRtos/Lib/Rs485_prot.c ****     if (debugStr != NULL)
+ 491:../../freeRtos/Lib/Rs485_prot.c ****       fprintf_P(debugStr, PSTR("bootloader nie rozpoczal odbioru danych\r\n"));     
+ 492:../../freeRtos/Lib/Rs485_prot.c ****     return 1;
+ 493:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 494:../../freeRtos/Lib/Rs485_prot.c ****  
+ 495:../../freeRtos/Lib/Rs485_prot.c ****   uint8_t liczbaBlokow = file->wpis->rozmiarHi * 2;
+ 2327               	.LM234:
+ 2328 0864 D201      		movw r26,r4
+ 2329 0866 1496      		adiw r26,4
+ 2330 0868 ED91      		ld r30,X+
+ 2331 086a FC91      		ld r31,X
+ 2332 086c 1597      		sbiw r26,4+1
+ 2333 086e 7280      		ldd r7,Z+2
+ 2334 0870 770C      		lsl r7
+ 496:../../freeRtos/Lib/Rs485_prot.c ****   if (file->wpis->rozmiarLo == 128)
+ 2336               	.LM235:
+ 2337 0872 8181      		ldd r24,Z+1
+ 2338 0874 8038      		cpi r24,lo8(-128)
+ 2339 0876 01F4      		brne .L80
+ 2340 0878 00C0      		rjmp .L122
+ 2341               	.L97:
+ 491:../../freeRtos/Lib/Rs485_prot.c ****       fprintf_P(debugStr, PSTR("bootloader nie rozpoczal odbioru danych\r\n"));     
+ 2343               	.LM236:
+ 2344 087a 00D0      		rcall .
+ 2345 087c 0F92      		push __tmp_reg__
+ 2346 087e EDB7      		in r30,__SP_L__
+ 2347 0880 FEB7      		in r31,__SP_H__
+ 2348 0882 0183      		std Z+1,r16
+ 2349 0884 1283      		std Z+2,r17
+ 2350 0886 80E0      		ldi r24,lo8(__c.5031)
+ 2351 0888 90E0      		ldi r25,hi8(__c.5031)
+ 2352 088a 8383      		std Z+3,r24
+ 2353 088c 9483      		std Z+4,r25
+ 2354 088e 0E94 0000 		call fprintf_P
+ 2355 0892 0F90      		pop __tmp_reg__
+ 2356 0894 0F90      		pop __tmp_reg__
+ 2357 0896 0F90      		pop __tmp_reg__
+ 2358 0898 0F90      		pop __tmp_reg__
+ 2359 089a 00C0      		rjmp .L120
+ 2360               	.L122:
+ 497:../../freeRtos/Lib/Rs485_prot.c ****     liczbaBlokow++;
+ 2362               	.LM237:
+ 2363 089c 7394      		inc r7
+ 2364               	.L80:
+ 498:../../freeRtos/Lib/Rs485_prot.c ****    
+ 499:../../freeRtos/Lib/Rs485_prot.c ****   nrBloku = 1;
+ 2366               	.LM238:
+ 2367 089e 81E0      		ldi r24,lo8(1)
+ 2368 08a0 8A83      		std Y+2,r24
+ 500:../../freeRtos/Lib/Rs485_prot.c ****   lRetransmisji = 0;
+ 2370               	.LM239:
+ 2371 08a2 8824      		clr r8
+ 501:../../freeRtos/Lib/Rs485_prot.c ****    
+ 502:../../freeRtos/Lib/Rs485_prot.c ****   while (nrBloku <= liczbaBlokow)
+ 2373               	.LM240:
+ 2374 08a4 9924      		clr r9
+ 503:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 504:../../freeRtos/Lib/Rs485_prot.c ****     crc = 0;
+ 505:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(SOH);
+ 506:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(nrBloku);
+ 507:../../freeRtos/Lib/Rs485_prot.c ****     data = (uint8_t)(~nrBloku);
+ 508:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(data);
+ 509:../../freeRtos/Lib/Rs485_prot.c ****  
+ 510:../../freeRtos/Lib/Rs485_prot.c ****     for (blad = 0; blad < 128; blad++)           //wysyłanie danych. Zmianna Blad jest tymczasowa
+ 511:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 512:../../freeRtos/Lib/Rs485_prot.c ****       if (ramDyskCzytajBajtZPliku(file, &data) != 0)
+ 2376               	.LM241:
+ 2377 08a6 6E01      		movw r12,r28
+ 2378 08a8 0894      		sec
+ 2379 08aa C11C      		adc r12,__zero_reg__
+ 2380 08ac D11C      		adc r13,__zero_reg__
+ 513:../../freeRtos/Lib/Rs485_prot.c ****         data = 0;
+ 514:../../freeRtos/Lib/Rs485_prot.c ****       crc = _crc_xmodem_update(crc, data);
+ 515:../../freeRtos/Lib/Rs485_prot.c ****       uartRs485SendByte(data);
+ 516:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 517:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte((uint8_t)(crc>>8));
+ 518:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 519:../../freeRtos/Lib/Rs485_prot.c ****  
+ 520:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 100) != pdTRUE)
+ 521:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 522:../../freeRtos/Lib/Rs485_prot.c ****       blad = 250;
+ 523:../../freeRtos/Lib/Rs485_prot.c ****       if (debugStr != NULL)
+ 524:../../freeRtos/Lib/Rs485_prot.c ****         fputc('#', debugStr);
+ 525:../../freeRtos/Lib/Rs485_prot.c ****       data = 0;
+ 526:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 527:../../freeRtos/Lib/Rs485_prot.c ****      
+ 528:../../freeRtos/Lib/Rs485_prot.c ****     flushRs485RecBuffer();
+ 529:../../freeRtos/Lib/Rs485_prot.c **** 
+ 530:../../freeRtos/Lib/Rs485_prot.c ****     if (data == ACK)
+ 531:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 532:../../freeRtos/Lib/Rs485_prot.c ****       nrBloku ++;
+ 533:../../freeRtos/Lib/Rs485_prot.c ****       lRetransmisji = 0;
+ 534:../../freeRtos/Lib/Rs485_prot.c ****       blad = 0;
+ 535:../../freeRtos/Lib/Rs485_prot.c ****       if (debugStr != NULL)
+ 536:../../freeRtos/Lib/Rs485_prot.c ****       {
+ 537:../../freeRtos/Lib/Rs485_prot.c ****         fputc('.', debugStr);
+ 538:../../freeRtos/Lib/Rs485_prot.c ****         if ((nrBloku & 0x0F) == 0)
+ 539:../../freeRtos/Lib/Rs485_prot.c ****         {
+ 540:../../freeRtos/Lib/Rs485_prot.c ****           fputc('\r', debugStr);
+ 541:../../freeRtos/Lib/Rs485_prot.c ****           fputc('\n', debugStr);      
+ 542:../../freeRtos/Lib/Rs485_prot.c ****         }
+ 543:../../freeRtos/Lib/Rs485_prot.c ****       }
+ 544:../../freeRtos/Lib/Rs485_prot.c ****       continue;
+ 545:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 546:../../freeRtos/Lib/Rs485_prot.c ****  
+ 547:../../freeRtos/Lib/Rs485_prot.c ****     if (data == CAN)
+ 548:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 549:../../freeRtos/Lib/Rs485_prot.c ****       if (debugStr != NULL)
+ 550:../../freeRtos/Lib/Rs485_prot.c ****         fputc('C', debugStr);
+ 551:../../freeRtos/Lib/Rs485_prot.c ****       blad = 249;
+ 552:../../freeRtos/Lib/Rs485_prot.c ****       break;
+ 553:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 554:../../freeRtos/Lib/Rs485_prot.c ****     
+ 555:../../freeRtos/Lib/Rs485_prot.c ****     if (debugStr != NULL)
+ 556:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 557:../../freeRtos/Lib/Rs485_prot.c ****       if (data == NAK)
+ 558:../../freeRtos/Lib/Rs485_prot.c ****         fputc('N', debugStr);
+ 559:../../freeRtos/Lib/Rs485_prot.c ****       if (data != 0)
+ 560:../../freeRtos/Lib/Rs485_prot.c ****         fprintf(debugStr, "data 0x%x ", data);                    
+ 2382               	.LM242:
+ 2383 08ae 60E0      		ldi r22,lo8(.LC0)
+ 2384 08b0 A62E      		mov r10,r22
+ 2385 08b2 60E0      		ldi r22,hi8(.LC0)
+ 2386 08b4 B62E      		mov r11,r22
+ 502:../../freeRtos/Lib/Rs485_prot.c ****   while (nrBloku <= liczbaBlokow)
+ 2388               	.LM243:
+ 2389 08b6 00C0      		rjmp .L118
+ 2390               	.L92:
+ 505:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(SOH);
+ 2392               	.LM244:
+ 2393 08b8 81E0      		ldi r24,lo8(1)
+ 2394 08ba 0E94 0000 		call uartRs485SendByte
+ 506:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(nrBloku);
+ 2396               	.LM245:
+ 2397 08be 8A81      		ldd r24,Y+2
+ 2398 08c0 0E94 0000 		call uartRs485SendByte
+ 507:../../freeRtos/Lib/Rs485_prot.c ****     data = (uint8_t)(~nrBloku);
+ 2400               	.LM246:
+ 2401 08c4 8A81      		ldd r24,Y+2
+ 2402 08c6 8095      		com r24
+ 2403 08c8 8983      		std Y+1,r24
+ 508:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(data);
+ 2405               	.LM247:
+ 2406 08ca 0E94 0000 		call uartRs485SendByte
+ 510:../../freeRtos/Lib/Rs485_prot.c ****     for (blad = 0; blad < 128; blad++)           //wysyłanie danych. Zmianna Blad jest tymczasowa
+ 2408               	.LM248:
+ 2409 08ce 9924      		clr r9
+ 504:../../freeRtos/Lib/Rs485_prot.c ****     crc = 0;
+ 2411               	.LM249:
+ 2412 08d0 EE24      		clr r14
+ 2413 08d2 FF24      		clr r15
+ 2414               	.L83:
+ 512:../../freeRtos/Lib/Rs485_prot.c ****       if (ramDyskCzytajBajtZPliku(file, &data) != 0)
+ 2416               	.LM250:
+ 2417 08d4 C201      		movw r24,r4
+ 2418 08d6 B601      		movw r22,r12
+ 2419 08d8 0E94 0000 		call ramDyskCzytajBajtZPliku
+ 2420 08dc 8111      		cpse r24,__zero_reg__
+ 513:../../freeRtos/Lib/Rs485_prot.c ****         data = 0;
+ 2422               	.LM251:
+ 2423 08de 1982      		std Y+1,__zero_reg__
+ 2424               	.L82:
+ 514:../../freeRtos/Lib/Rs485_prot.c ****       crc = _crc_xmodem_update(crc, data);
+ 2426               	.LM252:
+ 2427 08e0 C701      		movw r24,r14
+ 2428 08e2 6981      		ldd r22,Y+1
+ 2429 08e4 0E94 0000 		call _crc_xmodem_update
+ 2430 08e8 7C01      		movw r14,r24
+ 515:../../freeRtos/Lib/Rs485_prot.c ****       uartRs485SendByte(data);
+ 2432               	.LM253:
+ 2433 08ea 8981      		ldd r24,Y+1
+ 2434 08ec 0E94 0000 		call uartRs485SendByte
+ 510:../../freeRtos/Lib/Rs485_prot.c ****     for (blad = 0; blad < 128; blad++)           //wysyłanie danych. Zmianna Blad jest tymczasowa
+ 2436               	.LM254:
+ 2437 08f0 9394      		inc r9
+ 2438 08f2 F92D      		mov r31,r9
+ 2439 08f4 F038      		cpi r31,lo8(-128)
+ 2440 08f6 01F4      		brne .L83
+ 517:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte((uint8_t)(crc>>8));
+ 2442               	.LM255:
+ 2443 08f8 8F2D      		mov r24,r15
+ 2444 08fa 0E94 0000 		call uartRs485SendByte
+ 518:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 2446               	.LM256:
+ 2447 08fe 8E2D      		mov r24,r14
+ 2448 0900 0E94 0000 		call uartRs485SendByte
+ 520:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 100) != pdTRUE)
+ 2450               	.LM257:
+ 2451 0904 C601      		movw r24,r12
+ 2452 0906 64E6      		ldi r22,lo8(100)
+ 2453 0908 0E94 0000 		call rs485Receive
+ 2454 090c 8130      		cpi r24,lo8(1)
+ 2455 090e 01F0      		breq .L84
+ 523:../../freeRtos/Lib/Rs485_prot.c ****       if (debugStr != NULL)
+ 2457               	.LM258:
+ 2458 0910 0115      		cp r16,__zero_reg__
+ 2459 0912 1105      		cpc r17,__zero_reg__
+ 2460 0914 01F0      		breq .L85
+ 524:../../freeRtos/Lib/Rs485_prot.c ****         fputc('#', debugStr);
+ 2462               	.LM259:
+ 2463 0916 83E2      		ldi r24,lo8(35)
+ 2464 0918 90E0      		ldi r25,hi8(35)
+ 2465 091a B801      		movw r22,r16
+ 2466 091c 0E94 0000 		call fputc
+ 2467               	.L85:
+ 525:../../freeRtos/Lib/Rs485_prot.c ****       data = 0;
+ 2469               	.LM260:
+ 2470 0920 1982      		std Y+1,__zero_reg__
+ 522:../../freeRtos/Lib/Rs485_prot.c ****       blad = 250;
+ 2472               	.LM261:
+ 2473 0922 5AEF      		ldi r21,lo8(-6)
+ 2474 0924 952E      		mov r9,r21
+ 2475               	.L84:
+ 528:../../freeRtos/Lib/Rs485_prot.c ****     flushRs485RecBuffer();
+ 2477               	.LM262:
+ 2478 0926 0E94 0000 		call flushRs485RecBuffer
+ 530:../../freeRtos/Lib/Rs485_prot.c ****     if (data == ACK)
+ 2480               	.LM263:
+ 2481 092a 8981      		ldd r24,Y+1
+ 2482 092c 8630      		cpi r24,lo8(6)
+ 2483 092e 01F4      		brne .L86
+ 532:../../freeRtos/Lib/Rs485_prot.c ****       nrBloku ++;
+ 2485               	.LM264:
+ 2486 0930 8A81      		ldd r24,Y+2
+ 2487 0932 8F5F      		subi r24,lo8(-(1))
+ 2488 0934 8A83      		std Y+2,r24
+ 535:../../freeRtos/Lib/Rs485_prot.c ****       if (debugStr != NULL)
+ 2490               	.LM265:
+ 2491 0936 0115      		cp r16,__zero_reg__
+ 2492 0938 1105      		cpc r17,__zero_reg__
+ 2493 093a 01F4      		brne .+2
+ 2494 093c 00C0      		rjmp .L112
+ 537:../../freeRtos/Lib/Rs485_prot.c ****         fputc('.', debugStr);
+ 2496               	.LM266:
+ 2497 093e 8EE2      		ldi r24,lo8(46)
+ 2498 0940 90E0      		ldi r25,hi8(46)
+ 2499 0942 B801      		movw r22,r16
+ 2500 0944 0E94 0000 		call fputc
+ 538:../../freeRtos/Lib/Rs485_prot.c ****         if ((nrBloku & 0x0F) == 0)
+ 2502               	.LM267:
+ 2503 0948 8A81      		ldd r24,Y+2
+ 2504 094a 90E0      		ldi r25,lo8(0)
+ 2505 094c 8F70      		andi r24,lo8(15)
+ 2506 094e 9070      		andi r25,hi8(15)
+ 2507 0950 0097      		sbiw r24,0
+ 2508 0952 01F0      		breq .+2
+ 2509 0954 00C0      		rjmp .L112
+ 540:../../freeRtos/Lib/Rs485_prot.c ****           fputc('\r', debugStr);
+ 2511               	.LM268:
+ 2512 0956 8DE0      		ldi r24,lo8(13)
+ 2513 0958 90E0      		ldi r25,hi8(13)
+ 2514 095a B801      		movw r22,r16
+ 2515 095c 0E94 0000 		call fputc
+ 541:../../freeRtos/Lib/Rs485_prot.c ****           fputc('\n', debugStr);      
+ 2517               	.LM269:
+ 2518 0960 8AE0      		ldi r24,lo8(10)
+ 2519 0962 90E0      		ldi r25,hi8(10)
+ 2520 0964 B801      		movw r22,r16
+ 2521 0966 0E94 0000 		call fputc
+ 2522 096a 00C0      		rjmp .L112
+ 2523               	.L86:
+ 547:../../freeRtos/Lib/Rs485_prot.c ****     if (data == CAN)
+ 2525               	.LM270:
+ 2526 096c 8831      		cpi r24,lo8(24)
+ 2527 096e 01F4      		brne .L88
+ 549:../../freeRtos/Lib/Rs485_prot.c ****       if (debugStr != NULL)
+ 2529               	.LM271:
+ 2530 0970 0115      		cp r16,__zero_reg__
+ 2531 0972 1105      		cpc r17,__zero_reg__
+ 2532 0974 01F4      		brne .+2
+ 2533 0976 00C0      		rjmp .L113
+ 550:../../freeRtos/Lib/Rs485_prot.c ****         fputc('C', debugStr);
+ 2535               	.LM272:
+ 2536 0978 83E4      		ldi r24,lo8(67)
+ 2537 097a 90E0      		ldi r25,hi8(67)
+ 2538 097c B801      		movw r22,r16
+ 2539 097e 0E94 0000 		call fputc
+ 2540 0982 00C0      		rjmp .L113
+ 2541               	.L88:
+ 555:../../freeRtos/Lib/Rs485_prot.c ****     if (debugStr != NULL)
+ 2543               	.LM273:
+ 2544 0984 0115      		cp r16,__zero_reg__
+ 2545 0986 1105      		cpc r17,__zero_reg__
+ 2546 0988 01F0      		breq .L90
+ 557:../../freeRtos/Lib/Rs485_prot.c ****       if (data == NAK)
+ 2548               	.LM274:
+ 2549 098a 8531      		cpi r24,lo8(21)
+ 2550 098c 01F4      		brne .L91
+ 558:../../freeRtos/Lib/Rs485_prot.c ****         fputc('N', debugStr);
+ 2552               	.LM275:
+ 2553 098e 8EE4      		ldi r24,lo8(78)
+ 2554 0990 90E0      		ldi r25,hi8(78)
+ 2555 0992 B801      		movw r22,r16
+ 2556 0994 0E94 0000 		call fputc
+ 2557               	.L91:
+ 559:../../freeRtos/Lib/Rs485_prot.c ****       if (data != 0)
+ 2559               	.LM276:
+ 2560 0998 8981      		ldd r24,Y+1
+ 2561 099a 8823      		tst r24
+ 2562 099c 01F0      		breq .L90
+ 2564               	.LM277:
+ 2565 099e 00D0      		rcall .
+ 2566 09a0 00D0      		rcall .
+ 2567 09a2 EDB7      		in r30,__SP_L__
+ 2568 09a4 FEB7      		in r31,__SP_H__
+ 2569 09a6 3196      		adiw r30,1
+ 2570 09a8 ADB7      		in r26,__SP_L__
+ 2571 09aa BEB7      		in r27,__SP_H__
+ 2572 09ac 1196      		adiw r26,1
+ 2573 09ae 0D93      		st X+,r16
+ 2574 09b0 1C93      		st X,r17
+ 2575 09b2 1297      		sbiw r26,1+1
+ 2576 09b4 A282      		std Z+2,r10
+ 2577 09b6 B382      		std Z+3,r11
+ 2578 09b8 8483      		std Z+4,r24
+ 2579 09ba 1582      		std Z+5,__zero_reg__
+ 2580 09bc 0E94 0000 		call fprintf
+ 2581 09c0 EDB7      		in r30,__SP_L__
+ 2582 09c2 FEB7      		in r31,__SP_H__
+ 2583 09c4 3696      		adiw r30,6
+ 2584 09c6 EDBF      		out __SP_L__,r30
+ 2585 09c8 FEBF      		out __SP_H__,r31
+ 2586               	.L90:
+ 561:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 562:../../freeRtos/Lib/Rs485_prot.c ****     
+ 563:../../freeRtos/Lib/Rs485_prot.c ****     lRetransmisji ++;
+ 2588               	.LM278:
+ 2589 09ca 8394      		inc r8
+ 564:../../freeRtos/Lib/Rs485_prot.c ****      
+ 565:../../freeRtos/Lib/Rs485_prot.c ****     if (lRetransmisji == 3)
+ 2591               	.LM279:
+ 2592 09cc F82D      		mov r31,r8
+ 2593 09ce F330      		cpi r31,lo8(3)
+ 2594 09d0 01F4      		brne .L118
+ 2595 09d2 00C0      		rjmp .L123
+ 2596               	.L112:
+ 533:../../freeRtos/Lib/Rs485_prot.c ****       lRetransmisji = 0;
+ 2598               	.LM280:
+ 2599 09d4 8824      		clr r8
+ 534:../../freeRtos/Lib/Rs485_prot.c ****       blad = 0;
+ 2601               	.LM281:
+ 2602 09d6 9924      		clr r9
+ 2603               	.L118:
+ 502:../../freeRtos/Lib/Rs485_prot.c ****   while (nrBloku <= liczbaBlokow)
+ 2605               	.LM282:
+ 2606 09d8 8A81      		ldd r24,Y+2
+ 2607 09da 7816      		cp r7,r24
+ 2608 09dc 00F0      		brlo .+2
+ 2609 09de 00C0      		rjmp .L92
+ 566:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 567:../../freeRtos/Lib/Rs485_prot.c ****       blad = 248;
+ 568:../../freeRtos/Lib/Rs485_prot.c ****       break;
+ 569:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 570:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 571:../../freeRtos/Lib/Rs485_prot.c ****  
+ 572:../../freeRtos/Lib/Rs485_prot.c ****   if (blad == 0)
+ 2611               	.LM283:
+ 2612 09e0 9920      		tst r9
+ 2613 09e2 01F4      		brne .L93
+ 573:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 574:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(EOT); 
+ 2615               	.LM284:
+ 2616 09e4 84E0      		ldi r24,lo8(4)
+ 2617 09e6 0E94 0000 		call uartRs485SendByte
+ 575:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 25) == pdTRUE)
+ 2619               	.LM285:
+ 2620 09ea 8E01      		movw r16,r28
+ 2621 09ec 0F5F      		subi r16,lo8(-(1))
+ 2622 09ee 1F4F      		sbci r17,hi8(-(1))
+ 2623 09f0 C801      		movw r24,r16
+ 2624 09f2 69E1      		ldi r22,lo8(25)
+ 2625 09f4 0E94 0000 		call rs485Receive
+ 2626 09f8 8130      		cpi r24,lo8(1)
+ 2627 09fa 01F4      		brne .L93
+ 576:../../freeRtos/Lib/Rs485_prot.c ****     {
+ 577:../../freeRtos/Lib/Rs485_prot.c ****       if (data == ACK)
+ 2629               	.LM286:
+ 2630 09fc 8981      		ldd r24,Y+1
+ 2631 09fe 8630      		cpi r24,lo8(6)
+ 2632 0a00 01F4      		brne .L93
+ 578:../../freeRtos/Lib/Rs485_prot.c ****       {
+ 579:../../freeRtos/Lib/Rs485_prot.c ****         uartRs485SendByte(EOT);
+ 2634               	.LM287:
+ 2635 0a02 84E0      		ldi r24,lo8(4)
+ 2636 0a04 0E94 0000 		call uartRs485SendByte
+ 580:../../freeRtos/Lib/Rs485_prot.c ****         rs485Receive(&data, 25);
+ 2638               	.LM288:
+ 2639 0a08 C801      		movw r24,r16
+ 2640 0a0a 69E1      		ldi r22,lo8(25)
+ 2641 0a0c 0E94 0000 		call rs485Receive
+ 2642               	.L93:
+ 581:../../freeRtos/Lib/Rs485_prot.c ****       }
+ 582:../../freeRtos/Lib/Rs485_prot.c ****     }
+ 583:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 584:../../freeRtos/Lib/Rs485_prot.c **** 
+ 585:../../freeRtos/Lib/Rs485_prot.c ****   flushRs485RecBuffer();  
+ 2644               	.LM289:
+ 2645 0a10 0E94 0000 		call flushRs485RecBuffer
+ 586:../../freeRtos/Lib/Rs485_prot.c ****   releaseRs485();
+ 2647               	.LM290:
+ 2648 0a14 0E94 0000 		call releaseRs485
+ 2649               	.L78:
+ 587:../../freeRtos/Lib/Rs485_prot.c ****   return blad;
+ 588:../../freeRtos/Lib/Rs485_prot.c **** }
+ 2651               	.LM291:
+ 2652 0a18 892D      		mov r24,r9
+ 2653               	/* epilogue start */
+ 2654 0a1a 2396      		adiw r28,3
+ 2655 0a1c CDBF      		out __SP_L__,r28
+ 2656 0a1e DEBF      		out __SP_H__,r29
+ 2657 0a20 CF91      		pop r28
+ 2658 0a22 DF91      		pop r29
+ 2659 0a24 1F91      		pop r17
+ 2660 0a26 0F91      		pop r16
+ 2661 0a28 FF90      		pop r15
+ 2662 0a2a EF90      		pop r14
+ 2663 0a2c DF90      		pop r13
+ 2664 0a2e CF90      		pop r12
+ 2665 0a30 BF90      		pop r11
+ 2666 0a32 AF90      		pop r10
+ 2667 0a34 9F90      		pop r9
+ 2668 0a36 8F90      		pop r8
+ 2669 0a38 7F90      		pop r7
+ 2670 0a3a 5F90      		pop r5
+ 2671 0a3c 4F90      		pop r4
+ 2672 0a3e 0895      		ret
+ 2673               	.L121:
+ 444:../../freeRtos/Lib/Rs485_prot.c ****     if (rs485Receive(&nrBloku, 1) != pdTRUE)
+ 2675               	.LM292:
+ 2676 0a40 C701      		movw r24,r14
+ 2677 0a42 61E0      		ldi r22,lo8(1)
+ 2678 0a44 0E94 0000 		call rs485Receive
+ 2679 0a48 8130      		cpi r24,lo8(1)
+ 2680 0a4a 01F0      		breq .+2
+ 2681 0a4c 00C0      		rjmp .L94
+ 2682 0a4e 00C0      		rjmp .L124
+ 2683               	.L77:
+ 463:../../freeRtos/Lib/Rs485_prot.c ****     vTaskDelay(100);
+ 2685               	.LM293:
+ 2686 0a50 84E6      		ldi r24,lo8(100)
+ 2687 0a52 90E0      		ldi r25,hi8(100)
+ 2688 0a54 0E94 0000 		call vTaskDelay
+ 465:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(0, SYNC);            uartRs485SendByte(SYNC);
+ 2690               	.LM294:
+ 2691 0a58 80E0      		ldi r24,lo8(0)
+ 2692 0a5a 90E0      		ldi r25,hi8(0)
+ 2693 0a5c 6AE5      		ldi r22,lo8(90)
+ 2694 0a5e 0E94 0000 		call _crc_xmodem_update
+ 2695 0a62 7C01      		movw r14,r24
+ 2696 0a64 8AE5      		ldi r24,lo8(90)
+ 2697 0a66 0E94 0000 		call uartRs485SendByte
+ 466:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, devAddr);       uartRs485SendByte(devAddr);
+ 2699               	.LM295:
+ 2700 0a6a C701      		movw r24,r14
+ 2701 0a6c 6C2D      		mov r22,r12
+ 2702 0a6e 0E94 0000 		call _crc_xmodem_update
+ 2703 0a72 7C01      		movw r14,r24
+ 2704 0a74 8C2D      		mov r24,r12
+ 2705 0a76 0E94 0000 		call uartRs485SendByte
+ 467:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, rFLASH);        uartRs485SendByte(rFLASH);
+ 2707               	.LM296:
+ 2708 0a7a C701      		movw r24,r14
+ 2709 0a7c 61E8      		ldi r22,lo8(-127)
+ 2710 0a7e 0E94 0000 		call _crc_xmodem_update
+ 2711 0a82 7C01      		movw r14,r24
+ 2712 0a84 81E8      		ldi r24,lo8(-127)
+ 2713 0a86 0E94 0000 		call uartRs485SendByte
+ 468:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, 1);             uartRs485SendByte(1);
+ 2715               	.LM297:
+ 2716 0a8a C701      		movw r24,r14
+ 2717 0a8c 61E0      		ldi r22,lo8(1)
+ 2718 0a8e 0E94 0000 		call _crc_xmodem_update
+ 2719 0a92 7C01      		movw r14,r24
+ 2720 0a94 81E0      		ldi r24,lo8(1)
+ 2721 0a96 0E94 0000 		call uartRs485SendByte
+ 469:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, devAddr);       uartRs485SendByte(devAddr);
+ 2723               	.LM298:
+ 2724 0a9a C701      		movw r24,r14
+ 2725 0a9c 6C2D      		mov r22,r12
+ 2726 0a9e 0E94 0000 		call _crc_xmodem_update
+ 2727 0aa2 E82E      		mov r14,r24
+ 2728 0aa4 8C2D      		mov r24,r12
+ 2729 0aa6 9B83      		std Y+3,r25
+ 2730 0aa8 0E94 0000 		call uartRs485SendByte
+ 470:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte((uint8_t)(crc>>8));
+ 2732               	.LM299:
+ 2733 0aac 9B81      		ldd r25,Y+3
+ 2734 0aae 892F      		mov r24,r25
+ 2735 0ab0 0E94 0000 		call uartRs485SendByte
+ 471:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 2737               	.LM300:
+ 2738 0ab4 8E2D      		mov r24,r14
+ 2739 0ab6 0E94 0000 		call uartRs485SendByte
+ 474:../../freeRtos/Lib/Rs485_prot.c ****     if(rs485Receive(&data, 150) != pdTRUE)
+ 2741               	.LM301:
+ 2742 0aba CE01      		movw r24,r28
+ 2743 0abc 0196      		adiw r24,1
+ 2744 0abe 66E9      		ldi r22,lo8(-106)
+ 2745 0ac0 0E94 0000 		call rs485Receive
+ 477:../../freeRtos/Lib/Rs485_prot.c ****     if (data != 'C')
+ 2747               	.LM302:
+ 2748 0ac4 8981      		ldd r24,Y+1
+ 2749 0ac6 8334      		cpi r24,lo8(67)
+ 2750 0ac8 01F4      		brne .+2
+ 2751 0aca 00C0      		rjmp .L95
+ 488:../../freeRtos/Lib/Rs485_prot.c ****     releaseRs485();
+ 2753               	.LM303:
+ 2754 0acc 0E94 0000 		call releaseRs485
+ 489:../../freeRtos/Lib/Rs485_prot.c ****     flushRs485RecBuffer();  
+ 2756               	.LM304:
+ 2757 0ad0 0E94 0000 		call flushRs485RecBuffer
+ 490:../../freeRtos/Lib/Rs485_prot.c ****     if (debugStr != NULL)
+ 2759               	.LM305:
+ 2760 0ad4 0115      		cp r16,__zero_reg__
+ 2761 0ad6 1105      		cpc r17,__zero_reg__
+ 2762 0ad8 01F0      		breq .+2
+ 2763 0ada 00C0      		rjmp .L97
+ 2764               	.L120:
+ 492:../../freeRtos/Lib/Rs485_prot.c ****     return 1;
+ 2766               	.LM306:
+ 2767 0adc 9924      		clr r9
+ 2768 0ade 9394      		inc r9
+ 2769 0ae0 00C0      		rjmp .L78
+ 2770               	.L113:
+ 551:../../freeRtos/Lib/Rs485_prot.c ****       blad = 249;
+ 2772               	.LM307:
+ 2773 0ae2 49EF      		ldi r20,lo8(-7)
+ 2774 0ae4 942E      		mov r9,r20
+ 2775 0ae6 00C0      		rjmp .L93
+ 2776               	.L123:
+ 567:../../freeRtos/Lib/Rs485_prot.c ****       blad = 248;
+ 2778               	.LM308:
+ 2779 0ae8 38EF      		ldi r19,lo8(-8)
+ 2780 0aea 932E      		mov r9,r19
+ 2781 0aec 00C0      		rjmp .L93
+ 2789               	.Lscope13:
+ 2791               		.stabd	78,0,0
+ 2796               	.global	rs485curtainUp
+ 2798               	rs485curtainUp:
+ 2799               		.stabd	46,0,0
+ 589:../../freeRtos/Lib/Rs485_prot.c **** 
+ 590:../../freeRtos/Lib/Rs485_prot.c **** uint8_t rs485curtainUp(uint8_t deviceAddr, uint8_t curtainNo, uint8_t pos)
+ 591:../../freeRtos/Lib/Rs485_prot.c **** {
+ 2801               	.LM309:
+ 2802               	.LFBB14:
+ 2803 0aee CF92      		push r12
+ 2804 0af0 DF92      		push r13
+ 2805 0af2 FF92      		push r15
+ 2806 0af4 0F93      		push r16
+ 2807 0af6 1F93      		push r17
+ 2808 0af8 DF93      		push r29
+ 2809 0afa CF93      		push r28
+ 2810 0afc 0F92      		push __tmp_reg__
+ 2811 0afe CDB7      		in r28,__SP_L__
+ 2812 0b00 DEB7      		in r29,__SP_H__
+ 2813               	/* prologue: function */
+ 2814               	/* frame size = 1 */
+ 2815               	/* stack size = 8 */
+ 2816               	.L__stack_usage = 8
+ 2817 0b02 182F      		mov r17,r24
+ 2818 0b04 062F      		mov r16,r22
+ 2819 0b06 F42E      		mov r15,r20
+ 592:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = 0;
+ 593:../../freeRtos/Lib/Rs485_prot.c ****   
+ 594:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, SYNC);
+ 2821               	.LM310:
+ 2822 0b08 80E0      		ldi r24,lo8(0)
+ 2823 0b0a 90E0      		ldi r25,hi8(0)
+ 2824 0b0c 6AE5      		ldi r22,lo8(90)
+ 2825 0b0e 0E94 0000 		call _crc_xmodem_update
+ 2826 0b12 6C01      		movw r12,r24
+ 595:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(SYNC);
+ 2828               	.LM311:
+ 2829 0b14 8AE5      		ldi r24,lo8(90)
+ 2830 0b16 0E94 0000 		call uartRs485SendByte
+ 596:../../freeRtos/Lib/Rs485_prot.c **** 
+ 597:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, deviceAddr);
+ 2832               	.LM312:
+ 2833 0b1a C601      		movw r24,r12
+ 2834 0b1c 612F      		mov r22,r17
+ 2835 0b1e 0E94 0000 		call _crc_xmodem_update
+ 2836 0b22 6C01      		movw r12,r24
+ 598:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(deviceAddr);
+ 2838               	.LM313:
+ 2839 0b24 812F      		mov r24,r17
+ 2840 0b26 0E94 0000 		call uartRs485SendByte
+ 599:../../freeRtos/Lib/Rs485_prot.c ****   if (curtainNo == 0)
+ 2842               	.LM314:
+ 2843 0b2a 0023      		tst r16
+ 2844 0b2c 01F4      		brne .L126
+ 600:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 601:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, rPodniesRolete1);
+ 2846               	.LM315:
+ 2847 0b2e C601      		movw r24,r12
+ 2848 0b30 60E2      		ldi r22,lo8(32)
+ 2849 0b32 0E94 0000 		call _crc_xmodem_update
+ 2850 0b36 8C01      		movw r16,r24
+ 602:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(rPodniesRolete1);
+ 2852               	.LM316:
+ 2853 0b38 80E2      		ldi r24,lo8(32)
+ 2854 0b3a 00C0      		rjmp .L128
+ 2855               	.L126:
+ 603:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 604:../../freeRtos/Lib/Rs485_prot.c ****   else
+ 605:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 606:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, rPodniesRolete2);
+ 2857               	.LM317:
+ 2858 0b3c C601      		movw r24,r12
+ 2859 0b3e 61E2      		ldi r22,lo8(33)
+ 2860 0b40 0E94 0000 		call _crc_xmodem_update
+ 2861 0b44 8C01      		movw r16,r24
+ 607:../../freeRtos/Lib/Rs485_prot.c ****     uartRs485SendByte(rPodniesRolete2); 
+ 2863               	.LM318:
+ 2864 0b46 81E2      		ldi r24,lo8(33)
+ 2865               	.L128:
+ 2866 0b48 0E94 0000 		call uartRs485SendByte
+ 608:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 609:../../freeRtos/Lib/Rs485_prot.c ****   
+ 610:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, 1);    uartRs485SendByte(1);
+ 2868               	.LM319:
+ 2869 0b4c C801      		movw r24,r16
+ 2870 0b4e 61E0      		ldi r22,lo8(1)
+ 2871 0b50 0E94 0000 		call _crc_xmodem_update
+ 2872 0b54 8C01      		movw r16,r24
+ 2873 0b56 81E0      		ldi r24,lo8(1)
+ 2874 0b58 0E94 0000 		call uartRs485SendByte
+ 611:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, pos);  uartRs485SendByte(pos);
+ 2876               	.LM320:
+ 2877 0b5c C801      		movw r24,r16
+ 2878 0b5e 6F2D      		mov r22,r15
+ 2879 0b60 0E94 0000 		call _crc_xmodem_update
+ 2880 0b64 182F      		mov r17,r24
+ 2881 0b66 8F2D      		mov r24,r15
+ 2882 0b68 9983      		std Y+1,r25
+ 2883 0b6a 0E94 0000 		call uartRs485SendByte
+ 612:../../freeRtos/Lib/Rs485_prot.c ****   
+ 613:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc>>8));
+ 2885               	.LM321:
+ 2886 0b6e 9981      		ldd r25,Y+1
+ 2887 0b70 892F      		mov r24,r25
+ 2888 0b72 0E94 0000 		call uartRs485SendByte
+ 614:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 2890               	.LM322:
+ 2891 0b76 812F      		mov r24,r17
+ 2892 0b78 0E94 0000 		call uartRs485SendByte
+ 615:../../freeRtos/Lib/Rs485_prot.c ****   
+ 616:../../freeRtos/Lib/Rs485_prot.c ****   return 0;
+ 617:../../freeRtos/Lib/Rs485_prot.c **** }
+ 2894               	.LM323:
+ 2895 0b7c 80E0      		ldi r24,lo8(0)
+ 2896               	/* epilogue start */
+ 2897 0b7e 0F90      		pop __tmp_reg__
+ 2898 0b80 CF91      		pop r28
+ 2899 0b82 DF91      		pop r29
+ 2900 0b84 1F91      		pop r17
+ 2901 0b86 0F91      		pop r16
+ 2902 0b88 FF90      		pop r15
+ 2903 0b8a DF90      		pop r13
+ 2904 0b8c CF90      		pop r12
+ 2905 0b8e 0895      		ret
+ 2907               	.Lscope14:
+ 2909               		.stabd	78,0,0
+ 2914               	.global	rs485Led
+ 2916               	rs485Led:
+ 2917               		.stabd	46,0,0
+ 618:../../freeRtos/Lib/Rs485_prot.c **** 
+ 619:../../freeRtos/Lib/Rs485_prot.c **** uint8_t rs485Led(uint8_t deviceAddr, uint8_t ledNo, uint8_t time)
+ 620:../../freeRtos/Lib/Rs485_prot.c **** {
+ 2919               	.LM324:
+ 2920               	.LFBB15:
+ 2921 0b90 CF92      		push r12
+ 2922 0b92 DF92      		push r13
+ 2923 0b94 FF92      		push r15
+ 2924 0b96 0F93      		push r16
+ 2925 0b98 1F93      		push r17
+ 2926 0b9a DF93      		push r29
+ 2927 0b9c CF93      		push r28
+ 2928 0b9e 0F92      		push __tmp_reg__
+ 2929 0ba0 CDB7      		in r28,__SP_L__
+ 2930 0ba2 DEB7      		in r29,__SP_H__
+ 2931               	/* prologue: function */
+ 2932               	/* frame size = 1 */
+ 2933               	/* stack size = 8 */
+ 2934               	.L__stack_usage = 8
+ 2935 0ba4 182F      		mov r17,r24
+ 2936 0ba6 062F      		mov r16,r22
+ 2937 0ba8 F42E      		mov r15,r20
+ 621:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = 0;
+ 622:../../freeRtos/Lib/Rs485_prot.c ****   
+ 623:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, SYNC);
+ 2939               	.LM325:
+ 2940 0baa 80E0      		ldi r24,lo8(0)
+ 2941 0bac 90E0      		ldi r25,hi8(0)
+ 2942 0bae 6AE5      		ldi r22,lo8(90)
+ 2943 0bb0 0E94 0000 		call _crc_xmodem_update
+ 2944 0bb4 6C01      		movw r12,r24
+ 624:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(SYNC);
+ 2946               	.LM326:
+ 2947 0bb6 8AE5      		ldi r24,lo8(90)
+ 2948 0bb8 0E94 0000 		call uartRs485SendByte
+ 625:../../freeRtos/Lib/Rs485_prot.c **** 
+ 626:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, deviceAddr);
+ 2950               	.LM327:
+ 2951 0bbc C601      		movw r24,r12
+ 2952 0bbe 612F      		mov r22,r17
+ 2953 0bc0 0E94 0000 		call _crc_xmodem_update
+ 2954 0bc4 6C01      		movw r12,r24
+ 627:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte(deviceAddr);
+ 2956               	.LM328:
+ 2957 0bc6 812F      		mov r24,r17
+ 2958 0bc8 0E94 0000 		call uartRs485SendByte
+ 628:../../freeRtos/Lib/Rs485_prot.c **** 
+ 629:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, ledNo);
+ 2960               	.LM329:
+ 2961 0bcc C601      		movw r24,r12
+ 2962 0bce 602F      		mov r22,r16
+ 2963 0bd0 0E94 0000 		call _crc_xmodem_update
+ 630:../../freeRtos/Lib/Rs485_prot.c ****   
+ 631:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, 1);    uartRs485SendByte(1);
+ 2965               	.LM330:
+ 2966 0bd4 61E0      		ldi r22,lo8(1)
+ 2967 0bd6 0E94 0000 		call _crc_xmodem_update
+ 2968 0bda 8C01      		movw r16,r24
+ 2969 0bdc 81E0      		ldi r24,lo8(1)
+ 2970 0bde 0E94 0000 		call uartRs485SendByte
+ 632:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, time);  uartRs485SendByte(time);
+ 2972               	.LM331:
+ 2973 0be2 C801      		movw r24,r16
+ 2974 0be4 6F2D      		mov r22,r15
+ 2975 0be6 0E94 0000 		call _crc_xmodem_update
+ 2976 0bea 182F      		mov r17,r24
+ 2977 0bec 8F2D      		mov r24,r15
+ 2978 0bee 9983      		std Y+1,r25
+ 2979 0bf0 0E94 0000 		call uartRs485SendByte
+ 633:../../freeRtos/Lib/Rs485_prot.c ****   
+ 634:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc>>8));
+ 2981               	.LM332:
+ 2982 0bf4 9981      		ldd r25,Y+1
+ 2983 0bf6 892F      		mov r24,r25
+ 2984 0bf8 0E94 0000 		call uartRs485SendByte
+ 635:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 2986               	.LM333:
+ 2987 0bfc 812F      		mov r24,r17
+ 2988 0bfe 0E94 0000 		call uartRs485SendByte
+ 636:../../freeRtos/Lib/Rs485_prot.c ****   
+ 637:../../freeRtos/Lib/Rs485_prot.c ****   return 0;
+ 638:../../freeRtos/Lib/Rs485_prot.c **** }
+ 2990               	.LM334:
+ 2991 0c02 80E0      		ldi r24,lo8(0)
+ 2992               	/* epilogue start */
+ 2993 0c04 0F90      		pop __tmp_reg__
+ 2994 0c06 CF91      		pop r28
+ 2995 0c08 DF91      		pop r29
+ 2996 0c0a 1F91      		pop r17
+ 2997 0c0c 0F91      		pop r16
+ 2998 0c0e FF90      		pop r15
+ 2999 0c10 DF90      		pop r13
+ 3000 0c12 CF90      		pop r12
+ 3001 0c14 0895      		ret
+ 3003               	.Lscope15:
+ 3005               		.stabd	78,0,0
+ 3010               	.global	rs485curtainDown
+ 3012               	rs485curtainDown:
+ 3013               		.stabd	46,0,0
+ 639:../../freeRtos/Lib/Rs485_prot.c **** 
+ 640:../../freeRtos/Lib/Rs485_prot.c **** 
+ 641:../../freeRtos/Lib/Rs485_prot.c **** uint8_t rs485curtainDown(uint8_t deviceAddr, uint8_t curtainNo, uint8_t pos)
+ 642:../../freeRtos/Lib/Rs485_prot.c **** {
+ 3015               	.LM335:
+ 3016               	.LFBB16:
+ 3017 0c16 CF92      		push r12
+ 3018 0c18 DF92      		push r13
+ 3019 0c1a FF92      		push r15
+ 3020 0c1c 0F93      		push r16
+ 3021 0c1e 1F93      		push r17
+ 3022 0c20 DF93      		push r29
+ 3023 0c22 CF93      		push r28
+ 3024 0c24 0F92      		push __tmp_reg__
+ 3025 0c26 CDB7      		in r28,__SP_L__
+ 3026 0c28 DEB7      		in r29,__SP_H__
+ 3027               	/* prologue: function */
+ 3028               	/* frame size = 1 */
+ 3029               	/* stack size = 8 */
+ 3030               	.L__stack_usage = 8
+ 3031 0c2a 182F      		mov r17,r24
+ 3032 0c2c 062F      		mov r16,r22
+ 3033 0c2e F42E      		mov r15,r20
+ 643:../../freeRtos/Lib/Rs485_prot.c ****   uint16_t crc = 0;
+ 644:../../freeRtos/Lib/Rs485_prot.c ****   
+ 645:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, SYNC);            uartRs485SendByte(SYNC);
+ 3035               	.LM336:
+ 3036 0c30 80E0      		ldi r24,lo8(0)
+ 3037 0c32 90E0      		ldi r25,hi8(0)
+ 3038 0c34 6AE5      		ldi r22,lo8(90)
+ 3039 0c36 0E94 0000 		call _crc_xmodem_update
+ 3040 0c3a 6C01      		movw r12,r24
+ 3041 0c3c 8AE5      		ldi r24,lo8(90)
+ 3042 0c3e 0E94 0000 		call uartRs485SendByte
+ 646:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, deviceAddr);    uartRs485SendByte(deviceAddr);
+ 3044               	.LM337:
+ 3045 0c42 C601      		movw r24,r12
+ 3046 0c44 612F      		mov r22,r17
+ 3047 0c46 0E94 0000 		call _crc_xmodem_update
+ 3048 0c4a 6C01      		movw r12,r24
+ 3049 0c4c 812F      		mov r24,r17
+ 3050 0c4e 0E94 0000 		call uartRs485SendByte
+ 647:../../freeRtos/Lib/Rs485_prot.c ****   if (curtainNo == 0)
+ 3052               	.LM338:
+ 3053 0c52 0023      		tst r16
+ 3054 0c54 01F4      		brne .L131
+ 648:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 649:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, rOpuscRolete1); uartRs485SendByte(rOpuscRolete1);
+ 3056               	.LM339:
+ 3057 0c56 C601      		movw r24,r12
+ 3058 0c58 60E1      		ldi r22,lo8(16)
+ 3059 0c5a 0E94 0000 		call _crc_xmodem_update
+ 3060 0c5e 8C01      		movw r16,r24
+ 3061 0c60 80E1      		ldi r24,lo8(16)
+ 3062 0c62 00C0      		rjmp .L133
+ 3063               	.L131:
+ 650:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 651:../../freeRtos/Lib/Rs485_prot.c ****   else
+ 652:../../freeRtos/Lib/Rs485_prot.c ****   {
+ 653:../../freeRtos/Lib/Rs485_prot.c ****     crc = _crc_xmodem_update(crc, rOpuscRolete2); uartRs485SendByte(rOpuscRolete2); 
+ 3065               	.LM340:
+ 3066 0c64 C601      		movw r24,r12
+ 3067 0c66 61E1      		ldi r22,lo8(17)
+ 3068 0c68 0E94 0000 		call _crc_xmodem_update
+ 3069 0c6c 8C01      		movw r16,r24
+ 3070 0c6e 81E1      		ldi r24,lo8(17)
+ 3071               	.L133:
+ 3072 0c70 0E94 0000 		call uartRs485SendByte
+ 654:../../freeRtos/Lib/Rs485_prot.c ****   }
+ 655:../../freeRtos/Lib/Rs485_prot.c **** 
+ 656:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, 1);               uartRs485SendByte(1);
+ 3074               	.LM341:
+ 3075 0c74 C801      		movw r24,r16
+ 3076 0c76 61E0      		ldi r22,lo8(1)
+ 3077 0c78 0E94 0000 		call _crc_xmodem_update
+ 3078 0c7c 8C01      		movw r16,r24
+ 3079 0c7e 81E0      		ldi r24,lo8(1)
+ 3080 0c80 0E94 0000 		call uartRs485SendByte
+ 657:../../freeRtos/Lib/Rs485_prot.c ****   crc = _crc_xmodem_update(crc, pos);         uartRs485SendByte(pos);
+ 3082               	.LM342:
+ 3083 0c84 C801      		movw r24,r16
+ 3084 0c86 6F2D      		mov r22,r15
+ 3085 0c88 0E94 0000 		call _crc_xmodem_update
+ 3086 0c8c 182F      		mov r17,r24
+ 3087 0c8e 8F2D      		mov r24,r15
+ 3088 0c90 9983      		std Y+1,r25
+ 3089 0c92 0E94 0000 		call uartRs485SendByte
+ 658:../../freeRtos/Lib/Rs485_prot.c ****   
+ 659:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc>>8));
+ 3091               	.LM343:
+ 3092 0c96 9981      		ldd r25,Y+1
+ 3093 0c98 892F      		mov r24,r25
+ 3094 0c9a 0E94 0000 		call uartRs485SendByte
+ 660:../../freeRtos/Lib/Rs485_prot.c ****   uartRs485SendByte((uint8_t)(crc & 0xFF));
+ 3096               	.LM344:
+ 3097 0c9e 812F      		mov r24,r17
+ 3098 0ca0 0E94 0000 		call uartRs485SendByte
+ 661:../../freeRtos/Lib/Rs485_prot.c **** 
+ 662:../../freeRtos/Lib/Rs485_prot.c ****   return 0;
+ 663:../../freeRtos/Lib/Rs485_prot.c **** }
+ 3100               	.LM345:
+ 3101 0ca4 80E0      		ldi r24,lo8(0)
+ 3102               	/* epilogue start */
+ 3103 0ca6 0F90      		pop __tmp_reg__
+ 3104 0ca8 CF91      		pop r28
+ 3105 0caa DF91      		pop r29
+ 3106 0cac 1F91      		pop r17
+ 3107 0cae 0F91      		pop r16
+ 3108 0cb0 FF90      		pop r15
+ 3109 0cb2 DF90      		pop r13
+ 3110 0cb4 CF90      		pop r12
+ 3111 0cb6 0895      		ret
+ 3113               	.Lscope16:
+ 3115               		.stabd	78,0,0
+ 3116               	.global	statusRollerDescStr
+ 3117               		.section	.progmem.data,"a",@progbits
+ 3120               	statusRollerDescStr:
+ 3121 0000 2025 6420 		.string	" %d roller driver: roller 1 position %d, roller 2 position %d"
+ 3121      726F 6C6C 
+ 3121      6572 2064 
+ 3121      7269 7665 
+ 3121      723A 2072 
+ 3122               	.global	statusRollerDescStr2
+ 3125               	statusRollerDescStr2:
+ 3126 003e 2C20 6669 		.string	", firmware %s\r\n"
+ 3126      726D 7761 
+ 3126      7265 2025 
+ 3126      730D 0A00 
+ 3127               		.comm wwwport,1,1
+ 3128               		.comm xSemaphoreSpiSS,2,1
+ 3129               		.comm portA,1,1
+ 3130               		.comm portB,1,1
+ 3131               		.comm lockSensors,2,1
+ 3132               		.comm xSemaphoreRs485,2,1
+ 3133               		.comm nicState,14,1
+ 3134               		.comm plen,2,1
+ 3135               		.comm IpMyConfig,15,1
+ 3136               		.comm arpDebug,2,1
+ 3137               		.comm arpDebugLevel,1,1
+ 3138               		.comm icmpDebug,2,1
+ 3139               		.comm icmpDebugLevel,1,1
+ 3140               		.comm udpSocket,2,1
+ 3141               		.comm udpDbgStream,2,1
+ 3142               		.comm udpDbgLevel,1,1
+ 3143               		.comm tcpDebugStream,2,1
+ 3144               		.comm tcpDebugLevel,1,1
+ 3145               		.comm sockets,2,1
+ 3146               		.comm czasRtc,7,1
+ 3147               		.comm rollers,2,1
+ 3148               		.comm klastry,128,1
+ 3151               	__c.5031:
+ 3152 004e 626F 6F74 		.string	"bootloader nie rozpoczal odbioru danych\r\n"
+ 3152      6C6F 6164 
+ 3152      6572 206E 
+ 3152      6965 2072 
+ 3152      6F7A 706F 
+ 3155               	__c.5029:
+ 3156 0078 6E61 2075 		.string	"na urzadzeniu wgrany jest tylko bootloader\r\n"
+ 3156      727A 6164 
+ 3156      7A65 6E69 
+ 3156      7520 7767 
+ 3156      7261 6E79 
+ 3159               	__c.5027:
+ 3160 00a5 7246 4C41 		.string	"rFLASH timeout\r\n"
+ 3160      5348 2074 
+ 3160      696D 656F 
+ 3160      7574 0D0A 
+ 3160      00
+ 3185               		.text
+ 3187               	.Letext0:
+ 3188               	.global __do_copy_data
+ 3189               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 Rs485_prot.c
+     /tmp/ccsSvFl8.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccsSvFl8.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccsSvFl8.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccsSvFl8.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccsSvFl8.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccsSvFl8.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccsSvFl8.s:562    .text:00000000 _crc_xmodem_update
+     /tmp/ccsSvFl8.s:618    .text:00000038 takeRs485
+     /tmp/ccsSvFl8.s:640    .text:0000003a releaseRs485
+     /tmp/ccsSvFl8.s:661    .text:0000003c uartRs485SendByte
+     /tmp/ccsSvFl8.s:683    .text:0000003e rs485Receive
+     /tmp/ccsSvFl8.s:704    .text:00000042 flushRs485RecBuffer
+     /tmp/ccsSvFl8.s:727    .text:00000046 sendSettings
+     /tmp/ccsSvFl8.s:827    .text:000000ce saveSettings
+     /tmp/ccsSvFl8.s:913    .text:00000140 rollersMemInit
+                            *COM*:00000002 rollers
+     /tmp/ccsSvFl8.s:949    .text:0000015e printRs485devices
+     /tmp/ccsSvFl8.s:3120   .progmem.data:00000000 statusRollerDescStr
+     /tmp/ccsSvFl8.s:3125   .progmem.data:0000003e statusRollerDescStr2
+     /tmp/ccsSvFl8.s:1100   .text:00000232 rs485ping
+     /tmp/ccsSvFl8.s:1473   .text:0000040c rs485rollerHello
+     /tmp/ccsSvFl8.s:1963   .text:00000652 rs485xModemFlash
+     /tmp/ccsSvFl8.s:3159   .progmem.data:000000a5 __c.5027
+     /tmp/ccsSvFl8.s:3155   .progmem.data:00000078 __c.5029
+     /tmp/ccsSvFl8.s:3151   .progmem.data:0000004e __c.5031
+     /tmp/ccsSvFl8.s:2798   .text:00000aee rs485curtainUp
+     /tmp/ccsSvFl8.s:2916   .text:00000b90 rs485Led
+     /tmp/ccsSvFl8.s:3012   .text:00000c16 rs485curtainDown
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 lockSensors
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:00000002 plen
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+                            *COM*:00000080 klastry
+
+UNDEFINED SYMBOLS
+xmalloc
+fprintf_P
+xRs485Rec
+xQueueGenericReceive
+ramDyskCzytajBajtZPliku
+fputc
+fprintf
+vTaskDelay
+__do_copy_data
+__do_clear_bss

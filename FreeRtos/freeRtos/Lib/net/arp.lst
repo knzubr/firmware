@@ -1,0 +1,1639 @@
+   1               		.file	"arp.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 478               	.global	setArpDebug
+ 480               	setArpDebug:
+ 481               		.stabd	46,0,0
+   1:../../freeRtos/Lib/net/arp.c **** /**
+   2:../../freeRtos/Lib/net/arp.c ****  * @file      arp.c
+   3:../../freeRtos/Lib/net/arp.c ****  * @version   0.2
+   4:../../freeRtos/Lib/net/arp.c ****  * @author    Pascal Stang, Adam Kaliszan
+   5:../../freeRtos/Lib/net/arp.c ****  * \brief     ARP Protocol Library. 
+   6:../../freeRtos/Lib/net/arp.c ****  *
+   7:../../freeRtos/Lib/net/arp.c ****  * Created       :  7.09.2004
+   8:../../freeRtos/Lib/net/arp.c ****  * Revised       : 29.11.2010
+   9:../../freeRtos/Lib/net/arp.c ****  * Editor Tabs   : 4
+  10:../../freeRtos/Lib/net/arp.c ****  *
+  11:../../freeRtos/Lib/net/arp.c ****  */
+  12:../../freeRtos/Lib/net/arp.c **** 
+  13:../../freeRtos/Lib/net/arp.c **** 
+  14:../../freeRtos/Lib/net/arp.c **** #include "arp.h"
+  15:../../freeRtos/Lib/net/arp.c **** 
+  16:../../freeRtos/Lib/net/arp.c **** 
+  17:../../freeRtos/Lib/net/arp.c **** /// Single ARP table entry/record
+  18:../../freeRtos/Lib/net/arp.c **** struct ArpEntry
+  19:../../freeRtos/Lib/net/arp.c **** {
+  20:../../freeRtos/Lib/net/arp.c ****   uint32_t ipaddr;                           ///< remote-note IP address
+  21:../../freeRtos/Lib/net/arp.c ****   struct netEthAddr ethaddr;                 ///< remote-node ethernet (hardware/mac) address
+  22:../../freeRtos/Lib/net/arp.c ****   uint8_t time;                              ///< time to live (in ARP table); this is decremented 
+  23:../../freeRtos/Lib/net/arp.c **** };
+  24:../../freeRtos/Lib/net/arp.c **** 
+  25:../../freeRtos/Lib/net/arp.c **** // global variables
+  26:../../freeRtos/Lib/net/arp.c **** struct ArpEntry ArpTable[ARP_TABLE_SIZE];    ///< ARP table of matched IP<->MAC associations
+  27:../../freeRtos/Lib/net/arp.c **** 
+  28:../../freeRtos/Lib/net/arp.c **** #ifdef ARP_DEBUG
+  29:../../freeRtos/Lib/net/arp.c **** 
+  30:../../freeRtos/Lib/net/arp.c **** void setArpDebug(FILE *stream, uint8_t level)
+  31:../../freeRtos/Lib/net/arp.c **** {
+ 483               	.LM0:
+ 484               	.LFBB1:
+ 485               	/* prologue: function */
+ 486               	/* frame size = 0 */
+ 487               	/* stack size = 0 */
+ 488               	.L__stack_usage = 0
+  32:../../freeRtos/Lib/net/arp.c ****   arpDebug = stream;
+ 490               	.LM1:
+ 491 0000 8093 0000 		sts arpDebug,r24
+ 492 0004 9093 0000 		sts arpDebug+1,r25
+  33:../../freeRtos/Lib/net/arp.c ****   arpDebugLevel = level;
+ 494               	.LM2:
+ 495 0008 6093 0000 		sts arpDebugLevel,r22
+  34:../../freeRtos/Lib/net/arp.c ****   if (level == 0)
+ 497               	.LM3:
+ 498 000c 6623      		tst r22
+ 499 000e 01F4      		brne .L1
+  35:../../freeRtos/Lib/net/arp.c ****     arpDebug = NULL;
+ 501               	.LM4:
+ 502 0010 1092 0000 		sts arpDebug,__zero_reg__
+ 503 0014 1092 0000 		sts arpDebug+1,__zero_reg__
+ 504               	.L1:
+ 505 0018 0895      		ret
+ 507               	.Lscope1:
+ 509               		.stabd	78,0,0
+ 511               	.global	arpInit
+ 513               	arpInit:
+ 514               		.stabd	46,0,0
+  36:../../freeRtos/Lib/net/arp.c **** }
+  37:../../freeRtos/Lib/net/arp.c **** #endif /*ARP_DEBUG*/
+  38:../../freeRtos/Lib/net/arp.c **** 
+  39:../../freeRtos/Lib/net/arp.c **** void arpInit()
+  40:../../freeRtos/Lib/net/arp.c **** {
+ 516               	.LM5:
+ 517               	.LFBB2:
+ 518               	/* prologue: function */
+ 519               	/* frame size = 0 */
+ 520               	/* stack size = 0 */
+ 521               	.L__stack_usage = 0
+  41:../../freeRtos/Lib/net/arp.c **** 
+  42:../../freeRtos/Lib/net/arp.c ****   memset(ArpTable, 0, sizeof(ArpTable));
+ 523               	.LM6:
+ 524 001a 8EE6      		ldi r24,lo8(110)
+ 525 001c E0E0      		ldi r30,lo8(ArpTable)
+ 526 001e F0E0      		ldi r31,hi8(ArpTable)
+ 527 0020 DF01      		movw r26,r30
+ 528 0022 1D92      		st X+,__zero_reg__
+ 529 0024 8A95      	        dec r24
+ 530 0026 01F4      		brne .-6
+  43:../../freeRtos/Lib/net/arp.c ****   arpDebug = NULL;
+ 532               	.LM7:
+ 533 0028 1092 0000 		sts arpDebug,__zero_reg__
+ 534 002c 1092 0000 		sts arpDebug+1,__zero_reg__
+ 535               	/* epilogue start */
+  44:../../freeRtos/Lib/net/arp.c **** }
+ 537               	.LM8:
+ 538 0030 0895      		ret
+ 540               	.Lscope2:
+ 542               		.stabd	78,0,0
+ 544               	.global	arpTimer
+ 546               	arpTimer:
+ 547               		.stabd	46,0,0
+  45:../../freeRtos/Lib/net/arp.c **** 
+  46:../../freeRtos/Lib/net/arp.c **** void arpArpIn(void)
+  47:../../freeRtos/Lib/net/arp.c **** {
+  48:../../freeRtos/Lib/net/arp.c **** #ifdef ARP_DEBUG
+  49:../../freeRtos/Lib/net/arp.c ****   if (arpDebug != NULL)
+  50:../../freeRtos/Lib/net/arp.c ****   {
+  51:../../freeRtos/Lib/net/arp.c ****     if (arpDebugLevel > 1)
+  52:../../freeRtos/Lib/net/arp.c ****       fprintf_P(arpDebug, PSTR("Received ARP Request\r\n"));
+  53:../../freeRtos/Lib/net/arp.c ****     if (arpDebugLevel > 2)
+  54:../../freeRtos/Lib/net/arp.c ****       arpPrintHeader(arpDebug, nicState.layer3.arp);   
+  55:../../freeRtos/Lib/net/arp.c ****   }
+  56:../../freeRtos/Lib/net/arp.c **** #endif
+  57:../../freeRtos/Lib/net/arp.c **** 
+  58:../../freeRtos/Lib/net/arp.c **** // for now, we just reply to requests
+  59:../../freeRtos/Lib/net/arp.c **** // need to add ARP cache
+  60:../../freeRtos/Lib/net/arp.c ****   if((nicState.layer3.arp->dipaddr == IpMyConfig.ip) && (nicState.layer3.arp->opcode == htons(ARP_O
+  61:../../freeRtos/Lib/net/arp.c ****   {
+  62:../../freeRtos/Lib/net/arp.c **** // in ARP header
+  63:../../freeRtos/Lib/net/arp.c **** // copy sender's address info to dest. fields
+  64:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->dhwaddr = nicState.layer3.arp->shwaddr;
+  65:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->dipaddr = nicState.layer3.arp->sipaddr;
+  66:../../freeRtos/Lib/net/arp.c **** // fill in our information
+  67:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->shwaddr =  nicState.mac;
+  68:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->sipaddr =  IpMyConfig.ip;
+  69:../../freeRtos/Lib/net/arp.c **** // change op to reply
+  70:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->opcode = htons(ARP_OPCODE_REPLY);
+  71:../../freeRtos/Lib/net/arp.c **** 
+  72:../../freeRtos/Lib/net/arp.c **** // in ethernet header
+  73:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->dest = nicState.layer2.ethHeader->src;
+  74:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->src  = nicState.mac;
+  75:../../freeRtos/Lib/net/arp.c **** 
+  76:../../freeRtos/Lib/net/arp.c **** #ifdef ARP_DEBUG
+  77:../../freeRtos/Lib/net/arp.c ****     if (arpDebug != NULL)
+  78:../../freeRtos/Lib/net/arp.c ****     {
+  79:../../freeRtos/Lib/net/arp.c ****       if (arpDebugLevel > 0)
+  80:../../freeRtos/Lib/net/arp.c ****         fprintf_P(arpDebug, PSTR("Sending ARP Reply\r\n"));
+  81:../../freeRtos/Lib/net/arp.c ****       if (arpDebugLevel > 2)
+  82:../../freeRtos/Lib/net/arp.c ****         arpPrintHeader(arpDebug, nicState.layer3.arp);
+  83:../../freeRtos/Lib/net/arp.c ****     }
+  84:../../freeRtos/Lib/net/arp.c **** #endif
+  85:../../freeRtos/Lib/net/arp.c **** // send reply!
+  86:../../freeRtos/Lib/net/arp.c ****     nicSend(sizeof(struct netArpHeader) + ETH_HEADER_LEN);
+  87:../../freeRtos/Lib/net/arp.c ****   }
+  88:../../freeRtos/Lib/net/arp.c **** }
+  89:../../freeRtos/Lib/net/arp.c **** 
+  90:../../freeRtos/Lib/net/arp.c **** void arpIpIn(void)
+  91:../../freeRtos/Lib/net/arp.c **** {
+  92:../../freeRtos/Lib/net/arp.c **** #ifdef ARP_DEBUG
+  93:../../freeRtos/Lib/net/arp.c ****   if (arpDebug != NULL)
+  94:../../freeRtos/Lib/net/arp.c ****   {
+  95:../../freeRtos/Lib/net/arp.c ****     if (arpDebugLevel > 0)
+  96:../../freeRtos/Lib/net/arp.c ****     {
+  97:../../freeRtos/Lib/net/arp.c ****       fprintf_P(arpDebug, PSTR("ARP IP in MAC: "));
+  98:../../freeRtos/Lib/net/arp.c ****       netPrintEthAddr(arpDebug, &nicState.layer2.ethHeader->src);
+  99:../../freeRtos/Lib/net/arp.c ****       fprintf_P(arpDebug, PSTR(" IP: "));
+ 100:../../freeRtos/Lib/net/arp.c ****       netPrintIPAddr(arpDebug, nicState.layer3.ip->srcipaddr);
+ 101:../../freeRtos/Lib/net/arp.c ****       fprintf_P(arpDebug, PSTR("\r\n"));
+ 102:../../freeRtos/Lib/net/arp.c ****     }
+ 103:../../freeRtos/Lib/net/arp.c ****   }
+ 104:../../freeRtos/Lib/net/arp.c **** #endif
+ 105:../../freeRtos/Lib/net/arp.c ****   int8_t index;
+ 106:../../freeRtos/Lib/net/arp.c **** 
+ 107:../../freeRtos/Lib/net/arp.c **** // check if sender is already present in arp table
+ 108:../../freeRtos/Lib/net/arp.c ****   index = arpMatchIp(nicState.layer3.ip->srcipaddr);
+ 109:../../freeRtos/Lib/net/arp.c ****   if(index != -1)
+ 110:../../freeRtos/Lib/net/arp.c ****   {
+ 111:../../freeRtos/Lib/net/arp.c **** // sender's IP address found, update ARP entry
+ 112:../../freeRtos/Lib/net/arp.c ****     ArpTable[index].ethaddr = nicState.layer2.ethHeader->src;
+ 113:../../freeRtos/Lib/net/arp.c ****     ArpTable[index].time = ARP_CACHE_TIME_TO_LIVE;
+ 114:../../freeRtos/Lib/net/arp.c **** // and we're done
+ 115:../../freeRtos/Lib/net/arp.c ****     return;
+ 116:../../freeRtos/Lib/net/arp.c ****   }
+ 117:../../freeRtos/Lib/net/arp.c **** 
+ 118:../../freeRtos/Lib/net/arp.c **** // sender was not present in table,
+ 119:../../freeRtos/Lib/net/arp.c **** // must add in empty/expired slot
+ 120:../../freeRtos/Lib/net/arp.c ****   for(index=0; index<ARP_TABLE_SIZE; index++)
+ 121:../../freeRtos/Lib/net/arp.c ****   {
+ 122:../../freeRtos/Lib/net/arp.c ****     if(ArpTable[index].time == 0)
+ 123:../../freeRtos/Lib/net/arp.c ****     {
+ 124:../../freeRtos/Lib/net/arp.c **** // write entry
+ 125:../../freeRtos/Lib/net/arp.c ****       ArpTable[index].ethaddr = nicState.layer2.ethHeader->src;
+ 126:../../freeRtos/Lib/net/arp.c ****       ArpTable[index].ipaddr  = nicState.layer3.ip->srcipaddr;
+ 127:../../freeRtos/Lib/net/arp.c ****       ArpTable[index].time    = ARP_CACHE_TIME_TO_LIVE;
+ 128:../../freeRtos/Lib/net/arp.c **** // and we're done
+ 129:../../freeRtos/Lib/net/arp.c ****       return;
+ 130:../../freeRtos/Lib/net/arp.c ****     }
+ 131:../../freeRtos/Lib/net/arp.c ****   }
+ 132:../../freeRtos/Lib/net/arp.c **** // no space in table, we give up
+ 133:../../freeRtos/Lib/net/arp.c **** }
+ 134:../../freeRtos/Lib/net/arp.c **** 
+ 135:../../freeRtos/Lib/net/arp.c **** void arpIpOut(uint32_t phyDstIp)
+ 136:../../freeRtos/Lib/net/arp.c **** {
+ 137:../../freeRtos/Lib/net/arp.c ****   int index;
+ 138:../../freeRtos/Lib/net/arp.c **** // check if destination is already present in arp table
+ 139:../../freeRtos/Lib/net/arp.c **** // use the physical dstIp if it's provided, otherwise the dstIp in packet
+ 140:../../freeRtos/Lib/net/arp.c ****   if(phyDstIp)
+ 141:../../freeRtos/Lib/net/arp.c ****     index = arpMatchIp(phyDstIp);
+ 142:../../freeRtos/Lib/net/arp.c ****   else
+ 143:../../freeRtos/Lib/net/arp.c ****     index = arpMatchIp(nicState.layer3.ip->destipaddr);
+ 144:../../freeRtos/Lib/net/arp.c **** // fill in ethernet info
+ 145:../../freeRtos/Lib/net/arp.c ****   if(index != -1)
+ 146:../../freeRtos/Lib/net/arp.c ****   {
+ 147:../../freeRtos/Lib/net/arp.c **** // ARP entry present, fill eth address(es)
+ 148:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->src      = nicState.mac;
+ 149:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->dest     = ArpTable[index].ethaddr;
+ 150:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->type     = HTONS(ETHTYPE_IP);
+ 151:../../freeRtos/Lib/net/arp.c ****   }
+ 152:../../freeRtos/Lib/net/arp.c ****   else
+ 153:../../freeRtos/Lib/net/arp.c ****   {
+ 154:../../freeRtos/Lib/net/arp.c **** // not in table, must send ARP request
+ 155:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->src      = nicState.mac;
+ 156:../../freeRtos/Lib/net/arp.c **** // TODO MUST CHANGE, but for now, send this one broadcast
+ 157:../../freeRtos/Lib/net/arp.c **** // before sending frame, must copy buffer
+ 158:../../freeRtos/Lib/net/arp.c ****     memset(nicState.layer2.ethHeader->dest.addr, 0xFF, 6);
+ 159:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->type = HTONS(ETHTYPE_IP);
+ 160:../../freeRtos/Lib/net/arp.c ****   }
+ 161:../../freeRtos/Lib/net/arp.c **** }
+ 162:../../freeRtos/Lib/net/arp.c **** 
+ 163:../../freeRtos/Lib/net/arp.c **** void arpTimer(void)
+ 164:../../freeRtos/Lib/net/arp.c **** {
+ 549               	.LM9:
+ 550               	.LFBB3:
+ 551               	/* prologue: function */
+ 552               	/* frame size = 0 */
+ 553               	/* stack size = 0 */
+ 554               	.L__stack_usage = 0
+ 556               	.LM10:
+ 557 0032 E0E0      		ldi r30,lo8(ArpTable+10)
+ 558 0034 F0E0      		ldi r31,hi8(ArpTable+10)
+ 559               	.L6:
+ 165:../../freeRtos/Lib/net/arp.c ****   int index;
+ 166:../../freeRtos/Lib/net/arp.c **** // this function meant to be called on a regular time interval
+ 167:../../freeRtos/Lib/net/arp.c **** 
+ 168:../../freeRtos/Lib/net/arp.c **** // decrement time-to-live for all entries
+ 169:../../freeRtos/Lib/net/arp.c ****   for(index=0; index<ARP_TABLE_SIZE; index++)
+ 170:../../freeRtos/Lib/net/arp.c ****   {
+ 171:../../freeRtos/Lib/net/arp.c ****     if(ArpTable[index].time)
+ 561               	.LM11:
+ 562 0036 8081      		ld r24,Z
+ 563 0038 8823      		tst r24
+ 564 003a 01F0      		breq .L5
+ 172:../../freeRtos/Lib/net/arp.c ****       ArpTable[index].time--;
+ 566               	.LM12:
+ 567 003c 8150      		subi r24,lo8(-(-1))
+ 568 003e 8083      		st Z,r24
+ 569               	.L5:
+ 570 0040 3B96      		adiw r30,11
+ 169:../../freeRtos/Lib/net/arp.c ****   for(index=0; index<ARP_TABLE_SIZE; index++)
+ 572               	.LM13:
+ 573 0042 80E0      		ldi r24,hi8(ArpTable+120)
+ 574 0044 E030      		cpi r30,lo8(ArpTable+120)
+ 575 0046 F807      		cpc r31,r24
+ 576 0048 01F4      		brne .L6
+ 577               	/* epilogue start */
+ 173:../../freeRtos/Lib/net/arp.c ****   }
+ 174:../../freeRtos/Lib/net/arp.c **** }
+ 579               	.LM14:
+ 580 004a 0895      		ret
+ 582               	.Lscope3:
+ 584               		.stabd	78,0,0
+ 587               	.global	arpMatchIp
+ 589               	arpMatchIp:
+ 590               		.stabd	46,0,0
+ 175:../../freeRtos/Lib/net/arp.c **** 
+ 176:../../freeRtos/Lib/net/arp.c **** int arpMatchIp(uint32_t ipaddr)
+ 177:../../freeRtos/Lib/net/arp.c **** {
+ 592               	.LM15:
+ 593               	.LFBB4:
+ 594               	/* prologue: function */
+ 595               	/* frame size = 0 */
+ 596               	/* stack size = 0 */
+ 597               	.L__stack_usage = 0
+ 178:../../freeRtos/Lib/net/arp.c ****   uint8_t i;
+ 179:../../freeRtos/Lib/net/arp.c **** 
+ 180:../../freeRtos/Lib/net/arp.c ****   // check if IP address is present in arp table
+ 181:../../freeRtos/Lib/net/arp.c ****   for(i=0; i<ARP_TABLE_SIZE; i++)
+ 182:../../freeRtos/Lib/net/arp.c ****   {
+ 183:../../freeRtos/Lib/net/arp.c ****     if(ArpTable[i].ipaddr == ipaddr)
+ 184:../../freeRtos/Lib/net/arp.c ****     {
+ 185:../../freeRtos/Lib/net/arp.c **** // IP address found
+ 186:../../freeRtos/Lib/net/arp.c ****       return i;
+ 187:../../freeRtos/Lib/net/arp.c ****     }
+ 188:../../freeRtos/Lib/net/arp.c ****   }
+ 189:../../freeRtos/Lib/net/arp.c **** 
+ 190:../../freeRtos/Lib/net/arp.c **** // no match
+ 191:../../freeRtos/Lib/net/arp.c ****   return -1;
+ 599               	.LM16:
+ 600 004c A0E0      		ldi r26,lo8(ArpTable)
+ 601 004e B0E0      		ldi r27,hi8(ArpTable)
+ 177:../../freeRtos/Lib/net/arp.c **** {
+ 603               	.LM17:
+ 604 0050 E0E0      		ldi r30,lo8(0)
+ 605 0052 F0E0      		ldi r31,hi8(0)
+ 606               	.L10:
+ 183:../../freeRtos/Lib/net/arp.c ****     if(ArpTable[i].ipaddr == ipaddr)
+ 608               	.LM18:
+ 609 0054 2D91      		ld r18,X+
+ 610 0056 3D91      		ld r19,X+
+ 611 0058 4D91      		ld r20,X+
+ 612 005a 5C91      		ld r21,X
+ 613 005c 1397      		sbiw r26,3
+ 614 005e 2617      		cp r18,r22
+ 615 0060 3707      		cpc r19,r23
+ 616 0062 4807      		cpc r20,r24
+ 617 0064 5907      		cpc r21,r25
+ 618 0066 01F0      		breq .L9
+ 619 0068 3196      		adiw r30,1
+ 620 006a 1B96      		adiw r26,11
+ 181:../../freeRtos/Lib/net/arp.c ****   for(i=0; i<ARP_TABLE_SIZE; i++)
+ 622               	.LM19:
+ 623 006c EA30      		cpi r30,10
+ 624 006e F105      		cpc r31,__zero_reg__
+ 625 0070 01F4      		brne .L10
+ 627               	.LM20:
+ 628 0072 EFEF      		ldi r30,lo8(-1)
+ 629 0074 FFEF      		ldi r31,hi8(-1)
+ 630               	.L9:
+ 192:../../freeRtos/Lib/net/arp.c **** }
+ 632               	.LM21:
+ 633 0076 CF01      		movw r24,r30
+ 634               	/* epilogue start */
+ 635 0078 0895      		ret
+ 637               	.Lscope4:
+ 639               		.stabd	78,0,0
+ 642               	.global	arpIpOut
+ 644               	arpIpOut:
+ 645               		.stabd	46,0,0
+ 136:../../freeRtos/Lib/net/arp.c **** {
+ 647               	.LM22:
+ 648               	.LFBB5:
+ 649               	/* prologue: function */
+ 650               	/* frame size = 0 */
+ 651               	/* stack size = 0 */
+ 652               	.L__stack_usage = 0
+ 140:../../freeRtos/Lib/net/arp.c ****   if(phyDstIp)
+ 654               	.LM23:
+ 655 007a 6115      		cp r22,__zero_reg__
+ 656 007c 7105      		cpc r23,__zero_reg__
+ 657 007e 8105      		cpc r24,__zero_reg__
+ 658 0080 9105      		cpc r25,__zero_reg__
+ 659 0082 01F4      		brne .L23
+ 660               	.L13:
+ 143:../../freeRtos/Lib/net/arp.c ****     index = arpMatchIp(nicState.layer3.ip->destipaddr);
+ 662               	.LM24:
+ 663 0084 E091 0000 		lds r30,nicState+10
+ 664 0088 F091 0000 		lds r31,nicState+10+1
+ 665 008c 6089      		ldd r22,Z+16
+ 666 008e 7189      		ldd r23,Z+17
+ 667 0090 8289      		ldd r24,Z+18
+ 668 0092 9389      		ldd r25,Z+19
+ 669               	.L23:
+ 670 0094 0E94 0000 		call arpMatchIp
+ 671 0098 A091 0000 		lds r26,nicState+8
+ 672 009c B091 0000 		lds r27,nicState+8+1
+ 145:../../freeRtos/Lib/net/arp.c ****   if(index != -1)
+ 674               	.LM25:
+ 675 00a0 2FEF      		ldi r18,hi8(-1)
+ 676 00a2 8F3F      		cpi r24,lo8(-1)
+ 677 00a4 9207      		cpc r25,r18
+ 678 00a6 01F0      		breq .L15
+ 148:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->src      = nicState.mac;
+ 680               	.LM26:
+ 681 00a8 1696      		adiw r26,6
+ 682 00aa E0E0      		ldi r30,lo8(nicState+2)
+ 683 00ac F0E0      		ldi r31,hi8(nicState+2)
+ 684 00ae 26E0      		ldi r18,lo8(6)
+ 685               	.L16:
+ 686 00b0 0190      		ld r0,Z+
+ 687 00b2 0D92      		st X+,r0
+ 688 00b4 2150      		subi r18,lo8(-(-1))
+ 689 00b6 01F4      		brne .L16
+ 149:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->dest     = ArpTable[index].ethaddr;
+ 691               	.LM27:
+ 692 00b8 2BE0      		ldi r18,lo8(11)
+ 693 00ba 30E0      		ldi r19,hi8(11)
+ 694 00bc 829F      		mul r24,r18
+ 695 00be F001      		movw r30,r0
+ 696 00c0 839F      		mul r24,r19
+ 697 00c2 F00D      		add r31,r0
+ 698 00c4 929F      		mul r25,r18
+ 699 00c6 F00D      		add r31,r0
+ 700 00c8 1124      		clr r1
+ 701 00ca 3091 0000 		lds r19,nicState+8
+ 702 00ce 2091 0000 		lds r18,nicState+9
+ 703 00d2 832F      		mov r24,r19
+ 704 00d4 922F      		mov r25,r18
+ 705 00d6 DC01      		movw r26,r24
+ 706 00d8 E050      		subi r30,lo8(-(ArpTable+4))
+ 707 00da F040      		sbci r31,hi8(-(ArpTable+4))
+ 708 00dc 86E0      		ldi r24,lo8(6)
+ 709               	.L17:
+ 710 00de 0190      		ld r0,Z+
+ 711 00e0 0D92      		st X+,r0
+ 712 00e2 8150      		subi r24,lo8(-(-1))
+ 713 00e4 01F4      		brne .L17
+ 714 00e6 00C0      		rjmp .L24
+ 715               	.L15:
+ 155:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->src      = nicState.mac;
+ 717               	.LM28:
+ 718 00e8 1696      		adiw r26,6
+ 719 00ea E0E0      		ldi r30,lo8(nicState+2)
+ 720 00ec F0E0      		ldi r31,hi8(nicState+2)
+ 721 00ee 86E0      		ldi r24,lo8(6)
+ 722               	.L19:
+ 723 00f0 0190      		ld r0,Z+
+ 724 00f2 0D92      		st X+,r0
+ 725 00f4 8150      		subi r24,lo8(-(-1))
+ 726 00f6 01F4      		brne .L19
+ 158:../../freeRtos/Lib/net/arp.c ****     memset(nicState.layer2.ethHeader->dest.addr, 0xFF, 6);
+ 728               	.LM29:
+ 729 00f8 8091 0000 		lds r24,nicState+8
+ 730 00fc 9091 0000 		lds r25,nicState+8+1
+ 731 0100 6FEF      		ldi r22,lo8(255)
+ 732 0102 70E0      		ldi r23,hi8(255)
+ 733 0104 46E0      		ldi r20,lo8(6)
+ 734 0106 50E0      		ldi r21,hi8(6)
+ 735 0108 0E94 0000 		call memset
+ 736               	.L24:
+ 159:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->type = HTONS(ETHTYPE_IP);
+ 738               	.LM30:
+ 739 010c E091 0000 		lds r30,nicState+8
+ 740 0110 F091 0000 		lds r31,nicState+8+1
+ 741 0114 88E0      		ldi r24,lo8(8)
+ 742 0116 90E0      		ldi r25,hi8(8)
+ 743 0118 8487      		std Z+12,r24
+ 744 011a 9587      		std Z+13,r25
+ 745 011c 0895      		ret
+ 750               	.Lscope5:
+ 752               		.stabd	78,0,0
+ 754               	.global	arpIpIn
+ 756               	arpIpIn:
+ 757               		.stabd	46,0,0
+  91:../../freeRtos/Lib/net/arp.c **** {
+ 759               	.LM31:
+ 760               	.LFBB6:
+ 761 011e CF93      		push r28
+ 762 0120 DF93      		push r29
+ 763               	/* prologue: function */
+ 764               	/* frame size = 0 */
+ 765               	/* stack size = 2 */
+ 766               	.L__stack_usage = 2
+  93:../../freeRtos/Lib/net/arp.c ****   if (arpDebug != NULL)
+ 768               	.LM32:
+ 769 0122 8091 0000 		lds r24,arpDebug
+ 770 0126 9091 0000 		lds r25,arpDebug+1
+ 771 012a 0097      		sbiw r24,0
+ 772 012c 01F4      		brne .+2
+ 773 012e 00C0      		rjmp .L26
+  95:../../freeRtos/Lib/net/arp.c ****     if (arpDebugLevel > 0)
+ 775               	.LM33:
+ 776 0130 2091 0000 		lds r18,arpDebugLevel
+ 777 0134 2223      		tst r18
+ 778 0136 01F4      		brne .+2
+ 779 0138 00C0      		rjmp .L26
+  97:../../freeRtos/Lib/net/arp.c ****       fprintf_P(arpDebug, PSTR("ARP IP in MAC: "));
+ 781               	.LM34:
+ 782 013a 00D0      		rcall .
+ 783 013c 0F92      		push __tmp_reg__
+ 784 013e EDB7      		in r30,__SP_L__
+ 785 0140 FEB7      		in r31,__SP_H__
+ 786 0142 8183      		std Z+1,r24
+ 787 0144 9283      		std Z+2,r25
+ 788 0146 80E0      		ldi r24,lo8(__c.4233)
+ 789 0148 90E0      		ldi r25,hi8(__c.4233)
+ 790 014a 8383      		std Z+3,r24
+ 791 014c 9483      		std Z+4,r25
+ 792 014e 0E94 0000 		call fprintf_P
+  98:../../freeRtos/Lib/net/arp.c ****       netPrintEthAddr(arpDebug, &nicState.layer2.ethHeader->src);
+ 794               	.LM35:
+ 795 0152 0F90      		pop __tmp_reg__
+ 796 0154 0F90      		pop __tmp_reg__
+ 797 0156 0F90      		pop __tmp_reg__
+ 798 0158 0F90      		pop __tmp_reg__
+ 799 015a 6091 0000 		lds r22,nicState+8
+ 800 015e 7091 0000 		lds r23,nicState+8+1
+ 801 0162 6A5F      		subi r22,lo8(-(6))
+ 802 0164 7F4F      		sbci r23,hi8(-(6))
+ 803 0166 8091 0000 		lds r24,arpDebug
+ 804 016a 9091 0000 		lds r25,arpDebug+1
+ 805 016e 0E94 0000 		call netPrintEthAddr
+  99:../../freeRtos/Lib/net/arp.c ****       fprintf_P(arpDebug, PSTR(" IP: "));
+ 807               	.LM36:
+ 808 0172 00D0      		rcall .
+ 809 0174 0F92      		push __tmp_reg__
+ 810 0176 8091 0000 		lds r24,arpDebug
+ 811 017a 9091 0000 		lds r25,arpDebug+1
+ 812 017e EDB7      		in r30,__SP_L__
+ 813 0180 FEB7      		in r31,__SP_H__
+ 814 0182 8183      		std Z+1,r24
+ 815 0184 9283      		std Z+2,r25
+ 816 0186 80E0      		ldi r24,lo8(__c.4235)
+ 817 0188 90E0      		ldi r25,hi8(__c.4235)
+ 818 018a 8383      		std Z+3,r24
+ 819 018c 9483      		std Z+4,r25
+ 820 018e 0E94 0000 		call fprintf_P
+ 100:../../freeRtos/Lib/net/arp.c ****       netPrintIPAddr(arpDebug, nicState.layer3.ip->srcipaddr);
+ 822               	.LM37:
+ 823 0192 0F90      		pop __tmp_reg__
+ 824 0194 0F90      		pop __tmp_reg__
+ 825 0196 0F90      		pop __tmp_reg__
+ 826 0198 0F90      		pop __tmp_reg__
+ 827 019a E091 0000 		lds r30,nicState+10
+ 828 019e F091 0000 		lds r31,nicState+10+1
+ 829 01a2 4485      		ldd r20,Z+12
+ 830 01a4 5585      		ldd r21,Z+13
+ 831 01a6 6685      		ldd r22,Z+14
+ 832 01a8 7785      		ldd r23,Z+15
+ 833 01aa 8091 0000 		lds r24,arpDebug
+ 834 01ae 9091 0000 		lds r25,arpDebug+1
+ 835 01b2 0E94 0000 		call netPrintIPAddr
+ 101:../../freeRtos/Lib/net/arp.c ****       fprintf_P(arpDebug, PSTR("\r\n"));
+ 837               	.LM38:
+ 838 01b6 00D0      		rcall .
+ 839 01b8 0F92      		push __tmp_reg__
+ 840 01ba 8091 0000 		lds r24,arpDebug
+ 841 01be 9091 0000 		lds r25,arpDebug+1
+ 842 01c2 EDB7      		in r30,__SP_L__
+ 843 01c4 FEB7      		in r31,__SP_H__
+ 844 01c6 8183      		std Z+1,r24
+ 845 01c8 9283      		std Z+2,r25
+ 846 01ca 80E0      		ldi r24,lo8(__c.4237)
+ 847 01cc 90E0      		ldi r25,hi8(__c.4237)
+ 848 01ce 8383      		std Z+3,r24
+ 849 01d0 9483      		std Z+4,r25
+ 850 01d2 0E94 0000 		call fprintf_P
+ 851 01d6 0F90      		pop __tmp_reg__
+ 852 01d8 0F90      		pop __tmp_reg__
+ 853 01da 0F90      		pop __tmp_reg__
+ 854 01dc 0F90      		pop __tmp_reg__
+ 855               	.L26:
+ 108:../../freeRtos/Lib/net/arp.c ****   index = arpMatchIp(nicState.layer3.ip->srcipaddr);
+ 857               	.LM39:
+ 858 01de C091 0000 		lds r28,nicState+10
+ 859 01e2 D091 0000 		lds r29,nicState+10+1
+ 860 01e6 6C85      		ldd r22,Y+12
+ 861 01e8 7D85      		ldd r23,Y+13
+ 862 01ea 8E85      		ldd r24,Y+14
+ 863 01ec 9F85      		ldd r25,Y+15
+ 864 01ee 0E94 0000 		call arpMatchIp
+ 109:../../freeRtos/Lib/net/arp.c ****   if(index != -1)
+ 866               	.LM40:
+ 867 01f2 8F3F      		cpi r24,lo8(-1)
+ 868 01f4 01F0      		breq .L27
+ 112:../../freeRtos/Lib/net/arp.c ****     ArpTable[index].ethaddr = nicState.layer2.ethHeader->src;
+ 870               	.LM41:
+ 871 01f6 9927      		clr r25
+ 872 01f8 87FD      		sbrc r24,7
+ 873 01fa 9095      		com r25
+ 874 01fc 2BE0      		ldi r18,lo8(11)
+ 875 01fe 30E0      		ldi r19,hi8(11)
+ 876 0200 829F      		mul r24,r18
+ 877 0202 D001      		movw r26,r0
+ 878 0204 839F      		mul r24,r19
+ 879 0206 B00D      		add r27,r0
+ 880 0208 929F      		mul r25,r18
+ 881 020a B00D      		add r27,r0
+ 882 020c 1124      		clr r1
+ 883 020e E091 0000 		lds r30,nicState+8
+ 884 0212 F091 0000 		lds r31,nicState+8+1
+ 885 0216 A050      		subi r26,lo8(-(ArpTable+4))
+ 886 0218 B040      		sbci r27,hi8(-(ArpTable+4))
+ 887 021a 3696      		adiw r30,6
+ 888 021c 26E0      		ldi r18,lo8(6)
+ 889               	.L28:
+ 890 021e 0190      		ld r0,Z+
+ 891 0220 0D92      		st X+,r0
+ 892 0222 2150      		subi r18,lo8(-(-1))
+ 893 0224 01F4      		brne .L28
+ 113:../../freeRtos/Lib/net/arp.c ****     ArpTable[index].time = ARP_CACHE_TIME_TO_LIVE;
+ 895               	.LM42:
+ 896 0226 2BE0      		ldi r18,lo8(11)
+ 897 0228 30E0      		ldi r19,hi8(11)
+ 898 022a 829F      		mul r24,r18
+ 899 022c F001      		movw r30,r0
+ 900 022e 839F      		mul r24,r19
+ 901 0230 F00D      		add r31,r0
+ 902 0232 929F      		mul r25,r18
+ 903 0234 F00D      		add r31,r0
+ 904 0236 1124      		clr r1
+ 905 0238 E050      		subi r30,lo8(-(ArpTable))
+ 906 023a F040      		sbci r31,hi8(-(ArpTable))
+ 907 023c 00C0      		rjmp .L36
+ 908               	.L27:
+ 115:../../freeRtos/Lib/net/arp.c ****     return;
+ 910               	.LM43:
+ 911 023e E0E0      		ldi r30,lo8(ArpTable+10)
+ 912 0240 F0E0      		ldi r31,hi8(ArpTable+10)
+ 109:../../freeRtos/Lib/net/arp.c ****   if(index != -1)
+ 914               	.LM44:
+ 915 0242 80E0      		ldi r24,lo8(0)
+ 916 0244 90E0      		ldi r25,hi8(0)
+ 917               	.L32:
+ 122:../../freeRtos/Lib/net/arp.c ****     if(ArpTable[index].time == 0)
+ 919               	.LM45:
+ 920 0246 2081      		ld r18,Z
+ 921 0248 2223      		tst r18
+ 922 024a 01F4      		brne .L30
+ 125:../../freeRtos/Lib/net/arp.c ****       ArpTable[index].ethaddr = nicState.layer2.ethHeader->src;
+ 924               	.LM46:
+ 925 024c 2BE0      		ldi r18,lo8(11)
+ 926 024e 30E0      		ldi r19,hi8(11)
+ 927 0250 829F      		mul r24,r18
+ 928 0252 D001      		movw r26,r0
+ 929 0254 839F      		mul r24,r19
+ 930 0256 B00D      		add r27,r0
+ 931 0258 929F      		mul r25,r18
+ 932 025a B00D      		add r27,r0
+ 933 025c 1124      		clr r1
+ 934 025e E091 0000 		lds r30,nicState+8
+ 935 0262 F091 0000 		lds r31,nicState+8+1
+ 936 0266 A050      		subi r26,lo8(-(ArpTable+4))
+ 937 0268 B040      		sbci r27,hi8(-(ArpTable+4))
+ 938 026a 3696      		adiw r30,6
+ 939 026c 26E0      		ldi r18,lo8(6)
+ 940               	.L31:
+ 941 026e 0190      		ld r0,Z+
+ 942 0270 0D92      		st X+,r0
+ 943 0272 2150      		subi r18,lo8(-(-1))
+ 944 0274 01F4      		brne .L31
+ 126:../../freeRtos/Lib/net/arp.c ****       ArpTable[index].ipaddr  = nicState.layer3.ip->srcipaddr;
+ 946               	.LM47:
+ 947 0276 2BE0      		ldi r18,lo8(11)
+ 948 0278 30E0      		ldi r19,hi8(11)
+ 949 027a 829F      		mul r24,r18
+ 950 027c F001      		movw r30,r0
+ 951 027e 839F      		mul r24,r19
+ 952 0280 F00D      		add r31,r0
+ 953 0282 929F      		mul r25,r18
+ 954 0284 F00D      		add r31,r0
+ 955 0286 1124      		clr r1
+ 956 0288 E050      		subi r30,lo8(-(ArpTable))
+ 957 028a F040      		sbci r31,hi8(-(ArpTable))
+ 958 028c 8C85      		ldd r24,Y+12
+ 959 028e 9D85      		ldd r25,Y+13
+ 960 0290 AE85      		ldd r26,Y+14
+ 961 0292 BF85      		ldd r27,Y+15
+ 962 0294 8083      		st Z,r24
+ 963 0296 9183      		std Z+1,r25
+ 964 0298 A283      		std Z+2,r26
+ 965 029a B383      		std Z+3,r27
+ 966               	.L36:
+ 127:../../freeRtos/Lib/net/arp.c ****       ArpTable[index].time    = ARP_CACHE_TIME_TO_LIVE;
+ 968               	.LM48:
+ 969 029c 80E8      		ldi r24,lo8(-128)
+ 970 029e 8287      		std Z+10,r24
+ 129:../../freeRtos/Lib/net/arp.c ****       return;
+ 972               	.LM49:
+ 973 02a0 00C0      		rjmp .L25
+ 974               	.L30:
+ 975 02a2 0196      		adiw r24,1
+ 976 02a4 3B96      		adiw r30,11
+ 120:../../freeRtos/Lib/net/arp.c ****   for(index=0; index<ARP_TABLE_SIZE; index++)
+ 978               	.LM50:
+ 979 02a6 8A30      		cpi r24,10
+ 980 02a8 9105      		cpc r25,__zero_reg__
+ 981 02aa 01F4      		brne .L32
+ 982               	.L25:
+ 983               	/* epilogue start */
+ 133:../../freeRtos/Lib/net/arp.c **** }
+ 985               	.LM51:
+ 986 02ac DF91      		pop r29
+ 987 02ae CF91      		pop r28
+ 988 02b0 0895      		ret
+ 990               	.Lscope6:
+ 992               		.stabd	78,0,0
+ 996               	.global	arpPrintHeader
+ 998               	arpPrintHeader:
+ 999               		.stabd	46,0,0
+ 193:../../freeRtos/Lib/net/arp.c **** 
+ 194:../../freeRtos/Lib/net/arp.c **** #if ARP_DEBUG
+ 195:../../freeRtos/Lib/net/arp.c **** void arpPrintHeader(FILE *stream, struct netArpHeader* packet)
+ 196:../../freeRtos/Lib/net/arp.c **** {
+ 1001               	.LM52:
+ 1002               	.LFBB7:
+ 1003 02b2 EF92      		push r14
+ 1004 02b4 FF92      		push r15
+ 1005 02b6 0F93      		push r16
+ 1006 02b8 1F93      		push r17
+ 1007 02ba CF93      		push r28
+ 1008 02bc DF93      		push r29
+ 1009               	/* prologue: function */
+ 1010               	/* frame size = 0 */
+ 1011               	/* stack size = 6 */
+ 1012               	.L__stack_usage = 6
+ 1013 02be EC01      		movw r28,r24
+ 1014 02c0 8B01      		movw r16,r22
+ 197:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("ARP Packet:\r\n"));
+ 1016               	.LM53:
+ 1017 02c2 00D0      		rcall .
+ 1018 02c4 0F92      		push __tmp_reg__
+ 1019 02c6 EDB7      		in r30,__SP_L__
+ 1020 02c8 FEB7      		in r31,__SP_H__
+ 1021 02ca 8183      		std Z+1,r24
+ 1022 02cc 9283      		std Z+2,r25
+ 1023 02ce 80E0      		ldi r24,lo8(__c.4265)
+ 1024 02d0 90E0      		ldi r25,hi8(__c.4265)
+ 1025 02d2 8383      		std Z+3,r24
+ 1026 02d4 9483      		std Z+4,r25
+ 1027 02d6 0E94 0000 		call fprintf_P
+ 198:../../freeRtos/Lib/net/arp.c ****   //debugPrintHexTable(60, (unsigned char*)&packet);
+ 199:../../freeRtos/Lib/net/arp.c ****   // print operation type
+ 200:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("Operation   : "));
+ 1029               	.LM54:
+ 1030 02da EDB7      		in r30,__SP_L__
+ 1031 02dc FEB7      		in r31,__SP_H__
+ 1032 02de C183      		std Z+1,r28
+ 1033 02e0 D283      		std Z+2,r29
+ 1034 02e2 80E0      		ldi r24,lo8(__c.4267)
+ 1035 02e4 90E0      		ldi r25,hi8(__c.4267)
+ 1036 02e6 8383      		std Z+3,r24
+ 1037 02e8 9483      		std Z+4,r25
+ 1038 02ea 0E94 0000 		call fprintf_P
+ 201:../../freeRtos/Lib/net/arp.c ****   if(packet->opcode == htons(ARP_OPCODE_REQUEST))
+ 1040               	.LM55:
+ 1041 02ee F801      		movw r30,r16
+ 1042 02f0 E680      		ldd r14,Z+6
+ 1043 02f2 F780      		ldd r15,Z+7
+ 1044 02f4 0F90      		pop __tmp_reg__
+ 1045 02f6 0F90      		pop __tmp_reg__
+ 1046 02f8 0F90      		pop __tmp_reg__
+ 1047 02fa 0F90      		pop __tmp_reg__
+ 1048 02fc 81E0      		ldi r24,lo8(1)
+ 1049 02fe 90E0      		ldi r25,hi8(1)
+ 1050 0300 0E94 0000 		call htons
+ 1051 0304 E816      		cp r14,r24
+ 1052 0306 F906      		cpc r15,r25
+ 1053 0308 01F4      		brne .L38
+ 202:../../freeRtos/Lib/net/arp.c ****     fprintf_P(stream, PSTR("REQUEST"));
+ 1055               	.LM56:
+ 1056 030a 00D0      		rcall .
+ 1057 030c 0F92      		push __tmp_reg__
+ 1058 030e EDB7      		in r30,__SP_L__
+ 1059 0310 FEB7      		in r31,__SP_H__
+ 1060 0312 C183      		std Z+1,r28
+ 1061 0314 D283      		std Z+2,r29
+ 1062 0316 80E0      		ldi r24,lo8(__c.4269)
+ 1063 0318 90E0      		ldi r25,hi8(__c.4269)
+ 1064 031a 00C0      		rjmp .L41
+ 1065               	.L38:
+ 203:../../freeRtos/Lib/net/arp.c ****   else if(packet->opcode == htons(ARP_OPCODE_REPLY))
+ 1067               	.LM57:
+ 1068 031c F801      		movw r30,r16
+ 1069 031e E680      		ldd r14,Z+6
+ 1070 0320 F780      		ldd r15,Z+7
+ 1071 0322 82E0      		ldi r24,lo8(2)
+ 1072 0324 90E0      		ldi r25,hi8(2)
+ 1073 0326 0E94 0000 		call htons
+ 1074 032a E816      		cp r14,r24
+ 1075 032c F906      		cpc r15,r25
+ 1076 032e 01F4      		brne .L40
+ 204:../../freeRtos/Lib/net/arp.c ****     fprintf_P(stream, PSTR("REPLY"));
+ 1078               	.LM58:
+ 1079 0330 00D0      		rcall .
+ 1080 0332 0F92      		push __tmp_reg__
+ 1081 0334 EDB7      		in r30,__SP_L__
+ 1082 0336 FEB7      		in r31,__SP_H__
+ 1083 0338 C183      		std Z+1,r28
+ 1084 033a D283      		std Z+2,r29
+ 1085 033c 80E0      		ldi r24,lo8(__c.4271)
+ 1086 033e 90E0      		ldi r25,hi8(__c.4271)
+ 1087 0340 00C0      		rjmp .L41
+ 1088               	.L40:
+ 205:../../freeRtos/Lib/net/arp.c ****   else
+ 206:../../freeRtos/Lib/net/arp.c ****     fprintf_P(stream, PSTR("UNKNOWN"));
+ 1090               	.LM59:
+ 1091 0342 00D0      		rcall .
+ 1092 0344 0F92      		push __tmp_reg__
+ 1093 0346 EDB7      		in r30,__SP_L__
+ 1094 0348 FEB7      		in r31,__SP_H__
+ 1095 034a C183      		std Z+1,r28
+ 1096 034c D283      		std Z+2,r29
+ 1097 034e 80E0      		ldi r24,lo8(__c.4273)
+ 1098 0350 90E0      		ldi r25,hi8(__c.4273)
+ 1099               	.L41:
+ 1100 0352 8383      		std Z+3,r24
+ 1101 0354 9483      		std Z+4,r25
+ 1102 0356 0E94 0000 		call fprintf_P
+ 207:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("\r\n"));
+ 1104               	.LM60:
+ 1105 035a EDB7      		in r30,__SP_L__
+ 1106 035c FEB7      		in r31,__SP_H__
+ 1107 035e C183      		std Z+1,r28
+ 1108 0360 D283      		std Z+2,r29
+ 1109 0362 80E0      		ldi r24,lo8(__c.4275)
+ 1110 0364 90E0      		ldi r25,hi8(__c.4275)
+ 1111 0366 8383      		std Z+3,r24
+ 1112 0368 9483      		std Z+4,r25
+ 1113 036a 0E94 0000 		call fprintf_P
+ 208:../../freeRtos/Lib/net/arp.c **** // print source hardware address
+ 209:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("SrcHwAddr   : "));  netPrintEthAddr(stream, &packet->shwaddr);   fprintf_
+ 1115               	.LM61:
+ 1116 036e EDB7      		in r30,__SP_L__
+ 1117 0370 FEB7      		in r31,__SP_H__
+ 1118 0372 C183      		std Z+1,r28
+ 1119 0374 D283      		std Z+2,r29
+ 1120 0376 80E0      		ldi r24,lo8(__c.4277)
+ 1121 0378 90E0      		ldi r25,hi8(__c.4277)
+ 1122 037a 8383      		std Z+3,r24
+ 1123 037c 9483      		std Z+4,r25
+ 1124 037e 0E94 0000 		call fprintf_P
+ 1125 0382 0F90      		pop __tmp_reg__
+ 1126 0384 0F90      		pop __tmp_reg__
+ 1127 0386 0F90      		pop __tmp_reg__
+ 1128 0388 0F90      		pop __tmp_reg__
+ 1129 038a B801      		movw r22,r16
+ 1130 038c 685F      		subi r22,lo8(-(8))
+ 1131 038e 7F4F      		sbci r23,hi8(-(8))
+ 1132 0390 CE01      		movw r24,r28
+ 1133 0392 0E94 0000 		call netPrintEthAddr
+ 1134 0396 00D0      		rcall .
+ 1135 0398 0F92      		push __tmp_reg__
+ 1136 039a EDB7      		in r30,__SP_L__
+ 1137 039c FEB7      		in r31,__SP_H__
+ 1138 039e C183      		std Z+1,r28
+ 1139 03a0 D283      		std Z+2,r29
+ 1140 03a2 80E0      		ldi r24,lo8(__c.4279)
+ 1141 03a4 90E0      		ldi r25,hi8(__c.4279)
+ 1142 03a6 8383      		std Z+3,r24
+ 1143 03a8 9483      		std Z+4,r25
+ 1144 03aa 0E94 0000 		call fprintf_P
+ 210:../../freeRtos/Lib/net/arp.c **** // print source protocol address
+ 211:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("SrcProtoAddr: "));  netPrintIPAddr(stream, packet->sipaddr);     fprintf_
+ 1146               	.LM62:
+ 1147 03ae EDB7      		in r30,__SP_L__
+ 1148 03b0 FEB7      		in r31,__SP_H__
+ 1149 03b2 C183      		std Z+1,r28
+ 1150 03b4 D283      		std Z+2,r29
+ 1151 03b6 80E0      		ldi r24,lo8(__c.4281)
+ 1152 03b8 90E0      		ldi r25,hi8(__c.4281)
+ 1153 03ba 8383      		std Z+3,r24
+ 1154 03bc 9483      		std Z+4,r25
+ 1155 03be 0E94 0000 		call fprintf_P
+ 1156 03c2 0F90      		pop __tmp_reg__
+ 1157 03c4 0F90      		pop __tmp_reg__
+ 1158 03c6 0F90      		pop __tmp_reg__
+ 1159 03c8 0F90      		pop __tmp_reg__
+ 1160 03ca F801      		movw r30,r16
+ 1161 03cc 4685      		ldd r20,Z+14
+ 1162 03ce 5785      		ldd r21,Z+15
+ 1163 03d0 6089      		ldd r22,Z+16
+ 1164 03d2 7189      		ldd r23,Z+17
+ 1165 03d4 CE01      		movw r24,r28
+ 1166 03d6 0E94 0000 		call netPrintIPAddr
+ 1167 03da 00D0      		rcall .
+ 1168 03dc 0F92      		push __tmp_reg__
+ 1169 03de EDB7      		in r30,__SP_L__
+ 1170 03e0 FEB7      		in r31,__SP_H__
+ 1171 03e2 C183      		std Z+1,r28
+ 1172 03e4 D283      		std Z+2,r29
+ 1173 03e6 80E0      		ldi r24,lo8(__c.4283)
+ 1174 03e8 90E0      		ldi r25,hi8(__c.4283)
+ 1175 03ea 8383      		std Z+3,r24
+ 1176 03ec 9483      		std Z+4,r25
+ 1177 03ee 0E94 0000 		call fprintf_P
+ 212:../../freeRtos/Lib/net/arp.c **** // print target hardware address
+ 213:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("DstHwAddr   : "));  netPrintEthAddr(stream, &packet->dhwaddr);   fprintf_
+ 1179               	.LM63:
+ 1180 03f2 EDB7      		in r30,__SP_L__
+ 1181 03f4 FEB7      		in r31,__SP_H__
+ 1182 03f6 C183      		std Z+1,r28
+ 1183 03f8 D283      		std Z+2,r29
+ 1184 03fa 80E0      		ldi r24,lo8(__c.4285)
+ 1185 03fc 90E0      		ldi r25,hi8(__c.4285)
+ 1186 03fe 8383      		std Z+3,r24
+ 1187 0400 9483      		std Z+4,r25
+ 1188 0402 0E94 0000 		call fprintf_P
+ 1189 0406 0F90      		pop __tmp_reg__
+ 1190 0408 0F90      		pop __tmp_reg__
+ 1191 040a 0F90      		pop __tmp_reg__
+ 1192 040c 0F90      		pop __tmp_reg__
+ 1193 040e B801      		movw r22,r16
+ 1194 0410 6E5E      		subi r22,lo8(-(18))
+ 1195 0412 7F4F      		sbci r23,hi8(-(18))
+ 1196 0414 CE01      		movw r24,r28
+ 1197 0416 0E94 0000 		call netPrintEthAddr
+ 1198 041a 00D0      		rcall .
+ 1199 041c 0F92      		push __tmp_reg__
+ 1200 041e EDB7      		in r30,__SP_L__
+ 1201 0420 FEB7      		in r31,__SP_H__
+ 1202 0422 C183      		std Z+1,r28
+ 1203 0424 D283      		std Z+2,r29
+ 1204 0426 80E0      		ldi r24,lo8(__c.4287)
+ 1205 0428 90E0      		ldi r25,hi8(__c.4287)
+ 1206 042a 8383      		std Z+3,r24
+ 1207 042c 9483      		std Z+4,r25
+ 1208 042e 0E94 0000 		call fprintf_P
+ 214:../../freeRtos/Lib/net/arp.c **** // print target protocol address
+ 215:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("DstProtoAddr: "));  netPrintIPAddr(stream, packet->dipaddr);     fprintf_
+ 1210               	.LM64:
+ 1211 0432 EDB7      		in r30,__SP_L__
+ 1212 0434 FEB7      		in r31,__SP_H__
+ 1213 0436 C183      		std Z+1,r28
+ 1214 0438 D283      		std Z+2,r29
+ 1215 043a 80E0      		ldi r24,lo8(__c.4289)
+ 1216 043c 90E0      		ldi r25,hi8(__c.4289)
+ 1217 043e 8383      		std Z+3,r24
+ 1218 0440 9483      		std Z+4,r25
+ 1219 0442 0E94 0000 		call fprintf_P
+ 1220 0446 0F90      		pop __tmp_reg__
+ 1221 0448 0F90      		pop __tmp_reg__
+ 1222 044a 0F90      		pop __tmp_reg__
+ 1223 044c 0F90      		pop __tmp_reg__
+ 1224 044e F801      		movw r30,r16
+ 1225 0450 408D      		ldd r20,Z+24
+ 1226 0452 518D      		ldd r21,Z+25
+ 1227 0454 628D      		ldd r22,Z+26
+ 1228 0456 738D      		ldd r23,Z+27
+ 1229 0458 CE01      		movw r24,r28
+ 1230 045a 0E94 0000 		call netPrintIPAddr
+ 1231 045e 00D0      		rcall .
+ 1232 0460 0F92      		push __tmp_reg__
+ 1233 0462 EDB7      		in r30,__SP_L__
+ 1234 0464 FEB7      		in r31,__SP_H__
+ 1235 0466 C183      		std Z+1,r28
+ 1236 0468 D283      		std Z+2,r29
+ 1237 046a 80E0      		ldi r24,lo8(__c.4291)
+ 1238 046c 90E0      		ldi r25,hi8(__c.4291)
+ 1239 046e 8383      		std Z+3,r24
+ 1240 0470 9483      		std Z+4,r25
+ 1241 0472 0E94 0000 		call fprintf_P
+ 1242 0476 0F90      		pop __tmp_reg__
+ 1243 0478 0F90      		pop __tmp_reg__
+ 1244 047a 0F90      		pop __tmp_reg__
+ 1245 047c 0F90      		pop __tmp_reg__
+ 1246               	/* epilogue start */
+ 216:../../freeRtos/Lib/net/arp.c **** }
+ 1248               	.LM65:
+ 1249 047e DF91      		pop r29
+ 1250 0480 CF91      		pop r28
+ 1251 0482 1F91      		pop r17
+ 1252 0484 0F91      		pop r16
+ 1253 0486 FF90      		pop r15
+ 1254 0488 EF90      		pop r14
+ 1255 048a 0895      		ret
+ 1257               	.Lscope7:
+ 1259               		.stabd	78,0,0
+ 1261               	.global	arpArpIn
+ 1263               	arpArpIn:
+ 1264               		.stabd	46,0,0
+  47:../../freeRtos/Lib/net/arp.c **** {
+ 1266               	.LM66:
+ 1267               	.LFBB8:
+ 1268 048c CF93      		push r28
+ 1269 048e DF93      		push r29
+ 1270               	/* prologue: function */
+ 1271               	/* frame size = 0 */
+ 1272               	/* stack size = 2 */
+ 1273               	.L__stack_usage = 2
+  49:../../freeRtos/Lib/net/arp.c ****   if (arpDebug != NULL)
+ 1275               	.LM67:
+ 1276 0490 8091 0000 		lds r24,arpDebug
+ 1277 0494 9091 0000 		lds r25,arpDebug+1
+ 1278 0498 0097      		sbiw r24,0
+ 1279 049a 01F0      		breq .L43
+  51:../../freeRtos/Lib/net/arp.c ****     if (arpDebugLevel > 1)
+ 1281               	.LM68:
+ 1282 049c 2091 0000 		lds r18,arpDebugLevel
+ 1283 04a0 2230      		cpi r18,lo8(2)
+ 1284 04a2 00F0      		brlo .L44
+  52:../../freeRtos/Lib/net/arp.c ****       fprintf_P(arpDebug, PSTR("Received ARP Request\r\n"));
+ 1286               	.LM69:
+ 1287 04a4 00D0      		rcall .
+ 1288 04a6 0F92      		push __tmp_reg__
+ 1289 04a8 EDB7      		in r30,__SP_L__
+ 1290 04aa FEB7      		in r31,__SP_H__
+ 1291 04ac 8183      		std Z+1,r24
+ 1292 04ae 9283      		std Z+2,r25
+ 1293 04b0 80E0      		ldi r24,lo8(__c.4226)
+ 1294 04b2 90E0      		ldi r25,hi8(__c.4226)
+ 1295 04b4 8383      		std Z+3,r24
+ 1296 04b6 9483      		std Z+4,r25
+ 1297 04b8 0E94 0000 		call fprintf_P
+ 1298 04bc 0F90      		pop __tmp_reg__
+ 1299 04be 0F90      		pop __tmp_reg__
+ 1300 04c0 0F90      		pop __tmp_reg__
+ 1301 04c2 0F90      		pop __tmp_reg__
+ 1302               	.L44:
+  53:../../freeRtos/Lib/net/arp.c ****     if (arpDebugLevel > 2)
+ 1304               	.LM70:
+ 1305 04c4 8091 0000 		lds r24,arpDebugLevel
+ 1306 04c8 8330      		cpi r24,lo8(3)
+ 1307 04ca 00F0      		brlo .L43
+  54:../../freeRtos/Lib/net/arp.c ****       arpPrintHeader(arpDebug, nicState.layer3.arp);   
+ 1309               	.LM71:
+ 1310 04cc 6091 0000 		lds r22,nicState+10
+ 1311 04d0 7091 0000 		lds r23,nicState+10+1
+ 1312 04d4 8091 0000 		lds r24,arpDebug
+ 1313 04d8 9091 0000 		lds r25,arpDebug+1
+ 1314 04dc 0E94 0000 		call arpPrintHeader
+ 1315               	.L43:
+  60:../../freeRtos/Lib/net/arp.c ****   if((nicState.layer3.arp->dipaddr == IpMyConfig.ip) && (nicState.layer3.arp->opcode == htons(ARP_O
+ 1317               	.LM72:
+ 1318 04e0 E091 0000 		lds r30,nicState+10
+ 1319 04e4 F091 0000 		lds r31,nicState+10+1
+ 1320 04e8 208D      		ldd r18,Z+24
+ 1321 04ea 318D      		ldd r19,Z+25
+ 1322 04ec 428D      		ldd r20,Z+26
+ 1323 04ee 538D      		ldd r21,Z+27
+ 1324 04f0 8091 0000 		lds r24,IpMyConfig
+ 1325 04f4 9091 0000 		lds r25,IpMyConfig+1
+ 1326 04f8 A091 0000 		lds r26,IpMyConfig+2
+ 1327 04fc B091 0000 		lds r27,IpMyConfig+3
+ 1328 0500 2817      		cp r18,r24
+ 1329 0502 3907      		cpc r19,r25
+ 1330 0504 4A07      		cpc r20,r26
+ 1331 0506 5B07      		cpc r21,r27
+ 1332 0508 01F0      		breq .+2
+ 1333 050a 00C0      		rjmp .L42
+  60:../../freeRtos/Lib/net/arp.c ****   if((nicState.layer3.arp->dipaddr == IpMyConfig.ip) && (nicState.layer3.arp->opcode == htons(ARP_O
+ 1335               	.LM73:
+ 1336 050c C681      		ldd r28,Z+6
+ 1337 050e D781      		ldd r29,Z+7
+ 1338 0510 81E0      		ldi r24,lo8(1)
+ 1339 0512 90E0      		ldi r25,hi8(1)
+ 1340 0514 0E94 0000 		call htons
+ 1341 0518 C817      		cp r28,r24
+ 1342 051a D907      		cpc r29,r25
+ 1343 051c 01F0      		breq .+2
+ 1344 051e 00C0      		rjmp .L42
+  64:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->dhwaddr = nicState.layer3.arp->shwaddr;
+ 1346               	.LM74:
+ 1347 0520 E091 0000 		lds r30,nicState+10
+ 1348 0524 F091 0000 		lds r31,nicState+10+1
+ 1349 0528 EF01      		movw r28,r30
+ 1350 052a 6296      		adiw r28,18
+ 1351 052c DF01      		movw r26,r30
+ 1352 052e 1896      		adiw r26,8
+ 1353 0530 86E0      		ldi r24,lo8(6)
+ 1354               	.L46:
+ 1355 0532 0D90      		ld r0,X+
+ 1356 0534 0992      		st Y+,r0
+ 1357 0536 8150      		subi r24,lo8(-(-1))
+ 1358 0538 01F4      		brne .L46
+  65:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->dipaddr = nicState.layer3.arp->sipaddr;
+ 1360               	.LM75:
+ 1361 053a 8685      		ldd r24,Z+14
+ 1362 053c 9785      		ldd r25,Z+15
+ 1363 053e A089      		ldd r26,Z+16
+ 1364 0540 B189      		ldd r27,Z+17
+ 1365 0542 808F      		std Z+24,r24
+ 1366 0544 918F      		std Z+25,r25
+ 1367 0546 A28F      		std Z+26,r26
+ 1368 0548 B38F      		std Z+27,r27
+  67:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->shwaddr =  nicState.mac;
+ 1370               	.LM76:
+ 1371 054a 3896      		adiw r30,8
+ 1372 054c A0E0      		ldi r26,lo8(nicState+2)
+ 1373 054e B0E0      		ldi r27,hi8(nicState+2)
+ 1374 0550 86E0      		ldi r24,lo8(6)
+ 1375               	.L47:
+ 1376 0552 0D90      		ld r0,X+
+ 1377 0554 0192      		st Z+,r0
+ 1378 0556 8150      		subi r24,lo8(-(-1))
+ 1379 0558 01F4      		brne .L47
+  68:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->sipaddr =  IpMyConfig.ip;
+ 1381               	.LM77:
+ 1382 055a C091 0000 		lds r28,nicState+10
+ 1383 055e D091 0000 		lds r29,nicState+10+1
+ 1384 0562 8091 0000 		lds r24,IpMyConfig
+ 1385 0566 9091 0000 		lds r25,IpMyConfig+1
+ 1386 056a A091 0000 		lds r26,IpMyConfig+2
+ 1387 056e B091 0000 		lds r27,IpMyConfig+3
+ 1388 0572 8E87      		std Y+14,r24
+ 1389 0574 9F87      		std Y+15,r25
+ 1390 0576 A88B      		std Y+16,r26
+ 1391 0578 B98B      		std Y+17,r27
+  70:../../freeRtos/Lib/net/arp.c ****     nicState.layer3.arp->opcode = htons(ARP_OPCODE_REPLY);
+ 1393               	.LM78:
+ 1394 057a 82E0      		ldi r24,lo8(2)
+ 1395 057c 90E0      		ldi r25,hi8(2)
+ 1396 057e 0E94 0000 		call htons
+ 1397 0582 8E83      		std Y+6,r24
+ 1398 0584 9F83      		std Y+7,r25
+  73:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->dest = nicState.layer2.ethHeader->src;
+ 1400               	.LM79:
+ 1401 0586 E091 0000 		lds r30,nicState+8
+ 1402 058a F091 0000 		lds r31,nicState+8+1
+ 1403 058e DF01      		movw r26,r30
+ 1404 0590 1696      		adiw r26,6
+ 1405 0592 86E0      		ldi r24,lo8(6)
+ 1406               	.L48:
+ 1407 0594 0D90      		ld r0,X+
+ 1408 0596 0192      		st Z+,r0
+ 1409 0598 8150      		subi r24,lo8(-(-1))
+ 1410 059a 01F4      		brne .L48
+  74:../../freeRtos/Lib/net/arp.c ****     nicState.layer2.ethHeader->src  = nicState.mac;
+ 1412               	.LM80:
+ 1413 059c E091 0000 		lds r30,nicState+8
+ 1414 05a0 F091 0000 		lds r31,nicState+8+1
+ 1415 05a4 3696      		adiw r30,6
+ 1416 05a6 A0E0      		ldi r26,lo8(nicState+2)
+ 1417 05a8 B0E0      		ldi r27,hi8(nicState+2)
+ 1418 05aa 86E0      		ldi r24,lo8(6)
+ 1419               	.L49:
+ 1420 05ac 0D90      		ld r0,X+
+ 1421 05ae 0192      		st Z+,r0
+ 1422 05b0 8150      		subi r24,lo8(-(-1))
+ 1423 05b2 01F4      		brne .L49
+  77:../../freeRtos/Lib/net/arp.c ****     if (arpDebug != NULL)
+ 1425               	.LM81:
+ 1426 05b4 8091 0000 		lds r24,arpDebug
+ 1427 05b8 9091 0000 		lds r25,arpDebug+1
+ 1428 05bc 0097      		sbiw r24,0
+ 1429 05be 01F0      		breq .L50
+  79:../../freeRtos/Lib/net/arp.c ****       if (arpDebugLevel > 0)
+ 1431               	.LM82:
+ 1432 05c0 2091 0000 		lds r18,arpDebugLevel
+ 1433 05c4 2223      		tst r18
+ 1434 05c6 01F0      		breq .L51
+  80:../../freeRtos/Lib/net/arp.c ****         fprintf_P(arpDebug, PSTR("Sending ARP Reply\r\n"));
+ 1436               	.LM83:
+ 1437 05c8 00D0      		rcall .
+ 1438 05ca 0F92      		push __tmp_reg__
+ 1439 05cc EDB7      		in r30,__SP_L__
+ 1440 05ce FEB7      		in r31,__SP_H__
+ 1441 05d0 8183      		std Z+1,r24
+ 1442 05d2 9283      		std Z+2,r25
+ 1443 05d4 80E0      		ldi r24,lo8(__c.4228)
+ 1444 05d6 90E0      		ldi r25,hi8(__c.4228)
+ 1445 05d8 8383      		std Z+3,r24
+ 1446 05da 9483      		std Z+4,r25
+ 1447 05dc 0E94 0000 		call fprintf_P
+ 1448 05e0 0F90      		pop __tmp_reg__
+ 1449 05e2 0F90      		pop __tmp_reg__
+ 1450 05e4 0F90      		pop __tmp_reg__
+ 1451 05e6 0F90      		pop __tmp_reg__
+ 1452               	.L51:
+  81:../../freeRtos/Lib/net/arp.c ****       if (arpDebugLevel > 2)
+ 1454               	.LM84:
+ 1455 05e8 8091 0000 		lds r24,arpDebugLevel
+ 1456 05ec 8330      		cpi r24,lo8(3)
+ 1457 05ee 00F0      		brlo .L50
+  82:../../freeRtos/Lib/net/arp.c ****         arpPrintHeader(arpDebug, nicState.layer3.arp);
+ 1459               	.LM85:
+ 1460 05f0 6091 0000 		lds r22,nicState+10
+ 1461 05f4 7091 0000 		lds r23,nicState+10+1
+ 1462 05f8 8091 0000 		lds r24,arpDebug
+ 1463 05fc 9091 0000 		lds r25,arpDebug+1
+ 1464 0600 0E94 0000 		call arpPrintHeader
+ 1465               	.L50:
+  86:../../freeRtos/Lib/net/arp.c ****     nicSend(sizeof(struct netArpHeader) + ETH_HEADER_LEN);
+ 1467               	.LM86:
+ 1468 0604 8AE2      		ldi r24,lo8(42)
+ 1469 0606 90E0      		ldi r25,hi8(42)
+ 1470 0608 0E94 0000 		call nicSend
+ 1471               	.L42:
+ 1472               	/* epilogue start */
+  88:../../freeRtos/Lib/net/arp.c **** }
+ 1474               	.LM87:
+ 1475 060c DF91      		pop r29
+ 1476 060e CF91      		pop r28
+ 1477 0610 0895      		ret
+ 1479               	.Lscope8:
+ 1481               		.stabd	78,0,0
+ 1484               	.global	arpPrintTable
+ 1486               	arpPrintTable:
+ 1487               		.stabd	46,0,0
+ 217:../../freeRtos/Lib/net/arp.c **** #endif /*ARP_DEBUG*/
+ 218:../../freeRtos/Lib/net/arp.c **** 
+ 219:../../freeRtos/Lib/net/arp.c **** void arpPrintTable(FILE *stream)
+ 220:../../freeRtos/Lib/net/arp.c **** {
+ 1489               	.LM88:
+ 1490               	.LFBB9:
+ 1491 0612 6F92      		push r6
+ 1492 0614 7F92      		push r7
+ 1493 0616 8F92      		push r8
+ 1494 0618 9F92      		push r9
+ 1495 061a AF92      		push r10
+ 1496 061c BF92      		push r11
+ 1497 061e CF92      		push r12
+ 1498 0620 DF92      		push r13
+ 1499 0622 EF92      		push r14
+ 1500 0624 FF92      		push r15
+ 1501 0626 0F93      		push r16
+ 1502 0628 1F93      		push r17
+ 1503 062a CF93      		push r28
+ 1504 062c DF93      		push r29
+ 1505               	/* prologue: function */
+ 1506               	/* frame size = 0 */
+ 1507               	/* stack size = 14 */
+ 1508               	.L__stack_usage = 14
+ 1509 062e EC01      		movw r28,r24
+ 221:../../freeRtos/Lib/net/arp.c ****   uint8_t i;
+ 222:../../freeRtos/Lib/net/arp.c **** 
+ 223:../../freeRtos/Lib/net/arp.c ****   // print ARP table
+ 224:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("Time Eth Address        IP Address\r\n"));
+ 1511               	.LM89:
+ 1512 0630 00D0      		rcall .
+ 1513 0632 0F92      		push __tmp_reg__
+ 1514 0634 ADB7      		in r26,__SP_L__
+ 1515 0636 BEB7      		in r27,__SP_H__
+ 1516 0638 1196      		adiw r26,1
+ 1517 063a 8D93      		st X+,r24
+ 1518 063c 9C93      		st X,r25
+ 1519 063e 1297      		sbiw r26,1+1
+ 1520 0640 80E0      		ldi r24,lo8(__c.4297)
+ 1521 0642 90E0      		ldi r25,hi8(__c.4297)
+ 1522 0644 1396      		adiw r26,3
+ 1523 0646 8D93      		st X+,r24
+ 1524 0648 9C93      		st X,r25
+ 1525 064a 1497      		sbiw r26,3+1
+ 1526 064c 0E94 0000 		call fprintf_P
+ 225:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("-----------------------------------\r\n"));
+ 1528               	.LM90:
+ 1529 0650 EDB7      		in r30,__SP_L__
+ 1530 0652 FEB7      		in r31,__SP_H__
+ 1531 0654 C183      		std Z+1,r28
+ 1532 0656 D283      		std Z+2,r29
+ 1533 0658 80E0      		ldi r24,lo8(__c.4299)
+ 1534 065a 90E0      		ldi r25,hi8(__c.4299)
+ 1535 065c 8383      		std Z+3,r24
+ 1536 065e 9483      		std Z+4,r25
+ 1537 0660 0E94 0000 		call fprintf_P
+ 226:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR(" MY  "));
+ 1539               	.LM91:
+ 1540 0664 ADB7      		in r26,__SP_L__
+ 1541 0666 BEB7      		in r27,__SP_H__
+ 1542 0668 1196      		adiw r26,1
+ 1543 066a CD93      		st X+,r28
+ 1544 066c DC93      		st X,r29
+ 1545 066e 1297      		sbiw r26,1+1
+ 1546 0670 80E0      		ldi r24,lo8(__c.4301)
+ 1547 0672 90E0      		ldi r25,hi8(__c.4301)
+ 1548 0674 1396      		adiw r26,3
+ 1549 0676 8D93      		st X+,r24
+ 1550 0678 9C93      		st X,r25
+ 1551 067a 1497      		sbiw r26,3+1
+ 1552 067c 0E94 0000 		call fprintf_P
+ 227:../../freeRtos/Lib/net/arp.c ****   netPrintEthAddr(stream, &nicState.mac);
+ 1554               	.LM92:
+ 1555 0680 0F90      		pop __tmp_reg__
+ 1556 0682 0F90      		pop __tmp_reg__
+ 1557 0684 0F90      		pop __tmp_reg__
+ 1558 0686 0F90      		pop __tmp_reg__
+ 1559 0688 CE01      		movw r24,r28
+ 1560 068a 60E0      		ldi r22,lo8(nicState+2)
+ 1561 068c 70E0      		ldi r23,hi8(nicState+2)
+ 1562 068e 0E94 0000 		call netPrintEthAddr
+ 228:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("  "));
+ 1564               	.LM93:
+ 1565 0692 00D0      		rcall .
+ 1566 0694 0F92      		push __tmp_reg__
+ 1567 0696 EDB7      		in r30,__SP_L__
+ 1568 0698 FEB7      		in r31,__SP_H__
+ 1569 069a C183      		std Z+1,r28
+ 1570 069c D283      		std Z+2,r29
+ 1571 069e 80E0      		ldi r24,lo8(__c.4303)
+ 1572 06a0 90E0      		ldi r25,hi8(__c.4303)
+ 1573 06a2 8383      		std Z+3,r24
+ 1574 06a4 9483      		std Z+4,r25
+ 1575 06a6 0E94 0000 		call fprintf_P
+ 229:../../freeRtos/Lib/net/arp.c ****   netPrintIPAddr(stream, IpMyConfig.ip);
+ 1577               	.LM94:
+ 1578 06aa 0F90      		pop __tmp_reg__
+ 1579 06ac 0F90      		pop __tmp_reg__
+ 1580 06ae 0F90      		pop __tmp_reg__
+ 1581 06b0 0F90      		pop __tmp_reg__
+ 1582 06b2 4091 0000 		lds r20,IpMyConfig
+ 1583 06b6 5091 0000 		lds r21,IpMyConfig+1
+ 1584 06ba 6091 0000 		lds r22,IpMyConfig+2
+ 1585 06be 7091 0000 		lds r23,IpMyConfig+3
+ 1586 06c2 CE01      		movw r24,r28
+ 1587 06c4 0E94 0000 		call netPrintIPAddr
+ 230:../../freeRtos/Lib/net/arp.c ****   fprintf_P(stream, PSTR("\r\n"));
+ 1589               	.LM95:
+ 1590 06c8 00D0      		rcall .
+ 1591 06ca 0F92      		push __tmp_reg__
+ 1592 06cc ADB7      		in r26,__SP_L__
+ 1593 06ce BEB7      		in r27,__SP_H__
+ 1594 06d0 1196      		adiw r26,1
+ 1595 06d2 CD93      		st X+,r28
+ 1596 06d4 DC93      		st X,r29
+ 1597 06d6 1297      		sbiw r26,1+1
+ 1598 06d8 80E0      		ldi r24,lo8(__c.4305)
+ 1599 06da 90E0      		ldi r25,hi8(__c.4305)
+ 1600 06dc 1396      		adiw r26,3
+ 1601 06de 8D93      		st X+,r24
+ 1602 06e0 9C93      		st X,r25
+ 1603 06e2 1497      		sbiw r26,3+1
+ 1604 06e4 0E94 0000 		call fprintf_P
+ 1605 06e8 00E0      		ldi r16,lo8(ArpTable)
+ 1606 06ea 10E0      		ldi r17,hi8(ArpTable)
+ 1607 06ec 0F90      		pop __tmp_reg__
+ 1608 06ee 0F90      		pop __tmp_reg__
+ 1609 06f0 0F90      		pop __tmp_reg__
+ 1610 06f2 0F90      		pop __tmp_reg__
+ 1611 06f4 EE24      		clr r14
+ 1612 06f6 FF24      		clr r15
+ 231:../../freeRtos/Lib/net/arp.c **** 
+ 232:../../freeRtos/Lib/net/arp.c ****   for(i=0; i<ARP_TABLE_SIZE; i++)
+ 233:../../freeRtos/Lib/net/arp.c ****   {
+ 234:../../freeRtos/Lib/net/arp.c ****     if (ArpTable[i].ipaddr == 0)
+ 235:../../freeRtos/Lib/net/arp.c ****       continue;
+ 236:../../freeRtos/Lib/net/arp.c ****     fprintf_P(stream, PSTR("%3d  "), ArpTable[i].time);
+ 1614               	.LM96:
+ 1615 06f8 30E0      		ldi r19,lo8(__c.4308)
+ 1616 06fa C32E      		mov r12,r19
+ 1617 06fc 30E0      		ldi r19,hi8(__c.4308)
+ 1618 06fe D32E      		mov r13,r19
+ 237:../../freeRtos/Lib/net/arp.c ****     netPrintEthAddr(stream, &ArpTable[i].ethaddr);
+ 1620               	.LM97:
+ 1621 0700 2BE0      		ldi r18,lo8(11)
+ 1622 0702 A22E      		mov r10,r18
+ 1623 0704 B12C      		mov r11,__zero_reg__
+ 238:../../freeRtos/Lib/net/arp.c ****     fprintf_P(stream, PSTR("  "));
+ 1625               	.LM98:
+ 1626 0706 90E0      		ldi r25,lo8(__c.4310)
+ 1627 0708 892E      		mov r8,r25
+ 1628 070a 90E0      		ldi r25,hi8(__c.4310)
+ 1629 070c 992E      		mov r9,r25
+ 239:../../freeRtos/Lib/net/arp.c ****     netPrintIPAddr(stream, ArpTable[i].ipaddr);
+ 240:../../freeRtos/Lib/net/arp.c ****     fprintf_P(stream, PSTR("\r\n"));
+ 1631               	.LM99:
+ 1632 070e 80E0      		ldi r24,lo8(__c.4312)
+ 1633 0710 682E      		mov r6,r24
+ 1634 0712 80E0      		ldi r24,hi8(__c.4312)
+ 1635 0714 782E      		mov r7,r24
+ 1636               	.L58:
+ 234:../../freeRtos/Lib/net/arp.c ****     if (ArpTable[i].ipaddr == 0)
+ 1638               	.LM100:
+ 1639 0716 F801      		movw r30,r16
+ 1640 0718 8081      		ld r24,Z
+ 1641 071a 9181      		ldd r25,Z+1
+ 1642 071c A281      		ldd r26,Z+2
+ 1643 071e B381      		ldd r27,Z+3
+ 1644 0720 0097      		sbiw r24,0
+ 1645 0722 A105      		cpc r26,__zero_reg__
+ 1646 0724 B105      		cpc r27,__zero_reg__
+ 1647 0726 01F4      		brne .+2
+ 1648 0728 00C0      		rjmp .L57
+ 236:../../freeRtos/Lib/net/arp.c ****     fprintf_P(stream, PSTR("%3d  "), ArpTable[i].time);
+ 1650               	.LM101:
+ 1651 072a 00D0      		rcall .
+ 1652 072c 00D0      		rcall .
+ 1653 072e EDB7      		in r30,__SP_L__
+ 1654 0730 FEB7      		in r31,__SP_H__
+ 1655 0732 3196      		adiw r30,1
+ 1656 0734 ADB7      		in r26,__SP_L__
+ 1657 0736 BEB7      		in r27,__SP_H__
+ 1658 0738 1196      		adiw r26,1
+ 1659 073a CD93      		st X+,r28
+ 1660 073c DC93      		st X,r29
+ 1661 073e 1297      		sbiw r26,1+1
+ 1662 0740 C282      		std Z+2,r12
+ 1663 0742 D382      		std Z+3,r13
+ 1664 0744 D801      		movw r26,r16
+ 1665 0746 1A96      		adiw r26,10
+ 1666 0748 8C91      		ld r24,X
+ 1667 074a 8483      		std Z+4,r24
+ 1668 074c 1582      		std Z+5,__zero_reg__
+ 1669 074e 0E94 0000 		call fprintf_P
+ 237:../../freeRtos/Lib/net/arp.c ****     netPrintEthAddr(stream, &ArpTable[i].ethaddr);
+ 1671               	.LM102:
+ 1672 0752 EDB7      		in r30,__SP_L__
+ 1673 0754 FEB7      		in r31,__SP_H__
+ 1674 0756 3696      		adiw r30,6
+ 1675 0758 EDBF      		out __SP_L__,r30
+ 1676 075a FEBF      		out __SP_H__,r31
+ 1677 075c EA9C      		mul r14,r10
+ 1678 075e B001      		movw r22,r0
+ 1679 0760 EB9C      		mul r14,r11
+ 1680 0762 700D      		add r23,r0
+ 1681 0764 FA9C      		mul r15,r10
+ 1682 0766 700D      		add r23,r0
+ 1683 0768 1124      		clr r1
+ 1684 076a 6050      		subi r22,lo8(-(ArpTable+4))
+ 1685 076c 7040      		sbci r23,hi8(-(ArpTable+4))
+ 1686 076e CE01      		movw r24,r28
+ 1687 0770 0E94 0000 		call netPrintEthAddr
+ 238:../../freeRtos/Lib/net/arp.c ****     fprintf_P(stream, PSTR("  "));
+ 1689               	.LM103:
+ 1690 0774 00D0      		rcall .
+ 1691 0776 0F92      		push __tmp_reg__
+ 1692 0778 ADB7      		in r26,__SP_L__
+ 1693 077a BEB7      		in r27,__SP_H__
+ 1694 077c 1196      		adiw r26,1
+ 1695 077e CD93      		st X+,r28
+ 1696 0780 DC93      		st X,r29
+ 1697 0782 1297      		sbiw r26,1+1
+ 1698 0784 1396      		adiw r26,3
+ 1699 0786 8D92      		st X+,r8
+ 1700 0788 9C92      		st X,r9
+ 1701 078a 1497      		sbiw r26,3+1
+ 1702 078c 0E94 0000 		call fprintf_P
+ 239:../../freeRtos/Lib/net/arp.c ****     netPrintIPAddr(stream, ArpTable[i].ipaddr);
+ 1704               	.LM104:
+ 1705 0790 0F90      		pop __tmp_reg__
+ 1706 0792 0F90      		pop __tmp_reg__
+ 1707 0794 0F90      		pop __tmp_reg__
+ 1708 0796 0F90      		pop __tmp_reg__
+ 1709 0798 F801      		movw r30,r16
+ 1710 079a 4081      		ld r20,Z
+ 1711 079c 5181      		ldd r21,Z+1
+ 1712 079e 6281      		ldd r22,Z+2
+ 1713 07a0 7381      		ldd r23,Z+3
+ 1714 07a2 CE01      		movw r24,r28
+ 1715 07a4 0E94 0000 		call netPrintIPAddr
+ 1717               	.LM105:
+ 1718 07a8 00D0      		rcall .
+ 1719 07aa 0F92      		push __tmp_reg__
+ 1720 07ac ADB7      		in r26,__SP_L__
+ 1721 07ae BEB7      		in r27,__SP_H__
+ 1722 07b0 1196      		adiw r26,1
+ 1723 07b2 CD93      		st X+,r28
+ 1724 07b4 DC93      		st X,r29
+ 1725 07b6 1297      		sbiw r26,1+1
+ 1726 07b8 1396      		adiw r26,3
+ 1727 07ba 6D92      		st X+,r6
+ 1728 07bc 7C92      		st X,r7
+ 1729 07be 1497      		sbiw r26,3+1
+ 1730 07c0 0E94 0000 		call fprintf_P
+ 1731 07c4 0F90      		pop __tmp_reg__
+ 1732 07c6 0F90      		pop __tmp_reg__
+ 1733 07c8 0F90      		pop __tmp_reg__
+ 1734 07ca 0F90      		pop __tmp_reg__
+ 1735               	.L57:
+ 1736 07cc 0894      		sec
+ 1737 07ce E11C      		adc r14,__zero_reg__
+ 1738 07d0 F11C      		adc r15,__zero_reg__
+ 1739 07d2 055F      		subi r16,lo8(-(11))
+ 1740 07d4 1F4F      		sbci r17,hi8(-(11))
+ 232:../../freeRtos/Lib/net/arp.c ****   for(i=0; i<ARP_TABLE_SIZE; i++)
+ 1742               	.LM106:
+ 1743 07d6 BAE0      		ldi r27,lo8(10)
+ 1744 07d8 EB16      		cp r14,r27
+ 1745 07da F104      		cpc r15,__zero_reg__
+ 1746 07dc 01F0      		breq .+2
+ 1747 07de 00C0      		rjmp .L58
+ 1748               	/* epilogue start */
+ 241:../../freeRtos/Lib/net/arp.c ****   }
+ 242:../../freeRtos/Lib/net/arp.c **** }
+ 1750               	.LM107:
+ 1751 07e0 DF91      		pop r29
+ 1752 07e2 CF91      		pop r28
+ 1753 07e4 1F91      		pop r17
+ 1754 07e6 0F91      		pop r16
+ 1755 07e8 FF90      		pop r15
+ 1756 07ea EF90      		pop r14
+ 1757 07ec DF90      		pop r13
+ 1758 07ee CF90      		pop r12
+ 1759 07f0 BF90      		pop r11
+ 1760 07f2 AF90      		pop r10
+ 1761 07f4 9F90      		pop r9
+ 1762 07f6 8F90      		pop r8
+ 1763 07f8 7F90      		pop r7
+ 1764 07fa 6F90      		pop r6
+ 1765 07fc 0895      		ret
+ 1767               	.Lscope9:
+ 1769               		.stabd	78,0,0
+ 1770               		.comm wwwport,1,1
+ 1771               		.comm nicState,14,1
+ 1772               		.comm plen,2,1
+ 1773               		.comm icmpDebug,2,1
+ 1774               		.comm icmpDebugLevel,1,1
+ 1775               		.comm IpMyConfig,15,1
+ 1776               		.comm udpSocket,2,1
+ 1777               		.comm udpDbgStream,2,1
+ 1778               		.comm udpDbgLevel,1,1
+ 1779               		.comm tcpDebugStream,2,1
+ 1780               		.comm tcpDebugLevel,1,1
+ 1781               		.comm sockets,2,1
+ 1782               		.comm arpDebug,2,1
+ 1783               		.comm arpDebugLevel,1,1
+ 1784               		.comm ArpTable,110,1
+ 1785               		.section	.progmem.data,"a",@progbits
+ 1788               	__c.4312:
+ 1789 0000 0D0A 00   		.string	"\r\n"
+ 1792               	__c.4310:
+ 1793 0003 2020 00   		.string	"  "
+ 1796               	__c.4308:
+ 1797 0006 2533 6420 		.string	"%3d  "
+ 1797      2000 
+ 1800               	__c.4305:
+ 1801 000c 0D0A 00   		.string	"\r\n"
+ 1804               	__c.4303:
+ 1805 000f 2020 00   		.string	"  "
+ 1808               	__c.4301:
+ 1809 0012 204D 5920 		.string	" MY  "
+ 1809      2000 
+ 1812               	__c.4299:
+ 1813 0018 2D2D 2D2D 		.string	"-----------------------------------\r\n"
+ 1813      2D2D 2D2D 
+ 1813      2D2D 2D2D 
+ 1813      2D2D 2D2D 
+ 1813      2D2D 2D2D 
+ 1816               	__c.4297:
+ 1817 003e 5469 6D65 		.string	"Time Eth Address        IP Address\r\n"
+ 1817      2045 7468 
+ 1817      2041 6464 
+ 1817      7265 7373 
+ 1817      2020 2020 
+ 1820               	__c.4291:
+ 1821 0063 0D0A 00   		.string	"\r\n"
+ 1824               	__c.4289:
+ 1825 0066 4473 7450 		.string	"DstProtoAddr: "
+ 1825      726F 746F 
+ 1825      4164 6472 
+ 1825      3A20 00
+ 1828               	__c.4287:
+ 1829 0075 0D0A 00   		.string	"\r\n"
+ 1832               	__c.4285:
+ 1833 0078 4473 7448 		.string	"DstHwAddr   : "
+ 1833      7741 6464 
+ 1833      7220 2020 
+ 1833      3A20 00
+ 1836               	__c.4283:
+ 1837 0087 0D0A 00   		.string	"\r\n"
+ 1840               	__c.4281:
+ 1841 008a 5372 6350 		.string	"SrcProtoAddr: "
+ 1841      726F 746F 
+ 1841      4164 6472 
+ 1841      3A20 00
+ 1844               	__c.4279:
+ 1845 0099 0D0A 00   		.string	"\r\n"
+ 1848               	__c.4277:
+ 1849 009c 5372 6348 		.string	"SrcHwAddr   : "
+ 1849      7741 6464 
+ 1849      7220 2020 
+ 1849      3A20 00
+ 1852               	__c.4275:
+ 1853 00ab 0D0A 00   		.string	"\r\n"
+ 1856               	__c.4273:
+ 1857 00ae 554E 4B4E 		.string	"UNKNOWN"
+ 1857      4F57 4E00 
+ 1860               	__c.4271:
+ 1861 00b6 5245 504C 		.string	"REPLY"
+ 1861      5900 
+ 1864               	__c.4269:
+ 1865 00bc 5245 5155 		.string	"REQUEST"
+ 1865      4553 5400 
+ 1868               	__c.4267:
+ 1869 00c4 4F70 6572 		.string	"Operation   : "
+ 1869      6174 696F 
+ 1869      6E20 2020 
+ 1869      3A20 00
+ 1872               	__c.4265:
+ 1873 00d3 4152 5020 		.string	"ARP Packet:\r\n"
+ 1873      5061 636B 
+ 1873      6574 3A0D 
+ 1873      0A00 
+ 1876               	__c.4237:
+ 1877 00e1 0D0A 00   		.string	"\r\n"
+ 1880               	__c.4235:
+ 1881 00e4 2049 503A 		.string	" IP: "
+ 1881      2000 
+ 1884               	__c.4233:
+ 1885 00ea 4152 5020 		.string	"ARP IP in MAC: "
+ 1885      4950 2069 
+ 1885      6E20 4D41 
+ 1885      433A 2000 
+ 1888               	__c.4228:
+ 1889 00fa 5365 6E64 		.string	"Sending ARP Reply\r\n"
+ 1889      696E 6720 
+ 1889      4152 5020 
+ 1889      5265 706C 
+ 1889      790D 0A00 
+ 1892               	__c.4226:
+ 1893 010e 5265 6365 		.string	"Received ARP Request\r\n"
+ 1893      6976 6564 
+ 1893      2041 5250 
+ 1893      2052 6571 
+ 1893      7565 7374 
+ 1909               		.weak	nicSend
+ 1910               		.text
+ 1912               	.Letext0:
+ 1913               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 arp.c
+     /tmp/ccPZVqfb.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccPZVqfb.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccPZVqfb.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccPZVqfb.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccPZVqfb.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccPZVqfb.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccPZVqfb.s:480    .text:00000000 setArpDebug
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+     /tmp/ccPZVqfb.s:513    .text:0000001a arpInit
+                            *COM*:0000006e ArpTable
+     /tmp/ccPZVqfb.s:546    .text:00000032 arpTimer
+     /tmp/ccPZVqfb.s:589    .text:0000004c arpMatchIp
+     /tmp/ccPZVqfb.s:644    .text:0000007a arpIpOut
+                            *COM*:0000000e nicState
+     /tmp/ccPZVqfb.s:756    .text:0000011e arpIpIn
+     /tmp/ccPZVqfb.s:1884   .progmem.data:000000ea __c.4233
+     /tmp/ccPZVqfb.s:1880   .progmem.data:000000e4 __c.4235
+     /tmp/ccPZVqfb.s:1876   .progmem.data:000000e1 __c.4237
+     /tmp/ccPZVqfb.s:998    .text:000002b2 arpPrintHeader
+     /tmp/ccPZVqfb.s:1872   .progmem.data:000000d3 __c.4265
+     /tmp/ccPZVqfb.s:1868   .progmem.data:000000c4 __c.4267
+     /tmp/ccPZVqfb.s:1864   .progmem.data:000000bc __c.4269
+     /tmp/ccPZVqfb.s:1860   .progmem.data:000000b6 __c.4271
+     /tmp/ccPZVqfb.s:1856   .progmem.data:000000ae __c.4273
+     /tmp/ccPZVqfb.s:1852   .progmem.data:000000ab __c.4275
+     /tmp/ccPZVqfb.s:1848   .progmem.data:0000009c __c.4277
+     /tmp/ccPZVqfb.s:1844   .progmem.data:00000099 __c.4279
+     /tmp/ccPZVqfb.s:1840   .progmem.data:0000008a __c.4281
+     /tmp/ccPZVqfb.s:1836   .progmem.data:00000087 __c.4283
+     /tmp/ccPZVqfb.s:1832   .progmem.data:00000078 __c.4285
+     /tmp/ccPZVqfb.s:1828   .progmem.data:00000075 __c.4287
+     /tmp/ccPZVqfb.s:1824   .progmem.data:00000066 __c.4289
+     /tmp/ccPZVqfb.s:1820   .progmem.data:00000063 __c.4291
+     /tmp/ccPZVqfb.s:1263   .text:0000048c arpArpIn
+     /tmp/ccPZVqfb.s:1892   .progmem.data:0000010e __c.4226
+                            *COM*:0000000f IpMyConfig
+     /tmp/ccPZVqfb.s:1888   .progmem.data:000000fa __c.4228
+     /tmp/ccPZVqfb.s:1486   .text:00000612 arpPrintTable
+     /tmp/ccPZVqfb.s:1816   .progmem.data:0000003e __c.4297
+     /tmp/ccPZVqfb.s:1812   .progmem.data:00000018 __c.4299
+     /tmp/ccPZVqfb.s:1808   .progmem.data:00000012 __c.4301
+     /tmp/ccPZVqfb.s:1804   .progmem.data:0000000f __c.4303
+     /tmp/ccPZVqfb.s:1800   .progmem.data:0000000c __c.4305
+     /tmp/ccPZVqfb.s:1796   .progmem.data:00000006 __c.4308
+     /tmp/ccPZVqfb.s:1792   .progmem.data:00000003 __c.4310
+     /tmp/ccPZVqfb.s:1788   .progmem.data:00000000 __c.4312
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 plen
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+
+UNDEFINED SYMBOLS
+memset
+fprintf_P
+netPrintEthAddr
+netPrintIPAddr
+htons
+nicSend
+__do_clear_bss
