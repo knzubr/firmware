@@ -1,0 +1,551 @@
+   1               		.file	"spiXmega.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 560               	.global	spiInit
+ 562               	spiInit:
+ 563               		.stabd	46,0,0
+   1:../../freeRtos/Lib/spiXmega.c **** #include <stdlib.h>
+   2:../../freeRtos/Lib/spiXmega.c **** #include <avr/io.h>
+   3:../../freeRtos/Lib/spiXmega.c **** #include "FreeRTOS.h"
+   4:../../freeRtos/Lib/spiXmega.c **** #include "queue.h"
+   5:../../freeRtos/Lib/spiXmega.c **** #include "task.h"
+   6:../../freeRtos/Lib/spiXmega.c **** #include "hardware.h"
+   7:../../freeRtos/Lib/spiXmega.c **** #include "spi.h"
+   8:../../freeRtos/Lib/spiXmega.c **** #include "semphr.h"
+   9:../../freeRtos/Lib/spiXmega.c **** 
+  10:../../freeRtos/Lib/spiXmega.c **** 
+  11:../../freeRtos/Lib/spiXmega.c **** void spiInit(void (*disableAllSpiDevicesFun)(void))
+  12:../../freeRtos/Lib/spiXmega.c **** {
+ 565               	.LM0:
+ 566               	.LFBB1:
+ 567               	/* prologue: function */
+ 568               	/* frame size = 0 */
+ 569               	/* stack size = 0 */
+ 570               	.L__stack_usage = 0
+  13:../../freeRtos/Lib/spiXmega.c ****   disableAllSpiDevicesFun();
+ 572               	.LM1:
+ 573 0000 FC01      		movw r30,r24
+ 574 0002 1995      		eicall
+  14:../../freeRtos/Lib/spiXmega.c ****   portENTER_CRITICAL();
+ 576               	.LM2:
+ 577               	/* #APP */
+ 578               	 ;  14 "../../freeRtos/Lib/spiXmega.c" 1
+ 579 0004 0FB6      		in		__tmp_reg__, __SREG__
+ 580               	 ;  0 "" 2
+ 581               	 ;  14 "../../freeRtos/Lib/spiXmega.c" 1
+ 582 0006 F894      		cli
+ 583               	 ;  0 "" 2
+ 584               	 ;  14 "../../freeRtos/Lib/spiXmega.c" 1
+ 585 0008 0F92      		push	__tmp_reg__
+ 586               	 ;  0 "" 2
+  15:../../freeRtos/Lib/spiXmega.c ****   vSemaphoreCreateBinary(xSemaphoreSpiSS); 
+ 588               	.LM3:
+ 589               	/* #NOAPP */
+ 590 000a 81E0      		ldi r24,lo8(1)
+ 591 000c 60E0      		ldi r22,lo8(0)
+ 592 000e 0E94 0000 		call xQueueCreate
+ 593 0012 8093 0000 		sts xSemaphoreSpiSS,r24
+ 594 0016 9093 0000 		sts xSemaphoreSpiSS+1,r25
+ 595 001a 0097      		sbiw r24,0
+ 596 001c 01F0      		breq .L2
+ 598               	.LM4:
+ 599 001e 60E0      		ldi r22,lo8(0)
+ 600 0020 70E0      		ldi r23,hi8(0)
+ 601 0022 40E0      		ldi r20,lo8(0)
+ 602 0024 50E0      		ldi r21,hi8(0)
+ 603 0026 20E0      		ldi r18,lo8(0)
+ 604 0028 0E94 0000 		call xQueueGenericSend
+ 605               	.L2:
+  16:../../freeRtos/Lib/spiXmega.c **** 
+  17:../../freeRtos/Lib/spiXmega.c ****   //SPCR  = (1<<SPE)|(1<<MSTR)|(1<<SPIE);  //TODO Adam: użyć odpowiednich nazw rejestrów
+  18:../../freeRtos/Lib/spiXmega.c ****   //SPSR |= (1<<SPI2X);
+  19:../../freeRtos/Lib/spiXmega.c ****   SPID.CTRL=(1<<SPI_ENABLE_bp)|(1<<SPI_MASTER_bp);
+ 607               	.LM5:
+ 608 002c 80E5      		ldi r24,lo8(80)
+ 609 002e 8093 C009 		sts 2496,r24
+  20:../../freeRtos/Lib/spiXmega.c ****   SPID.INTCTRL|=(1<<SPI_INTLVL1_bp);//0x01;
+ 611               	.LM6:
+ 612 0032 8091 C109 		lds r24,2497
+ 613 0036 8260      		ori r24,lo8(2)
+ 614 0038 E0EC      		ldi r30,lo8(2496)
+ 615 003a F9E0      		ldi r31,hi8(2496)
+ 616 003c 8183      		std Z+1,r24
+  21:../../freeRtos/Lib/spiXmega.c ****   SPID.CTRL|=(1<<SPI_CLK2X_bp);
+ 618               	.LM7:
+ 619 003e 8091 C009 		lds r24,2496
+ 620 0042 8068      		ori r24,lo8(-128)
+ 621 0044 8093 C009 		sts 2496,r24
+  22:../../freeRtos/Lib/spiXmega.c ****   portEXIT_CRITICAL();
+ 623               	.LM8:
+ 624               	/* #APP */
+ 625               	 ;  22 "../../freeRtos/Lib/spiXmega.c" 1
+ 626 0048 0F90      		pop		__tmp_reg__
+ 627               	 ;  0 "" 2
+ 628               	 ;  22 "../../freeRtos/Lib/spiXmega.c" 1
+ 629 004a 0FBE      		out		__SREG__, __tmp_reg__
+ 630               	 ;  0 "" 2
+ 631               	/* epilogue start */
+  23:../../freeRtos/Lib/spiXmega.c ****   
+  24:../../freeRtos/Lib/spiXmega.c ****   //mode 0,0
+  25:../../freeRtos/Lib/spiXmega.c **** }
+ 633               	.LM9:
+ 634               	/* #NOAPP */
+ 635 004c 0895      		ret
+ 637               	.Lscope1:
+ 639               		.stabd	78,0,0
+ 642               	.global	spiInitENC
+ 644               	spiInitENC:
+ 645               		.stabd	46,0,0
+  26:../../freeRtos/Lib/spiXmega.c **** void spiInitENC(void (*disableAllSpiDevicesFun)(void)) // PORTC
+  27:../../freeRtos/Lib/spiXmega.c **** {
+ 647               	.LM10:
+ 648               	.LFBB2:
+ 649               	/* prologue: function */
+ 650               	/* frame size = 0 */
+ 651               	/* stack size = 0 */
+ 652               	.L__stack_usage = 0
+  28:../../freeRtos/Lib/spiXmega.c ****   disableAllSpiDevicesFun();
+ 654               	.LM11:
+ 655 004e FC01      		movw r30,r24
+ 656 0050 1995      		eicall
+  29:../../freeRtos/Lib/spiXmega.c ****   portENTER_CRITICAL();
+ 658               	.LM12:
+ 659               	/* #APP */
+ 660               	 ;  29 "../../freeRtos/Lib/spiXmega.c" 1
+ 661 0052 0FB6      		in		__tmp_reg__, __SREG__
+ 662               	 ;  0 "" 2
+ 663               	 ;  29 "../../freeRtos/Lib/spiXmega.c" 1
+ 664 0054 F894      		cli
+ 665               	 ;  0 "" 2
+ 666               	 ;  29 "../../freeRtos/Lib/spiXmega.c" 1
+ 667 0056 0F92      		push	__tmp_reg__
+ 668               	 ;  0 "" 2
+  30:../../freeRtos/Lib/spiXmega.c ****   vSemaphoreCreateBinary(xSemaphoreSpiSS); 
+ 670               	.LM13:
+ 671               	/* #NOAPP */
+ 672 0058 81E0      		ldi r24,lo8(1)
+ 673 005a 60E0      		ldi r22,lo8(0)
+ 674 005c 0E94 0000 		call xQueueCreate
+ 675 0060 8093 0000 		sts xSemaphoreSpiSS,r24
+ 676 0064 9093 0000 		sts xSemaphoreSpiSS+1,r25
+ 677 0068 0097      		sbiw r24,0
+ 678 006a 01F0      		breq .L4
+ 680               	.LM14:
+ 681 006c 60E0      		ldi r22,lo8(0)
+ 682 006e 70E0      		ldi r23,hi8(0)
+ 683 0070 40E0      		ldi r20,lo8(0)
+ 684 0072 50E0      		ldi r21,hi8(0)
+ 685 0074 20E0      		ldi r18,lo8(0)
+ 686 0076 0E94 0000 		call xQueueGenericSend
+ 687               	.L4:
+  31:../../freeRtos/Lib/spiXmega.c **** 
+  32:../../freeRtos/Lib/spiXmega.c ****   //SPCR  = (1<<SPE)|(1<<MSTR)|(1<<SPIE);  //TODO Adam: użyć odpowiednich nazw rejestrów
+  33:../../freeRtos/Lib/spiXmega.c ****   //SPSR |= (1<<SPI2X);
+  34:../../freeRtos/Lib/spiXmega.c ****   SPIC.CTRL=(1<<SPI_ENABLE_bp)|(1<<SPI_MASTER_bp);
+ 689               	.LM15:
+ 690 007a 80E5      		ldi r24,lo8(80)
+ 691 007c 8093 C008 		sts 2240,r24
+  35:../../freeRtos/Lib/spiXmega.c ****   SPIC.INTCTRL|=(1<<SPI_INTLVL1_bp);//0x01;
+ 693               	.LM16:
+ 694 0080 8091 C108 		lds r24,2241
+ 695 0084 8260      		ori r24,lo8(2)
+ 696 0086 E0EC      		ldi r30,lo8(2240)
+ 697 0088 F8E0      		ldi r31,hi8(2240)
+ 698 008a 8183      		std Z+1,r24
+  36:../../freeRtos/Lib/spiXmega.c ****   SPIC.CTRL|=(1<<SPI_CLK2X_bp);
+ 700               	.LM17:
+ 701 008c 8091 C008 		lds r24,2240
+ 702 0090 8068      		ori r24,lo8(-128)
+ 703 0092 8093 C008 		sts 2240,r24
+  37:../../freeRtos/Lib/spiXmega.c ****   portEXIT_CRITICAL();
+ 705               	.LM18:
+ 706               	/* #APP */
+ 707               	 ;  37 "../../freeRtos/Lib/spiXmega.c" 1
+ 708 0096 0F90      		pop		__tmp_reg__
+ 709               	 ;  0 "" 2
+ 710               	 ;  37 "../../freeRtos/Lib/spiXmega.c" 1
+ 711 0098 0FBE      		out		__SREG__, __tmp_reg__
+ 712               	 ;  0 "" 2
+ 713               	/* epilogue start */
+  38:../../freeRtos/Lib/spiXmega.c ****   
+  39:../../freeRtos/Lib/spiXmega.c ****   //mode 0,0
+  40:../../freeRtos/Lib/spiXmega.c **** }
+ 715               	.LM19:
+ 716               	/* #NOAPP */
+ 717 009a 0895      		ret
+ 719               	.Lscope2:
+ 721               		.stabd	78,0,0
+ 723               	.global	spiSetCPHA
+ 725               	spiSetCPHA:
+ 726               		.stabd	46,0,0
+  41:../../freeRtos/Lib/spiXmega.c **** 
+  42:../../freeRtos/Lib/spiXmega.c **** void spiSetCPHA(void)
+  43:../../freeRtos/Lib/spiXmega.c **** {
+ 728               	.LM20:
+ 729               	.LFBB3:
+ 730               	/* prologue: function */
+ 731               	/* frame size = 0 */
+ 732               	/* stack size = 0 */
+ 733               	.L__stack_usage = 0
+  44:../../freeRtos/Lib/spiXmega.c ****   //SPCR |= (1<<CPHA);
+  45:../../freeRtos/Lib/spiXmega.c ****   SPID.CTRL|=(1<<SPI_MODE_gp);
+ 735               	.LM21:
+ 736 009c E0EC      		ldi r30,lo8(2496)
+ 737 009e F9E0      		ldi r31,hi8(2496)
+ 738 00a0 8081      		ld r24,Z
+ 739 00a2 8460      		ori r24,lo8(4)
+ 740 00a4 8083      		st Z,r24
+ 741               	/* epilogue start */
+  46:../../freeRtos/Lib/spiXmega.c **** }
+ 743               	.LM22:
+ 744 00a6 0895      		ret
+ 746               	.Lscope3:
+ 748               		.stabd	78,0,0
+ 750               	.global	spiSetCPHAENC
+ 752               	spiSetCPHAENC:
+ 753               		.stabd	46,0,0
+  47:../../freeRtos/Lib/spiXmega.c **** void spiSetCPHAENC(void)
+  48:../../freeRtos/Lib/spiXmega.c **** {
+ 755               	.LM23:
+ 756               	.LFBB4:
+ 757               	/* prologue: function */
+ 758               	/* frame size = 0 */
+ 759               	/* stack size = 0 */
+ 760               	.L__stack_usage = 0
+  49:../../freeRtos/Lib/spiXmega.c ****   //SPCR |= (1<<CPHA);
+  50:../../freeRtos/Lib/spiXmega.c ****   SPIC.CTRL|=(1<<SPI_MODE_gp);
+ 762               	.LM24:
+ 763 00a8 E0EC      		ldi r30,lo8(2240)
+ 764 00aa F8E0      		ldi r31,hi8(2240)
+ 765 00ac 8081      		ld r24,Z
+ 766 00ae 8460      		ori r24,lo8(4)
+ 767 00b0 8083      		st Z,r24
+ 768               	/* epilogue start */
+  51:../../freeRtos/Lib/spiXmega.c **** }
+ 770               	.LM25:
+ 771 00b2 0895      		ret
+ 773               	.Lscope4:
+ 775               		.stabd	78,0,0
+ 777               	.global	spiClearCPHA
+ 779               	spiClearCPHA:
+ 780               		.stabd	46,0,0
+  52:../../freeRtos/Lib/spiXmega.c **** 
+  53:../../freeRtos/Lib/spiXmega.c **** void spiClearCPHA(void)
+  54:../../freeRtos/Lib/spiXmega.c **** {
+ 782               	.LM26:
+ 783               	.LFBB5:
+ 784               	/* prologue: function */
+ 785               	/* frame size = 0 */
+ 786               	/* stack size = 0 */
+ 787               	.L__stack_usage = 0
+  55:../../freeRtos/Lib/spiXmega.c ****   //SPCR &= ~(1<<CPHA);
+  56:../../freeRtos/Lib/spiXmega.c ****   SPID.CTRL&=~(1<<SPI_MODE_gp);
+ 789               	.LM27:
+ 790 00b4 E0EC      		ldi r30,lo8(2496)
+ 791 00b6 F9E0      		ldi r31,hi8(2496)
+ 792 00b8 8081      		ld r24,Z
+ 793 00ba 8B7F      		andi r24,lo8(-5)
+ 794 00bc 8083      		st Z,r24
+ 795               	/* epilogue start */
+  57:../../freeRtos/Lib/spiXmega.c **** }
+ 797               	.LM28:
+ 798 00be 0895      		ret
+ 800               	.Lscope5:
+ 802               		.stabd	78,0,0
+ 804               	.global	spiClearCPHAENC
+ 806               	spiClearCPHAENC:
+ 807               		.stabd	46,0,0
+  58:../../freeRtos/Lib/spiXmega.c **** void spiClearCPHAENC(void)
+  59:../../freeRtos/Lib/spiXmega.c **** {
+ 809               	.LM29:
+ 810               	.LFBB6:
+ 811               	/* prologue: function */
+ 812               	/* frame size = 0 */
+ 813               	/* stack size = 0 */
+ 814               	.L__stack_usage = 0
+  60:../../freeRtos/Lib/spiXmega.c ****   //SPCR &= ~(1<<CPHA);
+  61:../../freeRtos/Lib/spiXmega.c ****   SPIC.CTRL&=~(1<<SPI_MODE_gp);
+ 816               	.LM30:
+ 817 00c0 E0EC      		ldi r30,lo8(2240)
+ 818 00c2 F8E0      		ldi r31,hi8(2240)
+ 819 00c4 8081      		ld r24,Z
+ 820 00c6 8B7F      		andi r24,lo8(-5)
+ 821 00c8 8083      		st Z,r24
+ 822               	/* epilogue start */
+  62:../../freeRtos/Lib/spiXmega.c **** }
+ 824               	.LM31:
+ 825 00ca 0895      		ret
+ 827               	.Lscope6:
+ 829               		.stabd	78,0,0
+ 831               	.global	spiSetCPOL
+ 833               	spiSetCPOL:
+ 834               		.stabd	46,0,0
+  63:../../freeRtos/Lib/spiXmega.c **** 
+  64:../../freeRtos/Lib/spiXmega.c **** 
+  65:../../freeRtos/Lib/spiXmega.c **** void spiSetCPOL(void)
+  66:../../freeRtos/Lib/spiXmega.c **** {
+ 836               	.LM32:
+ 837               	.LFBB7:
+ 838               	/* prologue: function */
+ 839               	/* frame size = 0 */
+ 840               	/* stack size = 0 */
+ 841               	.L__stack_usage = 0
+  67:../../freeRtos/Lib/spiXmega.c ****   //SPCR |= (1<<CPOL);
+  68:../../freeRtos/Lib/spiXmega.c ****   SPID.CTRL|=(1<<SPI_MODE1_bp);
+ 843               	.LM33:
+ 844 00cc E0EC      		ldi r30,lo8(2496)
+ 845 00ce F9E0      		ldi r31,hi8(2496)
+ 846 00d0 8081      		ld r24,Z
+ 847 00d2 8860      		ori r24,lo8(8)
+ 848 00d4 8083      		st Z,r24
+ 849               	/* epilogue start */
+  69:../../freeRtos/Lib/spiXmega.c **** }
+ 851               	.LM34:
+ 852 00d6 0895      		ret
+ 854               	.Lscope7:
+ 856               		.stabd	78,0,0
+ 858               	.global	spiSetCPOLENC
+ 860               	spiSetCPOLENC:
+ 861               		.stabd	46,0,0
+  70:../../freeRtos/Lib/spiXmega.c **** void spiSetCPOLENC(void)
+  71:../../freeRtos/Lib/spiXmega.c **** {
+ 863               	.LM35:
+ 864               	.LFBB8:
+ 865               	/* prologue: function */
+ 866               	/* frame size = 0 */
+ 867               	/* stack size = 0 */
+ 868               	.L__stack_usage = 0
+  72:../../freeRtos/Lib/spiXmega.c ****   //SPCR |= (1<<CPOL);
+  73:../../freeRtos/Lib/spiXmega.c ****   SPIC.CTRL|=(1<<SPI_MODE1_bp);
+ 870               	.LM36:
+ 871 00d8 E0EC      		ldi r30,lo8(2240)
+ 872 00da F8E0      		ldi r31,hi8(2240)
+ 873 00dc 8081      		ld r24,Z
+ 874 00de 8860      		ori r24,lo8(8)
+ 875 00e0 8083      		st Z,r24
+ 876               	/* epilogue start */
+  74:../../freeRtos/Lib/spiXmega.c **** }
+ 878               	.LM37:
+ 879 00e2 0895      		ret
+ 881               	.Lscope8:
+ 883               		.stabd	78,0,0
+ 885               	.global	spiClearCPOL
+ 887               	spiClearCPOL:
+ 888               		.stabd	46,0,0
+  75:../../freeRtos/Lib/spiXmega.c **** 
+  76:../../freeRtos/Lib/spiXmega.c **** void spiClearCPOL(void)
+  77:../../freeRtos/Lib/spiXmega.c **** {
+ 890               	.LM38:
+ 891               	.LFBB9:
+ 892               	/* prologue: function */
+ 893               	/* frame size = 0 */
+ 894               	/* stack size = 0 */
+ 895               	.L__stack_usage = 0
+  78:../../freeRtos/Lib/spiXmega.c ****   //SPCR &= ~(1<<CPOL);
+  79:../../freeRtos/Lib/spiXmega.c ****    SPID.CTRL&=~(1<<SPI_MODE1_bp);
+ 897               	.LM39:
+ 898 00e4 E0EC      		ldi r30,lo8(2496)
+ 899 00e6 F9E0      		ldi r31,hi8(2496)
+ 900 00e8 8081      		ld r24,Z
+ 901 00ea 877F      		andi r24,lo8(-9)
+ 902 00ec 8083      		st Z,r24
+ 903               	/* epilogue start */
+  80:../../freeRtos/Lib/spiXmega.c **** }
+ 905               	.LM40:
+ 906 00ee 0895      		ret
+ 908               	.Lscope9:
+ 910               		.stabd	78,0,0
+ 912               	.global	spiClearCPOLENC
+ 914               	spiClearCPOLENC:
+ 915               		.stabd	46,0,0
+  81:../../freeRtos/Lib/spiXmega.c **** void spiClearCPOLENC(void)
+  82:../../freeRtos/Lib/spiXmega.c **** {
+ 917               	.LM41:
+ 918               	.LFBB10:
+ 919               	/* prologue: function */
+ 920               	/* frame size = 0 */
+ 921               	/* stack size = 0 */
+ 922               	.L__stack_usage = 0
+  83:../../freeRtos/Lib/spiXmega.c ****   //SPCR &= ~(1<<CPOL);
+  84:../../freeRtos/Lib/spiXmega.c ****    SPID.CTRL&=~(1<<SPI_MODE1_bp);
+ 924               	.LM42:
+ 925 00f0 E0EC      		ldi r30,lo8(2496)
+ 926 00f2 F9E0      		ldi r31,hi8(2496)
+ 927 00f4 8081      		ld r24,Z
+ 928 00f6 877F      		andi r24,lo8(-9)
+ 929 00f8 8083      		st Z,r24
+ 930               	/* epilogue start */
+  85:../../freeRtos/Lib/spiXmega.c **** }
+ 932               	.LM43:
+ 933 00fa 0895      		ret
+ 935               	.Lscope10:
+ 937               		.stabd	78,0,0
+ 939               	.global	spiTake
+ 941               	spiTake:
+ 942               		.stabd	46,0,0
+  86:../../freeRtos/Lib/spiXmega.c **** 
+  87:../../freeRtos/Lib/spiXmega.c **** void spiTake(void)
+  88:../../freeRtos/Lib/spiXmega.c **** {
+ 944               	.LM44:
+ 945               	.LFBB11:
+ 946               	/* prologue: function */
+ 947               	/* frame size = 0 */
+ 948               	/* stack size = 0 */
+ 949               	.L__stack_usage = 0
+  89:../../freeRtos/Lib/spiXmega.c ****   xSemaphoreTake(xSemaphoreSpiSS, portMAX_DELAY);
+ 951               	.LM45:
+ 952 00fc 8091 0000 		lds r24,xSemaphoreSpiSS
+ 953 0100 9091 0000 		lds r25,xSemaphoreSpiSS+1
+ 954 0104 60E0      		ldi r22,lo8(0)
+ 955 0106 70E0      		ldi r23,hi8(0)
+ 956 0108 4FEF      		ldi r20,lo8(-1)
+ 957 010a 5FEF      		ldi r21,hi8(-1)
+ 958 010c 20E0      		ldi r18,lo8(0)
+ 959 010e 0E94 0000 		call xQueueGenericReceive
+ 960               	/* epilogue start */
+  90:../../freeRtos/Lib/spiXmega.c **** }
+ 962               	.LM46:
+ 963 0112 0895      		ret
+ 965               	.Lscope11:
+ 967               		.stabd	78,0,0
+ 969               	.global	spiGive
+ 971               	spiGive:
+ 972               		.stabd	46,0,0
+  91:../../freeRtos/Lib/spiXmega.c **** 
+  92:../../freeRtos/Lib/spiXmega.c **** void spiGive(void)
+  93:../../freeRtos/Lib/spiXmega.c **** {
+ 974               	.LM47:
+ 975               	.LFBB12:
+ 976               	/* prologue: function */
+ 977               	/* frame size = 0 */
+ 978               	/* stack size = 0 */
+ 979               	.L__stack_usage = 0
+  94:../../freeRtos/Lib/spiXmega.c ****   xSemaphoreGive(xSemaphoreSpiSS);
+ 981               	.LM48:
+ 982 0114 8091 0000 		lds r24,xSemaphoreSpiSS
+ 983 0118 9091 0000 		lds r25,xSemaphoreSpiSS+1
+ 984 011c 60E0      		ldi r22,lo8(0)
+ 985 011e 70E0      		ldi r23,hi8(0)
+ 986 0120 40E0      		ldi r20,lo8(0)
+ 987 0122 50E0      		ldi r21,hi8(0)
+ 988 0124 20E0      		ldi r18,lo8(0)
+ 989 0126 0E94 0000 		call xQueueGenericSend
+ 990               	/* epilogue start */
+  95:../../freeRtos/Lib/spiXmega.c **** }
+ 992               	.LM49:
+ 993 012a 0895      		ret
+ 995               	.Lscope12:
+ 997               		.stabd	78,0,0
+ 1000               		.weak	spiSend
+ 1002               	spiSend:
+ 1003               		.stabd	46,0,0
+  96:../../freeRtos/Lib/spiXmega.c **** 
+  97:../../freeRtos/Lib/spiXmega.c **** uint8_t spiSend(uint8_t data)          { data = 0;  return 0; }
+ 1005               	.LM50:
+ 1006               	.LFBB13:
+ 1007               	/* prologue: function */
+ 1008               	/* frame size = 0 */
+ 1009               	/* stack size = 0 */
+ 1010               	.L__stack_usage = 0
+ 1012               	.LM51:
+ 1013 012c 80E0      		ldi r24,lo8(0)
+ 1014               	/* epilogue start */
+ 1015 012e 0895      		ret
+ 1017               	.Lscope13:
+ 1019               		.stabd	78,0,0
+ 1022               		.weak	spiSendSpinBlock
+ 1024               	spiSendSpinBlock:
+ 1025               		.stabd	46,0,0
+  98:../../freeRtos/Lib/spiXmega.c **** uint8_t spiSendSpinBlock(uint8_t data) { data = 0;  return 0; }
+ 1027               	.LM52:
+ 1028               	.LFBB14:
+ 1029               	/* prologue: function */
+ 1030               	/* frame size = 0 */
+ 1031               	/* stack size = 0 */
+ 1032               	.L__stack_usage = 0
+ 1034               	.LM53:
+ 1035 0130 80E0      		ldi r24,lo8(0)
+ 1036               	/* epilogue start */
+ 1037 0132 0895      		ret
+ 1039               	.Lscope14:
+ 1041               		.stabd	78,0,0
+ 1042               		.comm wwwport,1,1
+ 1043               		.comm klastry,128,1
+ 1044               		.comm rollers,2,1
+ 1045               		.comm xSemaphoreRs485,2,1
+ 1046               		.comm xSemaphoreSpiSS,2,1
+ 1047               		.comm nicState,14,1
+ 1048               		.comm plen,2,1
+ 1049               		.comm IpMyConfig,15,1
+ 1050               		.comm arpDebug,2,1
+ 1051               		.comm arpDebugLevel,1,1
+ 1052               		.comm icmpDebug,2,1
+ 1053               		.comm icmpDebugLevel,1,1
+ 1054               		.comm udpSocket,2,1
+ 1055               		.comm udpDbgStream,2,1
+ 1056               		.comm udpDbgLevel,1,1
+ 1057               		.comm tcpDebugStream,2,1
+ 1058               		.comm tcpDebugLevel,1,1
+ 1059               		.comm sockets,2,1
+ 1060               		.comm lockSensors,2,1
+ 1061               		.comm czasRtc,7,1
+ 1062               		.comm portA,1,1
+ 1063               		.comm portB,1,1
+ 1087               	.Letext0:
+ 1088               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 spiXmega.c
+     /tmp/ccYZ5Tdo.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccYZ5Tdo.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccYZ5Tdo.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccYZ5Tdo.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccYZ5Tdo.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccYZ5Tdo.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccYZ5Tdo.s:562    .text:00000000 spiInit
+                            *COM*:00000002 xSemaphoreSpiSS
+     /tmp/ccYZ5Tdo.s:644    .text:0000004e spiInitENC
+     /tmp/ccYZ5Tdo.s:725    .text:0000009c spiSetCPHA
+     /tmp/ccYZ5Tdo.s:752    .text:000000a8 spiSetCPHAENC
+     /tmp/ccYZ5Tdo.s:779    .text:000000b4 spiClearCPHA
+     /tmp/ccYZ5Tdo.s:806    .text:000000c0 spiClearCPHAENC
+     /tmp/ccYZ5Tdo.s:833    .text:000000cc spiSetCPOL
+     /tmp/ccYZ5Tdo.s:860    .text:000000d8 spiSetCPOLENC
+     /tmp/ccYZ5Tdo.s:887    .text:000000e4 spiClearCPOL
+     /tmp/ccYZ5Tdo.s:914    .text:000000f0 spiClearCPOLENC
+     /tmp/ccYZ5Tdo.s:941    .text:000000fc spiTake
+     /tmp/ccYZ5Tdo.s:971    .text:00000114 spiGive
+     /tmp/ccYZ5Tdo.s:1002   .text:0000012c spiSend
+     /tmp/ccYZ5Tdo.s:1024   .text:00000130 spiSendSpinBlock
+                            *COM*:00000001 wwwport
+                            *COM*:00000080 klastry
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:00000002 plen
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000002 lockSensors
+                            *COM*:00000007 czasRtc
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+
+UNDEFINED SYMBOLS
+xQueueCreate
+xQueueGenericSend
+xQueueGenericReceive
+__do_clear_bss

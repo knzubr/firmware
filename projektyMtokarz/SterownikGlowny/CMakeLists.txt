@@ -43,7 +43,7 @@ SET(CMAKE_CXX_FLAGS ${CXXFLAGS})
 
 
 add_executable(${IMAGENAME}
-                        main.c configuration.c serial.c hardware.c sensors_task.c vty.c netstack_task.c cli_task.c 
+                        main.c configuration.c serial.c hardware.c sensors_task.c vty.c netstack_task.c cli_task.c lcd.c
                         ${LIB_DIR}/spiXmega.c ${LIB_DIR}/memory_x.c ${LIB_DIR}/ramdysk.c ${LIB_DIR}/cmdline.c ${LIB_DIR}/xmodem.c 
                         ${LIB_DIR}/vt100.c ${LIB_DIR}/ds1305.c ${LIB_DIR}/mpc23s17.c ${LIB_DIR}/mcp3008.c ${LIB_DIR}/mcp4150.c
                         ${LIB_DIR}/enc28j60.c ${LIB_DIR}/queueStream.c 
@@ -64,6 +64,7 @@ add_custom_target(mainController  DEPENDS
                         sensors_task.c                          sensors_task.h
                         netstack_task.c                         netstack_task.h
                         cli_task.c                              cli_task.h
+                        lcd.c 					  lcd.h
                  )
 
 add_custom_target(languageFiles   DEPENDS

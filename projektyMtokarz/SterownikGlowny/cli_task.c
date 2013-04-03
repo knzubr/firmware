@@ -18,7 +18,7 @@ void vTaskVTYusb(void *cliStatePtr)
 }
 void vTaskUSB(void *cliStatePtr)
 {
- //null cliStatePtr; 
+ //nullptr (cliStatePtr); 
  for(;;)
  {
   vTaskDelay(200);

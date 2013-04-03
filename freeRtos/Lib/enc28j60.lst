@@ -1,0 +1,1913 @@
+   1               		.file	"enc28j60.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 557               		.weak	spiEnableEnc28j60
+ 559               	spiEnableEnc28j60:
+ 560               		.stabd	46,0,0
+   1:../../freeRtos/Lib/enc28j60.c **** /*********************************************
+   2:../../freeRtos/Lib/enc28j60.c ****  * vim:sw=8:ts=8:si:et
+   3:../../freeRtos/Lib/enc28j60.c ****  * To use the above modeline in vim you must have "set modeline" in your .vimrc
+   4:../../freeRtos/Lib/enc28j60.c ****  * Author: Guido Socher 
+   5:../../freeRtos/Lib/enc28j60.c ****  * Copyright: GPL V2
+   6:../../freeRtos/Lib/enc28j60.c ****  * http://www.gnu.org/licenses/gpl.html
+   7:../../freeRtos/Lib/enc28j60.c ****  *
+   8:../../freeRtos/Lib/enc28j60.c ****  * Based on the enc28j60.c file from the AVRlib library by Pascal Stang
+   9:../../freeRtos/Lib/enc28j60.c ****  * For AVRlib See http://www.procyonengineering.com/
+  10:../../freeRtos/Lib/enc28j60.c ****  * Used with explicit permission of Pascal Stang.
+  11:../../freeRtos/Lib/enc28j60.c ****  *
+  12:../../freeRtos/Lib/enc28j60.c ****  * Title: Microchip ENC28J60 Ethernet Interface Driver
+  13:../../freeRtos/Lib/enc28j60.c ****  * Chip type           : ATMEGA88 with ENC28J60
+  14:../../freeRtos/Lib/enc28j60.c ****  *********************************************/
+  15:../../freeRtos/Lib/enc28j60.c **** 
+  16:../../freeRtos/Lib/enc28j60.c **** #include "enc28j60.h"
+  17:../../freeRtos/Lib/enc28j60.c **** 
+  18:../../freeRtos/Lib/enc28j60.c **** 
+  19:../../freeRtos/Lib/enc28j60.c **** static uint8_t Enc28j60Bank;
+  20:../../freeRtos/Lib/enc28j60.c **** static uint16_t gNextPacketPtr;
+  21:../../freeRtos/Lib/enc28j60.c **** 
+  22:../../freeRtos/Lib/enc28j60.c **** 
+  23:../../freeRtos/Lib/enc28j60.c **** /**
+  24:../../freeRtos/Lib/enc28j60.c ****  * Initialize enc28j60
+  25:../../freeRtos/Lib/enc28j60.c ****  * @param *macaddr - pointer to the mac address (6 bytes)
+  26:../../freeRtos/Lib/enc28j60.c ****  */
+  27:../../freeRtos/Lib/enc28j60.c **** static void     enc28j60Init(uint8_t* macaddr);
+  28:../../freeRtos/Lib/enc28j60.c **** 
+  29:../../freeRtos/Lib/enc28j60.c **** /**
+  30:../../freeRtos/Lib/enc28j60.c ****  * Read register value (without changing the bank)
+  31:../../freeRtos/Lib/enc28j60.c ****  * @param op      - operation type
+  32:../../freeRtos/Lib/enc28j60.c ****  * @param address - register address
+  33:../../freeRtos/Lib/enc28j60.c ****  * @return register value
+  34:../../freeRtos/Lib/enc28j60.c ****  */
+  35:../../freeRtos/Lib/enc28j60.c **** static uint8_t  enc28j60ReadOp (uint8_t op, uint8_t address);
+  36:../../freeRtos/Lib/enc28j60.c **** static void     enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data);
+  37:../../freeRtos/Lib/enc28j60.c **** static void     enc28j60SetBank(uint8_t address);
+  38:../../freeRtos/Lib/enc28j60.c **** static void     enc28j60ReadBuffer(uint16_t len, uint8_t* data);
+  39:../../freeRtos/Lib/enc28j60.c **** static void     enc28j60WriteBuffer(uint16_t len, uint8_t* data);
+  40:../../freeRtos/Lib/enc28j60.c **** 
+  41:../../freeRtos/Lib/enc28j60.c **** /**
+  42:../../freeRtos/Lib/enc28j60.c ****  * Reads Enc28j60 control register
+  43:../../freeRtos/Lib/enc28j60.c ****  * @param address - register address. Banks are changed automatically
+  44:../../freeRtos/Lib/enc28j60.c ****  * @return control register value
+  45:../../freeRtos/Lib/enc28j60.c ****  */
+  46:../../freeRtos/Lib/enc28j60.c **** static uint8_t  enc28j60Read(uint8_t address);
+  47:../../freeRtos/Lib/enc28j60.c **** 
+  48:../../freeRtos/Lib/enc28j60.c **** /**
+  49:../../freeRtos/Lib/enc28j60.c ****  * Writes Enc28j60 control register
+  50:../../freeRtos/Lib/enc28j60.c ****  * @param address - register address. Banks are changed automatically
+  51:../../freeRtos/Lib/enc28j60.c ****  * @param data    - control register value to be writen
+  52:../../freeRtos/Lib/enc28j60.c ****  */
+  53:../../freeRtos/Lib/enc28j60.c **** static void     enc28j60Write(uint8_t address, uint8_t data);
+  54:../../freeRtos/Lib/enc28j60.c **** 
+  55:../../freeRtos/Lib/enc28j60.c **** /**
+  56:../../freeRtos/Lib/enc28j60.c ****  * Reads Enc28j60 phy register
+  57:../../freeRtos/Lib/enc28j60.c ****  * @param address - register address. Banks are changed automatically
+  58:../../freeRtos/Lib/enc28j60.c ****  * @return phy register value
+  59:../../freeRtos/Lib/enc28j60.c ****  */
+  60:../../freeRtos/Lib/enc28j60.c **** static uint16_t enc28j60PhyReadH(uint8_t address);
+  61:../../freeRtos/Lib/enc28j60.c **** 
+  62:../../freeRtos/Lib/enc28j60.c **** /**
+  63:../../freeRtos/Lib/enc28j60.c ****  * Writes Enc28j60 phy register
+  64:../../freeRtos/Lib/enc28j60.c ****  * @param address - register address. Banks are changed automatically
+  65:../../freeRtos/Lib/enc28j60.c ****  * @param data    - phy register value to be writen
+  66:../../freeRtos/Lib/enc28j60.c ****  */
+  67:../../freeRtos/Lib/enc28j60.c **** static void     enc28j60PhyWrite(uint8_t address, uint16_t data);
+  68:../../freeRtos/Lib/enc28j60.c **** 
+  69:../../freeRtos/Lib/enc28j60.c **** 
+  70:../../freeRtos/Lib/enc28j60.c **** //void     enc28j60BufferSend(uint16_t len, roundBuffer* buffer);
+  71:../../freeRtos/Lib/enc28j60.c **** 
+  72:../../freeRtos/Lib/enc28j60.c **** uint8_t  enc28j60hasRxPkt(void);
+  73:../../freeRtos/Lib/enc28j60.c **** uint8_t  enc28j60getrev(void);
+  74:../../freeRtos/Lib/enc28j60.c **** uint8_t  enc28j60linkup(void);
+  75:../../freeRtos/Lib/enc28j60.c **** 
+  76:../../freeRtos/Lib/enc28j60.c **** void nicMacInit(void)
+  77:../../freeRtos/Lib/enc28j60.c **** { 
+  78:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay          (5);
+  79:../../freeRtos/Lib/enc28j60.c ****     enc28j60Init        (nicState.mac.addr);
+  80:../../freeRtos/Lib/enc28j60.c **** //  enc28j60clkout      (2);     // change clkout from 6.25MHz to 12.5MHz
+  81:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay          (5);
+  82:../../freeRtos/Lib/enc28j60.c ****     enc28j60PhyWrite    (PHLCON, 0x476);
+  83:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay          (2);
+  84:../../freeRtos/Lib/enc28j60.c **** }
+  85:../../freeRtos/Lib/enc28j60.c **** 
+  86:../../freeRtos/Lib/enc28j60.c **** uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
+  87:../../freeRtos/Lib/enc28j60.c **** {
+  88:../../freeRtos/Lib/enc28j60.c ****   uint8_t result;
+  89:../../freeRtos/Lib/enc28j60.c ****   spiTake();
+  90:../../freeRtos/Lib/enc28j60.c ****   spiEnableEnc28j60();
+  91:../../freeRtos/Lib/enc28j60.c ****   
+  92:../../freeRtos/Lib/enc28j60.c ****   // issue read command
+  93:../../freeRtos/Lib/enc28j60.c ****   spiSend(op | (address & ADDR_MASK));
+  94:../../freeRtos/Lib/enc28j60.c **** 
+  95:../../freeRtos/Lib/enc28j60.c ****   // read data
+  96:../../freeRtos/Lib/enc28j60.c ****   result = spiSend(0x00);
+  97:../../freeRtos/Lib/enc28j60.c **** 
+  98:../../freeRtos/Lib/enc28j60.c ****   // do dummy read if needed (for mac and mii, see datasheet page 29)
+  99:../../freeRtos/Lib/enc28j60.c ****   if(address & 0x80)
+ 100:../../freeRtos/Lib/enc28j60.c ****   {
+ 101:../../freeRtos/Lib/enc28j60.c ****     result = spiSend(0x00);
+ 102:../../freeRtos/Lib/enc28j60.c ****   }
+ 103:../../freeRtos/Lib/enc28j60.c **** 
+ 104:../../freeRtos/Lib/enc28j60.c ****   spiDisableEnc28j60();
+ 105:../../freeRtos/Lib/enc28j60.c ****   spiGive();
+ 106:../../freeRtos/Lib/enc28j60.c ****   return result; 
+ 107:../../freeRtos/Lib/enc28j60.c **** }
+ 108:../../freeRtos/Lib/enc28j60.c **** 
+ 109:../../freeRtos/Lib/enc28j60.c **** void enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data)
+ 110:../../freeRtos/Lib/enc28j60.c **** {
+ 111:../../freeRtos/Lib/enc28j60.c ****   spiTake();
+ 112:../../freeRtos/Lib/enc28j60.c ****   spiEnableEnc28j60();
+ 113:../../freeRtos/Lib/enc28j60.c ****   // issue write command
+ 114:../../freeRtos/Lib/enc28j60.c ****   //spiSend(op | (address & ADDR_MASK));
+ 115:../../freeRtos/Lib/enc28j60.c ****   spiSend(op | (address & ADDR_MASK));
+ 116:../../freeRtos/Lib/enc28j60.c ****   spiSend(data);
+ 117:../../freeRtos/Lib/enc28j60.c ****   spiDisableEnc28j60();
+ 118:../../freeRtos/Lib/enc28j60.c ****   spiGive();
+ 119:../../freeRtos/Lib/enc28j60.c **** }
+ 120:../../freeRtos/Lib/enc28j60.c **** 
+ 121:../../freeRtos/Lib/enc28j60.c **** void enc28j60ReadBuffer(uint16_t len, uint8_t* data)
+ 122:../../freeRtos/Lib/enc28j60.c **** {
+ 123:../../freeRtos/Lib/enc28j60.c ****   spiTake();
+ 124:../../freeRtos/Lib/enc28j60.c ****   spiEnableEnc28j60();
+ 125:../../freeRtos/Lib/enc28j60.c ****   spiSend(ENC28J60_READ_BUF_MEM);
+ 126:../../freeRtos/Lib/enc28j60.c ****   while(len)
+ 127:../../freeRtos/Lib/enc28j60.c ****   {
+ 128:../../freeRtos/Lib/enc28j60.c ****     len--;
+ 129:../../freeRtos/Lib/enc28j60.c ****     *data = spiSend(0x00);
+ 130:../../freeRtos/Lib/enc28j60.c ****     data++;
+ 131:../../freeRtos/Lib/enc28j60.c ****   }
+ 132:../../freeRtos/Lib/enc28j60.c ****   *data='\0';
+ 133:../../freeRtos/Lib/enc28j60.c ****   spiDisableEnc28j60();
+ 134:../../freeRtos/Lib/enc28j60.c ****   spiGive();
+ 135:../../freeRtos/Lib/enc28j60.c **** }
+ 136:../../freeRtos/Lib/enc28j60.c **** 
+ 137:../../freeRtos/Lib/enc28j60.c **** void enc28j60WriteBuffer(uint16_t len, uint8_t* data)
+ 138:../../freeRtos/Lib/enc28j60.c **** {
+ 139:../../freeRtos/Lib/enc28j60.c ****   spiTake();
+ 140:../../freeRtos/Lib/enc28j60.c ****   spiEnableEnc28j60();
+ 141:../../freeRtos/Lib/enc28j60.c ****   // issue write command
+ 142:../../freeRtos/Lib/enc28j60.c ****   //spiSend(ENC28J60_WRITE_BUF_MEM);      // 
+ 143:../../freeRtos/Lib/enc28j60.c ****   spiSend(ENC28J60_WRITE_BUF_MEM);
+ 144:../../freeRtos/Lib/enc28j60.c ****   while(len)
+ 145:../../freeRtos/Lib/enc28j60.c ****   {
+ 146:../../freeRtos/Lib/enc28j60.c ****     len--;
+ 147:../../freeRtos/Lib/enc28j60.c ****     spiSend(*data);       // write data
+ 148:../../freeRtos/Lib/enc28j60.c ****     data++;
+ 149:../../freeRtos/Lib/enc28j60.c ****   }
+ 150:../../freeRtos/Lib/enc28j60.c ****   spiDisableEnc28j60();  
+ 151:../../freeRtos/Lib/enc28j60.c ****   spiGive();
+ 152:../../freeRtos/Lib/enc28j60.c **** }
+ 153:../../freeRtos/Lib/enc28j60.c **** 
+ 154:../../freeRtos/Lib/enc28j60.c **** // void enc28j60WriteRoundBuffer(uint8_t len, roundBuffer *buffer)
+ 155:../../freeRtos/Lib/enc28j60.c **** // {
+ 156:../../freeRtos/Lib/enc28j60.c **** //   spiTake();
+ 157:../../freeRtos/Lib/enc28j60.c **** //   spiEnableEnc28j60();
+ 158:../../freeRtos/Lib/enc28j60.c **** //   // issue write command
+ 159:../../freeRtos/Lib/enc28j60.c **** //   //spiSend(ENC28J60_WRITE_BUF_MEM);      // 
+ 160:../../freeRtos/Lib/enc28j60.c **** //   spiSend(ENC28J60_WRITE_BUF_MEM);
+ 161:../../freeRtos/Lib/enc28j60.c **** //   uint8_t data;
+ 162:../../freeRtos/Lib/enc28j60.c **** //   while(len)
+ 163:../../freeRtos/Lib/enc28j60.c **** //   {
+ 164:../../freeRtos/Lib/enc28j60.c **** //     len--;
+ 165:../../freeRtos/Lib/enc28j60.c **** //     data = *buffer->readIdx.ptr16;   
+ 166:../../freeRtos/Lib/enc28j60.c **** //     buffer->readIdx.ptr.L++;
+ 167:../../freeRtos/Lib/enc28j60.c **** //     
+ 168:../../freeRtos/Lib/enc28j60.c **** //     spiSend(*data);       // write data
+ 169:../../freeRtos/Lib/enc28j60.c **** //   }
+ 170:../../freeRtos/Lib/enc28j60.c **** //   spiDisableEnc28j60();  
+ 171:../../freeRtos/Lib/enc28j60.c **** //   spiGive();
+ 172:../../freeRtos/Lib/enc28j60.c **** // }
+ 173:../../freeRtos/Lib/enc28j60.c **** 
+ 174:../../freeRtos/Lib/enc28j60.c **** 
+ 175:../../freeRtos/Lib/enc28j60.c **** void enc28j60SetBank(uint8_t address)
+ 176:../../freeRtos/Lib/enc28j60.c **** {
+ 177:../../freeRtos/Lib/enc28j60.c ****   // set the bank (if needed)
+ 178:../../freeRtos/Lib/enc28j60.c ****   if((address & BANK_MASK) != Enc28j60Bank)
+ 179:../../freeRtos/Lib/enc28j60.c ****   {
+ 180:../../freeRtos/Lib/enc28j60.c ****     // set the bank
+ 181:../../freeRtos/Lib/enc28j60.c ****     enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, (ECON1_BSEL1|ECON1_BSEL0));
+ 182:../../freeRtos/Lib/enc28j60.c ****     enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, (address & BANK_MASK)>>5);
+ 183:../../freeRtos/Lib/enc28j60.c ****     Enc28j60Bank = (address & BANK_MASK);
+ 184:../../freeRtos/Lib/enc28j60.c ****   }
+ 185:../../freeRtos/Lib/enc28j60.c **** }
+ 186:../../freeRtos/Lib/enc28j60.c **** 
+ 187:../../freeRtos/Lib/enc28j60.c **** uint8_t enc28j60Read(uint8_t address)
+ 188:../../freeRtos/Lib/enc28j60.c **** {
+ 189:../../freeRtos/Lib/enc28j60.c ****   // set the bank
+ 190:../../freeRtos/Lib/enc28j60.c ****   enc28j60SetBank(address);
+ 191:../../freeRtos/Lib/enc28j60.c ****   // do the read
+ 192:../../freeRtos/Lib/enc28j60.c ****   uint8_t result = enc28j60ReadOp(ENC28J60_READ_CTRL_REG, address);
+ 193:../../freeRtos/Lib/enc28j60.c ****   return result;
+ 194:../../freeRtos/Lib/enc28j60.c **** }
+ 195:../../freeRtos/Lib/enc28j60.c **** 
+ 196:../../freeRtos/Lib/enc28j60.c **** // read upper 8 bits
+ 197:../../freeRtos/Lib/enc28j60.c **** uint16_t enc28j60PhyReadH(uint8_t address)
+ 198:../../freeRtos/Lib/enc28j60.c **** {
+ 199:../../freeRtos/Lib/enc28j60.c ****   // Set the right address and start the register read operation
+ 200:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MIREGADR, address);
+ 201:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MICMD, MICMD_MIIRD);
+ 202:../../freeRtos/Lib/enc28j60.c ****   
+ 203:../../freeRtos/Lib/enc28j60.c ****   vTaskDelay(0);
+ 204:../../freeRtos/Lib/enc28j60.c **** 
+ 205:../../freeRtos/Lib/enc28j60.c ****   // wait until the PHY read completes
+ 206:../../freeRtos/Lib/enc28j60.c ****   while(enc28j60Read(MISTAT) & MISTAT_BUSY)
+ 207:../../freeRtos/Lib/enc28j60.c ****    vTaskDelay ( 0 ); //FIXME być może tutaj następuje zawieszenie
+ 208:../../freeRtos/Lib/enc28j60.c **** 
+ 209:../../freeRtos/Lib/enc28j60.c ****   // reset reading bit
+ 210:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MICMD, 0x00);
+ 211:../../freeRtos/Lib/enc28j60.c **** 
+ 212:../../freeRtos/Lib/enc28j60.c ****   return (enc28j60Read(MIRDH));
+ 213:../../freeRtos/Lib/enc28j60.c **** }
+ 214:../../freeRtos/Lib/enc28j60.c **** 
+ 215:../../freeRtos/Lib/enc28j60.c **** void enc28j60Write(uint8_t address, uint8_t data)
+ 216:../../freeRtos/Lib/enc28j60.c **** {
+ 217:../../freeRtos/Lib/enc28j60.c ****   // set the bank
+ 218:../../freeRtos/Lib/enc28j60.c ****   enc28j60SetBank(address);
+ 219:../../freeRtos/Lib/enc28j60.c ****   // do the write
+ 220:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_WRITE_CTRL_REG, address, data);
+ 221:../../freeRtos/Lib/enc28j60.c **** }
+ 222:../../freeRtos/Lib/enc28j60.c **** 
+ 223:../../freeRtos/Lib/enc28j60.c **** void enc28j60PhyWrite(uint8_t address, uint16_t data)
+ 224:../../freeRtos/Lib/enc28j60.c **** {
+ 225:../../freeRtos/Lib/enc28j60.c ****   // set the PHY register address
+ 226:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MIREGADR, address);
+ 227:../../freeRtos/Lib/enc28j60.c ****   // write the PHY data
+ 228:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MIWRL, data);
+ 229:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MIWRH, data>>8);
+ 230:../../freeRtos/Lib/enc28j60.c ****   // wait until the PHY write completes
+ 231:../../freeRtos/Lib/enc28j60.c ****   
+ 232:../../freeRtos/Lib/enc28j60.c ****   while(enc28j60Read(MISTAT) & MISTAT_BUSY)
+ 233:../../freeRtos/Lib/enc28j60.c ****   {
+ 234:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay ( 0 );         //FIXME być może tutaj następuje zakleszczenie
+ 235:../../freeRtos/Lib/enc28j60.c ****   }
+ 236:../../freeRtos/Lib/enc28j60.c **** }
+ 237:../../freeRtos/Lib/enc28j60.c **** 
+ 238:../../freeRtos/Lib/enc28j60.c **** void enc28j60Init(uint8_t* macaddr)
+ 239:../../freeRtos/Lib/enc28j60.c **** {
+ 240:../../freeRtos/Lib/enc28j60.c ****   // perform system reset
+ 241:../../freeRtos/Lib/enc28j60.c ****   
+ 242:../../freeRtos/Lib/enc28j60.c ****   //ENC28j60 reset is on PE2 TODO add in hardware.c macros for that.
+ 243:../../freeRtos/Lib/enc28j60.c ****   ENC_RST_ON;   // PORTE &= ~0x04;
+ 244:../../freeRtos/Lib/enc28j60.c ****   vTaskDelay(5); // 50ms
+ 245:../../freeRtos/Lib/enc28j60.c ****   ENC_RST_OFF;  //PORTE |= 0x04; 
+ 246:../../freeRtos/Lib/enc28j60.c ****   vTaskDelay(5); // 50ms
+ 247:../../freeRtos/Lib/enc28j60.c **** 
+ 248:../../freeRtos/Lib/enc28j60.c ****   // check CLKRDY bit to see if reset is complete
+ 249:../../freeRtos/Lib/enc28j60.c ****   // The CLKRDY does not work. See Rev. B4 Silicon Errata point. Just wait.
+ 250:../../freeRtos/Lib/enc28j60.c ****   //while(!(enc28j60Read(ESTAT) & ESTAT_CLKRDY));
+ 251:../../freeRtos/Lib/enc28j60.c ****   // do bank 0 stuff
+ 252:../../freeRtos/Lib/enc28j60.c ****   // initialize receive buffer
+ 253:../../freeRtos/Lib/enc28j60.c ****   // 16-bit transfers, must write low byte first
+ 254:../../freeRtos/Lib/enc28j60.c ****   // set receive buffer start address
+ 255:../../freeRtos/Lib/enc28j60.c ****   gNextPacketPtr = RXSTART_INIT;
+ 256:../../freeRtos/Lib/enc28j60.c ****   // Rx start
+ 257:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXSTL, RXSTART_INIT&0xFF);
+ 258:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXSTH, RXSTART_INIT>>8);
+ 259:../../freeRtos/Lib/enc28j60.c ****   // set receive pointer address
+ 260:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXRDPTL, RXSTART_INIT&0xFF);
+ 261:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXRDPTH, RXSTART_INIT>>8);
+ 262:../../freeRtos/Lib/enc28j60.c ****   // RX end
+ 263:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXNDL, RXSTOP_INIT&0xFF);
+ 264:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXNDH, RXSTOP_INIT>>8);
+ 265:../../freeRtos/Lib/enc28j60.c ****   // TX start
+ 266:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXSTL, TXSTART_INIT&0xFF);
+ 267:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXSTH, TXSTART_INIT>>8);
+ 268:../../freeRtos/Lib/enc28j60.c ****   // TX end
+ 269:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXNDL, TXSTOP_INIT&0xFF);
+ 270:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXNDH, TXSTOP_INIT>>8);
+ 271:../../freeRtos/Lib/enc28j60.c **** 
+ 272:../../freeRtos/Lib/enc28j60.c ****   // do bank 1 stuff, packet filter:
+ 273:../../freeRtos/Lib/enc28j60.c ****   // For broadcast packets we allow only ARP packtets
+ 274:../../freeRtos/Lib/enc28j60.c ****   // All other packets should be unicast only for our mac (MAADR)
+ 275:../../freeRtos/Lib/enc28j60.c ****   //
+ 276:../../freeRtos/Lib/enc28j60.c ****   // The pattern to match on is therefore
+ 277:../../freeRtos/Lib/enc28j60.c ****   // Type     ETH.DST
+ 278:../../freeRtos/Lib/enc28j60.c ****   // ARP      BROADCAST
+ 279:../../freeRtos/Lib/enc28j60.c ****   // 06 08 -- ff ff ff ff ff ff -> ip checksum for theses bytes=f7f9
+ 280:../../freeRtos/Lib/enc28j60.c ****   // in binary these poitions are:11 0000 0011 1111
+ 281:../../freeRtos/Lib/enc28j60.c ****   // This is hex 303F->EPMM0=0x3f,EPMM1=0x30
+ 282:../../freeRtos/Lib/enc28j60.c ****   //enc28j60Write(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN);  //Bez wejsca dla broadcastu (
+ 283:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN|ERXFCON_MCEN); //Z wejsciem dla ca
+ 284:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EPMM0, 0x3f);
+ 285:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EPMM1, 0x30);
+ 286:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EPMCSL, 0xf9);
+ 287:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EPMCSH, 0xf7);
+ 288:../../freeRtos/Lib/enc28j60.c ****   //
+ 289:../../freeRtos/Lib/enc28j60.c ****   //
+ 290:../../freeRtos/Lib/enc28j60.c ****   // do bank 2 stuff
+ 291:../../freeRtos/Lib/enc28j60.c ****   // enable MAC receive
+ 292:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MACON1, MACON1_MARXEN|MACON1_TXPAUS|MACON1_RXPAUS);
+ 293:../../freeRtos/Lib/enc28j60.c ****   // bring MAC out of reset
+ 294:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MACON2, 0x00);
+ 295:../../freeRtos/Lib/enc28j60.c ****   // enable automatic padding to 60bytes and CRC operations
+ 296:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, MACON3, MACON3_PADCFG0|MACON3_TXCRCEN|MACON3_FRMLNEN);
+ 297:../../freeRtos/Lib/enc28j60.c ****   // set inter-frame gap (non-back-to-back)
+ 298:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAIPGL, 0x12);
+ 299:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAIPGH, 0x0C);
+ 300:../../freeRtos/Lib/enc28j60.c ****   // set inter-frame gap (back-to-back)
+ 301:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MABBIPG, 0x12);
+ 302:../../freeRtos/Lib/enc28j60.c ****   // Set the maximum packet size which the controller will accept
+ 303:../../freeRtos/Lib/enc28j60.c ****   // Do not send packets longer than MAX_FRAMELEN:
+ 304:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAMXFLL, MAX_FRAMELEN&0xFF);	
+ 305:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAMXFLH, MAX_FRAMELEN>>8);
+ 306:../../freeRtos/Lib/enc28j60.c ****   
+ 307:../../freeRtos/Lib/enc28j60.c ****   // do bank 3 stuff
+ 308:../../freeRtos/Lib/enc28j60.c ****   // write MAC address
+ 309:../../freeRtos/Lib/enc28j60.c **** 
+ 310:../../freeRtos/Lib/enc28j60.c ****   nicSetMacAddress(macaddr);
+ 311:../../freeRtos/Lib/enc28j60.c ****   
+ 312:../../freeRtos/Lib/enc28j60.c ****   // no loopback of transmitted frames
+ 313:../../freeRtos/Lib/enc28j60.c ****   enc28j60PhyWrite(PHCON2, PHCON2_HDLDIS);
+ 314:../../freeRtos/Lib/enc28j60.c ****   
+ 315:../../freeRtos/Lib/enc28j60.c ****   enc28j60SetBank(ECON1);                             // switch to bank 0
+ 316:../../freeRtos/Lib/enc28j60.c ****   // enable interrutps
+ 317:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, EIE, EIE_INTIE|EIE_PKTIE);
+ 318:../../freeRtos/Lib/enc28j60.c ****   // enable packet reception
+ 319:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_RXEN);
+ 320:../../freeRtos/Lib/enc28j60.c **** }
+ 321:../../freeRtos/Lib/enc28j60.c **** 
+ 322:../../freeRtos/Lib/enc28j60.c **** // read the revision of the chip:
+ 323:../../freeRtos/Lib/enc28j60.c **** uint8_t enc28j60getrev(void)
+ 324:../../freeRtos/Lib/enc28j60.c **** {
+ 325:../../freeRtos/Lib/enc28j60.c ****   return(enc28j60Read(EREVID));
+ 326:../../freeRtos/Lib/enc28j60.c **** }
+ 327:../../freeRtos/Lib/enc28j60.c **** 
+ 328:../../freeRtos/Lib/enc28j60.c **** // link status
+ 329:../../freeRtos/Lib/enc28j60.c **** uint8_t enc28j60linkup(void)
+ 330:../../freeRtos/Lib/enc28j60.c **** {
+ 331:../../freeRtos/Lib/enc28j60.c ****   // bit 10 (= bit 3 in upper reg)
+ 332:../../freeRtos/Lib/enc28j60.c ****   return(enc28j60PhyReadH(PHSTAT2) && 4);
+ 333:../../freeRtos/Lib/enc28j60.c **** }
+ 334:../../freeRtos/Lib/enc28j60.c **** 
+ 335:../../freeRtos/Lib/enc28j60.c **** void nicSend(uint16_t len)
+ 336:../../freeRtos/Lib/enc28j60.c **** {
+ 337:../../freeRtos/Lib/enc28j60.c ****   // Check no transmit in progress
+ 338:../../freeRtos/Lib/enc28j60.c ****   while (enc28j60ReadOp(ENC28J60_READ_CTRL_REG, ECON1) & ECON1_TXRTS)
+ 339:../../freeRtos/Lib/enc28j60.c ****   {
+ 340:../../freeRtos/Lib/enc28j60.c ****     // Reset the transmit logic problem. See Rev. B4 Silicon Errata point 12.
+ 341:../../freeRtos/Lib/enc28j60.c ****     if( (enc28j60Read(EIR) & EIR_TXERIF) )
+ 342:../../freeRtos/Lib/enc28j60.c ****     {
+ 343:../../freeRtos/Lib/enc28j60.c ****       enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
+ 344:../../freeRtos/Lib/enc28j60.c ****       enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
+ 345:../../freeRtos/Lib/enc28j60.c ****     }
+ 346:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay ( 0 ); //FIXME być może tutaj następuje zakleszczenie
+ 347:../../freeRtos/Lib/enc28j60.c ****   }
+ 348:../../freeRtos/Lib/enc28j60.c ****   // Set the write pointer to start of transmit buffer area
+ 349:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EWRPTL, TXSTART_INIT&0xFF);
+ 350:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EWRPTH, TXSTART_INIT>>8);
+ 351:../../freeRtos/Lib/enc28j60.c ****   // Set the TXND pointer to correspond to the packet size given
+ 352:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXNDL, (TXSTART_INIT+len)&0xFF);
+ 353:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXNDH, (TXSTART_INIT+len)>>8);
+ 354:../../freeRtos/Lib/enc28j60.c ****   // write per-packet control byte (0x00 means use macon3 settings)
+ 355:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
+ 356:../../freeRtos/Lib/enc28j60.c ****   // copy the packet into the transmit buffer
+ 357:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteBuffer(len, nicState.layer2.buf);
+ 358:../../freeRtos/Lib/enc28j60.c ****   // send the contents of the transmit buffer onto the network
+ 359:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
+ 360:../../freeRtos/Lib/enc28j60.c **** }
+ 361:../../freeRtos/Lib/enc28j60.c **** 
+ 362:../../freeRtos/Lib/enc28j60.c **** // just probe if there might be a packet
+ 363:../../freeRtos/Lib/enc28j60.c **** uint8_t enc28j60hasRxPkt(void)
+ 364:../../freeRtos/Lib/enc28j60.c **** {
+ 365:../../freeRtos/Lib/enc28j60.c ****   if( enc28j60Read(EPKTCNT) ==0 )
+ 366:../../freeRtos/Lib/enc28j60.c ****   {
+ 367:../../freeRtos/Lib/enc28j60.c ****     return(0);
+ 368:../../freeRtos/Lib/enc28j60.c ****   }
+ 369:../../freeRtos/Lib/enc28j60.c ****   return(1);
+ 370:../../freeRtos/Lib/enc28j60.c **** }
+ 371:../../freeRtos/Lib/enc28j60.c **** 
+ 372:../../freeRtos/Lib/enc28j60.c **** uint16_t nicPoll(void)
+ 373:../../freeRtos/Lib/enc28j60.c **** {
+ 374:../../freeRtos/Lib/enc28j60.c ****   uint16_t rxstat;
+ 375:../../freeRtos/Lib/enc28j60.c ****   uint16_t len;
+ 376:../../freeRtos/Lib/enc28j60.c ****   // check if a packet has been received and buffered
+ 377:../../freeRtos/Lib/enc28j60.c ****   //if( !(enc28j60Read(EIR) & EIR_PKTIF) ){
+ 378:../../freeRtos/Lib/enc28j60.c ****   // The above does not work. See Rev. B4 Silicon Errata point 6.
+ 379:../../freeRtos/Lib/enc28j60.c ****   if( enc28j60Read(EPKTCNT) == 0 )
+ 380:../../freeRtos/Lib/enc28j60.c ****   {
+ 381:../../freeRtos/Lib/enc28j60.c ****     return(0);
+ 382:../../freeRtos/Lib/enc28j60.c ****   }
+ 383:../../freeRtos/Lib/enc28j60.c **** 
+ 384:../../freeRtos/Lib/enc28j60.c ****   // Set the read pointer to the start of the received packet
+ 385:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERDPTL, (gNextPacketPtr &0xFF));
+ 386:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERDPTH, (gNextPacketPtr)>>8);
+ 387:../../freeRtos/Lib/enc28j60.c ****   // read the next packet pointer
+ 388:../../freeRtos/Lib/enc28j60.c ****   gNextPacketPtr  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+ 389:../../freeRtos/Lib/enc28j60.c ****   gNextPacketPtr |= enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0)<<8;
+ 390:../../freeRtos/Lib/enc28j60.c ****   // read the packet length (see datasheet page 43)
+ 391:../../freeRtos/Lib/enc28j60.c ****   len  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+ 392:../../freeRtos/Lib/enc28j60.c ****   len |= enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0)<<8;
+ 393:../../freeRtos/Lib/enc28j60.c ****   len-=4; //remove the CRC count
+ 394:../../freeRtos/Lib/enc28j60.c ****   // read the receive status (see datasheet page 43)
+ 395:../../freeRtos/Lib/enc28j60.c ****   rxstat  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+ 396:../../freeRtos/Lib/enc28j60.c ****   rxstat |= ((uint16_t)enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0))<<8;
+ 397:../../freeRtos/Lib/enc28j60.c ****   // limit retrieve length
+ 398:../../freeRtos/Lib/enc28j60.c ****   if (len> nicState.bufferSize -1)
+ 399:../../freeRtos/Lib/enc28j60.c ****   {
+ 400:../../freeRtos/Lib/enc28j60.c ****     len= nicState.bufferSize-1;
+ 401:../../freeRtos/Lib/enc28j60.c ****   }
+ 402:../../freeRtos/Lib/enc28j60.c ****   // check CRC and symbol errors (see datasheet page 44, table 7-3):
+ 403:../../freeRtos/Lib/enc28j60.c ****   // The ERXFCON.CRCEN is set by default. Normally we should not
+ 404:../../freeRtos/Lib/enc28j60.c ****   // need to check this.
+ 405:../../freeRtos/Lib/enc28j60.c **** 
+ 406:../../freeRtos/Lib/enc28j60.c ****   if ((rxstat & 0x80)==0)
+ 407:../../freeRtos/Lib/enc28j60.c ****   {
+ 408:../../freeRtos/Lib/enc28j60.c ****     // invalid
+ 409:../../freeRtos/Lib/enc28j60.c ****     len=0;
+ 410:../../freeRtos/Lib/enc28j60.c ****   }
+ 411:../../freeRtos/Lib/enc28j60.c ****   else
+ 412:../../freeRtos/Lib/enc28j60.c ****   {
+ 413:../../freeRtos/Lib/enc28j60.c ****     // copy the packet from the receive buffer
+ 414:../../freeRtos/Lib/enc28j60.c ****     enc28j60ReadBuffer(len, nicState.layer2.buf);
+ 415:../../freeRtos/Lib/enc28j60.c ****   }
+ 416:../../freeRtos/Lib/enc28j60.c ****   // Move the RX read pointer to the start of the next received packet
+ 417:../../freeRtos/Lib/enc28j60.c ****   // This frees the memory we just read out
+ 418:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXRDPTL, (gNextPacketPtr &0xFF));
+ 419:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXRDPTH, (gNextPacketPtr)>>8);
+ 420:../../freeRtos/Lib/enc28j60.c ****   // Move the RX read pointer to the start of the next received packet
+ 421:../../freeRtos/Lib/enc28j60.c ****   // This frees the memory we just read out.
+ 422:../../freeRtos/Lib/enc28j60.c ****   // However, compensate for the errata point 13, rev B4: enver write an even address!
+ 423:../../freeRtos/Lib/enc28j60.c ****   //FIXME remove this warning
+ 424:../../freeRtos/Lib/enc28j60.c ****   if ((gNextPacketPtr - 1 < RXSTART_INIT) || (gNextPacketPtr -1 > RXSTOP_INIT))
+ 425:../../freeRtos/Lib/enc28j60.c ****   {
+ 426:../../freeRtos/Lib/enc28j60.c ****     enc28j60Write(ERXRDPTL, (RXSTOP_INIT)&0xFF);
+ 427:../../freeRtos/Lib/enc28j60.c ****     enc28j60Write(ERXRDPTH, (RXSTOP_INIT)>>8);
+ 428:../../freeRtos/Lib/enc28j60.c ****   }
+ 429:../../freeRtos/Lib/enc28j60.c ****   else
+ 430:../../freeRtos/Lib/enc28j60.c ****   {
+ 431:../../freeRtos/Lib/enc28j60.c ****     enc28j60Write(ERXRDPTL, (gNextPacketPtr-1)&0xFF);
+ 432:../../freeRtos/Lib/enc28j60.c ****     enc28j60Write(ERXRDPTH, (gNextPacketPtr-1)>>8);
+ 433:../../freeRtos/Lib/enc28j60.c ****   }
+ 434:../../freeRtos/Lib/enc28j60.c ****   // decrement the packet counter indicate we are done with this packet
+ 435:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON2, ECON2_PKTDEC);
+ 436:../../freeRtos/Lib/enc28j60.c ****   return(len);
+ 437:../../freeRtos/Lib/enc28j60.c **** }
+ 438:../../freeRtos/Lib/enc28j60.c **** 
+ 439:../../freeRtos/Lib/enc28j60.c **** void spiEnableEnc28j60(void)  {};
+ 562               	.LM0:
+ 563               	.LFBB1:
+ 564               	/* prologue: function */
+ 565               	/* frame size = 0 */
+ 566               	/* stack size = 0 */
+ 567               	.L__stack_usage = 0
+ 568               	/* epilogue start */
+ 570               	.LM1:
+ 571 0000 0895      		ret
+ 573               	.Lscope1:
+ 575               		.stabd	78,0,0
+ 577               		.weak	spiDisableEnc28j60
+ 579               	spiDisableEnc28j60:
+ 580               		.stabd	46,0,0
+ 440:../../freeRtos/Lib/enc28j60.c **** void spiDisableEnc28j60(void) {};
+ 582               	.LM2:
+ 583               	.LFBB2:
+ 584               	/* prologue: function */
+ 585               	/* frame size = 0 */
+ 586               	/* stack size = 0 */
+ 587               	.L__stack_usage = 0
+ 588               	/* epilogue start */
+ 590               	.LM3:
+ 591 0002 0895      		ret
+ 593               	.Lscope2:
+ 595               		.stabd	78,0,0
+ 601               	enc28j60WriteOp:
+ 602               		.stabd	46,0,0
+ 110:../../freeRtos/Lib/enc28j60.c **** {
+ 604               	.LM4:
+ 605               	.LFBB3:
+ 606 0004 1F93      		push r17
+ 607 0006 DF93      		push r29
+ 608 0008 CF93      		push r28
+ 609 000a 0F92      		push __tmp_reg__
+ 610 000c 0F92      		push __tmp_reg__
+ 611 000e CDB7      		in r28,__SP_L__
+ 612 0010 DEB7      		in r29,__SP_H__
+ 613               	/* prologue: function */
+ 614               	/* frame size = 2 */
+ 615               	/* stack size = 5 */
+ 616               	.L__stack_usage = 5
+ 617 0012 182F      		mov r17,r24
+ 111:../../freeRtos/Lib/enc28j60.c ****   spiTake();
+ 619               	.LM5:
+ 620 0014 4A83      		std Y+2,r20
+ 621 0016 6983      		std Y+1,r22
+ 622 0018 0E94 0000 		call spiTake
+ 112:../../freeRtos/Lib/enc28j60.c ****   spiEnableEnc28j60();
+ 624               	.LM6:
+ 625 001c 0E94 0000 		call spiEnableEnc28j60
+ 115:../../freeRtos/Lib/enc28j60.c ****   spiSend(op | (address & ADDR_MASK));
+ 627               	.LM7:
+ 628 0020 6981      		ldd r22,Y+1
+ 629 0022 862F      		mov r24,r22
+ 630 0024 8F71      		andi r24,lo8(31)
+ 631 0026 812B      		or r24,r17
+ 632 0028 0E94 0000 		call spiSend
+ 116:../../freeRtos/Lib/enc28j60.c ****   spiSend(data);
+ 634               	.LM8:
+ 635 002c 4A81      		ldd r20,Y+2
+ 636 002e 842F      		mov r24,r20
+ 637 0030 0E94 0000 		call spiSend
+ 117:../../freeRtos/Lib/enc28j60.c ****   spiDisableEnc28j60();
+ 639               	.LM9:
+ 640 0034 0E94 0000 		call spiDisableEnc28j60
+ 118:../../freeRtos/Lib/enc28j60.c ****   spiGive();
+ 642               	.LM10:
+ 643 0038 0E94 0000 		call spiGive
+ 644               	/* epilogue start */
+ 119:../../freeRtos/Lib/enc28j60.c **** }
+ 646               	.LM11:
+ 647 003c 0F90      		pop __tmp_reg__
+ 648 003e 0F90      		pop __tmp_reg__
+ 649 0040 CF91      		pop r28
+ 650 0042 DF91      		pop r29
+ 651 0044 1F91      		pop r17
+ 652 0046 0895      		ret
+ 654               	.Lscope3:
+ 656               		.stabd	78,0,0
+ 660               	enc28j60SetBank:
+ 661               		.stabd	46,0,0
+ 176:../../freeRtos/Lib/enc28j60.c **** {
+ 663               	.LM12:
+ 664               	.LFBB4:
+ 665 0048 1F93      		push r17
+ 666 004a CF93      		push r28
+ 667 004c DF93      		push r29
+ 668               	/* prologue: function */
+ 669               	/* frame size = 0 */
+ 670               	/* stack size = 3 */
+ 671               	.L__stack_usage = 3
+ 672 004e 182F      		mov r17,r24
+ 178:../../freeRtos/Lib/enc28j60.c ****   if((address & BANK_MASK) != Enc28j60Bank)
+ 674               	.LM13:
+ 675 0050 C82F      		mov r28,r24
+ 676 0052 D0E0      		ldi r29,lo8(0)
+ 677 0054 C076      		andi r28,lo8(96)
+ 678 0056 D070      		andi r29,hi8(96)
+ 679 0058 2091 0000 		lds r18,Enc28j60Bank
+ 680 005c 30E0      		ldi r19,lo8(0)
+ 681 005e C217      		cp r28,r18
+ 682 0060 D307      		cpc r29,r19
+ 683 0062 01F0      		breq .L4
+ 181:../../freeRtos/Lib/enc28j60.c ****     enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, (ECON1_BSEL1|ECON1_BSEL0));
+ 685               	.LM14:
+ 686 0064 80EA      		ldi r24,lo8(-96)
+ 687 0066 6FE1      		ldi r22,lo8(31)
+ 688 0068 43E0      		ldi r20,lo8(3)
+ 689 006a 0E94 0000 		call enc28j60WriteOp
+ 182:../../freeRtos/Lib/enc28j60.c ****     enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, (address & BANK_MASK)>>5);
+ 691               	.LM15:
+ 692 006e AE01      		movw r20,r28
+ 693 0070 85E0      		ldi r24,5
+ 694 0072 5595      	1:	asr r21
+ 695 0074 4795      		ror r20
+ 696 0076 8A95      		dec r24
+ 697 0078 01F4      		brne 1b
+ 698 007a 80E8      		ldi r24,lo8(-128)
+ 699 007c 6FE1      		ldi r22,lo8(31)
+ 700 007e 0E94 0000 		call enc28j60WriteOp
+ 183:../../freeRtos/Lib/enc28j60.c ****     Enc28j60Bank = (address & BANK_MASK);
+ 702               	.LM16:
+ 703 0082 1076      		andi r17,lo8(96)
+ 704 0084 1093 0000 		sts Enc28j60Bank,r17
+ 705               	.L4:
+ 706               	/* epilogue start */
+ 185:../../freeRtos/Lib/enc28j60.c **** }
+ 708               	.LM17:
+ 709 0088 DF91      		pop r29
+ 710 008a CF91      		pop r28
+ 711 008c 1F91      		pop r17
+ 712 008e 0895      		ret
+ 714               	.Lscope4:
+ 716               		.stabd	78,0,0
+ 721               	enc28j60Write:
+ 722               		.stabd	46,0,0
+ 216:../../freeRtos/Lib/enc28j60.c **** {
+ 724               	.LM18:
+ 725               	.LFBB5:
+ 726 0090 1F93      		push r17
+ 727 0092 DF93      		push r29
+ 728 0094 CF93      		push r28
+ 729 0096 0F92      		push __tmp_reg__
+ 730 0098 CDB7      		in r28,__SP_L__
+ 731 009a DEB7      		in r29,__SP_H__
+ 732               	/* prologue: function */
+ 733               	/* frame size = 1 */
+ 734               	/* stack size = 4 */
+ 735               	.L__stack_usage = 4
+ 736 009c 182F      		mov r17,r24
+ 218:../../freeRtos/Lib/enc28j60.c ****   enc28j60SetBank(address);
+ 738               	.LM19:
+ 739 009e 6983      		std Y+1,r22
+ 740 00a0 0E94 0000 		call enc28j60SetBank
+ 220:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_WRITE_CTRL_REG, address, data);
+ 742               	.LM20:
+ 743 00a4 80E4      		ldi r24,lo8(64)
+ 744 00a6 612F      		mov r22,r17
+ 745 00a8 4981      		ldd r20,Y+1
+ 746 00aa 0E94 0000 		call enc28j60WriteOp
+ 747               	/* epilogue start */
+ 221:../../freeRtos/Lib/enc28j60.c **** }
+ 749               	.LM21:
+ 750 00ae 0F90      		pop __tmp_reg__
+ 751 00b0 CF91      		pop r28
+ 752 00b2 DF91      		pop r29
+ 753 00b4 1F91      		pop r17
+ 754 00b6 0895      		ret
+ 756               	.Lscope5:
+ 758               		.stabd	78,0,0
+ 763               	enc28j60ReadOp:
+ 764               		.stabd	46,0,0
+  87:../../freeRtos/Lib/enc28j60.c **** {
+ 766               	.LM22:
+ 767               	.LFBB6:
+ 768 00b8 1F93      		push r17
+ 769 00ba DF93      		push r29
+ 770 00bc CF93      		push r28
+ 771 00be 0F92      		push __tmp_reg__
+ 772 00c0 CDB7      		in r28,__SP_L__
+ 773 00c2 DEB7      		in r29,__SP_H__
+ 774               	/* prologue: function */
+ 775               	/* frame size = 1 */
+ 776               	/* stack size = 4 */
+ 777               	.L__stack_usage = 4
+ 778 00c4 162F      		mov r17,r22
+  89:../../freeRtos/Lib/enc28j60.c ****   spiTake();
+ 780               	.LM23:
+ 781 00c6 8983      		std Y+1,r24
+ 782 00c8 0E94 0000 		call spiTake
+  90:../../freeRtos/Lib/enc28j60.c ****   spiEnableEnc28j60();
+ 784               	.LM24:
+ 785 00cc 0E94 0000 		call spiEnableEnc28j60
+  93:../../freeRtos/Lib/enc28j60.c ****   spiSend(op | (address & ADDR_MASK));
+ 787               	.LM25:
+ 788 00d0 912F      		mov r25,r17
+ 789 00d2 9F71      		andi r25,lo8(31)
+ 790 00d4 8981      		ldd r24,Y+1
+ 791 00d6 892B      		or r24,r25
+ 792 00d8 0E94 0000 		call spiSend
+  96:../../freeRtos/Lib/enc28j60.c ****   result = spiSend(0x00);
+ 794               	.LM26:
+ 795 00dc 80E0      		ldi r24,lo8(0)
+ 796 00de 0E94 0000 		call spiSend
+  99:../../freeRtos/Lib/enc28j60.c ****   if(address & 0x80)
+ 798               	.LM27:
+ 799 00e2 17FF      		sbrs r17,7
+ 800 00e4 00C0      		rjmp .L8
+ 101:../../freeRtos/Lib/enc28j60.c ****     result = spiSend(0x00);
+ 802               	.LM28:
+ 803 00e6 80E0      		ldi r24,lo8(0)
+ 804 00e8 0E94 0000 		call spiSend
+ 805               	.L8:
+ 104:../../freeRtos/Lib/enc28j60.c ****   spiDisableEnc28j60();
+ 807               	.LM29:
+ 808 00ec 8983      		std Y+1,r24
+ 809 00ee 0E94 0000 		call spiDisableEnc28j60
+ 105:../../freeRtos/Lib/enc28j60.c ****   spiGive();
+ 811               	.LM30:
+ 812 00f2 0E94 0000 		call spiGive
+ 107:../../freeRtos/Lib/enc28j60.c **** }
+ 814               	.LM31:
+ 815 00f6 8981      		ldd r24,Y+1
+ 816               	/* epilogue start */
+ 817 00f8 0F90      		pop __tmp_reg__
+ 818 00fa CF91      		pop r28
+ 819 00fc DF91      		pop r29
+ 820 00fe 1F91      		pop r17
+ 821 0100 0895      		ret
+ 826               	.Lscope6:
+ 828               		.stabd	78,0,0
+ 832               	enc28j60Read:
+ 833               		.stabd	46,0,0
+ 188:../../freeRtos/Lib/enc28j60.c **** {
+ 835               	.LM32:
+ 836               	.LFBB7:
+ 837 0102 DF93      		push r29
+ 838 0104 CF93      		push r28
+ 839 0106 0F92      		push __tmp_reg__
+ 840 0108 CDB7      		in r28,__SP_L__
+ 841 010a DEB7      		in r29,__SP_H__
+ 842               	/* prologue: function */
+ 843               	/* frame size = 1 */
+ 844               	/* stack size = 3 */
+ 845               	.L__stack_usage = 3
+ 846 010c 682F      		mov r22,r24
+ 190:../../freeRtos/Lib/enc28j60.c ****   enc28j60SetBank(address);
+ 848               	.LM33:
+ 849 010e 6983      		std Y+1,r22
+ 850 0110 0E94 0000 		call enc28j60SetBank
+ 192:../../freeRtos/Lib/enc28j60.c ****   uint8_t result = enc28j60ReadOp(ENC28J60_READ_CTRL_REG, address);
+ 852               	.LM34:
+ 853 0114 80E0      		ldi r24,lo8(0)
+ 854 0116 6981      		ldd r22,Y+1
+ 855 0118 0E94 0000 		call enc28j60ReadOp
+ 856               	/* epilogue start */
+ 194:../../freeRtos/Lib/enc28j60.c **** }
+ 858               	.LM35:
+ 859 011c 0F90      		pop __tmp_reg__
+ 860 011e CF91      		pop r28
+ 861 0120 DF91      		pop r29
+ 862 0122 0895      		ret
+ 864               	.Lscope7:
+ 866               		.stabd	78,0,0
+ 868               	.global	enc28j60hasRxPkt
+ 870               	enc28j60hasRxPkt:
+ 871               		.stabd	46,0,0
+ 364:../../freeRtos/Lib/enc28j60.c **** {
+ 873               	.LM36:
+ 874               	.LFBB8:
+ 875               	/* prologue: function */
+ 876               	/* frame size = 0 */
+ 877               	/* stack size = 0 */
+ 878               	.L__stack_usage = 0
+ 365:../../freeRtos/Lib/enc28j60.c ****   if( enc28j60Read(EPKTCNT) ==0 )
+ 880               	.LM37:
+ 881 0124 89E3      		ldi r24,lo8(57)
+ 882 0126 0E94 0000 		call enc28j60Read
+ 367:../../freeRtos/Lib/enc28j60.c ****     return(0);
+ 884               	.LM38:
+ 885 012a 91E0      		ldi r25,lo8(1)
+ 886 012c 8823      		tst r24
+ 887 012e 01F4      		brne .L11
+ 888 0130 90E0      		ldi r25,lo8(0)
+ 889               	.L11:
+ 370:../../freeRtos/Lib/enc28j60.c **** }
+ 891               	.LM39:
+ 892 0132 892F      		mov r24,r25
+ 893               	/* epilogue start */
+ 894 0134 0895      		ret
+ 896               	.Lscope8:
+ 898               		.stabd	78,0,0
+ 900               	.global	enc28j60linkup
+ 902               	enc28j60linkup:
+ 903               		.stabd	46,0,0
+ 330:../../freeRtos/Lib/enc28j60.c **** {
+ 905               	.LM40:
+ 906               	.LFBB9:
+ 907               	/* prologue: function */
+ 908               	/* frame size = 0 */
+ 909               	/* stack size = 0 */
+ 910               	.L__stack_usage = 0
+ 911               	.LBB8:
+ 912               	.LBB9:
+ 200:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MIREGADR, address);
+ 914               	.LM41:
+ 915 0136 84ED      		ldi r24,lo8(-44)
+ 916 0138 61E1      		ldi r22,lo8(17)
+ 917 013a 0E94 0000 		call enc28j60Write
+ 201:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MICMD, MICMD_MIIRD);
+ 919               	.LM42:
+ 920 013e 82ED      		ldi r24,lo8(-46)
+ 921 0140 61E0      		ldi r22,lo8(1)
+ 922 0142 0E94 0000 		call enc28j60Write
+ 923               	.L14:
+ 207:../../freeRtos/Lib/enc28j60.c ****    vTaskDelay ( 0 ); //FIXME być może tutaj następuje zawieszenie
+ 925               	.LM43:
+ 926 0146 80E0      		ldi r24,lo8(0)
+ 927 0148 90E0      		ldi r25,hi8(0)
+ 928 014a 0E94 0000 		call vTaskDelay
+ 206:../../freeRtos/Lib/enc28j60.c ****   while(enc28j60Read(MISTAT) & MISTAT_BUSY)
+ 930               	.LM44:
+ 931 014e 8AEE      		ldi r24,lo8(-22)
+ 932 0150 0E94 0000 		call enc28j60Read
+ 933 0154 80FD      		sbrc r24,0
+ 934 0156 00C0      		rjmp .L14
+ 210:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MICMD, 0x00);
+ 936               	.LM45:
+ 937 0158 82ED      		ldi r24,lo8(-46)
+ 938 015a 60E0      		ldi r22,lo8(0)
+ 939 015c 0E94 0000 		call enc28j60Write
+ 212:../../freeRtos/Lib/enc28j60.c ****   return (enc28j60Read(MIRDH));
+ 941               	.LM46:
+ 942 0160 89ED      		ldi r24,lo8(-39)
+ 943 0162 0E94 0000 		call enc28j60Read
+ 944               	.LBE9:
+ 945               	.LBE8:
+ 332:../../freeRtos/Lib/enc28j60.c ****   return(enc28j60PhyReadH(PHSTAT2) && 4);
+ 947               	.LM47:
+ 948 0166 91E0      		ldi r25,lo8(1)
+ 949 0168 8823      		tst r24
+ 950 016a 01F4      		brne .L15
+ 951 016c 90E0      		ldi r25,lo8(0)
+ 952               	.L15:
+ 333:../../freeRtos/Lib/enc28j60.c **** }
+ 954               	.LM48:
+ 955 016e 892F      		mov r24,r25
+ 956               	/* epilogue start */
+ 957 0170 0895      		ret
+ 959               	.Lscope9:
+ 961               		.stabd	78,0,0
+ 963               	.global	enc28j60getrev
+ 965               	enc28j60getrev:
+ 966               		.stabd	46,0,0
+ 324:../../freeRtos/Lib/enc28j60.c **** {
+ 968               	.LM49:
+ 969               	.LFBB10:
+ 970               	/* prologue: function */
+ 971               	/* frame size = 0 */
+ 972               	/* stack size = 0 */
+ 973               	.L__stack_usage = 0
+ 325:../../freeRtos/Lib/enc28j60.c ****   return(enc28j60Read(EREVID));
+ 975               	.LM50:
+ 976 0172 82E7      		ldi r24,lo8(114)
+ 977 0174 0E94 0000 		call enc28j60Read
+ 978               	/* epilogue start */
+ 326:../../freeRtos/Lib/enc28j60.c **** }
+ 980               	.LM51:
+ 981 0178 0895      		ret
+ 983               	.Lscope10:
+ 985               		.stabd	78,0,0
+ 989               	enc28j60PhyWrite:
+ 990               		.stabd	46,0,0
+ 224:../../freeRtos/Lib/enc28j60.c **** {
+ 992               	.LM52:
+ 993               	.LFBB11:
+ 994 017a 1F93      		push r17
+ 995 017c DF93      		push r29
+ 996 017e CF93      		push r28
+ 997 0180 0F92      		push __tmp_reg__
+ 998 0182 CDB7      		in r28,__SP_L__
+ 999 0184 DEB7      		in r29,__SP_H__
+ 1000               	/* prologue: function */
+ 1001               	/* frame size = 1 */
+ 1002               	/* stack size = 4 */
+ 1003               	.L__stack_usage = 4
+ 1004 0186 982F      		mov r25,r24
+ 1005 0188 162F      		mov r17,r22
+ 226:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MIREGADR, address);
+ 1007               	.LM53:
+ 1008 018a 84ED      		ldi r24,lo8(-44)
+ 1009 018c 692F      		mov r22,r25
+ 1010 018e 7983      		std Y+1,r23
+ 1011 0190 0E94 0000 		call enc28j60Write
+ 228:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MIWRL, data);
+ 1013               	.LM54:
+ 1014 0194 86ED      		ldi r24,lo8(-42)
+ 1015 0196 612F      		mov r22,r17
+ 1016 0198 0E94 0000 		call enc28j60Write
+ 229:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MIWRH, data>>8);
+ 1018               	.LM55:
+ 1019 019c 87ED      		ldi r24,lo8(-41)
+ 1020 019e 7981      		ldd r23,Y+1
+ 1021 01a0 672F      		mov r22,r23
+ 1022 01a2 0E94 0000 		call enc28j60Write
+ 232:../../freeRtos/Lib/enc28j60.c ****   while(enc28j60Read(MISTAT) & MISTAT_BUSY)
+ 1024               	.LM56:
+ 1025 01a6 00C0      		rjmp .L18
+ 1026               	.L19:
+ 234:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay ( 0 );         //FIXME być może tutaj następuje zakleszczenie
+ 1028               	.LM57:
+ 1029 01a8 80E0      		ldi r24,lo8(0)
+ 1030 01aa 90E0      		ldi r25,hi8(0)
+ 1031 01ac 0E94 0000 		call vTaskDelay
+ 1032               	.L18:
+ 232:../../freeRtos/Lib/enc28j60.c ****   while(enc28j60Read(MISTAT) & MISTAT_BUSY)
+ 1034               	.LM58:
+ 1035 01b0 8AEE      		ldi r24,lo8(-22)
+ 1036 01b2 0E94 0000 		call enc28j60Read
+ 1037 01b6 80FD      		sbrc r24,0
+ 1038 01b8 00C0      		rjmp .L19
+ 1039               	/* epilogue start */
+ 236:../../freeRtos/Lib/enc28j60.c **** }
+ 1041               	.LM59:
+ 1042 01ba 0F90      		pop __tmp_reg__
+ 1043 01bc CF91      		pop r28
+ 1044 01be DF91      		pop r29
+ 1045 01c0 1F91      		pop r17
+ 1046 01c2 0895      		ret
+ 1048               	.Lscope11:
+ 1050               		.stabd	78,0,0
+ 1052               		.weak	nicPoll
+ 1054               	nicPoll:
+ 1055               		.stabd	46,0,0
+ 373:../../freeRtos/Lib/enc28j60.c **** {
+ 1057               	.LM60:
+ 1058               	.LFBB12:
+ 1059 01c4 CF92      		push r12
+ 1060 01c6 DF92      		push r13
+ 1061 01c8 EF92      		push r14
+ 1062 01ca FF92      		push r15
+ 1063 01cc 0F93      		push r16
+ 1064 01ce 1F93      		push r17
+ 1065 01d0 CF93      		push r28
+ 1066 01d2 DF93      		push r29
+ 1067               	/* prologue: function */
+ 1068               	/* frame size = 0 */
+ 1069               	/* stack size = 8 */
+ 1070               	.L__stack_usage = 8
+ 379:../../freeRtos/Lib/enc28j60.c ****   if( enc28j60Read(EPKTCNT) == 0 )
+ 1072               	.LM61:
+ 1073 01d4 89E3      		ldi r24,lo8(57)
+ 1074 01d6 0E94 0000 		call enc28j60Read
+ 1075 01da 8823      		tst r24
+ 1076 01dc 01F4      		brne .+2
+ 1077 01de 00C0      		rjmp .L28
+ 385:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERDPTL, (gNextPacketPtr &0xFF));
+ 1079               	.LM62:
+ 1080 01e0 80E0      		ldi r24,lo8(0)
+ 1081 01e2 6091 0000 		lds r22,gNextPacketPtr
+ 1082 01e6 0E94 0000 		call enc28j60Write
+ 386:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERDPTH, (gNextPacketPtr)>>8);
+ 1084               	.LM63:
+ 1085 01ea 6091 0000 		lds r22,gNextPacketPtr+1
+ 1086 01ee 81E0      		ldi r24,lo8(1)
+ 1087 01f0 0E94 0000 		call enc28j60Write
+ 388:../../freeRtos/Lib/enc28j60.c ****   gNextPacketPtr  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+ 1089               	.LM64:
+ 1090 01f4 8AE3      		ldi r24,lo8(58)
+ 1091 01f6 60E0      		ldi r22,lo8(0)
+ 1092 01f8 0E94 0000 		call enc28j60ReadOp
+ 1093 01fc C82F      		mov r28,r24
+ 1094 01fe D0E0      		ldi r29,lo8(0)
+ 1095 0200 C093 0000 		sts gNextPacketPtr,r28
+ 1096 0204 D093 0000 		sts gNextPacketPtr+1,r29
+ 389:../../freeRtos/Lib/enc28j60.c ****   gNextPacketPtr |= enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0)<<8;
+ 1098               	.LM65:
+ 1099 0208 8AE3      		ldi r24,lo8(58)
+ 1100 020a 60E0      		ldi r22,lo8(0)
+ 1101 020c 0E94 0000 		call enc28j60ReadOp
+ 1102 0210 382F      		mov r19,r24
+ 1103 0212 20E0      		ldi r18,lo8(0)
+ 1104 0214 C22B      		or r28,r18
+ 1105 0216 D32B      		or r29,r19
+ 1106 0218 C093 0000 		sts gNextPacketPtr,r28
+ 1107 021c D093 0000 		sts gNextPacketPtr+1,r29
+ 391:../../freeRtos/Lib/enc28j60.c ****   len  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+ 1109               	.LM66:
+ 1110 0220 8AE3      		ldi r24,lo8(58)
+ 1111 0222 60E0      		ldi r22,lo8(0)
+ 1112 0224 0E94 0000 		call enc28j60ReadOp
+ 1113 0228 C82E      		mov r12,r24
+ 392:../../freeRtos/Lib/enc28j60.c ****   len |= enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0)<<8;
+ 1115               	.LM67:
+ 1116 022a 8AE3      		ldi r24,lo8(58)
+ 1117 022c 60E0      		ldi r22,lo8(0)
+ 1118 022e 0E94 0000 		call enc28j60ReadOp
+ 1119 0232 E82E      		mov r14,r24
+ 395:../../freeRtos/Lib/enc28j60.c ****   rxstat  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+ 1121               	.LM68:
+ 1122 0234 8AE3      		ldi r24,lo8(58)
+ 1123 0236 60E0      		ldi r22,lo8(0)
+ 1124 0238 0E94 0000 		call enc28j60ReadOp
+ 1125 023c 082F      		mov r16,r24
+ 1126 023e 10E0      		ldi r17,lo8(0)
+ 396:../../freeRtos/Lib/enc28j60.c ****   rxstat |= ((uint16_t)enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0))<<8;
+ 1128               	.LM69:
+ 1129 0240 8AE3      		ldi r24,lo8(58)
+ 1130 0242 60E0      		ldi r22,lo8(0)
+ 1131 0244 0E94 0000 		call enc28j60ReadOp
+ 398:../../freeRtos/Lib/enc28j60.c ****   if (len> nicState.bufferSize -1)
+ 1133               	.LM70:
+ 1134 0248 4091 0000 		lds r20,nicState
+ 1135 024c 5091 0000 		lds r21,nicState+1
+ 396:../../freeRtos/Lib/enc28j60.c ****   rxstat |= ((uint16_t)enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0))<<8;
+ 1137               	.LM71:
+ 1138 0250 382F      		mov r19,r24
+ 1139 0252 20E0      		ldi r18,lo8(0)
+ 1140 0254 022B      		or r16,r18
+ 1141 0256 132B      		or r17,r19
+ 406:../../freeRtos/Lib/enc28j60.c ****   if ((rxstat & 0x80)==0)
+ 1143               	.LM72:
+ 1144 0258 07FF      		sbrs r16,7
+ 1145 025a 00C0      		rjmp .L29
+ 391:../../freeRtos/Lib/enc28j60.c ****   len  = enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0);
+ 1147               	.LM73:
+ 1148 025c CC2D      		mov r28,r12
+ 1149 025e D0E0      		ldi r29,lo8(0)
+ 392:../../freeRtos/Lib/enc28j60.c ****   len |= enc28j60ReadOp(ENC28J60_READ_BUF_MEM, 0)<<8;
+ 1151               	.LM74:
+ 1152 0260 3E2D      		mov r19,r14
+ 1153 0262 20E0      		ldi r18,lo8(0)
+ 1154 0264 C22B      		or r28,r18
+ 1155 0266 D32B      		or r29,r19
+ 398:../../freeRtos/Lib/enc28j60.c ****   if (len> nicState.bufferSize -1)
+ 1157               	.LM75:
+ 1158 0268 4150      		subi r20,lo8(-(-1))
+ 1159 026a 5040      		sbci r21,hi8(-(-1))
+ 393:../../freeRtos/Lib/enc28j60.c ****   len-=4; //remove the CRC count
+ 1161               	.LM76:
+ 1162 026c 2497      		sbiw r28,4
+ 1163 026e 4C17      		cp r20,r28
+ 1164 0270 5D07      		cpc r21,r29
+ 1165 0272 00F4      		brsh .L23
+ 1166 0274 EA01      		movw r28,r20
+ 1167               	.L23:
+ 414:../../freeRtos/Lib/enc28j60.c ****     enc28j60ReadBuffer(len, nicState.layer2.buf);
+ 1169               	.LM77:
+ 1170 0276 C090 0000 		lds r12,nicState+8
+ 1171 027a D090 0000 		lds r13,nicState+8+1
+ 1172               	.LBB10:
+ 1173               	.LBB11:
+ 123:../../freeRtos/Lib/enc28j60.c ****   spiTake();
+ 1175               	.LM78:
+ 1176 027e 0E94 0000 		call spiTake
+ 124:../../freeRtos/Lib/enc28j60.c ****   spiEnableEnc28j60();
+ 1178               	.LM79:
+ 1179 0282 0E94 0000 		call spiEnableEnc28j60
+ 125:../../freeRtos/Lib/enc28j60.c ****   spiSend(ENC28J60_READ_BUF_MEM);
+ 1181               	.LM80:
+ 1182 0286 8AE3      		ldi r24,lo8(58)
+ 1183 0288 0E94 0000 		call spiSend
+ 1184 028c 7601      		movw r14,r12
+ 1185 028e 8E01      		movw r16,r28
+ 1186 0290 00C0      		rjmp .L24
+ 1187               	.L25:
+ 128:../../freeRtos/Lib/enc28j60.c ****     len--;
+ 1189               	.LM81:
+ 1190 0292 0150      		subi r16,lo8(-(-1))
+ 1191 0294 1040      		sbci r17,hi8(-(-1))
+ 129:../../freeRtos/Lib/enc28j60.c ****     *data = spiSend(0x00);
+ 1193               	.LM82:
+ 1194 0296 80E0      		ldi r24,lo8(0)
+ 1195 0298 0E94 0000 		call spiSend
+ 1196 029c F701      		movw r30,r14
+ 1197 029e 8193      		st Z+,r24
+ 1198 02a0 7F01      		movw r14,r30
+ 1199               	.L24:
+ 126:../../freeRtos/Lib/enc28j60.c ****   while(len)
+ 1201               	.LM83:
+ 1202 02a2 0115      		cp r16,__zero_reg__
+ 1203 02a4 1105      		cpc r17,__zero_reg__
+ 1204 02a6 01F4      		brne .L25
+ 132:../../freeRtos/Lib/enc28j60.c ****   *data='\0';
+ 1206               	.LM84:
+ 1207 02a8 F601      		movw r30,r12
+ 1208 02aa EC0F      		add r30,r28
+ 1209 02ac FD1F      		adc r31,r29
+ 1210 02ae 1082      		st Z,__zero_reg__
+ 133:../../freeRtos/Lib/enc28j60.c ****   spiDisableEnc28j60();
+ 1212               	.LM85:
+ 1213 02b0 0E94 0000 		call spiDisableEnc28j60
+ 134:../../freeRtos/Lib/enc28j60.c ****   spiGive();
+ 1215               	.LM86:
+ 1216 02b4 0E94 0000 		call spiGive
+ 1217 02b8 00C0      		rjmp .L22
+ 1218               	.L29:
+ 1219               	.LBE11:
+ 1220               	.LBE10:
+ 409:../../freeRtos/Lib/enc28j60.c ****     len=0;
+ 1222               	.LM87:
+ 1223 02ba C0E0      		ldi r28,lo8(0)
+ 1224 02bc D0E0      		ldi r29,hi8(0)
+ 1225               	.L22:
+ 418:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXRDPTL, (gNextPacketPtr &0xFF));
+ 1227               	.LM88:
+ 1228 02be 8CE0      		ldi r24,lo8(12)
+ 1229 02c0 6091 0000 		lds r22,gNextPacketPtr
+ 1230 02c4 0E94 0000 		call enc28j60Write
+ 419:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXRDPTH, (gNextPacketPtr)>>8);
+ 1232               	.LM89:
+ 1233 02c8 6091 0000 		lds r22,gNextPacketPtr+1
+ 1234 02cc 8DE0      		ldi r24,lo8(13)
+ 1235 02ce 0E94 0000 		call enc28j60Write
+ 424:../../freeRtos/Lib/enc28j60.c ****   if ((gNextPacketPtr - 1 < RXSTART_INIT) || (gNextPacketPtr -1 > RXSTOP_INIT))
+ 1237               	.LM90:
+ 1238 02d2 6091 0000 		lds r22,gNextPacketPtr
+ 1239 02d6 7091 0000 		lds r23,gNextPacketPtr+1
+ 1240 02da CB01      		movw r24,r22
+ 1241 02dc 0197      		sbiw r24,1
+ 1242 02de F9E1      		ldi r31,hi8(6655)
+ 1243 02e0 8F3F      		cpi r24,lo8(6655)
+ 1244 02e2 9F07      		cpc r25,r31
+ 1245 02e4 00F0      		brlo .L26
+ 426:../../freeRtos/Lib/enc28j60.c ****     enc28j60Write(ERXRDPTL, (RXSTOP_INIT)&0xFF);
+ 1247               	.LM91:
+ 1248 02e6 8CE0      		ldi r24,lo8(12)
+ 1249 02e8 6EEF      		ldi r22,lo8(-2)
+ 1250 02ea 0E94 0000 		call enc28j60Write
+ 427:../../freeRtos/Lib/enc28j60.c ****     enc28j60Write(ERXRDPTH, (RXSTOP_INIT)>>8);
+ 1252               	.LM92:
+ 1253 02ee 8DE0      		ldi r24,lo8(13)
+ 1254 02f0 69E1      		ldi r22,lo8(25)
+ 1255 02f2 00C0      		rjmp .L30
+ 1256               	.L26:
+ 431:../../freeRtos/Lib/enc28j60.c ****     enc28j60Write(ERXRDPTL, (gNextPacketPtr-1)&0xFF);
+ 1258               	.LM93:
+ 1259 02f4 6150      		subi r22,lo8(-(-1))
+ 1260 02f6 8CE0      		ldi r24,lo8(12)
+ 1261 02f8 0E94 0000 		call enc28j60Write
+ 432:../../freeRtos/Lib/enc28j60.c ****     enc28j60Write(ERXRDPTH, (gNextPacketPtr-1)>>8);
+ 1263               	.LM94:
+ 1264 02fc 2091 0000 		lds r18,gNextPacketPtr
+ 1265 0300 3091 0000 		lds r19,gNextPacketPtr+1
+ 1266 0304 2150      		subi r18,lo8(-(-1))
+ 1267 0306 3040      		sbci r19,hi8(-(-1))
+ 1268 0308 8DE0      		ldi r24,lo8(13)
+ 1269 030a 632F      		mov r22,r19
+ 1270               	.L30:
+ 1271 030c 0E94 0000 		call enc28j60Write
+ 435:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON2, ECON2_PKTDEC);
+ 1273               	.LM95:
+ 1274 0310 80E8      		ldi r24,lo8(-128)
+ 1275 0312 6EE1      		ldi r22,lo8(30)
+ 1276 0314 40E4      		ldi r20,lo8(64)
+ 1277 0316 0E94 0000 		call enc28j60WriteOp
+ 436:../../freeRtos/Lib/enc28j60.c ****   return(len);
+ 1279               	.LM96:
+ 1280 031a 00C0      		rjmp .L21
+ 1281               	.L28:
+ 381:../../freeRtos/Lib/enc28j60.c ****     return(0);
+ 1283               	.LM97:
+ 1284 031c C0E0      		ldi r28,lo8(0)
+ 1285 031e D0E0      		ldi r29,hi8(0)
+ 1286               	.L21:
+ 437:../../freeRtos/Lib/enc28j60.c **** }
+ 1288               	.LM98:
+ 1289 0320 CE01      		movw r24,r28
+ 1290               	/* epilogue start */
+ 1291 0322 DF91      		pop r29
+ 1292 0324 CF91      		pop r28
+ 1293 0326 1F91      		pop r17
+ 1294 0328 0F91      		pop r16
+ 1295 032a FF90      		pop r15
+ 1296 032c EF90      		pop r14
+ 1297 032e DF90      		pop r13
+ 1298 0330 CF90      		pop r12
+ 1299 0332 0895      		ret
+ 1301               	.Lscope12:
+ 1303               		.stabd	78,0,0
+ 1306               		.weak	nicSend
+ 1308               	nicSend:
+ 1309               		.stabd	46,0,0
+ 336:../../freeRtos/Lib/enc28j60.c **** {
+ 1311               	.LM99:
+ 1312               	.LFBB13:
+ 1313 0334 0F93      		push r16
+ 1314 0336 1F93      		push r17
+ 1315 0338 CF93      		push r28
+ 1316 033a DF93      		push r29
+ 1317               	/* prologue: function */
+ 1318               	/* frame size = 0 */
+ 1319               	/* stack size = 4 */
+ 1320               	.L__stack_usage = 4
+ 1321 033c EC01      		movw r28,r24
+ 338:../../freeRtos/Lib/enc28j60.c ****   while (enc28j60ReadOp(ENC28J60_READ_CTRL_REG, ECON1) & ECON1_TXRTS)
+ 1323               	.LM100:
+ 1324 033e 00C0      		rjmp .L32
+ 1325               	.L34:
+ 341:../../freeRtos/Lib/enc28j60.c ****     if( (enc28j60Read(EIR) & EIR_TXERIF) )
+ 1327               	.LM101:
+ 1328 0340 8CE1      		ldi r24,lo8(28)
+ 1329 0342 0E94 0000 		call enc28j60Read
+ 1330 0346 81FF      		sbrs r24,1
+ 1331 0348 00C0      		rjmp .L33
+ 343:../../freeRtos/Lib/enc28j60.c ****       enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRST);
+ 1333               	.LM102:
+ 1334 034a 80E8      		ldi r24,lo8(-128)
+ 1335 034c 6FE1      		ldi r22,lo8(31)
+ 1336 034e 40E8      		ldi r20,lo8(-128)
+ 1337 0350 0E94 0000 		call enc28j60WriteOp
+ 344:../../freeRtos/Lib/enc28j60.c ****       enc28j60WriteOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRST);
+ 1339               	.LM103:
+ 1340 0354 80EA      		ldi r24,lo8(-96)
+ 1341 0356 6FE1      		ldi r22,lo8(31)
+ 1342 0358 40E8      		ldi r20,lo8(-128)
+ 1343 035a 0E94 0000 		call enc28j60WriteOp
+ 1344               	.L33:
+ 346:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay ( 0 ); //FIXME być może tutaj następuje zakleszczenie
+ 1346               	.LM104:
+ 1347 035e 80E0      		ldi r24,lo8(0)
+ 1348 0360 90E0      		ldi r25,hi8(0)
+ 1349 0362 0E94 0000 		call vTaskDelay
+ 1350               	.L32:
+ 338:../../freeRtos/Lib/enc28j60.c ****   while (enc28j60ReadOp(ENC28J60_READ_CTRL_REG, ECON1) & ECON1_TXRTS)
+ 1352               	.LM105:
+ 1353 0366 80E0      		ldi r24,lo8(0)
+ 1354 0368 6FE1      		ldi r22,lo8(31)
+ 1355 036a 0E94 0000 		call enc28j60ReadOp
+ 1356 036e 83FD      		sbrc r24,3
+ 1357 0370 00C0      		rjmp .L34
+ 349:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EWRPTL, TXSTART_INIT&0xFF);
+ 1359               	.LM106:
+ 1360 0372 82E0      		ldi r24,lo8(2)
+ 1361 0374 6FEF      		ldi r22,lo8(-1)
+ 1362 0376 0E94 0000 		call enc28j60Write
+ 350:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EWRPTH, TXSTART_INIT>>8);
+ 1364               	.LM107:
+ 1365 037a 83E0      		ldi r24,lo8(3)
+ 1366 037c 69E1      		ldi r22,lo8(25)
+ 1367 037e 0E94 0000 		call enc28j60Write
+ 352:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXNDL, (TXSTART_INIT+len)&0xFF);
+ 1369               	.LM108:
+ 1370 0382 CE01      		movw r24,r28
+ 1371 0384 8150      		subi r24,lo8(-(-1))
+ 1372 0386 682F      		mov r22,r24
+ 1373 0388 86E0      		ldi r24,lo8(6)
+ 1374 038a 0E94 0000 		call enc28j60Write
+ 353:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXNDH, (TXSTART_INIT+len)>>8);
+ 1376               	.LM109:
+ 1377 038e 9E01      		movw r18,r28
+ 1378 0390 2150      		subi r18,lo8(-(6655))
+ 1379 0392 364E      		sbci r19,hi8(-(6655))
+ 1380 0394 87E0      		ldi r24,lo8(7)
+ 1381 0396 632F      		mov r22,r19
+ 1382 0398 0E94 0000 		call enc28j60Write
+ 355:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_WRITE_BUF_MEM, 0, 0x00);
+ 1384               	.LM110:
+ 1385 039c 8AE7      		ldi r24,lo8(122)
+ 1386 039e 60E0      		ldi r22,lo8(0)
+ 1387 03a0 40E0      		ldi r20,lo8(0)
+ 1388 03a2 0E94 0000 		call enc28j60WriteOp
+ 357:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteBuffer(len, nicState.layer2.buf);
+ 1390               	.LM111:
+ 1391 03a6 0091 0000 		lds r16,nicState+8
+ 1392 03aa 1091 0000 		lds r17,nicState+8+1
+ 1393               	.LBB12:
+ 1394               	.LBB13:
+ 139:../../freeRtos/Lib/enc28j60.c ****   spiTake();
+ 1396               	.LM112:
+ 1397 03ae 0E94 0000 		call spiTake
+ 140:../../freeRtos/Lib/enc28j60.c ****   spiEnableEnc28j60();
+ 1399               	.LM113:
+ 1400 03b2 0E94 0000 		call spiEnableEnc28j60
+ 143:../../freeRtos/Lib/enc28j60.c ****   spiSend(ENC28J60_WRITE_BUF_MEM);
+ 1402               	.LM114:
+ 1403 03b6 8AE7      		ldi r24,lo8(122)
+ 1404 03b8 00C0      		rjmp .L37
+ 1405               	.L36:
+ 146:../../freeRtos/Lib/enc28j60.c ****     len--;
+ 1407               	.LM115:
+ 1408 03ba 2197      		sbiw r28,1
+ 147:../../freeRtos/Lib/enc28j60.c ****     spiSend(*data);       // write data
+ 1410               	.LM116:
+ 1411 03bc F801      		movw r30,r16
+ 1412 03be 8191      		ld r24,Z+
+ 1413 03c0 8F01      		movw r16,r30
+ 1414               	.L37:
+ 1415 03c2 0E94 0000 		call spiSend
+ 144:../../freeRtos/Lib/enc28j60.c ****   while(len)
+ 1417               	.LM117:
+ 1418 03c6 2097      		sbiw r28,0
+ 1419 03c8 01F4      		brne .L36
+ 150:../../freeRtos/Lib/enc28j60.c ****   spiDisableEnc28j60();  
+ 1421               	.LM118:
+ 1422 03ca 0E94 0000 		call spiDisableEnc28j60
+ 151:../../freeRtos/Lib/enc28j60.c ****   spiGive();
+ 1424               	.LM119:
+ 1425 03ce 0E94 0000 		call spiGive
+ 1426               	.LBE13:
+ 1427               	.LBE12:
+ 359:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_TXRTS);
+ 1429               	.LM120:
+ 1430 03d2 80E8      		ldi r24,lo8(-128)
+ 1431 03d4 6FE1      		ldi r22,lo8(31)
+ 1432 03d6 48E0      		ldi r20,lo8(8)
+ 1433 03d8 0E94 0000 		call enc28j60WriteOp
+ 1434               	/* epilogue start */
+ 360:../../freeRtos/Lib/enc28j60.c **** }
+ 1436               	.LM121:
+ 1437 03dc DF91      		pop r29
+ 1438 03de CF91      		pop r28
+ 1439 03e0 1F91      		pop r17
+ 1440 03e2 0F91      		pop r16
+ 1441 03e4 0895      		ret
+ 1446               	.Lscope13:
+ 1448               		.stabd	78,0,0
+ 1451               		.weak	nicSetMacAddress
+ 1453               	nicSetMacAddress:
+ 1454               		.stabd	46,0,0
+ 441:../../freeRtos/Lib/enc28j60.c **** 
+ 442:../../freeRtos/Lib/enc28j60.c **** void     nicSetMacAddress(uint8_t* macaddr)
+ 443:../../freeRtos/Lib/enc28j60.c **** {
+ 1456               	.LM122:
+ 1457               	.LFBB14:
+ 1458 03e6 CF93      		push r28
+ 1459 03e8 DF93      		push r29
+ 1460               	/* prologue: function */
+ 1461               	/* frame size = 0 */
+ 1462               	/* stack size = 2 */
+ 1463               	.L__stack_usage = 2
+ 1464 03ea EC01      		movw r28,r24
+ 444:../../freeRtos/Lib/enc28j60.c **** //NOTE: MAC address in ENC28J60 is byte-backward
+ 445:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAADR5, macaddr[0]); 
+ 1466               	.LM123:
+ 1467 03ec 84EE      		ldi r24,lo8(-28)
+ 1468 03ee 6881      		ld r22,Y
+ 1469 03f0 0E94 0000 		call enc28j60Write
+ 446:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAADR4, macaddr[1]);
+ 1471               	.LM124:
+ 1472 03f4 85EE      		ldi r24,lo8(-27)
+ 1473 03f6 6981      		ldd r22,Y+1
+ 1474 03f8 0E94 0000 		call enc28j60Write
+ 447:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAADR3, macaddr[2]);
+ 1476               	.LM125:
+ 1477 03fc 82EE      		ldi r24,lo8(-30)
+ 1478 03fe 6A81      		ldd r22,Y+2
+ 1479 0400 0E94 0000 		call enc28j60Write
+ 448:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAADR2, macaddr[3]);
+ 1481               	.LM126:
+ 1482 0404 83EE      		ldi r24,lo8(-29)
+ 1483 0406 6B81      		ldd r22,Y+3
+ 1484 0408 0E94 0000 		call enc28j60Write
+ 449:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAADR1, macaddr[4]);
+ 1486               	.LM127:
+ 1487 040c 80EE      		ldi r24,lo8(-32)
+ 1488 040e 6C81      		ldd r22,Y+4
+ 1489 0410 0E94 0000 		call enc28j60Write
+ 450:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAADR0, macaddr[5]);
+ 1491               	.LM128:
+ 1492 0414 81EE      		ldi r24,lo8(-31)
+ 1493 0416 6D81      		ldd r22,Y+5
+ 1494 0418 0E94 0000 		call enc28j60Write
+ 1495               	/* epilogue start */
+ 451:../../freeRtos/Lib/enc28j60.c ****   //strncpy((void *)(nicState.mac.addr), (void *)(macaddr), 6);
+ 452:../../freeRtos/Lib/enc28j60.c **** }
+ 1497               	.LM129:
+ 1498 041c DF91      		pop r29
+ 1499 041e CF91      		pop r28
+ 1500 0420 0895      		ret
+ 1502               	.Lscope14:
+ 1504               		.stabd	78,0,0
+ 1506               		.weak	nicMacInit
+ 1508               	nicMacInit:
+ 1509               		.stabd	46,0,0
+  77:../../freeRtos/Lib/enc28j60.c **** { 
+ 1511               	.LM130:
+ 1512               	.LFBB15:
+ 1513               	/* prologue: function */
+ 1514               	/* frame size = 0 */
+ 1515               	/* stack size = 0 */
+ 1516               	.L__stack_usage = 0
+  78:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay          (5);
+ 1518               	.LM131:
+ 1519 0422 85E0      		ldi r24,lo8(5)
+ 1520 0424 90E0      		ldi r25,hi8(5)
+ 1521 0426 0E94 0000 		call vTaskDelay
+ 1522               	.LBB16:
+ 1523               	.LBB17:
+ 244:../../freeRtos/Lib/enc28j60.c ****   vTaskDelay(5); // 50ms
+ 1525               	.LM132:
+ 1526 042a 85E0      		ldi r24,lo8(5)
+ 1527 042c 90E0      		ldi r25,hi8(5)
+ 1528 042e 0E94 0000 		call vTaskDelay
+ 246:../../freeRtos/Lib/enc28j60.c ****   vTaskDelay(5); // 50ms
+ 1530               	.LM133:
+ 1531 0432 85E0      		ldi r24,lo8(5)
+ 1532 0434 90E0      		ldi r25,hi8(5)
+ 1533 0436 0E94 0000 		call vTaskDelay
+ 255:../../freeRtos/Lib/enc28j60.c ****   gNextPacketPtr = RXSTART_INIT;
+ 1535               	.LM134:
+ 1536 043a 1092 0000 		sts gNextPacketPtr,__zero_reg__
+ 1537 043e 1092 0000 		sts gNextPacketPtr+1,__zero_reg__
+ 257:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXSTL, RXSTART_INIT&0xFF);
+ 1539               	.LM135:
+ 1540 0442 88E0      		ldi r24,lo8(8)
+ 1541 0444 60E0      		ldi r22,lo8(0)
+ 1542 0446 0E94 0000 		call enc28j60Write
+ 258:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXSTH, RXSTART_INIT>>8);
+ 1544               	.LM136:
+ 1545 044a 89E0      		ldi r24,lo8(9)
+ 1546 044c 60E0      		ldi r22,lo8(0)
+ 1547 044e 0E94 0000 		call enc28j60Write
+ 260:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXRDPTL, RXSTART_INIT&0xFF);
+ 1549               	.LM137:
+ 1550 0452 8CE0      		ldi r24,lo8(12)
+ 1551 0454 60E0      		ldi r22,lo8(0)
+ 1552 0456 0E94 0000 		call enc28j60Write
+ 261:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXRDPTH, RXSTART_INIT>>8);
+ 1554               	.LM138:
+ 1555 045a 8DE0      		ldi r24,lo8(13)
+ 1556 045c 60E0      		ldi r22,lo8(0)
+ 1557 045e 0E94 0000 		call enc28j60Write
+ 263:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXNDL, RXSTOP_INIT&0xFF);
+ 1559               	.LM139:
+ 1560 0462 8AE0      		ldi r24,lo8(10)
+ 1561 0464 6EEF      		ldi r22,lo8(-2)
+ 1562 0466 0E94 0000 		call enc28j60Write
+ 264:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXNDH, RXSTOP_INIT>>8);
+ 1564               	.LM140:
+ 1565 046a 8BE0      		ldi r24,lo8(11)
+ 1566 046c 69E1      		ldi r22,lo8(25)
+ 1567 046e 0E94 0000 		call enc28j60Write
+ 266:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXSTL, TXSTART_INIT&0xFF);
+ 1569               	.LM141:
+ 1570 0472 84E0      		ldi r24,lo8(4)
+ 1571 0474 6FEF      		ldi r22,lo8(-1)
+ 1572 0476 0E94 0000 		call enc28j60Write
+ 267:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXSTH, TXSTART_INIT>>8);
+ 1574               	.LM142:
+ 1575 047a 85E0      		ldi r24,lo8(5)
+ 1576 047c 69E1      		ldi r22,lo8(25)
+ 1577 047e 0E94 0000 		call enc28j60Write
+ 269:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXNDL, TXSTOP_INIT&0xFF);
+ 1579               	.LM143:
+ 1580 0482 86E0      		ldi r24,lo8(6)
+ 1581 0484 6FEF      		ldi r22,lo8(-1)
+ 1582 0486 0E94 0000 		call enc28j60Write
+ 270:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ETXNDH, TXSTOP_INIT>>8);
+ 1584               	.LM144:
+ 1585 048a 87E0      		ldi r24,lo8(7)
+ 1586 048c 6FE1      		ldi r22,lo8(31)
+ 1587 048e 0E94 0000 		call enc28j60Write
+ 283:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN|ERXFCON_MCEN); //Z wejsciem dla ca
+ 1589               	.LM145:
+ 1590 0492 88E3      		ldi r24,lo8(56)
+ 1591 0494 62EB      		ldi r22,lo8(-78)
+ 1592 0496 0E94 0000 		call enc28j60Write
+ 284:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EPMM0, 0x3f);
+ 1594               	.LM146:
+ 1595 049a 88E2      		ldi r24,lo8(40)
+ 1596 049c 6FE3      		ldi r22,lo8(63)
+ 1597 049e 0E94 0000 		call enc28j60Write
+ 285:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EPMM1, 0x30);
+ 1599               	.LM147:
+ 1600 04a2 89E2      		ldi r24,lo8(41)
+ 1601 04a4 60E3      		ldi r22,lo8(48)
+ 1602 04a6 0E94 0000 		call enc28j60Write
+ 286:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EPMCSL, 0xf9);
+ 1604               	.LM148:
+ 1605 04aa 80E3      		ldi r24,lo8(48)
+ 1606 04ac 69EF      		ldi r22,lo8(-7)
+ 1607 04ae 0E94 0000 		call enc28j60Write
+ 287:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(EPMCSH, 0xf7);
+ 1609               	.LM149:
+ 1610 04b2 81E3      		ldi r24,lo8(49)
+ 1611 04b4 67EF      		ldi r22,lo8(-9)
+ 1612 04b6 0E94 0000 		call enc28j60Write
+ 292:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MACON1, MACON1_MARXEN|MACON1_TXPAUS|MACON1_RXPAUS);
+ 1614               	.LM150:
+ 1615 04ba 80EC      		ldi r24,lo8(-64)
+ 1616 04bc 6DE0      		ldi r22,lo8(13)
+ 1617 04be 0E94 0000 		call enc28j60Write
+ 294:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MACON2, 0x00);
+ 1619               	.LM151:
+ 1620 04c2 81EC      		ldi r24,lo8(-63)
+ 1621 04c4 60E0      		ldi r22,lo8(0)
+ 1622 04c6 0E94 0000 		call enc28j60Write
+ 296:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, MACON3, MACON3_PADCFG0|MACON3_TXCRCEN|MACON3_FRMLNEN);
+ 1624               	.LM152:
+ 1625 04ca 80E8      		ldi r24,lo8(-128)
+ 1626 04cc 62EC      		ldi r22,lo8(-62)
+ 1627 04ce 42E3      		ldi r20,lo8(50)
+ 1628 04d0 0E94 0000 		call enc28j60WriteOp
+ 298:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAIPGL, 0x12);
+ 1630               	.LM153:
+ 1631 04d4 86EC      		ldi r24,lo8(-58)
+ 1632 04d6 62E1      		ldi r22,lo8(18)
+ 1633 04d8 0E94 0000 		call enc28j60Write
+ 299:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAIPGH, 0x0C);
+ 1635               	.LM154:
+ 1636 04dc 87EC      		ldi r24,lo8(-57)
+ 1637 04de 6CE0      		ldi r22,lo8(12)
+ 1638 04e0 0E94 0000 		call enc28j60Write
+ 301:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MABBIPG, 0x12);
+ 1640               	.LM155:
+ 1641 04e4 84EC      		ldi r24,lo8(-60)
+ 1642 04e6 62E1      		ldi r22,lo8(18)
+ 1643 04e8 0E94 0000 		call enc28j60Write
+ 304:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAMXFLL, MAX_FRAMELEN&0xFF);	
+ 1645               	.LM156:
+ 1646 04ec 8AEC      		ldi r24,lo8(-54)
+ 1647 04ee 6CED      		ldi r22,lo8(-36)
+ 1648 04f0 0E94 0000 		call enc28j60Write
+ 305:../../freeRtos/Lib/enc28j60.c ****   enc28j60Write(MAMXFLH, MAX_FRAMELEN>>8);
+ 1650               	.LM157:
+ 1651 04f4 8BEC      		ldi r24,lo8(-53)
+ 1652 04f6 65E0      		ldi r22,lo8(5)
+ 1653 04f8 0E94 0000 		call enc28j60Write
+ 310:../../freeRtos/Lib/enc28j60.c ****   nicSetMacAddress(macaddr);
+ 1655               	.LM158:
+ 1656 04fc 80E0      		ldi r24,lo8(nicState+2)
+ 1657 04fe 90E0      		ldi r25,hi8(nicState+2)
+ 1658 0500 0E94 0000 		call nicSetMacAddress
+ 313:../../freeRtos/Lib/enc28j60.c ****   enc28j60PhyWrite(PHCON2, PHCON2_HDLDIS);
+ 1660               	.LM159:
+ 1661 0504 80E1      		ldi r24,lo8(16)
+ 1662 0506 60E0      		ldi r22,lo8(256)
+ 1663 0508 71E0      		ldi r23,hi8(256)
+ 1664 050a 0E94 0000 		call enc28j60PhyWrite
+ 315:../../freeRtos/Lib/enc28j60.c ****   enc28j60SetBank(ECON1);                             // switch to bank 0
+ 1666               	.LM160:
+ 1667 050e 8FE1      		ldi r24,lo8(31)
+ 1668 0510 0E94 0000 		call enc28j60SetBank
+ 317:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, EIE, EIE_INTIE|EIE_PKTIE);
+ 1670               	.LM161:
+ 1671 0514 80E8      		ldi r24,lo8(-128)
+ 1672 0516 6BE1      		ldi r22,lo8(27)
+ 1673 0518 40EC      		ldi r20,lo8(-64)
+ 1674 051a 0E94 0000 		call enc28j60WriteOp
+ 319:../../freeRtos/Lib/enc28j60.c ****   enc28j60WriteOp(ENC28J60_BIT_FIELD_SET, ECON1, ECON1_RXEN);
+ 1676               	.LM162:
+ 1677 051e 80E8      		ldi r24,lo8(-128)
+ 1678 0520 6FE1      		ldi r22,lo8(31)
+ 1679 0522 44E0      		ldi r20,lo8(4)
+ 1680 0524 0E94 0000 		call enc28j60WriteOp
+ 1681               	.LBE17:
+ 1682               	.LBE16:
+  81:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay          (5);
+ 1684               	.LM163:
+ 1685 0528 85E0      		ldi r24,lo8(5)
+ 1686 052a 90E0      		ldi r25,hi8(5)
+ 1687 052c 0E94 0000 		call vTaskDelay
+  82:../../freeRtos/Lib/enc28j60.c ****     enc28j60PhyWrite    (PHLCON, 0x476);
+ 1689               	.LM164:
+ 1690 0530 84E1      		ldi r24,lo8(20)
+ 1691 0532 66E7      		ldi r22,lo8(1142)
+ 1692 0534 74E0      		ldi r23,hi8(1142)
+ 1693 0536 0E94 0000 		call enc28j60PhyWrite
+  83:../../freeRtos/Lib/enc28j60.c ****     vTaskDelay          (2);
+ 1695               	.LM165:
+ 1696 053a 82E0      		ldi r24,lo8(2)
+ 1697 053c 90E0      		ldi r25,hi8(2)
+ 1698 053e 0E94 0000 		call vTaskDelay
+ 1699               	/* epilogue start */
+  84:../../freeRtos/Lib/enc28j60.c **** }
+ 1701               	.LM166:
+ 1702 0542 0895      		ret
+ 1704               	.Lscope15:
+ 1706               		.stabd	78,0,0
+ 1709               		.weak	nicGetMacAddress
+ 1711               	nicGetMacAddress:
+ 1712               		.stabd	46,0,0
+ 453:../../freeRtos/Lib/enc28j60.c **** 
+ 454:../../freeRtos/Lib/enc28j60.c **** void     nicGetMacAddress(uint8_t* macaddr)
+ 455:../../freeRtos/Lib/enc28j60.c **** {
+ 1714               	.LM167:
+ 1715               	.LFBB16:
+ 1716 0544 CF93      		push r28
+ 1717 0546 DF93      		push r29
+ 1718               	/* prologue: function */
+ 1719               	/* frame size = 0 */
+ 1720               	/* stack size = 2 */
+ 1721               	.L__stack_usage = 2
+ 1722 0548 EC01      		movw r28,r24
+ 456:../../freeRtos/Lib/enc28j60.c ****   macaddr[5] = enc28j60Read(MAADR0); 
+ 1724               	.LM168:
+ 1725 054a 81EE      		ldi r24,lo8(-31)
+ 1726 054c 0E94 0000 		call enc28j60Read
+ 1727 0550 8D83      		std Y+5,r24
+ 457:../../freeRtos/Lib/enc28j60.c ****   macaddr[4] = enc28j60Read(MAADR1); 
+ 1729               	.LM169:
+ 1730 0552 80EE      		ldi r24,lo8(-32)
+ 1731 0554 0E94 0000 		call enc28j60Read
+ 1732 0558 8C83      		std Y+4,r24
+ 458:../../freeRtos/Lib/enc28j60.c ****   macaddr[3] = enc28j60Read(MAADR2); 
+ 1734               	.LM170:
+ 1735 055a 83EE      		ldi r24,lo8(-29)
+ 1736 055c 0E94 0000 		call enc28j60Read
+ 1737 0560 8B83      		std Y+3,r24
+ 459:../../freeRtos/Lib/enc28j60.c ****   macaddr[2] = enc28j60Read(MAADR3); 
+ 1739               	.LM171:
+ 1740 0562 82EE      		ldi r24,lo8(-30)
+ 1741 0564 0E94 0000 		call enc28j60Read
+ 1742 0568 8A83      		std Y+2,r24
+ 460:../../freeRtos/Lib/enc28j60.c ****   macaddr[1] = enc28j60Read(MAADR4); 
+ 1744               	.LM172:
+ 1745 056a 85EE      		ldi r24,lo8(-27)
+ 1746 056c 0E94 0000 		call enc28j60Read
+ 1747 0570 8983      		std Y+1,r24
+ 461:../../freeRtos/Lib/enc28j60.c ****   macaddr[0] = enc28j60Read(MAADR5); 
+ 1749               	.LM173:
+ 1750 0572 84EE      		ldi r24,lo8(-28)
+ 1751 0574 0E94 0000 		call enc28j60Read
+ 1752 0578 8883      		st Y,r24
+ 1753               	/* epilogue start */
+ 462:../../freeRtos/Lib/enc28j60.c ****   //strncpy((void *)(nicState.mac.addr), (void *)(macaddr), 6);
+ 463:../../freeRtos/Lib/enc28j60.c **** }
+ 1755               	.LM174:
+ 1756 057a DF91      		pop r29
+ 1757 057c CF91      		pop r28
+ 1758 057e 0895      		ret
+ 1760               	.Lscope16:
+ 1762               		.stabd	78,0,0
+ 1765               		.weak	nicRegDump
+ 1767               	nicRegDump:
+ 1768               		.stabd	46,0,0
+ 464:../../freeRtos/Lib/enc28j60.c **** 
+ 465:../../freeRtos/Lib/enc28j60.c **** void     nicRegDump(FILE *stream)
+ 466:../../freeRtos/Lib/enc28j60.c **** {
+ 1770               	.LM175:
+ 1771               	.LFBB17:
+ 1772 0580 CF93      		push r28
+ 1773 0582 DF93      		push r29
+ 1774               	/* prologue: function */
+ 1775               	/* frame size = 0 */
+ 1776               	/* stack size = 2 */
+ 1777               	.L__stack_usage = 2
+ 1778 0584 EC01      		movw r28,r24
+ 467:../../freeRtos/Lib/enc28j60.c ****   uint8_t temp;
+ 468:../../freeRtos/Lib/enc28j60.c ****   fprintf_P(stream, PSTR("ENC28j60 stan rejestrow:\r\n"));
+ 1780               	.LM176:
+ 1781 0586 00D0      		rcall .
+ 1782 0588 0F92      		push __tmp_reg__
+ 1783 058a ADB7      		in r26,__SP_L__
+ 1784 058c BEB7      		in r27,__SP_H__
+ 1785 058e 1196      		adiw r26,1
+ 1786 0590 8D93      		st X+,r24
+ 1787 0592 9C93      		st X,r25
+ 1788 0594 1297      		sbiw r26,1+1
+ 1789 0596 80E0      		ldi r24,lo8(__c.5039)
+ 1790 0598 90E0      		ldi r25,hi8(__c.5039)
+ 1791 059a 1396      		adiw r26,3
+ 1792 059c 8D93      		st X+,r24
+ 1793 059e 9C93      		st X,r25
+ 1794 05a0 1497      		sbiw r26,3+1
+ 1795 05a2 0E94 0000 		call fprintf_P
+ 469:../../freeRtos/Lib/enc28j60.c **** 
+ 470:../../freeRtos/Lib/enc28j60.c ****   temp = enc28j60Read(MAADR0); fprintf_P(stream, PSTR("\tMAADR0 0x%x\r\n"), temp);
+ 1797               	.LM177:
+ 1798 05a6 0F90      		pop __tmp_reg__
+ 1799 05a8 0F90      		pop __tmp_reg__
+ 1800 05aa 0F90      		pop __tmp_reg__
+ 1801 05ac 0F90      		pop __tmp_reg__
+ 1802 05ae 81EE      		ldi r24,lo8(-31)
+ 1803 05b0 0E94 0000 		call enc28j60Read
+ 1804 05b4 00D0      		rcall .
+ 1805 05b6 00D0      		rcall .
+ 1806 05b8 EDB7      		in r30,__SP_L__
+ 1807 05ba FEB7      		in r31,__SP_H__
+ 1808 05bc 3196      		adiw r30,1
+ 1809 05be ADB7      		in r26,__SP_L__
+ 1810 05c0 BEB7      		in r27,__SP_H__
+ 1811 05c2 1196      		adiw r26,1
+ 1812 05c4 CD93      		st X+,r28
+ 1813 05c6 DC93      		st X,r29
+ 1814 05c8 1297      		sbiw r26,1+1
+ 1815 05ca 20E0      		ldi r18,lo8(__c.5041)
+ 1816 05cc 30E0      		ldi r19,hi8(__c.5041)
+ 1817 05ce 2283      		std Z+2,r18
+ 1818 05d0 3383      		std Z+3,r19
+ 1819 05d2 8483      		std Z+4,r24
+ 1820 05d4 1582      		std Z+5,__zero_reg__
+ 1821 05d6 0E94 0000 		call fprintf_P
+ 471:../../freeRtos/Lib/enc28j60.c ****   temp = enc28j60Read(MAADR1); fprintf_P(stream, PSTR("\tMAADR1 0x%x\r\n"), temp);
+ 1823               	.LM178:
+ 1824 05da EDB7      		in r30,__SP_L__
+ 1825 05dc FEB7      		in r31,__SP_H__
+ 1826 05de 3696      		adiw r30,6
+ 1827 05e0 EDBF      		out __SP_L__,r30
+ 1828 05e2 FEBF      		out __SP_H__,r31
+ 1829 05e4 80EE      		ldi r24,lo8(-32)
+ 1830 05e6 0E94 0000 		call enc28j60Read
+ 1831 05ea 00D0      		rcall .
+ 1832 05ec 00D0      		rcall .
+ 1833 05ee EDB7      		in r30,__SP_L__
+ 1834 05f0 FEB7      		in r31,__SP_H__
+ 1835 05f2 3196      		adiw r30,1
+ 1836 05f4 ADB7      		in r26,__SP_L__
+ 1837 05f6 BEB7      		in r27,__SP_H__
+ 1838 05f8 1196      		adiw r26,1
+ 1839 05fa CD93      		st X+,r28
+ 1840 05fc DC93      		st X,r29
+ 1841 05fe 1297      		sbiw r26,1+1
+ 1842 0600 20E0      		ldi r18,lo8(__c.5043)
+ 1843 0602 30E0      		ldi r19,hi8(__c.5043)
+ 1844 0604 2283      		std Z+2,r18
+ 1845 0606 3383      		std Z+3,r19
+ 1846 0608 8483      		std Z+4,r24
+ 1847 060a 1582      		std Z+5,__zero_reg__
+ 1848 060c 0E94 0000 		call fprintf_P
+ 472:../../freeRtos/Lib/enc28j60.c ****   temp = enc28j60Read(MAADR2); fprintf_P(stream, PSTR("\tMAADR2 0x%x\r\n"), temp);
+ 1850               	.LM179:
+ 1851 0610 EDB7      		in r30,__SP_L__
+ 1852 0612 FEB7      		in r31,__SP_H__
+ 1853 0614 3696      		adiw r30,6
+ 1854 0616 EDBF      		out __SP_L__,r30
+ 1855 0618 FEBF      		out __SP_H__,r31
+ 1856 061a 83EE      		ldi r24,lo8(-29)
+ 1857 061c 0E94 0000 		call enc28j60Read
+ 1858 0620 00D0      		rcall .
+ 1859 0622 00D0      		rcall .
+ 1860 0624 EDB7      		in r30,__SP_L__
+ 1861 0626 FEB7      		in r31,__SP_H__
+ 1862 0628 3196      		adiw r30,1
+ 1863 062a ADB7      		in r26,__SP_L__
+ 1864 062c BEB7      		in r27,__SP_H__
+ 1865 062e 1196      		adiw r26,1
+ 1866 0630 CD93      		st X+,r28
+ 1867 0632 DC93      		st X,r29
+ 1868 0634 1297      		sbiw r26,1+1
+ 1869 0636 20E0      		ldi r18,lo8(__c.5045)
+ 1870 0638 30E0      		ldi r19,hi8(__c.5045)
+ 1871 063a 2283      		std Z+2,r18
+ 1872 063c 3383      		std Z+3,r19
+ 1873 063e 8483      		std Z+4,r24
+ 1874 0640 1582      		std Z+5,__zero_reg__
+ 1875 0642 0E94 0000 		call fprintf_P
+ 473:../../freeRtos/Lib/enc28j60.c ****   temp = enc28j60Read(MAADR3); fprintf_P(stream, PSTR("\tMAADR3 0x%x\r\n"), temp);
+ 1877               	.LM180:
+ 1878 0646 EDB7      		in r30,__SP_L__
+ 1879 0648 FEB7      		in r31,__SP_H__
+ 1880 064a 3696      		adiw r30,6
+ 1881 064c EDBF      		out __SP_L__,r30
+ 1882 064e FEBF      		out __SP_H__,r31
+ 1883 0650 82EE      		ldi r24,lo8(-30)
+ 1884 0652 0E94 0000 		call enc28j60Read
+ 1885 0656 00D0      		rcall .
+ 1886 0658 00D0      		rcall .
+ 1887 065a EDB7      		in r30,__SP_L__
+ 1888 065c FEB7      		in r31,__SP_H__
+ 1889 065e 3196      		adiw r30,1
+ 1890 0660 ADB7      		in r26,__SP_L__
+ 1891 0662 BEB7      		in r27,__SP_H__
+ 1892 0664 1196      		adiw r26,1
+ 1893 0666 CD93      		st X+,r28
+ 1894 0668 DC93      		st X,r29
+ 1895 066a 1297      		sbiw r26,1+1
+ 1896 066c 20E0      		ldi r18,lo8(__c.5047)
+ 1897 066e 30E0      		ldi r19,hi8(__c.5047)
+ 1898 0670 2283      		std Z+2,r18
+ 1899 0672 3383      		std Z+3,r19
+ 1900 0674 8483      		std Z+4,r24
+ 1901 0676 1582      		std Z+5,__zero_reg__
+ 1902 0678 0E94 0000 		call fprintf_P
+ 474:../../freeRtos/Lib/enc28j60.c ****   temp = enc28j60Read(MAADR4); fprintf_P(stream, PSTR("\tMAADR4 0x%x\r\n"), temp);
+ 1904               	.LM181:
+ 1905 067c EDB7      		in r30,__SP_L__
+ 1906 067e FEB7      		in r31,__SP_H__
+ 1907 0680 3696      		adiw r30,6
+ 1908 0682 EDBF      		out __SP_L__,r30
+ 1909 0684 FEBF      		out __SP_H__,r31
+ 1910 0686 85EE      		ldi r24,lo8(-27)
+ 1911 0688 0E94 0000 		call enc28j60Read
+ 1912 068c 00D0      		rcall .
+ 1913 068e 00D0      		rcall .
+ 1914 0690 EDB7      		in r30,__SP_L__
+ 1915 0692 FEB7      		in r31,__SP_H__
+ 1916 0694 3196      		adiw r30,1
+ 1917 0696 ADB7      		in r26,__SP_L__
+ 1918 0698 BEB7      		in r27,__SP_H__
+ 1919 069a 1196      		adiw r26,1
+ 1920 069c CD93      		st X+,r28
+ 1921 069e DC93      		st X,r29
+ 1922 06a0 1297      		sbiw r26,1+1
+ 1923 06a2 20E0      		ldi r18,lo8(__c.5049)
+ 1924 06a4 30E0      		ldi r19,hi8(__c.5049)
+ 1925 06a6 2283      		std Z+2,r18
+ 1926 06a8 3383      		std Z+3,r19
+ 1927 06aa 8483      		std Z+4,r24
+ 1928 06ac 1582      		std Z+5,__zero_reg__
+ 1929 06ae 0E94 0000 		call fprintf_P
+ 475:../../freeRtos/Lib/enc28j60.c ****   temp = enc28j60Read(MAADR5); fprintf_P(stream, PSTR("\tMAADR5 0x%x\r\n"), temp);
+ 1931               	.LM182:
+ 1932 06b2 EDB7      		in r30,__SP_L__
+ 1933 06b4 FEB7      		in r31,__SP_H__
+ 1934 06b6 3696      		adiw r30,6
+ 1935 06b8 EDBF      		out __SP_L__,r30
+ 1936 06ba FEBF      		out __SP_H__,r31
+ 1937 06bc 84EE      		ldi r24,lo8(-28)
+ 1938 06be 0E94 0000 		call enc28j60Read
+ 1939 06c2 00D0      		rcall .
+ 1940 06c4 00D0      		rcall .
+ 1941 06c6 EDB7      		in r30,__SP_L__
+ 1942 06c8 FEB7      		in r31,__SP_H__
+ 1943 06ca 3196      		adiw r30,1
+ 1944 06cc ADB7      		in r26,__SP_L__
+ 1945 06ce BEB7      		in r27,__SP_H__
+ 1946 06d0 1196      		adiw r26,1
+ 1947 06d2 CD93      		st X+,r28
+ 1948 06d4 DC93      		st X,r29
+ 1949 06d6 1297      		sbiw r26,1+1
+ 1950 06d8 20E0      		ldi r18,lo8(__c.5051)
+ 1951 06da 30E0      		ldi r19,hi8(__c.5051)
+ 1952 06dc 2283      		std Z+2,r18
+ 1953 06de 3383      		std Z+3,r19
+ 1954 06e0 8483      		std Z+4,r24
+ 1955 06e2 1582      		std Z+5,__zero_reg__
+ 1956 06e4 0E94 0000 		call fprintf_P
+ 1957 06e8 EDB7      		in r30,__SP_L__
+ 1958 06ea FEB7      		in r31,__SP_H__
+ 1959 06ec 3696      		adiw r30,6
+ 1960 06ee EDBF      		out __SP_L__,r30
+ 1961 06f0 FEBF      		out __SP_H__,r31
+ 1962               	/* epilogue start */
+ 476:../../freeRtos/Lib/enc28j60.c **** }
+ 1964               	.LM183:
+ 1965 06f2 DF91      		pop r29
+ 1966 06f4 CF91      		pop r28
+ 1967 06f6 0895      		ret
+ 1969               	.Lscope17:
+ 1971               		.stabd	78,0,0
+ 1972               		.comm klastry,128,1
+ 1973               		.comm wwwport,1,1
+ 1974               		.comm rollers,2,1
+ 1975               		.comm xSemaphoreSpiSS,2,1
+ 1976               		.comm portA,1,1
+ 1977               		.comm portB,1,1
+ 1978               		.comm lockSensors,2,1
+ 1979               		.comm xSemaphoreRs485,2,1
+ 1980               		.comm nicState,14,1
+ 1981               		.comm plen,2,1
+ 1982               		.comm IpMyConfig,15,1
+ 1983               		.comm arpDebug,2,1
+ 1984               		.comm arpDebugLevel,1,1
+ 1985               		.comm icmpDebug,2,1
+ 1986               		.comm icmpDebugLevel,1,1
+ 1987               		.comm udpSocket,2,1
+ 1988               		.comm udpDbgStream,2,1
+ 1989               		.comm udpDbgLevel,1,1
+ 1990               		.comm tcpDebugStream,2,1
+ 1991               		.comm tcpDebugLevel,1,1
+ 1992               		.comm sockets,2,1
+ 1993               		.comm czasRtc,7,1
+ 1994               		.section	.progmem.data,"a",@progbits
+ 1997               	__c.5051:
+ 1998 0000 094D 4141 		.string	"\tMAADR5 0x%x\r\n"
+ 1998      4452 3520 
+ 1998      3078 2578 
+ 1998      0D0A 00
+ 2001               	__c.5049:
+ 2002 000f 094D 4141 		.string	"\tMAADR4 0x%x\r\n"
+ 2002      4452 3420 
+ 2002      3078 2578 
+ 2002      0D0A 00
+ 2005               	__c.5047:
+ 2006 001e 094D 4141 		.string	"\tMAADR3 0x%x\r\n"
+ 2006      4452 3320 
+ 2006      3078 2578 
+ 2006      0D0A 00
+ 2009               	__c.5045:
+ 2010 002d 094D 4141 		.string	"\tMAADR2 0x%x\r\n"
+ 2010      4452 3220 
+ 2010      3078 2578 
+ 2010      0D0A 00
+ 2013               	__c.5043:
+ 2014 003c 094D 4141 		.string	"\tMAADR1 0x%x\r\n"
+ 2014      4452 3120 
+ 2014      3078 2578 
+ 2014      0D0A 00
+ 2017               	__c.5041:
+ 2018 004b 094D 4141 		.string	"\tMAADR0 0x%x\r\n"
+ 2018      4452 3020 
+ 2018      3078 2578 
+ 2018      0D0A 00
+ 2021               	__c.5039:
+ 2022 005a 454E 4332 		.string	"ENC28j60 stan rejestrow:\r\n"
+ 2022      386A 3630 
+ 2022      2073 7461 
+ 2022      6E20 7265 
+ 2022      6A65 7374 
+ 2023               		.lcomm Enc28j60Bank,1
+ 2024               		.lcomm gNextPacketPtr,2
+ 2049               		.weak	spiSend
+ 2050               		.text
+ 2052               	.Letext0:
+ 2053               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 enc28j60.c
+     /tmp/cchw74xv.s:2      *ABS*:0000003f __SREG__
+     /tmp/cchw74xv.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cchw74xv.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cchw74xv.s:5      *ABS*:00000034 __CCP__
+     /tmp/cchw74xv.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cchw74xv.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cchw74xv.s:559    .text:00000000 spiEnableEnc28j60
+     /tmp/cchw74xv.s:579    .text:00000002 spiDisableEnc28j60
+     /tmp/cchw74xv.s:601    .text:00000004 enc28j60WriteOp
+     /tmp/cchw74xv.s:660    .text:00000048 enc28j60SetBank
+                             .bss:00000000 Enc28j60Bank
+     /tmp/cchw74xv.s:721    .text:00000090 enc28j60Write
+     /tmp/cchw74xv.s:763    .text:000000b8 enc28j60ReadOp
+     /tmp/cchw74xv.s:832    .text:00000102 enc28j60Read
+     /tmp/cchw74xv.s:870    .text:00000124 enc28j60hasRxPkt
+     /tmp/cchw74xv.s:902    .text:00000136 enc28j60linkup
+     /tmp/cchw74xv.s:965    .text:00000172 enc28j60getrev
+     /tmp/cchw74xv.s:989    .text:0000017a enc28j60PhyWrite
+     /tmp/cchw74xv.s:1054   .text:000001c4 nicPoll
+     /tmp/cchw74xv.s:2023   .bss:00000001 gNextPacketPtr
+                            *COM*:0000000e nicState
+     /tmp/cchw74xv.s:1308   .text:00000334 nicSend
+     /tmp/cchw74xv.s:1453   .text:000003e6 nicSetMacAddress
+     /tmp/cchw74xv.s:1508   .text:00000422 nicMacInit
+     /tmp/cchw74xv.s:1711   .text:00000544 nicGetMacAddress
+     /tmp/cchw74xv.s:1767   .text:00000580 nicRegDump
+     /tmp/cchw74xv.s:2021   .progmem.data:0000005a __c.5039
+     /tmp/cchw74xv.s:2017   .progmem.data:0000004b __c.5041
+     /tmp/cchw74xv.s:2013   .progmem.data:0000003c __c.5043
+     /tmp/cchw74xv.s:2009   .progmem.data:0000002d __c.5045
+     /tmp/cchw74xv.s:2005   .progmem.data:0000001e __c.5047
+     /tmp/cchw74xv.s:2001   .progmem.data:0000000f __c.5049
+     /tmp/cchw74xv.s:1997   .progmem.data:00000000 __c.5051
+                            *COM*:00000080 klastry
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 lockSensors
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:00000002 plen
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+
+UNDEFINED SYMBOLS
+spiTake
+spiSend
+spiGive
+vTaskDelay
+fprintf_P
+__do_clear_bss

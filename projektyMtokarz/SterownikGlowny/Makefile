@@ -60,6 +60,7 @@ sensors_task.c \
 vty.c \
 netstack_task.c \
 cli_task.c \
+lcd.c\
 $(LIB_DIR)/spiXmega.c \
 $(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/ramdysk.c \
@@ -200,7 +201,7 @@ LDFLAGS += -lm
 
 # Programming support using avrdude.
 AVRDUDE             = avrdude
-AVRDUDE_PROGRAMMER  = avrispmkII 
+AVRDUDE_PROGRAMMER  = pdi 
 # jtag1
 #AVRDUDE_PORT        = /dev/jtag
 AVRDUDE_PORT        = usb

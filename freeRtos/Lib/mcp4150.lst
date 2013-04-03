@@ -1,0 +1,167 @@
+   1               		.file	"mcp4150.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 563               		.weak	enableSpiMCP4150
+ 565               	enableSpiMCP4150:
+ 566               		.stabd	46,0,0
+   1:../../freeRtos/Lib/mcp4150.c **** /*****************************************************************************
+   2:../../freeRtos/Lib/mcp4150.c **** * vim:sw=2:ts=2:si:et
+   3:../../freeRtos/Lib/mcp4150.c **** *
+   4:../../freeRtos/Lib/mcp4150.c **** * Title      : MPC23s17 parrarel I/O 16 bit port driver
+   5:../../freeRtos/Lib/mcp4150.c **** * Author     : Adam Kaliszan adam.kaliszan@gmail.com
+   6:../../freeRtos/Lib/mcp4150.c **** * Copyright  : GPL V2
+   7:../../freeRtos/Lib/mcp4150.c **** *
+   8:../../freeRtos/Lib/mcp4150.c **** *This driver provides:
+   9:../../freeRtos/Lib/mcp4150.c **** * - read/set operation
+  10:../../freeRtos/Lib/mcp4150.c **** *Driver uses mutexes and is condition race free. Function can be invoken by any thread.
+  11:../../freeRtos/Lib/mcp4150.c **** *****************************************************************************/
+  12:../../freeRtos/Lib/mcp4150.c **** //@{
+  13:../../freeRtos/Lib/mcp4150.c **** #include <avr/io.h>
+  14:../../freeRtos/Lib/mcp4150.c **** #include <util/delay.h>
+  15:../../freeRtos/Lib/mcp4150.c **** #include "mcp4150.h"
+  16:../../freeRtos/Lib/mcp4150.c **** #include "spi.h"
+  17:../../freeRtos/Lib/mcp4150.c **** 
+  18:../../freeRtos/Lib/mcp4150.c **** void enableSpiMCP4150(void)  {};
+ 568               	.LM0:
+ 569               	.LFBB1:
+ 570               	/* prologue: function */
+ 571               	/* frame size = 0 */
+ 572               	/* stack size = 0 */
+ 573               	.L__stack_usage = 0
+ 574               	/* epilogue start */
+ 576               	.LM1:
+ 577 0000 0895      		ret
+ 579               	.Lscope1:
+ 581               		.stabd	78,0,0
+ 583               		.weak	disableSpiMCP4150
+ 585               	disableSpiMCP4150:
+ 586               		.stabd	46,0,0
+  19:../../freeRtos/Lib/mcp4150.c **** void disableSpiMCP4150(void) {};
+ 588               	.LM2:
+ 589               	.LFBB2:
+ 590               	/* prologue: function */
+ 591               	/* frame size = 0 */
+ 592               	/* stack size = 0 */
+ 593               	.L__stack_usage = 0
+ 594               	/* epilogue start */
+ 596               	.LM3:
+ 597 0002 0895      		ret
+ 599               	.Lscope2:
+ 601               		.stabd	78,0,0
+ 604               	.global	MCP4150_setValue
+ 606               	MCP4150_setValue:
+ 607               		.stabd	46,0,0
+  20:../../freeRtos/Lib/mcp4150.c **** 
+  21:../../freeRtos/Lib/mcp4150.c **** /**
+  22:../../freeRtos/Lib/mcp4150.c ****  * Ustawia wartość rezystancji
+  23:../../freeRtos/Lib/mcp4150.c ****  * @param inputNo - WARTOŚĆ OD 0 DO 255.
+  24:../../freeRtos/Lib/mcp4150.c ****  */
+  25:../../freeRtos/Lib/mcp4150.c **** void MCP4150_setValue(uint8_t value)
+  26:../../freeRtos/Lib/mcp4150.c **** {  
+ 609               	.LM4:
+ 610               	.LFBB3:
+ 611 0004 1F93      		push r17
+ 612               	/* prologue: function */
+ 613               	/* frame size = 0 */
+ 614               	/* stack size = 1 */
+ 615               	.L__stack_usage = 1
+ 616 0006 182F      		mov r17,r24
+  27:../../freeRtos/Lib/mcp4150.c ****   spiTake();
+ 618               	.LM5:
+ 619 0008 0E94 0000 		call spiTake
+  28:../../freeRtos/Lib/mcp4150.c ****   enableSpiMCP4150();
+ 621               	.LM6:
+ 622 000c 0E94 0000 		call enableSpiMCP4150
+  29:../../freeRtos/Lib/mcp4150.c ****   
+  30:../../freeRtos/Lib/mcp4150.c ****   spiSend(0x11);  
+ 624               	.LM7:
+ 625 0010 81E1      		ldi r24,lo8(17)
+ 626 0012 0E94 0000 		call spiSend
+  31:../../freeRtos/Lib/mcp4150.c ****   spiSend(value);
+ 628               	.LM8:
+ 629 0016 812F      		mov r24,r17
+ 630 0018 0E94 0000 		call spiSend
+  32:../../freeRtos/Lib/mcp4150.c ****   
+  33:../../freeRtos/Lib/mcp4150.c ****   disableSpiMCP4150(); 
+ 632               	.LM9:
+ 633 001c 0E94 0000 		call disableSpiMCP4150
+  34:../../freeRtos/Lib/mcp4150.c ****   spiGive();
+ 635               	.LM10:
+ 636 0020 0E94 0000 		call spiGive
+ 637               	/* epilogue start */
+  35:../../freeRtos/Lib/mcp4150.c **** }
+ 639               	.LM11:
+ 640 0024 1F91      		pop r17
+ 641 0026 0895      		ret
+ 643               	.Lscope3:
+ 645               		.stabd	78,0,0
+ 646               		.comm klastry,128,1
+ 647               		.comm wwwport,1,1
+ 648               		.comm rollers,2,1
+ 649               		.comm xSemaphoreSpiSS,2,1
+ 650               		.comm portA,1,1
+ 651               		.comm portB,1,1
+ 652               		.comm lockSensors,2,1
+ 653               		.comm xSemaphoreRs485,2,1
+ 654               		.comm nicState,14,1
+ 655               		.comm plen,2,1
+ 656               		.comm IpMyConfig,15,1
+ 657               		.comm arpDebug,2,1
+ 658               		.comm arpDebugLevel,1,1
+ 659               		.comm icmpDebug,2,1
+ 660               		.comm icmpDebugLevel,1,1
+ 661               		.comm udpSocket,2,1
+ 662               		.comm udpDbgStream,2,1
+ 663               		.comm udpDbgLevel,1,1
+ 664               		.comm tcpDebugStream,2,1
+ 665               		.comm tcpDebugLevel,1,1
+ 666               		.comm sockets,2,1
+ 667               		.comm czasRtc,7,1
+ 690               		.weak	spiSend
+ 692               	.Letext0:
+ 693               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 mcp4150.c
+     /tmp/ccZn3T5r.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccZn3T5r.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccZn3T5r.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccZn3T5r.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccZn3T5r.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccZn3T5r.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccZn3T5r.s:565    .text:00000000 enableSpiMCP4150
+     /tmp/ccZn3T5r.s:585    .text:00000002 disableSpiMCP4150
+     /tmp/ccZn3T5r.s:606    .text:00000004 MCP4150_setValue
+                            *COM*:00000080 klastry
+                            *COM*:00000001 wwwport
+                            *COM*:00000002 rollers
+                            *COM*:00000002 xSemaphoreSpiSS
+                            *COM*:00000001 portA
+                            *COM*:00000001 portB
+                            *COM*:00000002 lockSensors
+                            *COM*:00000002 xSemaphoreRs485
+                            *COM*:0000000e nicState
+                            *COM*:00000002 plen
+                            *COM*:0000000f IpMyConfig
+                            *COM*:00000002 arpDebug
+                            *COM*:00000001 arpDebugLevel
+                            *COM*:00000002 icmpDebug
+                            *COM*:00000001 icmpDebugLevel
+                            *COM*:00000002 udpSocket
+                            *COM*:00000002 udpDbgStream
+                            *COM*:00000001 udpDbgLevel
+                            *COM*:00000002 tcpDebugStream
+                            *COM*:00000001 tcpDebugLevel
+                            *COM*:00000002 sockets
+                            *COM*:00000007 czasRtc
+
+UNDEFINED SYMBOLS
+spiTake
+spiSend
+spiGive
+__do_clear_bss

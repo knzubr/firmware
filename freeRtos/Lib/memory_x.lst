@@ -1,0 +1,101 @@
+   1               		.file	"memory_x.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+  41               	.global	xmalloc
+  43               	xmalloc:
+  44               		.stabd	46,0,0
+   1:../../freeRtos/Lib/memory_x.c **** #include "memory_x.h"
+   2:../../freeRtos/Lib/memory_x.c **** #include "hardwareConfig.h"
+   3:../../freeRtos/Lib/memory_x.c **** 
+   4:../../freeRtos/Lib/memory_x.c **** char *heapEnd = HEAP_BEGIN;
+   5:../../freeRtos/Lib/memory_x.c **** 
+   6:../../freeRtos/Lib/memory_x.c **** void *xmalloc(size_t size)
+   7:../../freeRtos/Lib/memory_x.c **** {
+  46               	.LM0:
+  47               	.LFBB1:
+  48 0000 CF93      		push r28
+  49 0002 DF93      		push r29
+  50               	/* prologue: function */
+  51               	/* frame size = 0 */
+  52               	/* stack size = 2 */
+  53               	.L__stack_usage = 2
+  54 0004 EC01      		movw r28,r24
+   8:../../freeRtos/Lib/memory_x.c ****   void *result = malloc(size);
+  56               	.LM1:
+  57 0006 0E94 0000 		call malloc
+   9:../../freeRtos/Lib/memory_x.c ****   
+  10:../../freeRtos/Lib/memory_x.c ****   heapEnd = (char *)(result);
+  11:../../freeRtos/Lib/memory_x.c ****   heapEnd += size;
+  59               	.LM2:
+  60 000a C80F      		add r28,r24
+  61 000c D91F      		adc r29,r25
+  62 000e C093 0000 		sts heapEnd,r28
+  63 0012 D093 0000 		sts heapEnd+1,r29
+  64               	/* epilogue start */
+  12:../../freeRtos/Lib/memory_x.c ****   
+  13:../../freeRtos/Lib/memory_x.c ****   return result;
+  14:../../freeRtos/Lib/memory_x.c **** }
+  66               	.LM3:
+  67 0016 DF91      		pop r29
+  68 0018 CF91      		pop r28
+  69 001a 0895      		ret
+  71               	.Lscope1:
+  73               		.stabd	78,0,0
+  75               	.global	xmallocAvailable
+  77               	xmallocAvailable:
+  78               		.stabd	46,0,0
+  15:../../freeRtos/Lib/memory_x.c **** 
+  16:../../freeRtos/Lib/memory_x.c **** size_t xmallocAvailable(void)
+  17:../../freeRtos/Lib/memory_x.c **** {
+  80               	.LM4:
+  81               	.LFBB2:
+  82               	/* prologue: function */
+  83               	/* frame size = 0 */
+  84               	/* stack size = 0 */
+  85               	.L__stack_usage = 0
+  18:../../freeRtos/Lib/memory_x.c ****   return __malloc_heap_end - heapEnd + 1;
+  87               	.LM5:
+  88 001c 2091 0000 		lds r18,__malloc_heap_end
+  89 0020 3091 0000 		lds r19,__malloc_heap_end+1
+  90 0024 2F5F      		subi r18,lo8(-(1))
+  91 0026 3F4F      		sbci r19,hi8(-(1))
+  92 0028 8091 0000 		lds r24,heapEnd
+  93 002c 9091 0000 		lds r25,heapEnd+1
+  94 0030 281B      		sub r18,r24
+  95 0032 390B      		sbc r19,r25
+  19:../../freeRtos/Lib/memory_x.c **** }...
+  97               	.LM6:
+  98 0034 C901      		movw r24,r18
+  99               	/* epilogue start */
+ 100 0036 0895      		ret
+ 102               	.Lscope2:
+ 104               		.stabd	78,0,0
+ 105               	.global	heapEnd
+ 106               		.data
+ 109               	heapEnd:
+ 110 0000 0011      		.word	4352
+ 112               		.text
+ 114               	.Letext0:
+ 115               	.global __do_copy_data
+DEFINED SYMBOLS
+                            *ABS*:00000000 memory_x.c
+     /tmp/ccOKSyYr.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccOKSyYr.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccOKSyYr.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccOKSyYr.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccOKSyYr.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccOKSyYr.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccOKSyYr.s:43     .text:00000000 xmalloc
+     /tmp/ccOKSyYr.s:109    .data:00000000 heapEnd
+     /tmp/ccOKSyYr.s:77     .text:0000001c xmallocAvailable
+
+UNDEFINED SYMBOLS
+malloc
+__malloc_heap_end
+__do_copy_data

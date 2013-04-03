@@ -1,0 +1,289 @@
+   1               		.file	"heap_avr.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 439               	.global	pvPortMalloc
+ 441               	pvPortMalloc:
+ 442               		.stabd	46,0,0
+   1:../../freeRtos/portable/MemMang/heap_avr.c **** /*
+   2:../../freeRtos/portable/MemMang/heap_avr.c ****     FreeRTOS V6.0.4 - Copyright (C) 2010 Real Time Engineers Ltd.
+   3:../../freeRtos/portable/MemMang/heap_avr.c **** 
+   4:../../freeRtos/portable/MemMang/heap_avr.c ****     ***************************************************************************
+   5:../../freeRtos/portable/MemMang/heap_avr.c ****     *                                                                         *
+   6:../../freeRtos/portable/MemMang/heap_avr.c ****     * If you are:                                                             *
+   7:../../freeRtos/portable/MemMang/heap_avr.c ****     *                                                                         *
+   8:../../freeRtos/portable/MemMang/heap_avr.c ****     *    + New to FreeRTOS,                                                   *
+   9:../../freeRtos/portable/MemMang/heap_avr.c ****     *    + Wanting to learn FreeRTOS or multitasking in general quickly       *
+  10:../../freeRtos/portable/MemMang/heap_avr.c ****     *    + Looking for basic training,                                        *
+  11:../../freeRtos/portable/MemMang/heap_avr.c ****     *    + Wanting to improve your FreeRTOS skills and productivity           *
+  12:../../freeRtos/portable/MemMang/heap_avr.c ****     *                                                                         *
+  13:../../freeRtos/portable/MemMang/heap_avr.c ****     * then take a look at the FreeRTOS eBook                                  *
+  14:../../freeRtos/portable/MemMang/heap_avr.c ****     *                                                                         *
+  15:../../freeRtos/portable/MemMang/heap_avr.c ****     *        "Using the FreeRTOS Real Time Kernel - a Practical Guide"        *
+  16:../../freeRtos/portable/MemMang/heap_avr.c ****     *                  http://www.FreeRTOS.org/Documentation                  *
+  17:../../freeRtos/portable/MemMang/heap_avr.c ****     *                                                                         *
+  18:../../freeRtos/portable/MemMang/heap_avr.c ****     * A pdf reference manual is also available.  Both are usually delivered   *
+  19:../../freeRtos/portable/MemMang/heap_avr.c ****     * to your inbox within 20 minutes to two hours when purchased between 8am *
+  20:../../freeRtos/portable/MemMang/heap_avr.c ****     * and 8pm GMT (although please allow up to 24 hours in case of            *
+  21:../../freeRtos/portable/MemMang/heap_avr.c ****     * exceptional circumstances).  Thank you for your support!                *
+  22:../../freeRtos/portable/MemMang/heap_avr.c ****     *                                                                         *
+  23:../../freeRtos/portable/MemMang/heap_avr.c ****     ***************************************************************************
+  24:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  25:../../freeRtos/portable/MemMang/heap_avr.c ****     This file is part of the FreeRTOS distribution.
+  26:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  27:../../freeRtos/portable/MemMang/heap_avr.c ****     FreeRTOS is free software; you can redistribute it and/or modify it under
+  28:../../freeRtos/portable/MemMang/heap_avr.c ****     the terms of the GNU General Public License (version 2) as published by the
+  29:../../freeRtos/portable/MemMang/heap_avr.c ****     Free Software Foundation AND MODIFIED BY the FreeRTOS exception.
+  30:../../freeRtos/portable/MemMang/heap_avr.c ****     ***NOTE*** The exception to the GPL is included to allow you to distribute
+  31:../../freeRtos/portable/MemMang/heap_avr.c ****     a combined work that includes FreeRTOS without being obliged to provide the
+  32:../../freeRtos/portable/MemMang/heap_avr.c ****     source code for proprietary components outside of the FreeRTOS kernel.
+  33:../../freeRtos/portable/MemMang/heap_avr.c ****     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT
+  34:../../freeRtos/portable/MemMang/heap_avr.c ****     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  35:../../freeRtos/portable/MemMang/heap_avr.c ****     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+  36:../../freeRtos/portable/MemMang/heap_avr.c ****     more details. You should have received a copy of the GNU General Public 
+  37:../../freeRtos/portable/MemMang/heap_avr.c ****     License and the FreeRTOS license exception along with FreeRTOS; if not it 
+  38:../../freeRtos/portable/MemMang/heap_avr.c ****     can be viewed here: http://www.freertos.org/a00114.html and also obtained 
+  39:../../freeRtos/portable/MemMang/heap_avr.c ****     by writing to Richard Barry, contact details for whom are available on the
+  40:../../freeRtos/portable/MemMang/heap_avr.c ****     FreeRTOS WEB site.
+  41:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  42:../../freeRtos/portable/MemMang/heap_avr.c ****     1 tab == 4 spaces!
+  43:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  44:../../freeRtos/portable/MemMang/heap_avr.c ****     http://www.FreeRTOS.org - Documentation, latest information, license and
+  45:../../freeRtos/portable/MemMang/heap_avr.c ****     contact details.
+  46:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  47:../../freeRtos/portable/MemMang/heap_avr.c ****     http://www.SafeRTOS.com - A version that is certified for use in safety
+  48:../../freeRtos/portable/MemMang/heap_avr.c ****     critical systems.
+  49:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  50:../../freeRtos/portable/MemMang/heap_avr.c ****     http://www.OpenRTOS.com - Commercial support, development, porting,
+  51:../../freeRtos/portable/MemMang/heap_avr.c ****     licensing and training services.
+  52:../../freeRtos/portable/MemMang/heap_avr.c **** */
+  53:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  54:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  55:../../freeRtos/portable/MemMang/heap_avr.c **** /*
+  56:../../freeRtos/portable/MemMang/heap_avr.c ****  * AVR implementation of pvPortMalloc().
+  57:../../freeRtos/portable/MemMang/heap_avr.c ****  * Modified by Adam Kaliszan
+  58:../../freeRtos/portable/MemMang/heap_avr.c ****  */
+  59:../../freeRtos/portable/MemMang/heap_avr.c **** #include <stdlib.h>
+  60:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  61:../../freeRtos/portable/MemMang/heap_avr.c **** /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
+  62:../../freeRtos/portable/MemMang/heap_avr.c **** all the API functions to use the MPU wrappers.  That should only be done when
+  63:../../freeRtos/portable/MemMang/heap_avr.c **** task.h is included from an application file. */
+  64:../../freeRtos/portable/MemMang/heap_avr.c **** #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
+  65:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  66:../../freeRtos/portable/MemMang/heap_avr.c **** #include "FreeRTOS.h"
+  67:../../freeRtos/portable/MemMang/heap_avr.c **** #include "task.h"
+  68:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  69:../../freeRtos/portable/MemMang/heap_avr.c **** #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
+  70:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  71:../../freeRtos/portable/MemMang/heap_avr.c **** /* Allocate the memory for the heap.  The struct is used to force byte
+  72:../../freeRtos/portable/MemMang/heap_avr.c **** alignment without using any non-portable code. */
+  73:../../freeRtos/portable/MemMang/heap_avr.c **** static union xRTOS_HEAP
+  74:../../freeRtos/portable/MemMang/heap_avr.c **** {
+  75:../../freeRtos/portable/MemMang/heap_avr.c **** 	#if portBYTE_ALIGNMENT == 8
+  76:../../freeRtos/portable/MemMang/heap_avr.c **** 		volatile portDOUBLE dDummy;
+  77:../../freeRtos/portable/MemMang/heap_avr.c **** 	#else
+  78:../../freeRtos/portable/MemMang/heap_avr.c **** 		volatile unsigned long ulDummy;
+  79:../../freeRtos/portable/MemMang/heap_avr.c **** 	#endif	
+  80:../../freeRtos/portable/MemMang/heap_avr.c **** 	unsigned char ucHeap[ configTOTAL_HEAP_SIZE ];
+  81:../../freeRtos/portable/MemMang/heap_avr.c **** } xHeap;
+  82:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  83:../../freeRtos/portable/MemMang/heap_avr.c **** static size_t xNextFreeByte = ( size_t ) 0;
+  84:../../freeRtos/portable/MemMang/heap_avr.c **** /*-----------------------------------------------------------*/
+  85:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  86:../../freeRtos/portable/MemMang/heap_avr.c **** void *pvPortMalloc( size_t xWantedSize )
+  87:../../freeRtos/portable/MemMang/heap_avr.c **** {
+ 444               	.LM0:
+ 445               	.LFBB1:
+ 446 0000 EF92      		push r14
+ 447 0002 FF92      		push r15
+ 448 0004 0F93      		push r16
+ 449 0006 1F93      		push r17
+ 450 0008 CF93      		push r28
+ 451 000a DF93      		push r29
+ 452               	/* prologue: function */
+ 453               	/* frame size = 0 */
+ 454               	/* stack size = 6 */
+ 455               	.L__stack_usage = 6
+ 456 000c 8C01      		movw r16,r24
+  88:../../freeRtos/portable/MemMang/heap_avr.c **** void *pvReturn = NULL; 
+  89:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  90:../../freeRtos/portable/MemMang/heap_avr.c **** 	/* Ensure that blocks are always aligned to the required number of bytes. */
+  91:../../freeRtos/portable/MemMang/heap_avr.c **** 	#if portBYTE_ALIGNMENT != 1
+  92:../../freeRtos/portable/MemMang/heap_avr.c **** 		if( xWantedSize & portBYTE_ALIGNMENT_MASK )
+  93:../../freeRtos/portable/MemMang/heap_avr.c **** 		{
+  94:../../freeRtos/portable/MemMang/heap_avr.c **** 			/* Byte alignment required. */
+  95:../../freeRtos/portable/MemMang/heap_avr.c **** 			xWantedSize += ( portBYTE_ALIGNMENT - ( xWantedSize & portBYTE_ALIGNMENT_MASK ) );
+  96:../../freeRtos/portable/MemMang/heap_avr.c **** 		}
+  97:../../freeRtos/portable/MemMang/heap_avr.c **** 	#endif
+  98:../../freeRtos/portable/MemMang/heap_avr.c **** 
+  99:../../freeRtos/portable/MemMang/heap_avr.c **** 	vTaskSuspendAll();
+ 458               	.LM1:
+ 459 000e 0E94 0000 		call vTaskSuspendAll
+ 100:../../freeRtos/portable/MemMang/heap_avr.c **** 	{
+ 101:../../freeRtos/portable/MemMang/heap_avr.c **** 		/* Check there is enough room left for the allocation. */
+ 102:../../freeRtos/portable/MemMang/heap_avr.c **** 		if( ( ( xNextFreeByte + xWantedSize ) < configTOTAL_HEAP_SIZE ) &&
+ 461               	.LM2:
+ 462 0012 C091 0000 		lds r28,xNextFreeByte
+ 463 0016 D091 0000 		lds r29,xNextFreeByte+1
+ 464 001a 0C0F      		add r16,r28
+ 465 001c 1D1F      		adc r17,r29
+ 466 001e 2BE0      		ldi r18,hi8(3000)
+ 467 0020 083B      		cpi r16,lo8(3000)
+ 468 0022 1207      		cpc r17,r18
+ 469 0024 00F4      		brsh .L4
+ 471               	.LM3:
+ 472 0026 C017      		cp r28,r16
+ 473 0028 D107      		cpc r29,r17
+ 474 002a 00F4      		brsh .L4
+ 103:../../freeRtos/portable/MemMang/heap_avr.c **** 			( ( xNextFreeByte + xWantedSize ) > xNextFreeByte )	)/* Check for overflow. */
+ 104:../../freeRtos/portable/MemMang/heap_avr.c **** 		{
+ 105:../../freeRtos/portable/MemMang/heap_avr.c **** 			/* Return the next free byte then increment the index past this
+ 106:../../freeRtos/portable/MemMang/heap_avr.c **** 			block. */
+ 107:../../freeRtos/portable/MemMang/heap_avr.c **** 			pvReturn = &( xHeap.ucHeap[ xNextFreeByte ] );
+ 476               	.LM4:
+ 477 002c C050      		subi r28,lo8(-(xHeap))
+ 478 002e D040      		sbci r29,hi8(-(xHeap))
+ 108:../../freeRtos/portable/MemMang/heap_avr.c **** 			xNextFreeByte += xWantedSize;			
+ 480               	.LM5:
+ 481 0030 0093 0000 		sts xNextFreeByte,r16
+ 482 0034 1093 0000 		sts xNextFreeByte+1,r17
+ 483 0038 00C0      		rjmp .L2
+ 484               	.L4:
+  88:../../freeRtos/portable/MemMang/heap_avr.c **** void *pvReturn = NULL; 
+ 486               	.LM6:
+ 487 003a C0E0      		ldi r28,lo8(0)
+ 488 003c D0E0      		ldi r29,hi8(0)
+ 489               	.L2:
+ 109:../../freeRtos/portable/MemMang/heap_avr.c **** 		}	
+ 110:../../freeRtos/portable/MemMang/heap_avr.c **** 	}
+ 111:../../freeRtos/portable/MemMang/heap_avr.c **** 	xTaskResumeAll();
+ 491               	.LM7:
+ 492 003e 0E94 0000 		call xTaskResumeAll
+ 112:../../freeRtos/portable/MemMang/heap_avr.c **** 	
+ 113:../../freeRtos/portable/MemMang/heap_avr.c **** 	#if( configUSE_MALLOC_FAILED_HOOK == 1 )
+ 114:../../freeRtos/portable/MemMang/heap_avr.c **** 	{
+ 115:../../freeRtos/portable/MemMang/heap_avr.c **** 		if( pvReturn == NULL )
+ 116:../../freeRtos/portable/MemMang/heap_avr.c **** 		{
+ 117:../../freeRtos/portable/MemMang/heap_avr.c **** 			extern void vApplicationMallocFailedHook( void );
+ 118:../../freeRtos/portable/MemMang/heap_avr.c **** 			vApplicationMallocFailedHook();
+ 119:../../freeRtos/portable/MemMang/heap_avr.c **** 		}
+ 120:../../freeRtos/portable/MemMang/heap_avr.c **** 	}
+ 121:../../freeRtos/portable/MemMang/heap_avr.c **** 	#endif	
+ 122:../../freeRtos/portable/MemMang/heap_avr.c **** 
+ 123:../../freeRtos/portable/MemMang/heap_avr.c **** 	return pvReturn;
+ 124:../../freeRtos/portable/MemMang/heap_avr.c **** }
+ 494               	.LM8:
+ 495 0042 CE01      		movw r24,r28
+ 496               	/* epilogue start */
+ 497 0044 DF91      		pop r29
+ 498 0046 CF91      		pop r28
+ 499 0048 1F91      		pop r17
+ 500 004a 0F91      		pop r16
+ 501 004c FF90      		pop r15
+ 502 004e EF90      		pop r14
+ 503 0050 0895      		ret
+ 508               	.Lscope1:
+ 510               		.stabd	78,0,0
+ 513               	.global	vPortFree
+ 515               	vPortFree:
+ 516               		.stabd	46,0,0
+ 125:../../freeRtos/portable/MemMang/heap_avr.c **** /*-----------------------------------------------------------*/
+ 126:../../freeRtos/portable/MemMang/heap_avr.c **** 
+ 127:../../freeRtos/portable/MemMang/heap_avr.c **** void vPortFree( void *pv )
+ 128:../../freeRtos/portable/MemMang/heap_avr.c **** {
+ 518               	.LM9:
+ 519               	.LFBB2:
+ 520               	/* prologue: function */
+ 521               	/* frame size = 0 */
+ 522               	/* stack size = 0 */
+ 523               	.L__stack_usage = 0
+ 524               	/* epilogue start */
+ 129:../../freeRtos/portable/MemMang/heap_avr.c **** 	/* Memory cannot be freed using this scheme.  See heap_2.c and heap_3.c 
+ 130:../../freeRtos/portable/MemMang/heap_avr.c **** 	for alternative implementations, and the memory management pages of 
+ 131:../../freeRtos/portable/MemMang/heap_avr.c **** 	http://www.FreeRTOS.org for more information. */
+ 132:../../freeRtos/portable/MemMang/heap_avr.c **** 	( void ) pv;
+ 133:../../freeRtos/portable/MemMang/heap_avr.c **** }
+ 526               	.LM10:
+ 527 0052 0895      		ret
+ 529               	.Lscope2:
+ 531               		.stabd	78,0,0
+ 533               	.global	vPortInitialiseBlocks
+ 535               	vPortInitialiseBlocks:
+ 536               		.stabd	46,0,0
+ 134:../../freeRtos/portable/MemMang/heap_avr.c **** /*-----------------------------------------------------------*/
+ 135:../../freeRtos/portable/MemMang/heap_avr.c **** 
+ 136:../../freeRtos/portable/MemMang/heap_avr.c **** void vPortInitialiseBlocks( void )
+ 137:../../freeRtos/portable/MemMang/heap_avr.c **** {
+ 538               	.LM11:
+ 539               	.LFBB3:
+ 540               	/* prologue: function */
+ 541               	/* frame size = 0 */
+ 542               	/* stack size = 0 */
+ 543               	.L__stack_usage = 0
+ 138:../../freeRtos/portable/MemMang/heap_avr.c **** 	/* Only required when static memory is not cleared. */
+ 139:../../freeRtos/portable/MemMang/heap_avr.c **** 	xNextFreeByte = ( size_t ) 0;
+ 545               	.LM12:
+ 546 0054 1092 0000 		sts xNextFreeByte,__zero_reg__
+ 547 0058 1092 0000 		sts xNextFreeByte+1,__zero_reg__
+ 548               	/* epilogue start */
+ 140:../../freeRtos/portable/MemMang/heap_avr.c **** }
+ 550               	.LM13:
+ 551 005c 0895      		ret
+ 553               	.Lscope3:
+ 555               		.stabd	78,0,0
+ 557               	.global	xPortGetFreeHeapSize
+ 559               	xPortGetFreeHeapSize:
+ 560               		.stabd	46,0,0
+ 141:../../freeRtos/portable/MemMang/heap_avr.c **** /*-----------------------------------------------------------*/
+ 142:../../freeRtos/portable/MemMang/heap_avr.c **** 
+ 143:../../freeRtos/portable/MemMang/heap_avr.c **** size_t xPortGetFreeHeapSize( void )
+ 144:../../freeRtos/portable/MemMang/heap_avr.c **** {
+ 562               	.LM14:
+ 563               	.LFBB4:
+ 564               	/* prologue: function */
+ 565               	/* frame size = 0 */
+ 566               	/* stack size = 0 */
+ 567               	.L__stack_usage = 0
+ 145:../../freeRtos/portable/MemMang/heap_avr.c **** 	return ( configTOTAL_HEAP_SIZE - xNextFreeByte );
+ 569               	.LM15:
+ 570 005e 28EB      		ldi r18,lo8(3000)
+ 571 0060 3BE0      		ldi r19,hi8(3000)
+ 572 0062 8091 0000 		lds r24,xNextFreeByte
+ 573 0066 9091 0000 		lds r25,xNextFreeByte+1
+ 574 006a 281B      		sub r18,r24
+ 575 006c 390B      		sbc r19,r25
+ 146:../../freeRtos/portable/MemMang/heap_avr.c **** }
+ 577               	.LM16:
+ 578 006e C901      		movw r24,r18
+ 579               	/* epilogue start */
+ 580 0070 0895      		ret
+ 582               	.Lscope4:
+ 584               		.stabd	78,0,0
+ 585               		.lcomm xNextFreeByte,2
+ 586               		.lcomm xHeap,3000
+ 590               	.Letext0:
+ 591               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:00000000 heap_avr.c
+     /tmp/ccm8sE2F.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccm8sE2F.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccm8sE2F.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccm8sE2F.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccm8sE2F.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccm8sE2F.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccm8sE2F.s:441    .text:00000000 pvPortMalloc
+                             .bss:00000000 xNextFreeByte
+     /tmp/ccm8sE2F.s:585    .bss:00000002 xHeap
+     /tmp/ccm8sE2F.s:515    .text:00000052 vPortFree
+     /tmp/ccm8sE2F.s:535    .text:00000054 vPortInitialiseBlocks
+     /tmp/ccm8sE2F.s:559    .text:0000005e xPortGetFreeHeapSize
+
+UNDEFINED SYMBOLS
+vTaskSuspendAll
+xTaskResumeAll
+__do_clear_bss
