@@ -33,12 +33,12 @@
  609               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 xmodem.c
-     /tmp/ccRmu3CX.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccRmu3CX.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccRmu3CX.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccRmu3CX.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccRmu3CX.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccRmu3CX.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccb8skjn.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccb8skjn.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccb8skjn.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccb8skjn.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccb8skjn.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccb8skjn.s:7      *ABS*:00000001 __zero_reg__
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

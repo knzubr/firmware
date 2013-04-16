@@ -574,23 +574,23 @@
  993               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 ds1305.c
-     /tmp/ccFG3lH7.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccFG3lH7.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccFG3lH7.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccFG3lH7.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccFG3lH7.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccFG3lH7.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccFG3lH7.s:446    .text:00000000 spiEnableDS1305
-     /tmp/ccFG3lH7.s:466    .text:00000002 spiDisableDS1305
-     /tmp/ccFG3lH7.s:486    .text:00000004 readTimeBCD
-     /tmp/ccFG3lH7.s:568    .text:0000005e readTimeDecoded
-     /tmp/ccFG3lH7.s:592    .text:00000064 readTime
-     /tmp/ccFG3lH7.s:615    .text:0000006a setTimeBCD
-     /tmp/ccFG3lH7.s:699    .text:000000ca setTimeDecoded
-     /tmp/ccFG3lH7.s:723    .text:000000d0 setTime
-     /tmp/ccFG3lH7.s:746    .text:000000d6 ds1305start
-     /tmp/ccFG3lH7.s:789    .text:000000f4 ds1305writeMem
-     /tmp/ccFG3lH7.s:891    .text:0000015e ds1305readMem
+     /tmp/cc5W6HIw.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc5W6HIw.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc5W6HIw.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc5W6HIw.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc5W6HIw.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc5W6HIw.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc5W6HIw.s:446    .text:00000000 spiEnableDS1305
+     /tmp/cc5W6HIw.s:466    .text:00000002 spiDisableDS1305
+     /tmp/cc5W6HIw.s:486    .text:00000004 readTimeBCD
+     /tmp/cc5W6HIw.s:568    .text:0000005e readTimeDecoded
+     /tmp/cc5W6HIw.s:592    .text:00000064 readTime
+     /tmp/cc5W6HIw.s:615    .text:0000006a setTimeBCD
+     /tmp/cc5W6HIw.s:699    .text:000000ca setTimeDecoded
+     /tmp/cc5W6HIw.s:723    .text:000000d0 setTime
+     /tmp/cc5W6HIw.s:746    .text:000000d6 ds1305start
+     /tmp/cc5W6HIw.s:789    .text:000000f4 ds1305writeMem
+     /tmp/cc5W6HIw.s:891    .text:0000015e ds1305readMem
                             *COM*:00000002 xSemaphoreSpiSS
 
 UNDEFINED SYMBOLS

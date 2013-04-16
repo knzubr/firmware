@@ -1027,27 +1027,27 @@
  1156               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 croutine.c
-     /tmp/ccXT9m7v.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccXT9m7v.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccXT9m7v.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccXT9m7v.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccXT9m7v.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccXT9m7v.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccXT9m7v.s:441    .text:00000000 xCoRoutineCreate
-     /tmp/ccXT9m7v.s:1130   .bss:00000000 pxCurrentCoRoutine
-     /tmp/ccXT9m7v.s:1133   .bss:0000000c pxReadyCoRoutineLists
-     /tmp/ccXT9m7v.s:1139   .bss:0000001f xDelayedCoRoutineList1
-     /tmp/ccXT9m7v.s:1140   .bss:00000028 xDelayedCoRoutineList2
+     /tmp/cctHG8gU.s:2      *ABS*:0000003f __SREG__
+     /tmp/cctHG8gU.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cctHG8gU.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cctHG8gU.s:5      *ABS*:00000034 __CCP__
+     /tmp/cctHG8gU.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cctHG8gU.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cctHG8gU.s:441    .text:00000000 xCoRoutineCreate
+     /tmp/cctHG8gU.s:1130   .bss:00000000 pxCurrentCoRoutine
+     /tmp/cctHG8gU.s:1133   .bss:0000000c pxReadyCoRoutineLists
+     /tmp/cctHG8gU.s:1139   .bss:0000001f xDelayedCoRoutineList1
+     /tmp/cctHG8gU.s:1140   .bss:00000028 xDelayedCoRoutineList2
                              .bss:00000002 xPendingReadyCoRoutineList
-     /tmp/ccXT9m7v.s:1137   .bss:0000001b pxDelayedCoRoutineList
-     /tmp/ccXT9m7v.s:1138   .bss:0000001d pxOverflowDelayedCoRoutineList
-     /tmp/ccXT9m7v.s:1132   .bss:0000000b uxTopCoRoutineReadyPriority
-     /tmp/ccXT9m7v.s:621    .text:000000ec vCoRoutineAddToDelayedList
-     /tmp/ccXT9m7v.s:1136   .bss:00000019 xCoRoutineTickCount
-     /tmp/ccXT9m7v.s:706    .text:00000166 vCoRoutineSchedule
-     /tmp/ccXT9m7v.s:1134   .bss:00000015 xLastTickCount
-     /tmp/ccXT9m7v.s:1135   .bss:00000017 xPassedTicks
-     /tmp/ccXT9m7v.s:1051   .text:0000035e xCoRoutineRemoveFromEventList
+     /tmp/cctHG8gU.s:1137   .bss:0000001b pxDelayedCoRoutineList
+     /tmp/cctHG8gU.s:1138   .bss:0000001d pxOverflowDelayedCoRoutineList
+     /tmp/cctHG8gU.s:1132   .bss:0000000b uxTopCoRoutineReadyPriority
+     /tmp/cctHG8gU.s:621    .text:000000ec vCoRoutineAddToDelayedList
+     /tmp/cctHG8gU.s:1136   .bss:00000019 xCoRoutineTickCount
+     /tmp/cctHG8gU.s:706    .text:00000166 vCoRoutineSchedule
+     /tmp/cctHG8gU.s:1134   .bss:00000015 xLastTickCount
+     /tmp/cctHG8gU.s:1135   .bss:00000017 xPassedTicks
+     /tmp/cctHG8gU.s:1051   .text:0000035e xCoRoutineRemoveFromEventList
 
 UNDEFINED SYMBOLS
 pvPortMalloc

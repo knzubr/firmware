@@ -90,15 +90,15 @@ uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
   spiEnableEnc28j60();
   
   // issue read command
-  spiSend(op | (address & ADDR_MASK));
+  spiSendENC(op | (address & ADDR_MASK));
 
   // read data
-  result = spiSend(0x00);
+  result = spiSendENC(0x00);
 
   // do dummy read if needed (for mac and mii, see datasheet page 29)
   if(address & 0x80)
   {
-    result = spiSend(0x00);
+    result = spiSendENC(0x00);
   }
 
   spiDisableEnc28j60();
@@ -112,8 +112,8 @@ void enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data)
   spiEnableEnc28j60();
   // issue write command
   //spiSend(op | (address & ADDR_MASK));
-  spiSend(op | (address & ADDR_MASK));
-  spiSend(data);
+  spiSendENC(op | (address & ADDR_MASK));
+  spiSendENC(data);
   spiDisableEnc28j60();
  // spiGive();
 }
@@ -122,11 +122,11 @@ void enc28j60ReadBuffer(uint16_t len, uint8_t* data)
 {
  // spiTake();
   spiEnableEnc28j60();
-  spiSend(ENC28J60_READ_BUF_MEM);
+  spiSendENC(ENC28J60_READ_BUF_MEM);
   while(len)
   {
     len--;
-    *data = spiSend(0x00);
+    *data = spiSendENC(0x00);
     data++;
   }
   *data='\0';
@@ -140,11 +140,11 @@ void enc28j60WriteBuffer(uint16_t len, uint8_t* data)
   spiEnableEnc28j60();
   // issue write command
   //spiSend(ENC28J60_WRITE_BUF_MEM);      // 
-  spiSend(ENC28J60_WRITE_BUF_MEM);
+  spiSendENC(ENC28J60_WRITE_BUF_MEM);
   while(len)
   {
     len--;
-    spiSend(*data);       // write data
+    spiSendENC(*data);       // write data
     data++;
   }
   spiDisableEnc28j60();  

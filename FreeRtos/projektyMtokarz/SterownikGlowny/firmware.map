@@ -88,6 +88,7 @@ Common symbol       size              file
 
 usbStream           0xe               main.o
 portB               0x1               main.o
+xSpiRxEnc           0x2               hardware.o
 wwwport             0x1               main.o
 fdVty               0x6               vty.o
 xVtyTx              0x2               main.o
@@ -279,7 +280,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0xb688
+.text           0x00000000     0xb732
  *(.vectors)
  .vectors       0x00000000      0x1f4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
                 0x00000000                __vectors
@@ -550,7 +551,6 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
                 0x000010a2                __vector_97
                 0x000010a2                __vector_20
                 0x000010a2                __vector_42
-                0x000010a2                __vector_87
                 0x000010a2                __vector_65
  .text          0x000010a6      0x10a main.o
                 0x000010a6                main
@@ -576,7 +576,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
                 0x0000159a                uartVtySendByte
                 0x000015d0                VtyPutChar
                 0x000015da                __vector_89
- .text          0x0000167a      0x56e hardware.o
+ .text          0x0000167a      0x5fa hardware.o
                 0x0000167a                hardwareInit
                 0x000016da                LockersMemInit
                 0x000016ec                printLockers
@@ -598,409 +598,410 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
                 0x00001b1a                disableSpiMCP4150
                 0x00001b30                spiEnableDS1305
                 0x00001b46                spiDisableDS1305
-                0x00001b5c                __vector_24
- .text          0x00001be8       0x88 sensors_task.o
-                0x00001be8                sensorsTaskInit
-                0x00001bf2                sensorsTask
- .text          0x00001c70     0x171a vty.o
-                0x00002d34                VtyInit
-                0x00002d56                printErrorInfo
-                0x00002f3e                printStatus
- .text          0x0000338a       0xaa netstack_task.o
-                0x0000338a                encTask
- .text          0x00003434       0xac cli_task.o
-                0x00003434                vTaskVTYusb
-                0x000034a6                vTaskUSB
-                0x000034b8                vTaskVTYsocket
- .text          0x000034e0       0x10 lcd_task.o
-                0x000034e0                vTasklcd
- .text          0x000034f0      0x220 ../../freeRtos/Lib/lcd.o
-                0x000034f0                odwroc
-                0x0000354c                polbajt
-                0x000035ae                lcdWrite
-                0x00003608                lcdwritecommand
-                0x00003618                lcdsend
-                0x00003628                lcdclear
-                0x0000363c                lcdinit
- .text          0x00003710      0x134 ../../freeRtos/Lib/spiXmega.o
-                0x00003710                spiInit
-                0x0000375e                spiInitENC
-                0x000037ac                spiSetCPHA
-                0x000037b8                spiSetCPHAENC
-                0x000037c4                spiClearCPHA
-                0x000037d0                spiClearCPHAENC
-                0x000037dc                spiSetCPOL
-                0x000037e8                spiSetCPOLENC
-                0x000037f4                spiClearCPOL
-                0x00003800                spiClearCPOLENC
-                0x0000380c                spiTake
-                0x00003824                spiGive
- .text          0x00003844       0x38 ../../freeRtos/Lib/memory_x.o
-                0x00003844                xmalloc
-                0x00003860                xmallocAvailable
- .text          0x0000387c      0xab6 ../../freeRtos/Lib/ramdysk.o
-                0x00003a48                ramDyskInit
-                0x00003a6c                ramDyskUtworzPlik
-                0x00003b5e                ramDyskOtworzPlik
-                0x00003b9c                ramDyskUsunPlik
-                0x00003be6                ramDyskZamknijPlik
-                0x00003c04                ramDyskCzyscPlik
-                0x00003c60                ramDyskZapiszBajtDoPliku
-                0x00003cee                ramDyskCzytajBajtZPliku
-                0x00003d90                ramDyskZapiszBlokDoPliku
-                0x00003ea0                ramDyskCzytajBlokZPliku
-                0x00003fe2                ramDyskUstawWskaznik
-                0x0000406c                ramDyskUstawWskaznikNaKoniec
-                0x000040b0                ramDyskDodajBlokXmodem
-                0x00004186                ramDyskDir
-                0x000042a4                ramDyskLiczbaWolnychKlastrow
-                0x000042bc                ramDyskOtworzPlikStdIo
-                0x00004306                ramDyskZamknijPlikStdIo
- .text          0x00004332      0xac0 ../../freeRtos/Lib/cmdline.o
-                0x0000451e                cmdStateConfigure
-                0x000045a6                cmdlineInputFunc
-                0x00004b02                cmdLineGetLastArgIdx
-                0x00004b2c                cmdlineMainLoop
-                0x00004c58                cmdlineGetArgStr
-                0x00004ca4                cmdlineGetArgInt
-                0x00004ccc                cmdlineGetArgHex
-                0x00004cf4                cmdPrintHelp
- .text          0x00004df2        0x0 ../../freeRtos/Lib/xmodem.o
- .text          0x00004df2      0x114 ../../freeRtos/Lib/vt100.o
-                0x00004df2                vt100Init
-                0x00004e1a                vt100ClearScreen
-                0x00004e42                vt100SetAttr
-                0x00004e7e                vt100SetCursorMode
-                0x00004ebc                vt100SetCursorPos
- .text          0x00004f06      0x1ca ../../freeRtos/Lib/ds1305.o
-                0x00004f0a                readTimeBCD
-                0x00004f64                readTimeDecoded
-                0x00004f6a                readTime
-                0x00004f70                setTimeBCD
-                0x00004fd0                setTimeDecoded
-                0x00004fd6                setTime
-                0x00004fdc                ds1305start
-                0x00004ffa                ds1305writeMem
-                0x00005064                ds1305readMem
- .text          0x000050d0      0x2ce ../../freeRtos/Lib/mpc23s17.o
-                0x000050d4                MPC23s17SetDirA
-                0x00005118                MPC23s17SetDirB
-                0x0000515c                MPC23s17SetPortA
-                0x000051a6                MPC23s17SetBitsOnPortA
-                0x000051f0                MPC23s17ClearBitsOnPortA
-                0x0000523c                MPC23s17SetPortB
-                0x00005280                MPC23s17SetBitsOnPortB
-                0x000052ca                MPC23s17ClearBitsOnPortB
-                0x00005316                MPC23s17ReadPortA
-                0x0000535a                MPC23s17ReadPortB
- .text          0x0000539e       0xb0 ../../freeRtos/Lib/mcp3008.o
-                0x000053a2                MCP3008_getSampleDiff
-                0x000053f8                MCP3008_getSampleSingle
- .text          0x0000544e       0x28 ../../freeRtos/Lib/mcp4150.o
-                0x00005452                MCP4150_setValue
- .text          0x00005476      0x6d8 ../../freeRtos/Lib/enc28j60.o
-                0x0000558a                enc28j60hasRxPkt
-                0x0000559c                enc28j60linkup
-                0x000055d8                enc28j60getrev
-                0x0000562a                nicPoll
-                0x00005792                nicSend
-                0x0000583c                nicSetMacAddress
-                0x00005878                nicMacInit
-                0x0000599a                nicGetMacAddress
-                0x000059d6                nicRegDump
- .text          0x00005b4e       0x9e ../../freeRtos/Lib/queueStream.o
-                0x00005bc0                initQueueStream
- .text          0x00005bec       0xb2 ../../freeRtos/Lib/net/nic.o
-                0x00005bf6                saveNic
-                0x00005c08                nicInit
- .text          0x00005c9e      0x692 ../../freeRtos/Lib/net/net.o
-                0x00005c9e                htons
-                0x00005ca6                htonl
-                0x00005ccc                netChecksum
-                0x00005d2e                netPrintEthAddr
-                0x00005da2                netPrintIPAddr
-                0x00005e22                netPrintEthHeader
-                0x00005ec4                netPrintIpHeader
-                0x000060b2                netPrintTcpHeader
- .text          0x00006330      0x5ac ../../freeRtos/Lib/net/ip.o
-                0x00006330                ipInit
-                0x00006386                ipSaveConfig
-                0x000063d0                netstackIPv4Process
-                0x0000654c                setIpDebug
-                0x00006566                ipSetConfig
-                0x000065a8                ipSetConfigIp
-                0x000065ba                ipSetConfigMask
-                0x000065cc                ipSetConfigGw
-                0x000065de                ipGetConfig
-                0x000065e4                ipSend
-                0x000067ee                ipPrintConfig
- .text          0x000068dc      0x31c ../../freeRtos/Lib/net/icmp.o
-                0x000068dc                icmpInit
-                0x000068ea                setIcmpDebug
-                0x000068f8                icmpPrintHeader
-                0x00006a96                icmpEchoRequest
-                0x00006bae                icmpIpIn
- .text          0x00006bf8      0x7fe ../../freeRtos/Lib/net/arp.o
-                0x00006bf8                setArpDebug
-                0x00006c12                arpInit
-                0x00006c2a                arpTimer
-                0x00006c44                arpMatchIp
-                0x00006c72                arpIpOut
-                0x00006d16                arpIpIn
-                0x00006eaa                arpPrintHeader
-                0x00007084                arpArpIn
-                0x0000720a                arpPrintTable
- .text          0x000073f6      0x56c ../../freeRtos/Lib/net/tcp.o
-                0x000073f6                socketInit
-                0x00007498                calculateTcpChecksun
-                0x000074ba                processTcpPacket
-                0x000078f6                sendTcBuffer
-                0x000078fa                netstackTCPIPProcess
-                0x00007950                setTcpDebug
-                0x0000795e                flushTcpQueues
-                0x00007960                httpProcess
- .text          0x00007962      0x50c ../../freeRtos/Lib/net/udp.o
-                0x00007962                udpInit
-                0x000079ea                setUdpDebug
-                0x000079f8                udpSend
-                0x00007acc                netstackUDPIPProcess
-                0x00007cc0                flushUdpQueues
-                0x00007d20                udpSaveConfig
-                0x00007d62                udpPrintStatus
- .text          0x00007e6e      0xcb8 ../../freeRtos/Lib/Rs485_prot.o
-                0x00007eb4                sendSettings
-                0x00007f3c                saveSettings
-                0x00007fae                rollersMemInit
-                0x00007fcc                printRs485devices
-                0x000080a0                rs485ping
-                0x0000827a                rs485rollerHello
-                0x000084c0                rs485xModemFlash
-                0x0000895c                rs485curtainUp
-                0x000089fe                rs485Led
-                0x00008a84                rs485curtainDown
- .text          0x00008b26      0xdc4 ../../freeRtos/Source/tasks.o
-                0x00008c5c                xTaskGenericCreate
-                0x00008e60                uxTaskPriorityGet
-                0x00008e7e                vTaskPrioritySet
-                0x00008f5e                vTaskSuspend
-                0x00008fda                xTaskIsTaskSuspended
-                0x00009004                vTaskResume
-                0x00009098                xTaskResumeFromISR
-                0x00009130                vTaskStartScheduler
-                0x00009186                vTaskEndScheduler
-                0x00009192                vTaskSuspendAll
-                0x0000919e                xTaskGetTickCount
-                0x000091b4                uxTaskGetNumberOfTasks
-                0x000091ba                vTaskStartTrace
-                0x000091ec                ulTaskEndTrace
-                0x0000921c                vTaskIncrementTick
-                0x0000930c                xTaskResumeAll
-                0x0000940e                vTaskList
-                0x000094b6                vTaskDelay
-                0x00009534                vTaskDelayUntil
-                0x000095ea                vTaskSwitchContext
-                0x00009730                vTaskPlaceOnEventList
-                0x000097c0                xTaskRemoveFromEventList
-                0x0000984e                vTaskSetTimeOutState
-                0x00009864                xTaskCheckForTimeOut
-                0x000098e2                vTaskMissedYield
- .text          0x000098ea      0x6f6 ../../freeRtos/Source/queue.o
-                0x0000996a                xQueueCreate
-                0x00009a2a                xQueueCreateExternal
-                0x00009b0e                xQueueGenericSend
-                0x00009cc6                xQueueGenericSendFromISR
-                0x00009d84                xQueueGenericReceive
-                0x00009f16                xQueueReceiveFromISR
-                0x00009f96                uxQueueMessagesWaiting
-                0x00009fa6                uxQueueMessagesWaitingFromISR
-                0x00009fac                vQueueDelete
-                0x00009fc6                xQueueIsQueueEmptyFromISR
-                0x00009fd2                xQueueIsQueueFullFromISR
- .text          0x00009fe0      0x124 ../../freeRtos/Source/list.o
-                0x00009fe0                vListInitialise
-                0x00009ffc                vListInitialiseItem
-                0x0000a004                vListInsertEnd
-                0x0000a04e                vListInsert
-                0x0000a0bc                vListRemove
- .text          0x0000a104      0x3b2 ../../freeRtos/Source/croutine.o
-                0x0000a104                xCoRoutineCreate
-                0x0000a1f0                vCoRoutineAddToDelayedList
-                0x0000a26a                vCoRoutineSchedule
-                0x0000a462                xCoRoutineRemoveFromEventList
- .text          0x0000a4b6       0x72 ../../freeRtos/portable/MemMang/heap_avr.o
-                0x0000a4b6                pvPortMalloc
-                0x0000a508                vPortFree
-                0x0000a50a                vPortInitialiseBlocks
-                0x0000a514                xPortGetFreeHeapSize
- .text          0x0000a528      0x302 ../../freeRtos/portable/GCC/ATXmega/port.o
-                0x0000a528                pxPortInitialiseStack
-                0x0000a5d8                xPortStartScheduler
-                0x0000a66c                vPortEndScheduler
-                0x0000a66e                vPortYield
-                0x0000a748                vPortYieldFromTick
-                0x0000a826                __vector_14
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodqi4.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodhi4.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(malloc.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strtol.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(isspace.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy_P.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp_P.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memset.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcat.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcpy.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncpy.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fclose.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fgetc.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf_p.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputs.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(iob.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_block_atxmega128a1.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_dword_atxmega128a1.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_word_atxmega128a1.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_block_atxmega128a1.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_byte_atxmega128a1.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_dword_atxmega128a1.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_word_atxmega128a1.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eewr_byte_atxmega128a1.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_byte_atxmega128a1u.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(errno.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(cty_isfalse.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_mulsi3.o)
- .text          0x0000a82a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodsi4.o)
-                0x0000a82a                . = ALIGN (0x2)
+                0x00001b5c                __vector_87
+                0x00001be8                __vector_24
+ .text          0x00001c74       0x88 sensors_task.o
+                0x00001c74                sensorsTaskInit
+                0x00001c7e                sensorsTask
+ .text          0x00001cfc     0x171a vty.o
+                0x00002dc0                VtyInit
+                0x00002de2                printErrorInfo
+                0x00002fca                printStatus
+ .text          0x00003416       0xaa netstack_task.o
+                0x00003416                encTask
+ .text          0x000034c0       0xac cli_task.o
+                0x000034c0                vTaskVTYusb
+                0x00003532                vTaskUSB
+                0x00003544                vTaskVTYsocket
+ .text          0x0000356c       0x10 lcd_task.o
+                0x0000356c                vTasklcd
+ .text          0x0000357c      0x220 ../../freeRtos/Lib/lcd.o
+                0x0000357c                odwroc
+                0x000035d8                polbajt
+                0x0000363a                lcdWrite
+                0x00003694                lcdwritecommand
+                0x000036a4                lcdsend
+                0x000036b4                lcdclear
+                0x000036c8                lcdinit
+ .text          0x0000379c      0x134 ../../freeRtos/Lib/spiXmega.o
+                0x0000379c                spiInit
+                0x000037ea                spiInitENC
+                0x00003838                spiSetCPHA
+                0x00003844                spiSetCPHAENC
+                0x00003850                spiClearCPHA
+                0x0000385c                spiClearCPHAENC
+                0x00003868                spiSetCPOL
+                0x00003874                spiSetCPOLENC
+                0x00003880                spiClearCPOL
+                0x0000388c                spiClearCPOLENC
+                0x00003898                spiTake
+                0x000038b0                spiGive
+ .text          0x000038d0       0x38 ../../freeRtos/Lib/memory_x.o
+                0x000038d0                xmalloc
+                0x000038ec                xmallocAvailable
+ .text          0x00003908      0xab6 ../../freeRtos/Lib/ramdysk.o
+                0x00003ad4                ramDyskInit
+                0x00003af8                ramDyskUtworzPlik
+                0x00003bea                ramDyskOtworzPlik
+                0x00003c28                ramDyskUsunPlik
+                0x00003c72                ramDyskZamknijPlik
+                0x00003c90                ramDyskCzyscPlik
+                0x00003cec                ramDyskZapiszBajtDoPliku
+                0x00003d7a                ramDyskCzytajBajtZPliku
+                0x00003e1c                ramDyskZapiszBlokDoPliku
+                0x00003f2c                ramDyskCzytajBlokZPliku
+                0x0000406e                ramDyskUstawWskaznik
+                0x000040f8                ramDyskUstawWskaznikNaKoniec
+                0x0000413c                ramDyskDodajBlokXmodem
+                0x00004212                ramDyskDir
+                0x00004330                ramDyskLiczbaWolnychKlastrow
+                0x00004348                ramDyskOtworzPlikStdIo
+                0x00004392                ramDyskZamknijPlikStdIo
+ .text          0x000043be      0xac0 ../../freeRtos/Lib/cmdline.o
+                0x000045aa                cmdStateConfigure
+                0x00004632                cmdlineInputFunc
+                0x00004b8e                cmdLineGetLastArgIdx
+                0x00004bb8                cmdlineMainLoop
+                0x00004ce4                cmdlineGetArgStr
+                0x00004d30                cmdlineGetArgInt
+                0x00004d58                cmdlineGetArgHex
+                0x00004d80                cmdPrintHelp
+ .text          0x00004e7e        0x0 ../../freeRtos/Lib/xmodem.o
+ .text          0x00004e7e      0x114 ../../freeRtos/Lib/vt100.o
+                0x00004e7e                vt100Init
+                0x00004ea6                vt100ClearScreen
+                0x00004ece                vt100SetAttr
+                0x00004f0a                vt100SetCursorMode
+                0x00004f48                vt100SetCursorPos
+ .text          0x00004f92      0x1ca ../../freeRtos/Lib/ds1305.o
+                0x00004f96                readTimeBCD
+                0x00004ff0                readTimeDecoded
+                0x00004ff6                readTime
+                0x00004ffc                setTimeBCD
+                0x0000505c                setTimeDecoded
+                0x00005062                setTime
+                0x00005068                ds1305start
+                0x00005086                ds1305writeMem
+                0x000050f0                ds1305readMem
+ .text          0x0000515c      0x2ce ../../freeRtos/Lib/mpc23s17.o
+                0x00005160                MPC23s17SetDirA
+                0x000051a4                MPC23s17SetDirB
+                0x000051e8                MPC23s17SetPortA
+                0x00005232                MPC23s17SetBitsOnPortA
+                0x0000527c                MPC23s17ClearBitsOnPortA
+                0x000052c8                MPC23s17SetPortB
+                0x0000530c                MPC23s17SetBitsOnPortB
+                0x00005356                MPC23s17ClearBitsOnPortB
+                0x000053a2                MPC23s17ReadPortA
+                0x000053e6                MPC23s17ReadPortB
+ .text          0x0000542a       0xb0 ../../freeRtos/Lib/mcp3008.o
+                0x0000542e                MCP3008_getSampleDiff
+                0x00005484                MCP3008_getSampleSingle
+ .text          0x000054da       0x28 ../../freeRtos/Lib/mcp4150.o
+                0x000054de                MCP4150_setValue
+ .text          0x00005502      0x6f6 ../../freeRtos/Lib/enc28j60.o
+                0x0000562c                enc28j60hasRxPkt
+                0x0000563e                enc28j60linkup
+                0x0000567a                enc28j60getrev
+                0x000056cc                nicPoll
+                0x00005838                nicSend
+                0x000058e6                nicSetMacAddress
+                0x00005922                nicMacInit
+                0x00005a44                nicGetMacAddress
+                0x00005a80                nicRegDump
+ .text          0x00005bf8       0x9e ../../freeRtos/Lib/queueStream.o
+                0x00005c6a                initQueueStream
+ .text          0x00005c96       0xb2 ../../freeRtos/Lib/net/nic.o
+                0x00005ca0                saveNic
+                0x00005cb2                nicInit
+ .text          0x00005d48      0x692 ../../freeRtos/Lib/net/net.o
+                0x00005d48                htons
+                0x00005d50                htonl
+                0x00005d76                netChecksum
+                0x00005dd8                netPrintEthAddr
+                0x00005e4c                netPrintIPAddr
+                0x00005ecc                netPrintEthHeader
+                0x00005f6e                netPrintIpHeader
+                0x0000615c                netPrintTcpHeader
+ .text          0x000063da      0x5ac ../../freeRtos/Lib/net/ip.o
+                0x000063da                ipInit
+                0x00006430                ipSaveConfig
+                0x0000647a                netstackIPv4Process
+                0x000065f6                setIpDebug
+                0x00006610                ipSetConfig
+                0x00006652                ipSetConfigIp
+                0x00006664                ipSetConfigMask
+                0x00006676                ipSetConfigGw
+                0x00006688                ipGetConfig
+                0x0000668e                ipSend
+                0x00006898                ipPrintConfig
+ .text          0x00006986      0x31c ../../freeRtos/Lib/net/icmp.o
+                0x00006986                icmpInit
+                0x00006994                setIcmpDebug
+                0x000069a2                icmpPrintHeader
+                0x00006b40                icmpEchoRequest
+                0x00006c58                icmpIpIn
+ .text          0x00006ca2      0x7fe ../../freeRtos/Lib/net/arp.o
+                0x00006ca2                setArpDebug
+                0x00006cbc                arpInit
+                0x00006cd4                arpTimer
+                0x00006cee                arpMatchIp
+                0x00006d1c                arpIpOut
+                0x00006dc0                arpIpIn
+                0x00006f54                arpPrintHeader
+                0x0000712e                arpArpIn
+                0x000072b4                arpPrintTable
+ .text          0x000074a0      0x56c ../../freeRtos/Lib/net/tcp.o
+                0x000074a0                socketInit
+                0x00007542                calculateTcpChecksun
+                0x00007564                processTcpPacket
+                0x000079a0                sendTcBuffer
+                0x000079a4                netstackTCPIPProcess
+                0x000079fa                setTcpDebug
+                0x00007a08                flushTcpQueues
+                0x00007a0a                httpProcess
+ .text          0x00007a0c      0x50c ../../freeRtos/Lib/net/udp.o
+                0x00007a0c                udpInit
+                0x00007a94                setUdpDebug
+                0x00007aa2                udpSend
+                0x00007b76                netstackUDPIPProcess
+                0x00007d6a                flushUdpQueues
+                0x00007dca                udpSaveConfig
+                0x00007e0c                udpPrintStatus
+ .text          0x00007f18      0xcb8 ../../freeRtos/Lib/Rs485_prot.o
+                0x00007f5e                sendSettings
+                0x00007fe6                saveSettings
+                0x00008058                rollersMemInit
+                0x00008076                printRs485devices
+                0x0000814a                rs485ping
+                0x00008324                rs485rollerHello
+                0x0000856a                rs485xModemFlash
+                0x00008a06                rs485curtainUp
+                0x00008aa8                rs485Led
+                0x00008b2e                rs485curtainDown
+ .text          0x00008bd0      0xdc4 ../../freeRtos/Source/tasks.o
+                0x00008d06                xTaskGenericCreate
+                0x00008f0a                uxTaskPriorityGet
+                0x00008f28                vTaskPrioritySet
+                0x00009008                vTaskSuspend
+                0x00009084                xTaskIsTaskSuspended
+                0x000090ae                vTaskResume
+                0x00009142                xTaskResumeFromISR
+                0x000091da                vTaskStartScheduler
+                0x00009230                vTaskEndScheduler
+                0x0000923c                vTaskSuspendAll
+                0x00009248                xTaskGetTickCount
+                0x0000925e                uxTaskGetNumberOfTasks
+                0x00009264                vTaskStartTrace
+                0x00009296                ulTaskEndTrace
+                0x000092c6                vTaskIncrementTick
+                0x000093b6                xTaskResumeAll
+                0x000094b8                vTaskList
+                0x00009560                vTaskDelay
+                0x000095de                vTaskDelayUntil
+                0x00009694                vTaskSwitchContext
+                0x000097da                vTaskPlaceOnEventList
+                0x0000986a                xTaskRemoveFromEventList
+                0x000098f8                vTaskSetTimeOutState
+                0x0000990e                xTaskCheckForTimeOut
+                0x0000998c                vTaskMissedYield
+ .text          0x00009994      0x6f6 ../../freeRtos/Source/queue.o
+                0x00009a14                xQueueCreate
+                0x00009ad4                xQueueCreateExternal
+                0x00009bb8                xQueueGenericSend
+                0x00009d70                xQueueGenericSendFromISR
+                0x00009e2e                xQueueGenericReceive
+                0x00009fc0                xQueueReceiveFromISR
+                0x0000a040                uxQueueMessagesWaiting
+                0x0000a050                uxQueueMessagesWaitingFromISR
+                0x0000a056                vQueueDelete
+                0x0000a070                xQueueIsQueueEmptyFromISR
+                0x0000a07c                xQueueIsQueueFullFromISR
+ .text          0x0000a08a      0x124 ../../freeRtos/Source/list.o
+                0x0000a08a                vListInitialise
+                0x0000a0a6                vListInitialiseItem
+                0x0000a0ae                vListInsertEnd
+                0x0000a0f8                vListInsert
+                0x0000a166                vListRemove
+ .text          0x0000a1ae      0x3b2 ../../freeRtos/Source/croutine.o
+                0x0000a1ae                xCoRoutineCreate
+                0x0000a29a                vCoRoutineAddToDelayedList
+                0x0000a314                vCoRoutineSchedule
+                0x0000a50c                xCoRoutineRemoveFromEventList
+ .text          0x0000a560       0x72 ../../freeRtos/portable/MemMang/heap_avr.o
+                0x0000a560                pvPortMalloc
+                0x0000a5b2                vPortFree
+                0x0000a5b4                vPortInitialiseBlocks
+                0x0000a5be                xPortGetFreeHeapSize
+ .text          0x0000a5d2      0x302 ../../freeRtos/portable/GCC/ATXmega/port.o
+                0x0000a5d2                pxPortInitialiseStack
+                0x0000a682                xPortStartScheduler
+                0x0000a716                vPortEndScheduler
+                0x0000a718                vPortYield
+                0x0000a7f2                vPortYieldFromTick
+                0x0000a8d0                __vector_14
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodqi4.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodhi4.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(malloc.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strtol.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(isspace.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy_P.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp_P.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memset.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcat.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcpy.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncpy.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fclose.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fgetc.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf_p.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputs.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(iob.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_block_atxmega128a1.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_dword_atxmega128a1.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_word_atxmega128a1.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_block_atxmega128a1.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_byte_atxmega128a1.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_dword_atxmega128a1.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_word_atxmega128a1.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eewr_byte_atxmega128a1.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_byte_atxmega128a1u.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(errno.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(cty_isfalse.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_mulsi3.o)
+ .text          0x0000a8d4        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodsi4.o)
+                0x0000a8d4                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x0000a82a       0x18 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodqi4.o)
-                0x0000a82a                __udivmodqi4
- .text.libgcc   0x0000a842       0x28 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodhi4.o)
-                0x0000a842                __udivmodhi4
- .text.libgcc   0x0000a86a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
- .text.libgcc   0x0000a86a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
- .text.libgcc   0x0000a86a        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x0000a8d4       0x18 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodqi4.o)
+                0x0000a8d4                __udivmodqi4
+ .text.libgcc   0x0000a8ec       0x28 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodhi4.o)
+                0x0000a8ec                __udivmodhi4
+ .text.libgcc   0x0000a914        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ .text.libgcc   0x0000a914        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000a914        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
  .text.avr-libc
-                0x0000a86a      0x25e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(malloc.o)
-                0x0000a86a                malloc
-                0x0000a996                free
+                0x0000a914      0x25e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(malloc.o)
+                0x0000a914                malloc
+                0x0000aa40                free
  .text.avr-libc
-                0x0000aac8      0x27a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strtol.o)
-                0x0000aac8                strtol
+                0x0000ab72      0x27a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strtol.o)
+                0x0000ab72                strtol
  .text.avr-libc
-                0x0000ad42       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(isspace.o)
-                0x0000ad42                isspace
+                0x0000adec       0x10 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(isspace.o)
+                0x0000adec                isspace
  .text.avr-libc
-                0x0000ad52       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy_P.o)
-                0x0000ad52                memcpy_P
+                0x0000adfc       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy_P.o)
+                0x0000adfc                memcpy_P
  .text.avr-libc
-                0x0000ad64       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp_P.o)
-                0x0000ad64                strncmp_P
+                0x0000ae0e       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp_P.o)
+                0x0000ae0e                strncmp_P
  .text.avr-libc
-                0x0000ad80       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy.o)
-                0x0000ad80                memcpy
+                0x0000ae2a       0x12 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy.o)
+                0x0000ae2a                memcpy
  .text.avr-libc
-                0x0000ad92        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memset.o)
-                0x0000ad92                memset
+                0x0000ae3c        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memset.o)
+                0x0000ae3c                memset
  .text.avr-libc
-                0x0000ada0       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcat.o)
-                0x0000ada0                strcat
+                0x0000ae4a       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcat.o)
+                0x0000ae4a                strcat
  .text.avr-libc
-                0x0000adb6        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcpy.o)
-                0x0000adb6                strcpy
+                0x0000ae60        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcpy.o)
+                0x0000ae60                strcpy
  .text.avr-libc
-                0x0000adc4       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp.o)
-                0x0000adc4                strncmp
+                0x0000ae6e       0x1c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp.o)
+                0x0000ae6e                strncmp
  .text.avr-libc
-                0x0000ade0       0x1e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncpy.o)
-                0x0000ade0                strncpy
+                0x0000ae8a       0x1e /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncpy.o)
+                0x0000ae8a                strncpy
  .text.avr-libc
-                0x0000adfe       0x54 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fclose.o)
-                0x0000adfe                fclose
+                0x0000aea8       0x54 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fclose.o)
+                0x0000aea8                fclose
  .text.avr-libc
-                0x0000ae52       0x80 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fgetc.o)
-                0x0000ae52                fgetc
+                0x0000aefc       0x80 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fgetc.o)
+                0x0000aefc                fgetc
  .text.avr-libc
-                0x0000aed2       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf.o)
-                0x0000aed2                fprintf
+                0x0000af7c       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf.o)
+                0x0000af7c                fprintf
  .text.avr-libc
-                0x0000aef2       0x3a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf_p.o)
-                0x0000aef2                fprintf_P
+                0x0000af9c       0x3a /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf_p.o)
+                0x0000af9c                fprintf_P
  .text.avr-libc
-                0x0000af2c       0x58 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
-                0x0000af2c                fputc
+                0x0000afd6       0x58 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+                0x0000afd6                fputc
  .text.avr-libc
-                0x0000af84       0x4c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputs.o)
-                0x0000af84                fputs
+                0x0000b02e       0x4c /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputs.o)
+                0x0000b02e                fputs
  .text.avr-libc
-                0x0000afd0       0x52 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
-                0x0000afd0                sprintf
+                0x0000b07a       0x52 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+                0x0000b07a                sprintf
  .text.avr-libc
-                0x0000b022      0x402 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
-                0x0000b022                vfprintf
+                0x0000b0cc      0x402 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+                0x0000b0cc                vfprintf
  .text.avr-libc
-                0x0000b424       0x18 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_block_atxmega128a1.o)
-                0x0000b424                __eerd_block_x128a1
+                0x0000b4ce       0x18 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_block_atxmega128a1.o)
+                0x0000b4ce                __eerd_block_x128a1
  .text.avr-libc
-                0x0000b43c        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_dword_atxmega128a1.o)
-                0x0000b43c                __eerd_dword_x128a1
-                0x0000b43c                __eerd_float_x128a1
+                0x0000b4e6        0xe /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_dword_atxmega128a1.o)
+                0x0000b4e6                __eerd_dword_x128a1
+                0x0000b4e6                __eerd_float_x128a1
  .text.avr-libc
-                0x0000b44a        0xa /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_word_atxmega128a1.o)
-                0x0000b44a                __eerd_word_x128a1
+                0x0000b4f4        0xa /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_word_atxmega128a1.o)
+                0x0000b4f4                __eerd_word_x128a1
  .text.avr-libc
-                0x0000b454       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_block_atxmega128a1.o)
-                0x0000b454                __eeupd_block_x128a1
+                0x0000b4fe       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_block_atxmega128a1.o)
+                0x0000b4fe                __eeupd_block_x128a1
  .text.avr-libc
-                0x0000b474       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_byte_atxmega128a1.o)
-                0x0000b474                __eeupd_byte_x128a1
-                0x0000b476                __eeupd_r18_x128a1
+                0x0000b51e       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_byte_atxmega128a1.o)
+                0x0000b51e                __eeupd_byte_x128a1
+                0x0000b520                __eeupd_r18_x128a1
  .text.avr-libc
-                0x0000b48a       0x18 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_dword_atxmega128a1.o)
-                0x0000b48a                __eeupd_float_x128a1
-                0x0000b48a                __eeupd_dword_x128a1
+                0x0000b534       0x18 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_dword_atxmega128a1.o)
+                0x0000b534                __eeupd_float_x128a1
+                0x0000b534                __eeupd_dword_x128a1
  .text.avr-libc
-                0x0000b4a2        0xc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_word_atxmega128a1.o)
-                0x0000b4a2                __eeupd_word_x128a1
+                0x0000b54c        0xc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_word_atxmega128a1.o)
+                0x0000b54c                __eeupd_word_x128a1
  .text.avr-libc
-                0x0000b4ae       0x46 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eewr_byte_atxmega128a1.o)
-                0x0000b4ae                __eewr_byte_x128a1
-                0x0000b4b0                __eewr_r18_x128a1
+                0x0000b558       0x46 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eewr_byte_atxmega128a1.o)
+                0x0000b558                __eewr_byte_x128a1
+                0x0000b55a                __eewr_r18_x128a1
  .text.avr-libc
-                0x0000b4f4       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_byte_atxmega128a1u.o)
-                0x0000b4f4                __eerd_byte_x128a1u
-                0x0000b4fc                eeprom_mapen
+                0x0000b59e       0x20 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_byte_atxmega128a1u.o)
+                0x0000b59e                __eerd_byte_x128a1u
+                0x0000b5a6                eeprom_mapen
  .text.avr-libc
-                0x0000b514        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(cty_isfalse.o)
-                0x0000b514                __ctype_isfalse
-                0x0000b518                __ctype_istrue
+                0x0000b5be        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(cty_isfalse.o)
+                0x0000b5be                __ctype_isfalse
+                0x0000b5c2                __ctype_istrue
  .text.avr-libc
-                0x0000b51a       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
-                0x0000b51a                strnlen_P
+                0x0000b5c4       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+                0x0000b5c4                strnlen_P
  .text.avr-libc
-                0x0000b530       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
-                0x0000b530                strnlen
+                0x0000b5da       0x16 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+                0x0000b5da                strnlen
  .text.avr-libc
-                0x0000b546       0xbc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
-                0x0000b546                __ultoa_invert
- .text.libgcc   0x0000b602       0x3e /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_mulsi3.o)
-                0x0000b602                __mulsi3
- .text.libgcc   0x0000b640       0x44 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodsi4.o)
-                0x0000b640                __udivmodsi4
-                0x0000b684                . = ALIGN (0x2)
+                0x0000b5f0       0xbc /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+                0x0000b5f0                __ultoa_invert
+ .text.libgcc   0x0000b6ac       0x3e /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_mulsi3.o)
+                0x0000b6ac                __mulsi3
+ .text.libgcc   0x0000b6ea       0x44 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodsi4.o)
+                0x0000b6ea                __udivmodsi4
+                0x0000b72e                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000b684        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
-                0x0000b684                exit
-                0x0000b684                _exit
+ .fini9         0x0000b72e        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+                0x0000b72e                exit
+                0x0000b72e                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -1019,11 +1020,11 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000b684        0x4 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ .fini0         0x0000b72e        0x4 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
  *(.fini0)
-                0x0000b688                _etext = .
+                0x0000b732                _etext = .
 
-.data           0x00802000      0x54a load address 0x0000b688
+.data           0x00802000      0x54a load address 0x0000b732
                 0x00802000                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00802000        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
@@ -1148,7 +1149,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
                 0x0080254a                _edata = .
                 0x0080254a                PROVIDE (__data_end, .)
 
-.bss            0x0080254a      0xdfa
+.bss            0x0080254a      0xdfe
                 0x0080254a                PROVIDE (__bss_start, .)
  *(.bss)
  .bss           0x0080254a        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
@@ -1156,146 +1157,147 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
                 0x0080254a                timer100Hz
  .bss           0x0080254b        0x0 configuration.o
  .bss           0x0080254b        0x5 serial.o
- .bss           0x00802550        0x2 hardware.o
- .bss           0x00802552        0x0 sensors_task.o
- .bss           0x00802552        0x0 vty.o
- .bss           0x00802552        0x0 netstack_task.o
- .bss           0x00802552        0x0 cli_task.o
- .bss           0x00802552        0x0 lcd_task.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/lcd.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/spiXmega.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/memory_x.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/ramdysk.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/cmdline.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/xmodem.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/vt100.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/ds1305.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/mpc23s17.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/mcp3008.o
- .bss           0x00802552        0x0 ../../freeRtos/Lib/mcp4150.o
- .bss           0x00802552        0x3 ../../freeRtos/Lib/enc28j60.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/queueStream.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/net/nic.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/net/net.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/net/ip.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/net/icmp.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/net/arp.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/net/tcp.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/net/udp.o
- .bss           0x00802555        0x0 ../../freeRtos/Lib/Rs485_prot.o
- .bss           0x00802555       0x89 ../../freeRtos/Source/tasks.o
-                0x00802555                pxCurrentTCB
- .bss           0x008025de        0x0 ../../freeRtos/Source/queue.o
- .bss           0x008025de        0x0 ../../freeRtos/Source/list.o
- .bss           0x008025de       0x31 ../../freeRtos/Source/croutine.o
-                0x008025de                pxCurrentCoRoutine
- .bss           0x0080260f      0xbba ../../freeRtos/portable/MemMang/heap_avr.o
- .bss           0x008031c9        0x0 ../../freeRtos/portable/GCC/ATXmega/port.o
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodqi4.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodhi4.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(malloc.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strtol.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(isspace.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy_P.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp_P.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memset.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcat.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcpy.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncpy.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fclose.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fgetc.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf_p.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputs.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(iob.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_block_atxmega128a1.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_dword_atxmega128a1.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_word_atxmega128a1.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_block_atxmega128a1.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_byte_atxmega128a1.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_dword_atxmega128a1.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_word_atxmega128a1.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eewr_byte_atxmega128a1.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_byte_atxmega128a1u.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(errno.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(cty_isfalse.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_mulsi3.o)
- .bss           0x008031c9        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodsi4.o)
+ .bss           0x00802550        0x4 hardware.o
+ .bss           0x00802554        0x0 sensors_task.o
+ .bss           0x00802554        0x0 vty.o
+ .bss           0x00802554        0x0 netstack_task.o
+ .bss           0x00802554        0x0 cli_task.o
+ .bss           0x00802554        0x0 lcd_task.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/lcd.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/spiXmega.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/memory_x.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/ramdysk.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/cmdline.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/xmodem.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/vt100.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/ds1305.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/mpc23s17.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/mcp3008.o
+ .bss           0x00802554        0x0 ../../freeRtos/Lib/mcp4150.o
+ .bss           0x00802554        0x3 ../../freeRtos/Lib/enc28j60.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/queueStream.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/net/nic.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/net/net.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/net/ip.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/net/icmp.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/net/arp.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/net/tcp.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/net/udp.o
+ .bss           0x00802557        0x0 ../../freeRtos/Lib/Rs485_prot.o
+ .bss           0x00802557       0x89 ../../freeRtos/Source/tasks.o
+                0x00802557                pxCurrentTCB
+ .bss           0x008025e0        0x0 ../../freeRtos/Source/queue.o
+ .bss           0x008025e0        0x0 ../../freeRtos/Source/list.o
+ .bss           0x008025e0       0x31 ../../freeRtos/Source/croutine.o
+                0x008025e0                pxCurrentCoRoutine
+ .bss           0x00802611      0xbba ../../freeRtos/portable/MemMang/heap_avr.o
+ .bss           0x008031cb        0x0 ../../freeRtos/portable/GCC/ATXmega/port.o
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodqi4.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodhi4.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_exit.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_copy_data.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_clear_bss.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(malloc.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strtol.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(isspace.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy_P.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp_P.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memcpy.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(memset.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcat.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strcpy.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncmp.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strncpy.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fclose.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fgetc.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fprintf_p.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputc.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(fputs.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(iob.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(sprintf.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(vfprintf_std.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_block_atxmega128a1.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_dword_atxmega128a1.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_word_atxmega128a1.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_block_atxmega128a1.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_byte_atxmega128a1.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_dword_atxmega128a1.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eeupd_word_atxmega128a1.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eewr_byte_atxmega128a1.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(eerd_byte_atxmega128a1u.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(errno.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(cty_isfalse.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen_P.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(strnlen.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(ultoa_invert.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_mulsi3.o)
+ .bss           0x008031cb        0x0 /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a(_udivmodsi4.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x008031c9       0xf9 main.o
-                0x008031c9                usbStream
-                0x008031d7                portB
-                0x008031d8                wwwport
-                0x008031d9                xVtyTx
-                0x008031db                udpDbgLevel
-                0x008031dc                nicState
-                0x008031ea                xHandleUSB
-                0x008031ec                arpDebug
-                0x008031ee                udpStream
-                0x008031fc                xRs485Rec
-                0x008031fe                CLIStateSerialUsb
-                0x00803200                lockSensors
-                0x00803202                udpSocket
-                0x00803204                temperature
-                0x00803205                tcpDebugLevel
-                0x00803206                xHandleSensors
-                0x00803208                rollers
-                0x0080320a                icmpDebug
-                0x0080320c                voltage
-                0x0080320d                xVtyRec
-                0x0080320f                xSemaphoreRs485
-                0x00803211                plen
-                0x00803213                xHandleVTY_UDP
-                0x00803215                czasRtc
-                0x0080321c                xHandleVTY_USB
-                0x0080321e                sockets
-                0x00803220                xSemaphoreSpiSS
-                0x00803222                udpDbgStream
-                0x00803224                portA
-                0x00803225                xRs485Tx
-                0x00803227                udpBuffers
-                0x0080322b                klastry
-                0x008032ab                xHandleEnc
-                0x008032ad                icmpDebugLevel
-                0x008032ae                tcpDebugStream
-                0x008032b0                IpMyConfig
-                0x008032bf                arpDebugLevel
-                0x008032c0                CLIStateSerialUdp
- COMMON         0x008032c2        0x2 hardware.o
-                0x008032c2                xSpiRx
- COMMON         0x008032c4        0x6 vty.o
-                0x008032c4                fdVty
- COMMON         0x008032ca       0x6e ../../freeRtos/Lib/net/arp.o
-                0x008032ca                ArpTable
- COMMON         0x00803338        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(malloc.o)
-                0x00803338                __brkval
-                0x0080333a                __flp
- COMMON         0x0080333c        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(iob.o)
-                0x0080333c                __iob
- COMMON         0x00803342        0x2 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(errno.o)
-                0x00803342                errno
-                0x00803344                PROVIDE (__bss_end, .)
-                0x0000b688                __data_load_start = LOADADDR (.data)
-                0x0000bbd2                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x008031cb       0xf9 main.o
+                0x008031cb                usbStream
+                0x008031d9                portB
+                0x008031da                wwwport
+                0x008031db                xVtyTx
+                0x008031dd                udpDbgLevel
+                0x008031de                nicState
+                0x008031ec                xHandleUSB
+                0x008031ee                arpDebug
+                0x008031f0                udpStream
+                0x008031fe                xRs485Rec
+                0x00803200                CLIStateSerialUsb
+                0x00803202                lockSensors
+                0x00803204                udpSocket
+                0x00803206                temperature
+                0x00803207                tcpDebugLevel
+                0x00803208                xHandleSensors
+                0x0080320a                rollers
+                0x0080320c                icmpDebug
+                0x0080320e                voltage
+                0x0080320f                xVtyRec
+                0x00803211                xSemaphoreRs485
+                0x00803213                plen
+                0x00803215                xHandleVTY_UDP
+                0x00803217                czasRtc
+                0x0080321e                xHandleVTY_USB
+                0x00803220                sockets
+                0x00803222                xSemaphoreSpiSS
+                0x00803224                udpDbgStream
+                0x00803226                portA
+                0x00803227                xRs485Tx
+                0x00803229                udpBuffers
+                0x0080322d                klastry
+                0x008032ad                xHandleEnc
+                0x008032af                icmpDebugLevel
+                0x008032b0                tcpDebugStream
+                0x008032b2                IpMyConfig
+                0x008032c1                arpDebugLevel
+                0x008032c2                CLIStateSerialUdp
+ COMMON         0x008032c4        0x4 hardware.o
+                0x008032c4                xSpiRxEnc
+                0x008032c6                xSpiRx
+ COMMON         0x008032c8        0x6 vty.o
+                0x008032c8                fdVty
+ COMMON         0x008032ce       0x6e ../../freeRtos/Lib/net/arp.o
+                0x008032ce                ArpTable
+ COMMON         0x0080333c        0x4 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(malloc.o)
+                0x0080333c                __brkval
+                0x0080333e                __flp
+ COMMON         0x00803340        0x6 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(iob.o)
+                0x00803340                __iob
+ COMMON         0x00803346        0x2 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/libc.a(errno.o)
+                0x00803346                errno
+                0x00803348                PROVIDE (__bss_end, .)
+                0x0000b732                __data_load_start = LOADADDR (.data)
+                0x0000bc7c                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00803344        0x0
-                0x00803344                PROVIDE (__noinit_start, .)
+.noinit         0x00803348        0x0
+                0x00803348                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00803344                PROVIDE (__noinit_end, .)
-                0x00803344                _end = .
-                0x00803344                PROVIDE (__heap_start, .)
+                0x00803348                PROVIDE (__noinit_end, .)
+                0x00803348                _end = .
+                0x00803348                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000       0x32
  *(.eeprom*)
@@ -1317,7 +1319,7 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
 .signature
  *(.signature*)
 
-.stab           0x00000000    0x19bfc
+.stab           0x00000000    0x19cb0
  *(.stab)
  .stab          0x00000000      0x714 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
  .stab          0x00000714     0x1da0 main.o
@@ -1326,76 +1328,76 @@ LOAD /usr/lib/gcc/avr/4.5.3/avrxmega7/libgcc.a
                                0x1b9c (size before relaxing)
  .stab          0x00002a3c      0xdbc serial.o
                                0x2364 (size before relaxing)
- .stab          0x000037f8     0x1020 hardware.o
-                               0x270c (size before relaxing)
- .stab          0x00004818      0x570 sensors_task.o
+ .stab          0x000037f8     0x10d4 hardware.o
+                               0x27c0 (size before relaxing)
+ .stab          0x000048cc      0x570 sensors_task.o
                                0x1c50 (size before relaxing)
- .stab          0x00004d88     0x2820 vty.o
+ .stab          0x00004e3c     0x2820 vty.o
                                0x3f18 (size before relaxing)
- .stab          0x000075a8      0x528 netstack_task.o
+ .stab          0x0000765c      0x528 netstack_task.o
                                0x1c08 (size before relaxing)
- .stab          0x00007ad0      0x390 cli_task.o
+ .stab          0x00007b84      0x390 cli_task.o
                                0x1668 (size before relaxing)
- .stab          0x00007e60      0x210 lcd_task.o
+ .stab          0x00007f14      0x210 lcd_task.o
                                0x138c (size before relaxing)
- .stab          0x00008070      0x798 ../../freeRtos/Lib/lcd.o
+ .stab          0x00008124      0x798 ../../freeRtos/Lib/lcd.o
                                0x1878 (size before relaxing)
- .stab          0x00008808      0x93c ../../freeRtos/Lib/spiXmega.o
+ .stab          0x000088bc      0x93c ../../freeRtos/Lib/spiXmega.o
                                0x2028 (size before relaxing)
- .stab          0x00009144      0x1d4 ../../freeRtos/Lib/memory_x.o
+ .stab          0x000091f8      0x1d4 ../../freeRtos/Lib/memory_x.o
                                 0x240 (size before relaxing)
- .stab          0x00009318     0x1c98 ../../freeRtos/Lib/ramdysk.o
+ .stab          0x000093cc     0x1c98 ../../freeRtos/Lib/ramdysk.o
                                0x3354 (size before relaxing)
- .stab          0x0000afb0     0x156c ../../freeRtos/Lib/cmdline.o
+ .stab          0x0000b064     0x156c ../../freeRtos/Lib/cmdline.o
                                0x2c64 (size before relaxing)
- .stab          0x0000c51c      0x414 ../../freeRtos/Lib/xmodem.o
+ .stab          0x0000c5d0      0x414 ../../freeRtos/Lib/xmodem.o
                                0x1b0c (size before relaxing)
- .stab          0x0000c930      0x60c ../../freeRtos/Lib/vt100.o
+ .stab          0x0000c9e4      0x60c ../../freeRtos/Lib/vt100.o
                                0x1d04 (size before relaxing)
- .stab          0x0000cf3c      0x84c ../../freeRtos/Lib/ds1305.o
+ .stab          0x0000cff0      0x84c ../../freeRtos/Lib/ds1305.o
                                0x1af4 (size before relaxing)
- .stab          0x0000d788      0xd14 ../../freeRtos/Lib/mpc23s17.o
+ .stab          0x0000d83c      0xd14 ../../freeRtos/Lib/mpc23s17.o
                                0x2418 (size before relaxing)
- .stab          0x0000e49c      0x66c ../../freeRtos/Lib/mcp3008.o
+ .stab          0x0000e550      0x66c ../../freeRtos/Lib/mcp3008.o
                                0x1d64 (size before relaxing)
- .stab          0x0000eb08      0x534 ../../freeRtos/Lib/mcp4150.o
+ .stab          0x0000ebbc      0x534 ../../freeRtos/Lib/mcp4150.o
                                0x1c2c (size before relaxing)
- .stab          0x0000f03c     0x1050 ../../freeRtos/Lib/enc28j60.o
+ .stab          0x0000f0f0     0x1050 ../../freeRtos/Lib/enc28j60.o
                                0x2730 (size before relaxing)
- .stab          0x0001008c      0x354 ../../freeRtos/Lib/queueStream.o
+ .stab          0x00010140      0x354 ../../freeRtos/Lib/queueStream.o
                                0x1530 (size before relaxing)
- .stab          0x000103e0      0x4b0 ../../freeRtos/Lib/net/nic.o
+ .stab          0x00010494      0x4b0 ../../freeRtos/Lib/net/nic.o
                                0x168c (size before relaxing)
- .stab          0x00010890      0x744 ../../freeRtos/Lib/net/net.o
+ .stab          0x00010944      0x744 ../../freeRtos/Lib/net/net.o
                                0x18e4 (size before relaxing)
- .stab          0x00010fd4      0xa38 ../../freeRtos/Lib/net/ip.o
+ .stab          0x00011088      0xa38 ../../freeRtos/Lib/net/ip.o
                                0x1dc4 (size before relaxing)
- .stab          0x00011a0c      0x654 ../../freeRtos/Lib/net/icmp.o
+ .stab          0x00011ac0      0x654 ../../freeRtos/Lib/net/icmp.o
                                0x1a04 (size before relaxing)
- .stab          0x00012060      0xa20 ../../freeRtos/Lib/net/arp.o
+ .stab          0x00012114      0xa20 ../../freeRtos/Lib/net/arp.o
                                0x1dd0 (size before relaxing)
- .stab          0x00012a80      0x990 ../../freeRtos/Lib/net/tcp.o
+ .stab          0x00012b34      0x990 ../../freeRtos/Lib/net/tcp.o
                                0x1d40 (size before relaxing)
- .stab          0x00013410      0x8d0 ../../freeRtos/Lib/net/udp.o
+ .stab          0x000134c4      0x8d0 ../../freeRtos/Lib/net/udp.o
                                0x1c74 (size before relaxing)
- .stab          0x00013ce0     0x1a70 ../../freeRtos/Lib/Rs485_prot.o
+ .stab          0x00013d94     0x1a70 ../../freeRtos/Lib/Rs485_prot.o
                                0x315c (size before relaxing)
- .stab          0x00015750     0x1bf0 ../../freeRtos/Source/tasks.o
+ .stab          0x00015804     0x1bf0 ../../freeRtos/Source/tasks.o
                                0x2e8c (size before relaxing)
- .stab          0x00017340     0x1188 ../../freeRtos/Source/queue.o
+ .stab          0x000173f4     0x1188 ../../freeRtos/Source/queue.o
                                0x2334 (size before relaxing)
- .stab          0x000184c8      0x564 ../../freeRtos/Source/list.o
+ .stab          0x0001857c      0x564 ../../freeRtos/Source/list.o
                                0x1764 (size before relaxing)
- .stab          0x00018a2c      0x7bc ../../freeRtos/Source/croutine.o
+ .stab          0x00018ae0      0x7bc ../../freeRtos/Source/croutine.o
                                0x1a1c (size before relaxing)
- .stab          0x000191e8      0x39c ../../freeRtos/portable/MemMang/heap_avr.o
+ .stab          0x0001929c      0x39c ../../freeRtos/portable/MemMang/heap_avr.o
                                0x15fc (size before relaxing)
- .stab          0x00019584      0x678 ../../freeRtos/portable/GCC/ATXmega/port.o
+ .stab          0x00019638      0x678 ../../freeRtos/portable/GCC/ATXmega/port.o
                                0x18cc (size before relaxing)
 
-.stabstr        0x00000000    0x14ce1
+.stabstr        0x00000000    0x14d07
  *(.stabstr)
- .stabstr       0x00000000    0x14ce1 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+ .stabstr       0x00000000    0x14d07 /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
 
 .stab.excl
  *(.stab.excl)
@@ -1760,7 +1762,8 @@ __vector_83                                       /usr/lib/gcc/avr/4.5.3/../../.
 __vector_84                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
 __vector_85                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
 __vector_86                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
-__vector_87                                       /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
+__vector_87                                       hardware.o
+                                                  /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
 __vector_88                                       serial.o
                                                   /usr/lib/gcc/avr/4.5.3/../../../avr/lib/avrxmega7/crtx128a1.o
 __vector_89                                       serial.o
@@ -2426,12 +2429,12 @@ spiGive                                           ../../freeRtos/Lib/spiXmega.o
 spiInit                                           ../../freeRtos/Lib/spiXmega.o
 spiInitENC                                        ../../freeRtos/Lib/spiXmega.o
 spiSend                                           hardware.o
-                                                  ../../freeRtos/Lib/enc28j60.o
                                                   ../../freeRtos/Lib/mcp4150.o
                                                   ../../freeRtos/Lib/mcp3008.o
                                                   ../../freeRtos/Lib/mpc23s17.o
                                                   ../../freeRtos/Lib/ds1305.o
 spiSendENC                                        hardware.o
+                                                  ../../freeRtos/Lib/enc28j60.o
 spiSendSpinBlock                                  hardware.o
 spiSendSpinBlockENC                               hardware.o
 spiSetCPHA                                        ../../freeRtos/Lib/spiXmega.o
@@ -2808,6 +2811,7 @@ xSemaphoreSpiSS                                   ../../freeRtos/Lib/Rs485_prot.
                                                   main.o
 xSerialPortInitMinimal                            serial.o
 xSpiRx                                            hardware.o
+xSpiRxEnc                                         hardware.o
 xTaskCheckForTimeOut                              ../../freeRtos/Source/tasks.o
                                                   ../../freeRtos/Source/queue.o
 xTaskGenericCreate                                ../../freeRtos/Source/tasks.o

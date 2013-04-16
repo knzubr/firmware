@@ -686,33 +686,33 @@
  1089               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 icmp.c
-     /tmp/ccYWfYSX.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccYWfYSX.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccYWfYSX.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccYWfYSX.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccYWfYSX.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccYWfYSX.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccYWfYSX.s:479    .text:00000000 icmpInit
+     /tmp/ccUvzPGp.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccUvzPGp.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccUvzPGp.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccUvzPGp.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccUvzPGp.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccUvzPGp.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccUvzPGp.s:479    .text:00000000 icmpInit
                             *COM*:00000002 icmpDebug
                             *COM*:00000001 icmpDebugLevel
-     /tmp/ccYWfYSX.s:508    .text:0000000e setIcmpDebug
-     /tmp/ccYWfYSX.s:542    .text:0000001c icmpPrintHeader
-     /tmp/ccYWfYSX.s:1056   .progmem.data:00000053 __c.4240
-     /tmp/ccYWfYSX.s:1052   .progmem.data:00000047 __c.4242
-     /tmp/ccYWfYSX.s:1048   .progmem.data:00000044 __c.4244
-     /tmp/ccYWfYSX.s:1044   .progmem.data:00000038 __c.4246
-     /tmp/ccYWfYSX.s:1040   .progmem.data:00000035 __c.4248
-     /tmp/ccYWfYSX.s:1036   .progmem.data:0000002b __c.4250
-     /tmp/ccYWfYSX.s:1032   .progmem.data:0000001e __c.4253
-     /tmp/ccYWfYSX.s:1028   .progmem.data:00000013 __c.4257
-     /tmp/ccYWfYSX.s:1024   .progmem.data:00000010 __c.4260
-     /tmp/ccYWfYSX.s:1020   .progmem.data:00000000 __c.4262
-     /tmp/ccYWfYSX.s:781    .text:000001ba icmpEchoRequest
-     /tmp/ccYWfYSX.s:1064   .progmem.data:00000076 __c.4226
+     /tmp/ccUvzPGp.s:508    .text:0000000e setIcmpDebug
+     /tmp/ccUvzPGp.s:542    .text:0000001c icmpPrintHeader
+     /tmp/ccUvzPGp.s:1056   .progmem.data:00000053 __c.4240
+     /tmp/ccUvzPGp.s:1052   .progmem.data:00000047 __c.4242
+     /tmp/ccUvzPGp.s:1048   .progmem.data:00000044 __c.4244
+     /tmp/ccUvzPGp.s:1044   .progmem.data:00000038 __c.4246
+     /tmp/ccUvzPGp.s:1040   .progmem.data:00000035 __c.4248
+     /tmp/ccUvzPGp.s:1036   .progmem.data:0000002b __c.4250
+     /tmp/ccUvzPGp.s:1032   .progmem.data:0000001e __c.4253
+     /tmp/ccUvzPGp.s:1028   .progmem.data:00000013 __c.4257
+     /tmp/ccUvzPGp.s:1024   .progmem.data:00000010 __c.4260
+     /tmp/ccUvzPGp.s:1020   .progmem.data:00000000 __c.4262
+     /tmp/ccUvzPGp.s:781    .text:000001ba icmpEchoRequest
+     /tmp/ccUvzPGp.s:1064   .progmem.data:00000076 __c.4226
                             *COM*:0000000e nicState
-     /tmp/ccYWfYSX.s:1060   .progmem.data:00000062 __c.4229
-     /tmp/ccYWfYSX.s:946    .text:000002d2 icmpIpIn
-     /tmp/ccYWfYSX.s:1068   .progmem.data:0000008e __c.4221
+     /tmp/ccUvzPGp.s:1060   .progmem.data:00000062 __c.4229
+     /tmp/ccUvzPGp.s:946    .text:000002d2 icmpIpIn
+     /tmp/ccUvzPGp.s:1068   .progmem.data:0000008e __c.4221
                             *COM*:00000001 wwwport
                             *COM*:00000002 plen
                             *COM*:0000000f IpMyConfig

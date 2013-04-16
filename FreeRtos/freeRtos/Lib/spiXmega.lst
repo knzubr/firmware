@@ -501,27 +501,27 @@
  1088               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 spiXmega.c
-     /tmp/cc2Yn77k.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc2Yn77k.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc2Yn77k.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc2Yn77k.s:5      *ABS*:00000034 __CCP__
-     /tmp/cc2Yn77k.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/cc2Yn77k.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/cc2Yn77k.s:562    .text:00000000 spiInit
+     /tmp/ccc5RjiG.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccc5RjiG.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccc5RjiG.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccc5RjiG.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccc5RjiG.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccc5RjiG.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccc5RjiG.s:562    .text:00000000 spiInit
                             *COM*:00000002 xSemaphoreSpiSS
-     /tmp/cc2Yn77k.s:644    .text:0000004e spiInitENC
-     /tmp/cc2Yn77k.s:725    .text:0000009c spiSetCPHA
-     /tmp/cc2Yn77k.s:752    .text:000000a8 spiSetCPHAENC
-     /tmp/cc2Yn77k.s:779    .text:000000b4 spiClearCPHA
-     /tmp/cc2Yn77k.s:806    .text:000000c0 spiClearCPHAENC
-     /tmp/cc2Yn77k.s:833    .text:000000cc spiSetCPOL
-     /tmp/cc2Yn77k.s:860    .text:000000d8 spiSetCPOLENC
-     /tmp/cc2Yn77k.s:887    .text:000000e4 spiClearCPOL
-     /tmp/cc2Yn77k.s:914    .text:000000f0 spiClearCPOLENC
-     /tmp/cc2Yn77k.s:941    .text:000000fc spiTake
-     /tmp/cc2Yn77k.s:971    .text:00000114 spiGive
-     /tmp/cc2Yn77k.s:1002   .text:0000012c spiSend
-     /tmp/cc2Yn77k.s:1024   .text:00000130 spiSendSpinBlock
+     /tmp/ccc5RjiG.s:644    .text:0000004e spiInitENC
+     /tmp/ccc5RjiG.s:725    .text:0000009c spiSetCPHA
+     /tmp/ccc5RjiG.s:752    .text:000000a8 spiSetCPHAENC
+     /tmp/ccc5RjiG.s:779    .text:000000b4 spiClearCPHA
+     /tmp/ccc5RjiG.s:806    .text:000000c0 spiClearCPHAENC
+     /tmp/ccc5RjiG.s:833    .text:000000cc spiSetCPOL
+     /tmp/ccc5RjiG.s:860    .text:000000d8 spiSetCPOLENC
+     /tmp/ccc5RjiG.s:887    .text:000000e4 spiClearCPOL
+     /tmp/ccc5RjiG.s:914    .text:000000f0 spiClearCPOLENC
+     /tmp/ccc5RjiG.s:941    .text:000000fc spiTake
+     /tmp/ccc5RjiG.s:971    .text:00000114 spiGive
+     /tmp/ccc5RjiG.s:1002   .text:0000012c spiSend
+     /tmp/ccc5RjiG.s:1024   .text:00000130 spiSendSpinBlock
                             *COM*:00000001 wwwport
                             *COM*:00000080 klastry
                             *COM*:00000002 rollers

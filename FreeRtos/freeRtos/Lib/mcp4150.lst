@@ -128,15 +128,15 @@
  693               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 mcp4150.c
-     /tmp/cc8VyGGj.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc8VyGGj.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc8VyGGj.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc8VyGGj.s:5      *ABS*:00000034 __CCP__
-     /tmp/cc8VyGGj.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/cc8VyGGj.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/cc8VyGGj.s:565    .text:00000000 enableSpiMCP4150
-     /tmp/cc8VyGGj.s:585    .text:00000002 disableSpiMCP4150
-     /tmp/cc8VyGGj.s:606    .text:00000004 MCP4150_setValue
+     /tmp/ccv7fBkT.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccv7fBkT.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccv7fBkT.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccv7fBkT.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccv7fBkT.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccv7fBkT.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccv7fBkT.s:565    .text:00000000 enableSpiMCP4150
+     /tmp/ccv7fBkT.s:585    .text:00000002 disableSpiMCP4150
+     /tmp/ccv7fBkT.s:606    .text:00000004 MCP4150_setValue
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

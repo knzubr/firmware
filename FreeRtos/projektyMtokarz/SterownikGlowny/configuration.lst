@@ -118,16 +118,16 @@
  684               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 configuration.c
-     /tmp/ccT9Dr27.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccT9Dr27.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccT9Dr27.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccT9Dr27.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccT9Dr27.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccT9Dr27.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccT9Dr27.s:561    .text:00000000 loadConfiguration
+     /tmp/ccNXo3lv.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccNXo3lv.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccNXo3lv.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccNXo3lv.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccNXo3lv.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccNXo3lv.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccNXo3lv.s:561    .text:00000000 loadConfiguration
                             *COM*:00000002 lockSensors
-     /tmp/ccT9Dr27.s:641    .eeprom:00000000 lockerSensorsEEP
-     /tmp/ccT9Dr27.s:590    .text:00000016 saveConfiguration
+     /tmp/ccNXo3lv.s:641    .eeprom:00000000 lockerSensorsEEP
+     /tmp/ccNXo3lv.s:590    .text:00000016 saveConfiguration
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

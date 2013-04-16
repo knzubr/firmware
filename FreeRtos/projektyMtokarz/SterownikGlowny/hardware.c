@@ -9,6 +9,7 @@
 #endif
 
 xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
+xQueueHandle      xSpiRxEnc;
 // napisać funkcje do konfiguracji zew pam s-ram
 void hardwareInit(void)
 {
@@ -165,7 +166,7 @@ uint8_t spiSendENC(uint8_t data)
   uint8_t result; 
   SPIC.DATA = data;
   //SPID.DATA = data; 
-  xQueueReceive(xSpiRx, &result, 10); 
+  xQueueReceive(xSpiRxEnc, &result, 10); 
   return result;
 }
 
@@ -408,7 +409,7 @@ void spiDisableDS1305(void)
 #endif  
 }
 
-/*ISR(SPID_INT_vect)
+ISR(SPID_INT_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
 
@@ -423,7 +424,7 @@ void spiDisableDS1305(void)
   }
   
   //clear SPI interrupt SPI |= 1;
-}*/
+}
 ISR(SPIC_INT_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
@@ -431,7 +432,7 @@ ISR(SPIC_INT_vect)
   static uint8_t data;
   data = SPIC.DATA;//SPDR;
   
-  xQueueSendFromISR(xSpiRx, &data, &xHigherPriorityTaskWoken);
+  xQueueSendFromISR(xSpiRxEnc, &data, &xHigherPriorityTaskWoken);
 
   if( xHigherPriorityTaskWoken )
   {

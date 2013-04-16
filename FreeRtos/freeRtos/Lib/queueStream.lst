@@ -173,15 +173,15 @@
  582               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 queueStream.c
-     /tmp/ccyZWXkz.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccyZWXkz.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccyZWXkz.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccyZWXkz.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccyZWXkz.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccyZWXkz.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccyZWXkz.s:428    .text:00000000 streamQueueInputFun
-     /tmp/ccyZWXkz.s:484    .text:0000003c streamQueueOutputFun
-     /tmp/ccyZWXkz.s:535    .text:00000072 initQueueStream
+     /tmp/ccmIMA41.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccmIMA41.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccmIMA41.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccmIMA41.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccmIMA41.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccmIMA41.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccmIMA41.s:428    .text:00000000 streamQueueInputFun
+     /tmp/ccmIMA41.s:484    .text:0000003c streamQueueOutputFun
+     /tmp/ccmIMA41.s:535    .text:00000072 initQueueStream
 
 UNDEFINED SYMBOLS
 xQueueGenericReceive
