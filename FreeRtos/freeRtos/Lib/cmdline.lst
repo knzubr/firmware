@@ -2173,8 +2173,8 @@
  2278 084e FEB7      		in r31,__SP_H__
  2279 0850 8183      		std Z+1,r24
  2280 0852 9283      		std Z+2,r25
- 2281 0854 80E0      		ldi r24,lo8(__c.5043)
- 2282 0856 90E0      		ldi r25,hi8(__c.5043)
+ 2281 0854 80E0      		ldi r24,lo8(__c.5199)
+ 2282 0856 90E0      		ldi r25,hi8(__c.5199)
  2283 0858 00C0      		rjmp .L98
  2284               	.L94:
  448:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Syntax Error. Use: "));
@@ -2187,8 +2187,8 @@
  2292 0864 FEB7      		in r31,__SP_H__
  2293 0866 8183      		std Z+1,r24
  2294 0868 9283      		std Z+2,r25
- 2295 086a 80E0      		ldi r24,lo8(__c.5047)
- 2296 086c 90E0      		ldi r25,hi8(__c.5047)
+ 2295 086a 80E0      		ldi r24,lo8(__c.5203)
+ 2296 086c 90E0      		ldi r25,hi8(__c.5203)
  2297 086e 8383      		std Z+3,r24
  2298 0870 9483      		std Z+4,r25
  2299 0872 0E94 0000 		call fprintf_P
@@ -2213,8 +2213,8 @@
  2318 0894 FEB7      		in r31,__SP_H__
  2319 0896 8183      		std Z+1,r24
  2320 0898 9283      		std Z+2,r25
- 2321 089a 80E0      		ldi r24,lo8(__c.5049)
- 2322 089c 90E0      		ldi r25,hi8(__c.5049)
+ 2321 089a 80E0      		ldi r24,lo8(__c.5205)
+ 2322 089c 90E0      		ldi r25,hi8(__c.5205)
  2323 089e 8383      		std Z+3,r24
  2324 08a0 9483      		std Z+4,r25
  2325 08a2 0E94 0000 		call fprintf_P
@@ -2239,8 +2239,8 @@
  2344 08c4 FEB7      		in r31,__SP_H__
  2345 08c6 8183      		std Z+1,r24
  2346 08c8 9283      		std Z+2,r25
- 2347 08ca 80E0      		ldi r24,lo8(__c.5051)
- 2348 08cc 90E0      		ldi r25,hi8(__c.5051)
+ 2347 08ca 80E0      		ldi r24,lo8(__c.5207)
+ 2348 08cc 90E0      		ldi r25,hi8(__c.5207)
  2349 08ce 00C0      		rjmp .L98
  2350               	.L95:
  455:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Operation failed\r\n"));
@@ -2253,8 +2253,8 @@
  2358 08da FEB7      		in r31,__SP_H__
  2359 08dc 8183      		std Z+1,r24
  2360 08de 9283      		std Z+2,r25
- 2361 08e0 80E0      		ldi r24,lo8(__c.5054)
- 2362 08e2 90E0      		ldi r25,hi8(__c.5054)
+ 2361 08e0 80E0      		ldi r24,lo8(__c.5210)
+ 2362 08e2 90E0      		ldi r25,hi8(__c.5210)
  2363 08e4 00C0      		rjmp .L98
  2364               	.L100:
  458:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Operation not allowed\r\n"));
@@ -2267,8 +2267,8 @@
  2372 08f0 FEB7      		in r31,__SP_H__
  2373 08f2 8183      		std Z+1,r24
  2374 08f4 9283      		std Z+2,r25
- 2375 08f6 80E0      		ldi r24,lo8(__c.5057)
- 2376 08f8 90E0      		ldi r25,hi8(__c.5057)
+ 2375 08f6 80E0      		ldi r24,lo8(__c.5213)
+ 2376 08f8 90E0      		ldi r25,hi8(__c.5213)
  2377               	.L98:
  2378 08fa 8383      		std Z+3,r24
  2379 08fc 9483      		std Z+4,r25
@@ -2531,16 +2531,16 @@
  585:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, tmp.commandStr);
  586:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, PSTR("\t"));
  2649               	.LM242:
- 2650 09fe 90E0      		ldi r25,lo8(__c.5145)
+ 2650 09fe 90E0      		ldi r25,lo8(__c.5301)
  2651 0a00 A92E      		mov r10,r25
- 2652 0a02 90E0      		ldi r25,hi8(__c.5145)
+ 2652 0a02 90E0      		ldi r25,hi8(__c.5301)
  2653 0a04 B92E      		mov r11,r25
  587:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, tmp.commandHelpStr);
  588:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, PSTR("\r\n"));
  2655               	.LM243:
- 2656 0a06 80E0      		ldi r24,lo8(__c.5147)
+ 2656 0a06 80E0      		ldi r24,lo8(__c.5303)
  2657 0a08 882E      		mov r8,r24
- 2658 0a0a 80E0      		ldi r24,hi8(__c.5147)
+ 2658 0a0a 80E0      		ldi r24,hi8(__c.5303)
  2659 0a0c 982E      		mov r9,r24
  589:../../freeRtos/Lib/cmdline.c **** 
  590:../../freeRtos/Lib/cmdline.c ****     tmpPtr++;
@@ -2694,33 +2694,33 @@
  2817               		.comm tcpDebugLevel,1,1
  2818               		.comm sockets,2,1
  2819               		.comm czasRtc,7,1
- 2822               	__c.5147:
+ 2822               	__c.5303:
  2823 0024 0D0A 00   		.string	"\r\n"
- 2826               	__c.5145:
+ 2826               	__c.5301:
  2827 0027 0900      		.string	"\t"
- 2830               	__c.5057:
+ 2830               	__c.5213:
  2831 0029 4F70 6572 		.string	"Operation not allowed\r\n"
  2831      6174 696F 
  2831      6E20 6E6F 
  2831      7420 616C 
  2831      6C6F 7765 
- 2834               	__c.5054:
+ 2834               	__c.5210:
  2835 0041 4F70 6572 		.string	"Operation failed\r\n"
  2835      6174 696F 
  2835      6E20 6661 
  2835      696C 6564 
  2835      0D0A 00
- 2838               	__c.5051:
+ 2838               	__c.5207:
  2839 0054 0D0A 00   		.string	"\r\n"
- 2842               	__c.5049:
+ 2842               	__c.5205:
  2843 0057 2000      		.string	" "
- 2846               	__c.5047:
+ 2846               	__c.5203:
  2847 0059 5379 6E74 		.string	"Syntax Error. Use: "
  2847      6178 2045 
  2847      7272 6F72 
  2847      2E20 5573 
  2847      653A 2000 
- 2850               	__c.5043:
+ 2850               	__c.5199:
  2851 006d 4F4B 0D0A 		.string	"OK\r\n"
  2851      00
  2852               		.data
@@ -2734,38 +2734,38 @@
  2890               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 cmdline.c
-     /tmp/ccycUSsQ.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccycUSsQ.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccycUSsQ.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccycUSsQ.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccycUSsQ.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccycUSsQ.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccycUSsQ.s:563    .text:00000000 cmdlinePrintPrompt
-     /tmp/ccycUSsQ.s:2855   .data:00000000 CSWTCH.2
-     /tmp/ccycUSsQ.s:2776   .progmem.data:00000000 CmdlinePromptNormal
-     /tmp/ccycUSsQ.s:656    .text:00000056 cmdlineRepaint
-     /tmp/ccycUSsQ.s:768    .text:000000d4 cmdlineDoHistory
-     /tmp/ccycUSsQ.s:935    .text:000001a0 cmdHistoryCopy
-     /tmp/ccycUSsQ.s:1014   .text:000001ec cmdStateConfigure
-     /tmp/ccycUSsQ.s:1130   .text:00000274 cmdlineInputFunc
-     /tmp/ccycUSsQ.s:2791   .progmem.data:00000015 CmdlineNotice
-     /tmp/ccycUSsQ.s:2796   .progmem.data:0000001f CmdlineCmdNotFound
-     /tmp/ccycUSsQ.s:2147   .text:000007d0 cmdLineGetLastArgIdx
-     /tmp/ccycUSsQ.s:2216   .text:000007fa cmdlineMainLoop
-     /tmp/ccycUSsQ.s:2850   .progmem.data:0000006d __c.5043
-     /tmp/ccycUSsQ.s:2846   .progmem.data:00000059 __c.5047
-     /tmp/ccycUSsQ.s:2842   .progmem.data:00000057 __c.5049
-     /tmp/ccycUSsQ.s:2838   .progmem.data:00000054 __c.5051
-     /tmp/ccycUSsQ.s:2834   .progmem.data:00000041 __c.5054
-     /tmp/ccycUSsQ.s:2830   .progmem.data:00000029 __c.5057
-     /tmp/ccycUSsQ.s:2425   .text:00000926 cmdlineGetArgStr
-     /tmp/ccycUSsQ.s:2519   .text:00000972 cmdlineGetArgInt
-     /tmp/ccycUSsQ.s:2563   .text:0000099a cmdlineGetArgHex
-     /tmp/ccycUSsQ.s:2606   .text:000009c2 cmdPrintHelp
-     /tmp/ccycUSsQ.s:2826   .progmem.data:00000027 __c.5145
-     /tmp/ccycUSsQ.s:2822   .progmem.data:00000024 __c.5147
-     /tmp/ccycUSsQ.s:2781   .progmem.data:00000007 CmdlinePromptEnable
-     /tmp/ccycUSsQ.s:2786   .progmem.data:0000000e CmdlinePromptConfigure
+     /tmp/ccfIUZ3H.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccfIUZ3H.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccfIUZ3H.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccfIUZ3H.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccfIUZ3H.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccfIUZ3H.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccfIUZ3H.s:563    .text:00000000 cmdlinePrintPrompt
+     /tmp/ccfIUZ3H.s:2855   .data:00000000 CSWTCH.2
+     /tmp/ccfIUZ3H.s:2776   .progmem.data:00000000 CmdlinePromptNormal
+     /tmp/ccfIUZ3H.s:656    .text:00000056 cmdlineRepaint
+     /tmp/ccfIUZ3H.s:768    .text:000000d4 cmdlineDoHistory
+     /tmp/ccfIUZ3H.s:935    .text:000001a0 cmdHistoryCopy
+     /tmp/ccfIUZ3H.s:1014   .text:000001ec cmdStateConfigure
+     /tmp/ccfIUZ3H.s:1130   .text:00000274 cmdlineInputFunc
+     /tmp/ccfIUZ3H.s:2791   .progmem.data:00000015 CmdlineNotice
+     /tmp/ccfIUZ3H.s:2796   .progmem.data:0000001f CmdlineCmdNotFound
+     /tmp/ccfIUZ3H.s:2147   .text:000007d0 cmdLineGetLastArgIdx
+     /tmp/ccfIUZ3H.s:2216   .text:000007fa cmdlineMainLoop
+     /tmp/ccfIUZ3H.s:2850   .progmem.data:0000006d __c.5199
+     /tmp/ccfIUZ3H.s:2846   .progmem.data:00000059 __c.5203
+     /tmp/ccfIUZ3H.s:2842   .progmem.data:00000057 __c.5205
+     /tmp/ccfIUZ3H.s:2838   .progmem.data:00000054 __c.5207
+     /tmp/ccfIUZ3H.s:2834   .progmem.data:00000041 __c.5210
+     /tmp/ccfIUZ3H.s:2830   .progmem.data:00000029 __c.5213
+     /tmp/ccfIUZ3H.s:2425   .text:00000926 cmdlineGetArgStr
+     /tmp/ccfIUZ3H.s:2519   .text:00000972 cmdlineGetArgInt
+     /tmp/ccfIUZ3H.s:2563   .text:0000099a cmdlineGetArgHex
+     /tmp/ccfIUZ3H.s:2606   .text:000009c2 cmdPrintHelp
+     /tmp/ccfIUZ3H.s:2826   .progmem.data:00000027 __c.5301
+     /tmp/ccfIUZ3H.s:2822   .progmem.data:00000024 __c.5303
+     /tmp/ccfIUZ3H.s:2781   .progmem.data:00000007 CmdlinePromptEnable
+     /tmp/ccfIUZ3H.s:2786   .progmem.data:0000000e CmdlinePromptConfigure
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

@@ -19,7 +19,7 @@
 #define DS1305_H
 
 #include <inttypes.h>
-#include "spi.h"
+#include "spiXmega.h"
 #include "hardwareConfig.h"
 
 

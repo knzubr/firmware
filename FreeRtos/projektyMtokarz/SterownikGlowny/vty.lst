@@ -1730,8 +1730,8 @@
  1425 040a 2D93      		st X+,r18
  1426 040c 3C93      		st X,r19
  1427 040e 1297      		sbiw r26,1+1
- 1428 0410 20E0      		ldi r18,lo8(__c.5194)
- 1429 0412 30E0      		ldi r19,hi8(__c.5194)
+ 1428 0410 20E0      		ldi r18,lo8(__c.5350)
+ 1429 0412 30E0      		ldi r19,hi8(__c.5350)
  1430 0414 2283      		std Z+2,r18
  1431 0416 3383      		std Z+3,r19
  1432 0418 6981      		ldd r22,Y+1
@@ -2618,8 +2618,8 @@
  2370 0924 FEB7      		in r31,__SP_H__
  2371 0926 8183      		std Z+1,r24
  2372 0928 9283      		std Z+2,r25
- 2373 092a 80E0      		ldi r24,lo8(__c.5245)
- 2374 092c 90E0      		ldi r25,hi8(__c.5245)
+ 2373 092a 80E0      		ldi r24,lo8(__c.5401)
+ 2374 092c 90E0      		ldi r25,hi8(__c.5401)
  2375 092e 8383      		std Z+3,r24
  2376 0930 9483      		std Z+4,r25
  2377 0932 0E94 0000 		call fprintf_P
@@ -3498,8 +3498,8 @@
  3084 0cfc 00C0      		rjmp .L96
  311:vty.c         ****     if (strncmp_P(str, PSTR("arp"), 3) == 0)
  3086               	.LM295:
- 3087 0cfe 60E0      		ldi r22,lo8(__c.5141)
- 3088 0d00 70E0      		ldi r23,hi8(__c.5141)
+ 3087 0cfe 60E0      		ldi r22,lo8(__c.5297)
+ 3088 0d00 70E0      		ldi r23,hi8(__c.5297)
  3089 0d02 43E0      		ldi r20,lo8(3)
  3090 0d04 50E0      		ldi r21,hi8(3)
  3091 0d06 0E94 0000 		call strncmp_P
@@ -3516,8 +3516,8 @@
  318:vty.c         ****     if (strncmp_P(str, PSTR("ip"), 2) == 0)
  3103               	.LM297:
  3104 0d1a CE01      		movw r24,r28
- 3105 0d1c 60E0      		ldi r22,lo8(__c.5143)
- 3106 0d1e 70E0      		ldi r23,hi8(__c.5143)
+ 3105 0d1c 60E0      		ldi r22,lo8(__c.5299)
+ 3106 0d1e 70E0      		ldi r23,hi8(__c.5299)
  3107 0d20 42E0      		ldi r20,lo8(2)
  3108 0d22 50E0      		ldi r21,hi8(2)
  3109 0d24 0E94 0000 		call strncmp_P
@@ -3534,8 +3534,8 @@
  325:vty.c         ****     if (strncmp_P(str, PSTR("icmp"), 2) == 0)
  3121               	.LM299:
  3122 0d38 CE01      		movw r24,r28
- 3123 0d3a 60E0      		ldi r22,lo8(__c.5145)
- 3124 0d3c 70E0      		ldi r23,hi8(__c.5145)
+ 3123 0d3a 60E0      		ldi r22,lo8(__c.5301)
+ 3124 0d3c 70E0      		ldi r23,hi8(__c.5301)
  3125 0d3e 42E0      		ldi r20,lo8(2)
  3126 0d40 50E0      		ldi r21,hi8(2)
  3127 0d42 0E94 0000 		call strncmp_P
@@ -3552,8 +3552,8 @@
  332:vty.c         ****     if (strncmp_P(str, PSTR("tcp"), 2) == 0)
  3139               	.LM301:
  3140 0d56 CE01      		movw r24,r28
- 3141 0d58 60E0      		ldi r22,lo8(__c.5147)
- 3142 0d5a 70E0      		ldi r23,hi8(__c.5147)
+ 3141 0d58 60E0      		ldi r22,lo8(__c.5303)
+ 3142 0d5a 70E0      		ldi r23,hi8(__c.5303)
  3143 0d5c 42E0      		ldi r20,lo8(2)
  3144 0d5e 50E0      		ldi r21,hi8(2)
  3145 0d60 0E94 0000 		call strncmp_P
@@ -3570,8 +3570,8 @@
  339:vty.c         ****     if (strncmp_P(str, PSTR("udp"), 2) == 0)
  3157               	.LM303:
  3158 0d74 CE01      		movw r24,r28
- 3159 0d76 60E0      		ldi r22,lo8(__c.5149)
- 3160 0d78 70E0      		ldi r23,hi8(__c.5149)
+ 3159 0d76 60E0      		ldi r22,lo8(__c.5305)
+ 3160 0d78 70E0      		ldi r23,hi8(__c.5305)
  3161 0d7a 42E0      		ldi r20,lo8(2)
  3162 0d7c 50E0      		ldi r21,hi8(2)
  3163 0d7e 0E94 0000 		call strncmp_P
@@ -3609,8 +3609,8 @@
  3195               	.L96:
  350:vty.c         ****     if (strncmp_P(str, PSTR("arp"), 3) == 0)
  3197               	.LM306:
- 3198 0db8 60E0      		ldi r22,lo8(__c.5151)
- 3199 0dba 70E0      		ldi r23,hi8(__c.5151)
+ 3198 0db8 60E0      		ldi r22,lo8(__c.5307)
+ 3199 0dba 70E0      		ldi r23,hi8(__c.5307)
  3200 0dbc 43E0      		ldi r20,lo8(3)
  3201 0dbe 50E0      		ldi r21,hi8(3)
  3202 0dc0 0E94 0000 		call strncmp_P
@@ -3630,8 +3630,8 @@
  357:vty.c         ****     if (strncmp_P(str, PSTR("ip"), 2) == 0)
  3217               	.LM308:
  3218 0dda CE01      		movw r24,r28
- 3219 0ddc 60E0      		ldi r22,lo8(__c.5153)
- 3220 0dde 70E0      		ldi r23,hi8(__c.5153)
+ 3219 0ddc 60E0      		ldi r22,lo8(__c.5309)
+ 3220 0dde 70E0      		ldi r23,hi8(__c.5309)
  3221 0de0 42E0      		ldi r20,lo8(2)
  3222 0de2 50E0      		ldi r21,hi8(2)
  3223 0de4 0E94 0000 		call strncmp_P
@@ -3651,8 +3651,8 @@
  364:vty.c         ****     if (strncmp_P(str, PSTR("icmp"), 2) == 0)
  3238               	.LM310:
  3239 0dfe CE01      		movw r24,r28
- 3240 0e00 60E0      		ldi r22,lo8(__c.5155)
- 3241 0e02 70E0      		ldi r23,hi8(__c.5155)
+ 3240 0e00 60E0      		ldi r22,lo8(__c.5311)
+ 3241 0e02 70E0      		ldi r23,hi8(__c.5311)
  3242 0e04 42E0      		ldi r20,lo8(2)
  3243 0e06 50E0      		ldi r21,hi8(2)
  3244 0e08 0E94 0000 		call strncmp_P
@@ -3672,8 +3672,8 @@
  371:vty.c         ****     if (strncmp_P(str, PSTR("tcp"), 2) == 0)
  3259               	.LM312:
  3260 0e22 CE01      		movw r24,r28
- 3261 0e24 60E0      		ldi r22,lo8(__c.5157)
- 3262 0e26 70E0      		ldi r23,hi8(__c.5157)
+ 3261 0e24 60E0      		ldi r22,lo8(__c.5313)
+ 3262 0e26 70E0      		ldi r23,hi8(__c.5313)
  3263 0e28 42E0      		ldi r20,lo8(2)
  3264 0e2a 50E0      		ldi r21,hi8(2)
  3265 0e2c 0E94 0000 		call strncmp_P
@@ -3693,8 +3693,8 @@
  378:vty.c         ****     if (strncmp_P(str, PSTR("udp"), 2) == 0)
  3280               	.LM314:
  3281 0e46 CE01      		movw r24,r28
- 3282 0e48 60E0      		ldi r22,lo8(__c.5159)
- 3283 0e4a 70E0      		ldi r23,hi8(__c.5159)
+ 3282 0e48 60E0      		ldi r22,lo8(__c.5315)
+ 3283 0e4a 70E0      		ldi r23,hi8(__c.5315)
  3284 0e4c 42E0      		ldi r20,lo8(2)
  3285 0e4e 50E0      		ldi r21,hi8(2)
  3286 0e50 0E94 0000 		call strncmp_P
@@ -4060,8 +4060,8 @@
  3672 1064 8D93      		st X+,r24
  3673 1066 9C93      		st X,r25
  3674 1068 1297      		sbiw r26,1+1
- 3675 106a 80E0      		ldi r24,lo8(__c.5134)
- 3676 106c 90E0      		ldi r25,hi8(__c.5134)
+ 3675 106a 80E0      		ldi r24,lo8(__c.5290)
+ 3676 106c 90E0      		ldi r25,hi8(__c.5290)
  3677 106e 8283      		std Z+2,r24
  3678 1070 9383      		std Z+3,r25
  295:vty.c         ****   uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
@@ -4589,8 +4589,8 @@
  4249 12de 8D93      		st X+,r24
  4250 12e0 9C93      		st X,r25
  4251 12e2 1297      		sbiw r26,1+1
- 4252 12e4 80E0      		ldi r24,lo8(__c.5110)
- 4253 12e6 90E0      		ldi r25,hi8(__c.5110)
+ 4252 12e4 80E0      		ldi r24,lo8(__c.5266)
+ 4253 12e6 90E0      		ldi r25,hi8(__c.5266)
  4254 12e8 1396      		adiw r26,3
  4255 12ea 8D93      		st X+,r24
  4256 12ec 9C93      		st X,r25
@@ -4824,8 +4824,8 @@
  4484 14a6 FEB7      		in r31,__SP_H__
  4485 14a8 C183      		std Z+1,r28
  4486 14aa D283      		std Z+2,r29
- 4487 14ac 80E0      		ldi r24,lo8(__c.5113)
- 4488 14ae 90E0      		ldi r25,hi8(__c.5113)
+ 4487 14ac 80E0      		ldi r24,lo8(__c.5269)
+ 4488 14ae 90E0      		ldi r25,hi8(__c.5269)
  4489 14b0 8383      		std Z+3,r24
  4490 14b2 9483      		std Z+4,r25
  4491 14b4 0E94 0000 		call fprintf_P
@@ -4868,8 +4868,8 @@
  4528 14fa CD93      		st X+,r28
  4529 14fc DC93      		st X,r29
  4530 14fe 1297      		sbiw r26,1+1
- 4531 1500 80E0      		ldi r24,lo8(__c.5115)
- 4532 1502 90E0      		ldi r25,hi8(__c.5115)
+ 4531 1500 80E0      		ldi r24,lo8(__c.5271)
+ 4532 1502 90E0      		ldi r25,hi8(__c.5271)
  4533 1504 1396      		adiw r26,3
  4534 1506 8D93      		st X+,r24
  4535 1508 9C93      		st X,r25
@@ -4910,8 +4910,8 @@
  4570 154a FEB7      		in r31,__SP_H__
  4571 154c C183      		std Z+1,r28
  4572 154e D283      		std Z+2,r29
- 4573 1550 80E0      		ldi r24,lo8(__c.5117)
- 4574 1552 90E0      		ldi r25,hi8(__c.5117)
+ 4573 1550 80E0      		ldi r24,lo8(__c.5273)
+ 4574 1552 90E0      		ldi r25,hi8(__c.5273)
  4575 1554 8383      		std Z+3,r24
  4576 1556 9483      		std Z+4,r25
  4577 1558 0E94 0000 		call fprintf_P
@@ -4954,8 +4954,8 @@
  4614 159e CD93      		st X+,r28
  4615 15a0 DC93      		st X,r29
  4616 15a2 1297      		sbiw r26,1+1
- 4617 15a4 80E0      		ldi r24,lo8(__c.5119)
- 4618 15a6 90E0      		ldi r25,hi8(__c.5119)
+ 4617 15a4 80E0      		ldi r24,lo8(__c.5275)
+ 4618 15a6 90E0      		ldi r25,hi8(__c.5275)
  4619 15a8 1396      		adiw r26,3
  4620 15aa 8D93      		st X+,r24
  4621 15ac 9C93      		st X,r25
@@ -6008,56 +6008,56 @@
  5619               		.comm sockets,2,1
  5620               		.comm czasRtc,7,1
  5621               		.comm fdVty,6,1
- 5624               	__c.5194:
+ 5624               	__c.5350:
  5625 04ec 5761 7274 		.string	"Wartosc probki na wejsciu %d: %d\r\n"
  5625      6F73 6320 
  5625      7072 6F62 
  5625      6B69 206E 
  5625      6120 7765 
- 5628               	__c.5245:
+ 5628               	__c.5401:
  5629 050f 586D 6F64 		.string	"Xmodem: rozpoczynanie odbioru\r\n"
  5629      656D 3A20 
  5629      726F 7A70 
  5629      6F63 7A79 
  5629      6E61 6E69 
- 5632               	__c.5159:
+ 5632               	__c.5315:
  5633 052f 7564 7000 		.string	"udp"
- 5636               	__c.5157:
+ 5636               	__c.5313:
  5637 0533 7463 7000 		.string	"tcp"
- 5640               	__c.5155:
+ 5640               	__c.5311:
  5641 0537 6963 6D70 		.string	"icmp"
  5641      00
- 5644               	__c.5153:
+ 5644               	__c.5309:
  5645 053c 6970 00   		.string	"ip"
- 5648               	__c.5151:
+ 5648               	__c.5307:
  5649 053f 6172 7000 		.string	"arp"
- 5652               	__c.5149:
+ 5652               	__c.5305:
  5653 0543 7564 7000 		.string	"udp"
- 5656               	__c.5147:
+ 5656               	__c.5303:
  5657 0547 7463 7000 		.string	"tcp"
- 5660               	__c.5145:
+ 5660               	__c.5301:
  5661 054b 6963 6D70 		.string	"icmp"
  5661      00
- 5664               	__c.5143:
+ 5664               	__c.5299:
  5665 0550 6970 00   		.string	"ip"
- 5668               	__c.5141:
+ 5668               	__c.5297:
  5669 0553 6172 7000 		.string	"arp"
- 5672               	__c.5134:
+ 5672               	__c.5290:
  5673 0557 416B 7475 		.string	"Aktualny czas %d:%d:%d\r\n"
  5673      616C 6E79 
  5673      2063 7A61 
  5673      7320 2564 
  5673      3A25 643A 
- 5676               	__c.5119:
+ 5676               	__c.5275:
  5677 0570 0D0A 00   		.string	"\r\n"
- 5680               	__c.5117:
+ 5680               	__c.5273:
  5681 0573 0D0A 00   		.string	"\r\n"
- 5684               	__c.5115:
+ 5684               	__c.5271:
  5685 0576 0D0A 00   		.string	"\r\n"
- 5688               	__c.5113:
+ 5688               	__c.5269:
  5689 0579 0D0A 00   		.string	"\r\n"
- 5692               	__c.5110:
- 5693 057c 4672 6565 		.string	"FreeRtos+ ver 0.31 build: Apr  3 2013, 22:07:38\r\n"
+ 5692               	__c.5266:
+ 5693 057c 4672 6565 		.string	"FreeRtos+ ver 0.31 build: Apr 14 2013, 20:28:21\r\n"
  5693      5274 6F73 
  5693      2B20 7665 
  5693      7220 302E 
@@ -6070,173 +6070,173 @@
  5828               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 vty.c
-     /tmp/ccHb5T0M.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccHb5T0M.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccHb5T0M.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccHb5T0M.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccHb5T0M.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccHb5T0M.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccHb5T0M.s:563    .text:00000000 enableFunction
-     /tmp/ccHb5T0M.s:5479   .data:0000041a cmdListEnable
-     /tmp/ccHb5T0M.s:611    .text:00000022 disableFunction
-     /tmp/ccHb5T0M.s:5447   .progmem.data:00000468 cmdListNormal
-     /tmp/ccHb5T0M.s:649    .text:0000003a configureModeFunction
-     /tmp/ccHb5T0M.s:5559   .progmem.data:0000049e cmdListConfigure
-     /tmp/ccHb5T0M.s:697    .text:0000005c saveConfigFunction
-     /tmp/ccHb5T0M.s:722    .text:00000066 setMacAddrFunction
+     /tmp/ccQF0y5s.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccQF0y5s.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccQF0y5s.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccQF0y5s.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccQF0y5s.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccQF0y5s.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccQF0y5s.s:563    .text:00000000 enableFunction
+     /tmp/ccQF0y5s.s:5479   .data:0000041a cmdListEnable
+     /tmp/ccQF0y5s.s:611    .text:00000022 disableFunction
+     /tmp/ccQF0y5s.s:5447   .progmem.data:00000468 cmdListNormal
+     /tmp/ccQF0y5s.s:649    .text:0000003a configureModeFunction
+     /tmp/ccQF0y5s.s:5559   .progmem.data:0000049e cmdListConfigure
+     /tmp/ccQF0y5s.s:697    .text:0000005c saveConfigFunction
+     /tmp/ccQF0y5s.s:722    .text:00000066 setMacAddrFunction
                             *COM*:0000000e nicState
-     /tmp/ccHb5T0M.s:805    .text:000000d4 pingFunction
-     /tmp/ccHb5T0M.s:867    .text:00000112 setUdpFunction
+     /tmp/ccQF0y5s.s:805    .text:000000d4 pingFunction
+     /tmp/ccQF0y5s.s:867    .text:00000112 setUdpFunction
                             *COM*:00000002 udpSocket
-     /tmp/ccHb5T0M.s:1051   .text:00000222 setIpGwFunction
-     /tmp/ccHb5T0M.s:1185   .text:000002d6 setIpMaskFunction
-     /tmp/ccHb5T0M.s:1245   .text:00000314 setIpFunction
-     /tmp/ccHb5T0M.s:1379   .text:000003c8 czytajAC_Function
-     /tmp/ccHb5T0M.s:5624   .progmem.data:000004ec __c.5194
-     /tmp/ccHb5T0M.s:1461   .text:00000440 setTimeFunction
+     /tmp/ccQF0y5s.s:1051   .text:00000222 setIpGwFunction
+     /tmp/ccQF0y5s.s:1185   .text:000002d6 setIpMaskFunction
+     /tmp/ccQF0y5s.s:1245   .text:00000314 setIpFunction
+     /tmp/ccQF0y5s.s:1379   .text:000003c8 czytajAC_Function
+     /tmp/ccQF0y5s.s:5624   .progmem.data:000004ec __c.5350
+     /tmp/ccQF0y5s.s:1461   .text:00000440 setTimeFunction
                             *COM*:00000007 czasRtc
-     /tmp/ccHb5T0M.s:1609   .text:00000516 ustawPortRezystor
-     /tmp/ccHb5T0M.s:1656   .text:0000053a ustawPortExtBFunction
-     /tmp/ccHb5T0M.s:1696   .text:0000055e ustawPortExtAFunction
-     /tmp/ccHb5T0M.s:1736   .text:00000582 curtainDownFunction
-     /tmp/ccHb5T0M.s:5022   .progmem.data:0000030a movingCurtainDownStr
-     /tmp/ccHb5T0M.s:5027   .progmem.data:0000033d movingCurtainPosStr
-     /tmp/ccHb5T0M.s:1887   .text:0000065c curtainUpFunction
-     /tmp/ccHb5T0M.s:5017   .progmem.data:000002d7 movingCurtainUpStr
-     /tmp/ccHb5T0M.s:2062   .text:00000752 goXmodemWyslijFunction
-     /tmp/ccHb5T0M.s:5012   .progmem.data:000002ba xwyslijStartStr
+     /tmp/ccQF0y5s.s:1609   .text:00000516 ustawPortRezystor
+     /tmp/ccQF0y5s.s:1656   .text:0000053a ustawPortExtBFunction
+     /tmp/ccQF0y5s.s:1696   .text:0000055e ustawPortExtAFunction
+     /tmp/ccQF0y5s.s:1736   .text:00000582 curtainDownFunction
+     /tmp/ccQF0y5s.s:5022   .progmem.data:0000030a movingCurtainDownStr
+     /tmp/ccQF0y5s.s:5027   .progmem.data:0000033d movingCurtainPosStr
+     /tmp/ccQF0y5s.s:1887   .text:0000065c curtainUpFunction
+     /tmp/ccQF0y5s.s:5017   .progmem.data:000002d7 movingCurtainUpStr
+     /tmp/ccQF0y5s.s:2062   .text:00000752 goXmodemWyslijFunction
+     /tmp/ccQF0y5s.s:5012   .progmem.data:000002ba xwyslijStartStr
                             *COM*:00000006 fdVty
-     /tmp/ccHb5T0M.s:4917   .progmem.data:000000ba errorOpenFile
-     /tmp/ccHb5T0M.s:2166   .text:000007ee editRamFileFunction
-     /tmp/ccHb5T0M.s:5002   .progmem.data:00000280 editRamFileIntroStr
-     /tmp/ccHb5T0M.s:2327   .text:000008e4 goXmodemOdbierzFunction
-     /tmp/ccHb5T0M.s:5628   .progmem.data:0000050f __c.5245
-     /tmp/ccHb5T0M.s:3044   .text:00000cca debugFunction
-     /tmp/ccHb5T0M.s:5668   .progmem.data:00000553 __c.5141
-     /tmp/ccHb5T0M.s:5664   .progmem.data:00000550 __c.5143
-     /tmp/ccHb5T0M.s:5660   .progmem.data:0000054b __c.5145
-     /tmp/ccHb5T0M.s:5656   .progmem.data:00000547 __c.5147
-     /tmp/ccHb5T0M.s:5652   .progmem.data:00000543 __c.5149
-     /tmp/ccHb5T0M.s:5037   .progmem.data:00000360 debugDisabledInfoStr
-     /tmp/ccHb5T0M.s:5648   .progmem.data:0000053f __c.5151
-     /tmp/ccHb5T0M.s:5644   .progmem.data:0000053c __c.5153
-     /tmp/ccHb5T0M.s:5640   .progmem.data:00000537 __c.5155
-     /tmp/ccHb5T0M.s:5636   .progmem.data:00000533 __c.5157
-     /tmp/ccHb5T0M.s:5632   .progmem.data:0000052f __c.5159
-     /tmp/ccHb5T0M.s:5032   .progmem.data:0000034d debugEnabledInfoStr
-     /tmp/ccHb5T0M.s:3361   .text:00000eba statusEncFunction
-     /tmp/ccHb5T0M.s:3389   .text:00000eca readRamFIleFunction
-     /tmp/ccHb5T0M.s:5007   .progmem.data:000002a8 readRamFIleLenStr
-     /tmp/ccHb5T0M.s:5421   .progmem.data:00000423 nlStr
-     /tmp/ccHb5T0M.s:3588   .text:00000ffc writeRamFileFunction
-     /tmp/ccHb5T0M.s:3616   .text:0000100c pokazCzasFunction
-     /tmp/ccHb5T0M.s:5672   .progmem.data:00000557 __c.5134
-     /tmp/ccHb5T0M.s:3736   .text:000010ba helpFunction
-     /tmp/ccHb5T0M.s:3763   .text:000010c4 VtyInit
-     /tmp/ccHb5T0M.s:3801   .text:000010e6 printErrorInfo
-     /tmp/ccHb5T0M.s:5431   .progmem.data:00000450 errorStrings
-     /tmp/ccHb5T0M.s:3894   .text:00001152 eraseRamFileFunction
-     /tmp/ccHb5T0M.s:3943   .text:00001180 dodajRamPlikFunction
-     /tmp/ccHb5T0M.s:4002   .text:000011b8 flashExModuleFunction
-     /tmp/ccHb5T0M.s:4145   .text:00001270 rpingFunction
-     /tmp/ccHb5T0M.s:4230   .text:000012ce printStatus
-     /tmp/ccHb5T0M.s:5692   .progmem.data:0000057c __c.5110
-     /tmp/ccHb5T0M.s:4922   .progmem.data:000000cf systemStateStr
-     /tmp/ccHb5T0M.s:4927   .progmem.data:000000df statusNumberOfTasksStr
-     /tmp/ccHb5T0M.s:4932   .progmem.data:000000f8 statusStaticHeapStateStr
-     /tmp/ccHb5T0M.s:4937   .progmem.data:00000122 statusDynamicHeapStateStr
-     /tmp/ccHb5T0M.s:4947   .progmem.data:00000179 statusTemperatureStr
-     /tmp/ccHb5T0M.s:4952   .progmem.data:00000194 statusVoltageStr
-     /tmp/ccHb5T0M.s:4942   .progmem.data:0000014c statusRamDiskStateStr
-     /tmp/ccHb5T0M.s:4957   .progmem.data:000001af systemRamConfigStr
-     /tmp/ccHb5T0M.s:4962   .progmem.data:000001c2 statusMacStr
-     /tmp/ccHb5T0M.s:5688   .progmem.data:00000579 __c.5113
-     /tmp/ccHb5T0M.s:4967   .progmem.data:000001d7 statusIpStr
-     /tmp/ccHb5T0M.s:5684   .progmem.data:00000576 __c.5115
-     /tmp/ccHb5T0M.s:4972   .progmem.data:000001ec statusIpMaskStr
-     /tmp/ccHb5T0M.s:5680   .progmem.data:00000573 __c.5117
-     /tmp/ccHb5T0M.s:4977   .progmem.data:00000201 statusIpGwStr
-     /tmp/ccHb5T0M.s:5676   .progmem.data:00000570 __c.5119
-     /tmp/ccHb5T0M.s:4982   .progmem.data:00000216 statusRs485listStr
-     /tmp/ccHb5T0M.s:4987   .progmem.data:00000231 statusNoRs485Dev
-     /tmp/ccHb5T0M.s:4992   .progmem.data:0000024b statusLockerSensorsStr
-     /tmp/ccHb5T0M.s:4997   .progmem.data:00000264 statusLockerSensorsDisStr
-     /tmp/ccHb5T0M.s:4733   .text:00001660 statusFunction
-     /tmp/ccHb5T0M.s:4862   .progmem.data:00000000 errorOK
-     /tmp/ccHb5T0M.s:4867   .progmem.data:00000009 errorNoFile
-     /tmp/ccHb5T0M.s:4872   .progmem.data:00000013 errorxModemFrameStartTimeout
-     /tmp/ccHb5T0M.s:4877   .progmem.data:00000016 errorxModemByteSendTimeout
-     /tmp/ccHb5T0M.s:4882   .progmem.data:00000019 errorxModemWrongFrameNo
-     /tmp/ccHb5T0M.s:4887   .progmem.data:0000001c errorxModemFrameFrameNoCorrectionNotMatch
-     /tmp/ccHb5T0M.s:4892   .progmem.data:0000001f errorxModemFrameCrc
-     /tmp/ccHb5T0M.s:4897   .progmem.data:00000032 errorxModemRemoteSideCan
-     /tmp/ccHb5T0M.s:4902   .progmem.data:00000059 errorxModemUnknownResponse
-     /tmp/ccHb5T0M.s:4907   .progmem.data:00000078 errorNoRemoteDevice
-     /tmp/ccHb5T0M.s:4912   .progmem.data:0000009b errorBootloaderNotResponding
-     /tmp/ccHb5T0M.s:5042   .progmem.data:00000374 cmd_help
-     /tmp/ccHb5T0M.s:5048   .data:00000000 cmd_help_help
-     /tmp/ccHb5T0M.s:5054   .progmem.data:00000379 cmd_status
-     /tmp/ccHb5T0M.s:5060   .data:00000012 cmd_help_status
-     /tmp/ccHb5T0M.s:5066   .progmem.data:00000380 cmd_enc_stat
-     /tmp/ccHb5T0M.s:5072   .data:00000049 cmd_help_enc_stat
-     /tmp/ccHb5T0M.s:5078   .progmem.data:00000388 cmd_time
-     /tmp/ccHb5T0M.s:5084   .data:00000063 cmd_help_time
-     /tmp/ccHb5T0M.s:5090   .progmem.data:0000038d cmd_net_dbg
-     /tmp/ccHb5T0M.s:5096   .data:0000006e cmd_help_net_dbg
-     /tmp/ccHb5T0M.s:5103   .progmem.data:00000393 cmd_rping
-     /tmp/ccHb5T0M.s:5109   .data:000000b7 cmd_help_rping
-     /tmp/ccHb5T0M.s:5115   .progmem.data:00000399 cmd_ping
-     /tmp/ccHb5T0M.s:5121   .data:000000dd cmd_help_ping
-     /tmp/ccHb5T0M.s:5127   .progmem.data:0000039e cmd_xRec
-     /tmp/ccHb5T0M.s:5133   .data:0000010e cmd_help_xRec
-     /tmp/ccHb5T0M.s:5139   .progmem.data:000003a3 cmd_xSend
-     /tmp/ccHb5T0M.s:5145   .data:00000134 cmd_help_xSend
-     /tmp/ccHb5T0M.s:5151   .progmem.data:000003a9 cmd_xflash
-     /tmp/ccHb5T0M.s:5157   .data:00000157 cmd_help_xflash
-     /tmp/ccHb5T0M.s:5163   .progmem.data:000003b0 cmd_dir_rf
-     /tmp/ccHb5T0M.s:5169   .data:0000018f cmd_help_dir_rf
-     /tmp/ccHb5T0M.s:5175   .progmem.data:000003b6 cmd_create_rf
-     /tmp/ccHb5T0M.s:5181   .data:000001a3 cmd_help_create_rf
-     /tmp/ccHb5T0M.s:5187   .progmem.data:000003ba cmd_erase_rf
-     /tmp/ccHb5T0M.s:5193   .data:000001bf cmd_help_erase_rf
-     /tmp/ccHb5T0M.s:5199   .progmem.data:000003c2 cmd_edit_rf
-     /tmp/ccHb5T0M.s:5205   .data:000001e4 cmd_help_edit_rf
-     /tmp/ccHb5T0M.s:5211   .progmem.data:000003c9 cmd_read_rf
-     /tmp/ccHb5T0M.s:5217   .data:0000020e cmd_help_read_rf
-     /tmp/ccHb5T0M.s:5223   .progmem.data:000003d0 cmd_up
-     /tmp/ccHb5T0M.s:5229   .data:00000238 cmd_help_up
-     /tmp/ccHb5T0M.s:5235   .progmem.data:000003d3 cmd_down
-     /tmp/ccHb5T0M.s:5241   .data:0000025e cmd_help_down
-     /tmp/ccHb5T0M.s:5247   .progmem.data:000003d8 cmd_spa
-     /tmp/ccHb5T0M.s:5253   .data:00000286 cmd_help_spa
-     /tmp/ccHb5T0M.s:5259   .progmem.data:000003dc cmd_spb
-     /tmp/ccHb5T0M.s:5265   .data:00000299 cmd_help_spb
-     /tmp/ccHb5T0M.s:5271   .progmem.data:000003e0 cmd_settime
-     /tmp/ccHb5T0M.s:5277   .data:000002ac cmd_help_settime
-     /tmp/ccHb5T0M.s:5283   .progmem.data:000003e8 cmd_ac
-     /tmp/ccHb5T0M.s:5289   .data:000002ce cmd_help_ac
-     /tmp/ccHb5T0M.s:5295   .progmem.data:000003eb cmd_enable
-     /tmp/ccHb5T0M.s:5301   .data:000002ee cmd_help_enable
-     /tmp/ccHb5T0M.s:5307   .progmem.data:000003f2 cmd_disable
-     /tmp/ccHb5T0M.s:5313   .data:000002fa cmd_help_disable
-     /tmp/ccHb5T0M.s:5319   .progmem.data:000003fa cmd_configure
-     /tmp/ccHb5T0M.s:5325   .data:00000304 cmd_help_configure
-     /tmp/ccHb5T0M.s:5331   .progmem.data:00000401 cmd_conf_ip
-     /tmp/ccHb5T0M.s:5337   .data:00000313 cmd_help_conf_ip
-     /tmp/ccHb5T0M.s:5343   .progmem.data:00000404 cmd_conf_udp
-     /tmp/ccHb5T0M.s:5349   .data:00000336 cmd_help_conf_udp
-     /tmp/ccHb5T0M.s:5356   .progmem.data:00000408 cmd_conf_ip_mask
-     /tmp/ccHb5T0M.s:5362   .data:00000384 cmd_conf_ip_mask_help
-     /tmp/ccHb5T0M.s:5368   .progmem.data:0000040d cmd_conf_ip_gw
-     /tmp/ccHb5T0M.s:5374   .data:00000394 cmd_conf_ip_gw_help
-     /tmp/ccHb5T0M.s:5380   .progmem.data:00000410 cmd_conf_mac
-     /tmp/ccHb5T0M.s:5386   .data:000003bc cmd_help_conf_mac
-     /tmp/ccHb5T0M.s:5392   .progmem.data:00000414 cmd_conf_save
-     /tmp/ccHb5T0M.s:5398   .data:000003ea cmd_help_conf_save
-     /tmp/ccHb5T0M.s:5404   .progmem.data:00000419 cmd_ustawR
-     /tmp/ccHb5T0M.s:5410   .data:000003fd cmd_help_ustawR
-     /tmp/ccHb5T0M.s:5416   .progmem.data:0000041e okStr
-     /tmp/ccHb5T0M.s:5426   .progmem.data:00000426 BladBuforaPozostaloBajtowStr
+     /tmp/ccQF0y5s.s:4917   .progmem.data:000000ba errorOpenFile
+     /tmp/ccQF0y5s.s:2166   .text:000007ee editRamFileFunction
+     /tmp/ccQF0y5s.s:5002   .progmem.data:00000280 editRamFileIntroStr
+     /tmp/ccQF0y5s.s:2327   .text:000008e4 goXmodemOdbierzFunction
+     /tmp/ccQF0y5s.s:5628   .progmem.data:0000050f __c.5401
+     /tmp/ccQF0y5s.s:3044   .text:00000cca debugFunction
+     /tmp/ccQF0y5s.s:5668   .progmem.data:00000553 __c.5297
+     /tmp/ccQF0y5s.s:5664   .progmem.data:00000550 __c.5299
+     /tmp/ccQF0y5s.s:5660   .progmem.data:0000054b __c.5301
+     /tmp/ccQF0y5s.s:5656   .progmem.data:00000547 __c.5303
+     /tmp/ccQF0y5s.s:5652   .progmem.data:00000543 __c.5305
+     /tmp/ccQF0y5s.s:5037   .progmem.data:00000360 debugDisabledInfoStr
+     /tmp/ccQF0y5s.s:5648   .progmem.data:0000053f __c.5307
+     /tmp/ccQF0y5s.s:5644   .progmem.data:0000053c __c.5309
+     /tmp/ccQF0y5s.s:5640   .progmem.data:00000537 __c.5311
+     /tmp/ccQF0y5s.s:5636   .progmem.data:00000533 __c.5313
+     /tmp/ccQF0y5s.s:5632   .progmem.data:0000052f __c.5315
+     /tmp/ccQF0y5s.s:5032   .progmem.data:0000034d debugEnabledInfoStr
+     /tmp/ccQF0y5s.s:3361   .text:00000eba statusEncFunction
+     /tmp/ccQF0y5s.s:3389   .text:00000eca readRamFIleFunction
+     /tmp/ccQF0y5s.s:5007   .progmem.data:000002a8 readRamFIleLenStr
+     /tmp/ccQF0y5s.s:5421   .progmem.data:00000423 nlStr
+     /tmp/ccQF0y5s.s:3588   .text:00000ffc writeRamFileFunction
+     /tmp/ccQF0y5s.s:3616   .text:0000100c pokazCzasFunction
+     /tmp/ccQF0y5s.s:5672   .progmem.data:00000557 __c.5290
+     /tmp/ccQF0y5s.s:3736   .text:000010ba helpFunction
+     /tmp/ccQF0y5s.s:3763   .text:000010c4 VtyInit
+     /tmp/ccQF0y5s.s:3801   .text:000010e6 printErrorInfo
+     /tmp/ccQF0y5s.s:5431   .progmem.data:00000450 errorStrings
+     /tmp/ccQF0y5s.s:3894   .text:00001152 eraseRamFileFunction
+     /tmp/ccQF0y5s.s:3943   .text:00001180 dodajRamPlikFunction
+     /tmp/ccQF0y5s.s:4002   .text:000011b8 flashExModuleFunction
+     /tmp/ccQF0y5s.s:4145   .text:00001270 rpingFunction
+     /tmp/ccQF0y5s.s:4230   .text:000012ce printStatus
+     /tmp/ccQF0y5s.s:5692   .progmem.data:0000057c __c.5266
+     /tmp/ccQF0y5s.s:4922   .progmem.data:000000cf systemStateStr
+     /tmp/ccQF0y5s.s:4927   .progmem.data:000000df statusNumberOfTasksStr
+     /tmp/ccQF0y5s.s:4932   .progmem.data:000000f8 statusStaticHeapStateStr
+     /tmp/ccQF0y5s.s:4937   .progmem.data:00000122 statusDynamicHeapStateStr
+     /tmp/ccQF0y5s.s:4947   .progmem.data:00000179 statusTemperatureStr
+     /tmp/ccQF0y5s.s:4952   .progmem.data:00000194 statusVoltageStr
+     /tmp/ccQF0y5s.s:4942   .progmem.data:0000014c statusRamDiskStateStr
+     /tmp/ccQF0y5s.s:4957   .progmem.data:000001af systemRamConfigStr
+     /tmp/ccQF0y5s.s:4962   .progmem.data:000001c2 statusMacStr
+     /tmp/ccQF0y5s.s:5688   .progmem.data:00000579 __c.5269
+     /tmp/ccQF0y5s.s:4967   .progmem.data:000001d7 statusIpStr
+     /tmp/ccQF0y5s.s:5684   .progmem.data:00000576 __c.5271
+     /tmp/ccQF0y5s.s:4972   .progmem.data:000001ec statusIpMaskStr
+     /tmp/ccQF0y5s.s:5680   .progmem.data:00000573 __c.5273
+     /tmp/ccQF0y5s.s:4977   .progmem.data:00000201 statusIpGwStr
+     /tmp/ccQF0y5s.s:5676   .progmem.data:00000570 __c.5275
+     /tmp/ccQF0y5s.s:4982   .progmem.data:00000216 statusRs485listStr
+     /tmp/ccQF0y5s.s:4987   .progmem.data:00000231 statusNoRs485Dev
+     /tmp/ccQF0y5s.s:4992   .progmem.data:0000024b statusLockerSensorsStr
+     /tmp/ccQF0y5s.s:4997   .progmem.data:00000264 statusLockerSensorsDisStr
+     /tmp/ccQF0y5s.s:4733   .text:00001660 statusFunction
+     /tmp/ccQF0y5s.s:4862   .progmem.data:00000000 errorOK
+     /tmp/ccQF0y5s.s:4867   .progmem.data:00000009 errorNoFile
+     /tmp/ccQF0y5s.s:4872   .progmem.data:00000013 errorxModemFrameStartTimeout
+     /tmp/ccQF0y5s.s:4877   .progmem.data:00000016 errorxModemByteSendTimeout
+     /tmp/ccQF0y5s.s:4882   .progmem.data:00000019 errorxModemWrongFrameNo
+     /tmp/ccQF0y5s.s:4887   .progmem.data:0000001c errorxModemFrameFrameNoCorrectionNotMatch
+     /tmp/ccQF0y5s.s:4892   .progmem.data:0000001f errorxModemFrameCrc
+     /tmp/ccQF0y5s.s:4897   .progmem.data:00000032 errorxModemRemoteSideCan
+     /tmp/ccQF0y5s.s:4902   .progmem.data:00000059 errorxModemUnknownResponse
+     /tmp/ccQF0y5s.s:4907   .progmem.data:00000078 errorNoRemoteDevice
+     /tmp/ccQF0y5s.s:4912   .progmem.data:0000009b errorBootloaderNotResponding
+     /tmp/ccQF0y5s.s:5042   .progmem.data:00000374 cmd_help
+     /tmp/ccQF0y5s.s:5048   .data:00000000 cmd_help_help
+     /tmp/ccQF0y5s.s:5054   .progmem.data:00000379 cmd_status
+     /tmp/ccQF0y5s.s:5060   .data:00000012 cmd_help_status
+     /tmp/ccQF0y5s.s:5066   .progmem.data:00000380 cmd_enc_stat
+     /tmp/ccQF0y5s.s:5072   .data:00000049 cmd_help_enc_stat
+     /tmp/ccQF0y5s.s:5078   .progmem.data:00000388 cmd_time
+     /tmp/ccQF0y5s.s:5084   .data:00000063 cmd_help_time
+     /tmp/ccQF0y5s.s:5090   .progmem.data:0000038d cmd_net_dbg
+     /tmp/ccQF0y5s.s:5096   .data:0000006e cmd_help_net_dbg
+     /tmp/ccQF0y5s.s:5103   .progmem.data:00000393 cmd_rping
+     /tmp/ccQF0y5s.s:5109   .data:000000b7 cmd_help_rping
+     /tmp/ccQF0y5s.s:5115   .progmem.data:00000399 cmd_ping
+     /tmp/ccQF0y5s.s:5121   .data:000000dd cmd_help_ping
+     /tmp/ccQF0y5s.s:5127   .progmem.data:0000039e cmd_xRec
+     /tmp/ccQF0y5s.s:5133   .data:0000010e cmd_help_xRec
+     /tmp/ccQF0y5s.s:5139   .progmem.data:000003a3 cmd_xSend
+     /tmp/ccQF0y5s.s:5145   .data:00000134 cmd_help_xSend
+     /tmp/ccQF0y5s.s:5151   .progmem.data:000003a9 cmd_xflash
+     /tmp/ccQF0y5s.s:5157   .data:00000157 cmd_help_xflash
+     /tmp/ccQF0y5s.s:5163   .progmem.data:000003b0 cmd_dir_rf
+     /tmp/ccQF0y5s.s:5169   .data:0000018f cmd_help_dir_rf
+     /tmp/ccQF0y5s.s:5175   .progmem.data:000003b6 cmd_create_rf
+     /tmp/ccQF0y5s.s:5181   .data:000001a3 cmd_help_create_rf
+     /tmp/ccQF0y5s.s:5187   .progmem.data:000003ba cmd_erase_rf
+     /tmp/ccQF0y5s.s:5193   .data:000001bf cmd_help_erase_rf
+     /tmp/ccQF0y5s.s:5199   .progmem.data:000003c2 cmd_edit_rf
+     /tmp/ccQF0y5s.s:5205   .data:000001e4 cmd_help_edit_rf
+     /tmp/ccQF0y5s.s:5211   .progmem.data:000003c9 cmd_read_rf
+     /tmp/ccQF0y5s.s:5217   .data:0000020e cmd_help_read_rf
+     /tmp/ccQF0y5s.s:5223   .progmem.data:000003d0 cmd_up
+     /tmp/ccQF0y5s.s:5229   .data:00000238 cmd_help_up
+     /tmp/ccQF0y5s.s:5235   .progmem.data:000003d3 cmd_down
+     /tmp/ccQF0y5s.s:5241   .data:0000025e cmd_help_down
+     /tmp/ccQF0y5s.s:5247   .progmem.data:000003d8 cmd_spa
+     /tmp/ccQF0y5s.s:5253   .data:00000286 cmd_help_spa
+     /tmp/ccQF0y5s.s:5259   .progmem.data:000003dc cmd_spb
+     /tmp/ccQF0y5s.s:5265   .data:00000299 cmd_help_spb
+     /tmp/ccQF0y5s.s:5271   .progmem.data:000003e0 cmd_settime
+     /tmp/ccQF0y5s.s:5277   .data:000002ac cmd_help_settime
+     /tmp/ccQF0y5s.s:5283   .progmem.data:000003e8 cmd_ac
+     /tmp/ccQF0y5s.s:5289   .data:000002ce cmd_help_ac
+     /tmp/ccQF0y5s.s:5295   .progmem.data:000003eb cmd_enable
+     /tmp/ccQF0y5s.s:5301   .data:000002ee cmd_help_enable
+     /tmp/ccQF0y5s.s:5307   .progmem.data:000003f2 cmd_disable
+     /tmp/ccQF0y5s.s:5313   .data:000002fa cmd_help_disable
+     /tmp/ccQF0y5s.s:5319   .progmem.data:000003fa cmd_configure
+     /tmp/ccQF0y5s.s:5325   .data:00000304 cmd_help_configure
+     /tmp/ccQF0y5s.s:5331   .progmem.data:00000401 cmd_conf_ip
+     /tmp/ccQF0y5s.s:5337   .data:00000313 cmd_help_conf_ip
+     /tmp/ccQF0y5s.s:5343   .progmem.data:00000404 cmd_conf_udp
+     /tmp/ccQF0y5s.s:5349   .data:00000336 cmd_help_conf_udp
+     /tmp/ccQF0y5s.s:5356   .progmem.data:00000408 cmd_conf_ip_mask
+     /tmp/ccQF0y5s.s:5362   .data:00000384 cmd_conf_ip_mask_help
+     /tmp/ccQF0y5s.s:5368   .progmem.data:0000040d cmd_conf_ip_gw
+     /tmp/ccQF0y5s.s:5374   .data:00000394 cmd_conf_ip_gw_help
+     /tmp/ccQF0y5s.s:5380   .progmem.data:00000410 cmd_conf_mac
+     /tmp/ccQF0y5s.s:5386   .data:000003bc cmd_help_conf_mac
+     /tmp/ccQF0y5s.s:5392   .progmem.data:00000414 cmd_conf_save
+     /tmp/ccQF0y5s.s:5398   .data:000003ea cmd_help_conf_save
+     /tmp/ccQF0y5s.s:5404   .progmem.data:00000419 cmd_ustawR
+     /tmp/ccQF0y5s.s:5410   .data:000003fd cmd_help_ustawR
+     /tmp/ccQF0y5s.s:5416   .progmem.data:0000041e okStr
+     /tmp/ccQF0y5s.s:5426   .progmem.data:00000426 BladBuforaPozostaloBajtowStr
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

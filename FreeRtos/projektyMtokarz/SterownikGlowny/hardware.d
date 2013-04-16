@@ -16,8 +16,9 @@ hardware.o hardware.d : hardware.c hardware.h ../../freeRtos/Lib/include/memory_
  ../../freeRtos/Lib/include/cmdline.h serial.h main.h \
  ../../freeRtos/Source/include/semphr.h \
  ../../freeRtos/Source/include/queue.h hardware.h hardwareConfig.h \
- softwareConfig.h ../../freeRtos/Lib/include/spi.h \
- ../../freeRtos/Lib/include/mcp3008.h ../../freeRtos/Lib/include/spi.h \
+ softwareConfig.h ../../freeRtos/Lib/include/spiXmega.h \
+ ../../freeRtos/Lib/include/mcp3008.h \
+ ../../freeRtos/Lib/include/spiXmega.h \
  ../../freeRtos/Lib/include/ds1305.h hardwareConfig.h \
  ../../freeRtos/Lib/include/enc28j60.h \
  ../../freeRtos/Lib/net/include/nic.h \
@@ -35,5 +36,5 @@ hardware.o hardware.d : hardware.c hardware.h ../../freeRtos/Lib/include/memory_
  netstack_task.h ../../freeRtos/Lib/net/include/net.h \
  ../../freeRtos/Lib/net/include/ip.h ../../freeRtos/Lib/net/include/arp.h \
  ../../freeRtos/Lib/net/include/udp.h \
- ../../freeRtos/Lib/net/include/icmp.h vty.h configuration.h \
- hardware_en.h
+ ../../freeRtos/Lib/net/include/icmp.h ../../freeRtos/Lib/include/lcd.h \
+ vty.h configuration.h hardware_en.h

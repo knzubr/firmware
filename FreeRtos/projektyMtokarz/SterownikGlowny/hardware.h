@@ -13,7 +13,7 @@
 
 #include "mpc23s17.h"
 #include "mcp3008.h"
-#include "spi.h"
+#include "spiXmega.h"
 
 #define Rs485TxStart() (PORTF.OUT |=  0x20)
 #define Rs485TxStop()  (PORTF.OUT &=  0xDF)
@@ -82,6 +82,10 @@ void disableSpiMCP3008(void);
 
 void spiEnableDS1305(void);
 void spiDisableDS1305(void);
+
+void enableSpiMCP4150(void);
+void disableSpiMCP4150(void);
+
 
 #endif
 

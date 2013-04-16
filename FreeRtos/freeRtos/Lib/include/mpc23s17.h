@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 #include "main.h"
-#include "spi.h"
+#include "spiXmega.h"
 
 #define B0_IODIRA 0x00
 #define B0_IODIRB 0x01

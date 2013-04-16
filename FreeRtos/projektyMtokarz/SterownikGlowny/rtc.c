@@ -7,7 +7,7 @@
 
 
 
-#define SCL_LOW()	DDRE |=	0x04			/* SCL = LOW */
+#define SCL_LOW()	DDRE |=	0x04			/* SCL = LOW */ 
 #define SCL_HIGH()	DDRE &=	0xFB			/* SCL = High-Z */
 #define	SCL_VAL		((PINE & 0x04) ? 1 : 0)	/* SCL input level */
 #define SDA_LOW()	DDRE |=	0x08			/* SDA = LOW */

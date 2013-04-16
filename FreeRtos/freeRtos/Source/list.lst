@@ -430,16 +430,16 @@
  757               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 list.c
-     /tmp/ccFmp7EG.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccFmp7EG.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccFmp7EG.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccFmp7EG.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccFmp7EG.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccFmp7EG.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccFmp7EG.s:431    .text:00000000 vListInitialise
-     /tmp/ccFmp7EG.s:475    .text:0000001c vListInitialiseItem
-     /tmp/ccFmp7EG.s:502    .text:00000024 vListInsertEnd
-     /tmp/ccFmp7EG.s:579    .text:0000006e vListInsert
-     /tmp/ccFmp7EG.s:686    .text:000000dc vListRemove
+     /tmp/ccXCGZSq.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccXCGZSq.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccXCGZSq.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccXCGZSq.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccXCGZSq.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccXCGZSq.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccXCGZSq.s:431    .text:00000000 vListInitialise
+     /tmp/ccXCGZSq.s:475    .text:0000001c vListInitialiseItem
+     /tmp/ccXCGZSq.s:502    .text:00000024 vListInsertEnd
+     /tmp/ccXCGZSq.s:579    .text:0000006e vListInsert
+     /tmp/ccXCGZSq.s:686    .text:000000dc vListRemove
 
 NO UNDEFINED SYMBOLS

@@ -20,14 +20,14 @@ void    spiInit( void (*disableAllSpiDevicesFun)(void));
 void    spiInitENC( void (*disableAllSpiDevicesFun)(void));
 
 void spiSetCPHA(void);
-void spiClearCPHA(void);
-void spiSetCPOL(void);
-void spiClearCPOL(void);
-
 void spiSetCPHAENC(void);
+void spiClearCPHA(void);
 void spiClearCPHAENC(void);
+void spiSetCPOL(void);
 void spiSetCPOLENC(void);
+void spiClearCPOL(void);
 void spiClearCPOLENC(void);
+
 
 /**
  * Wyślij do magistrali SPI. Po rozpoczęciu transmisji przełączany jest wątek.

@@ -14,7 +14,7 @@
 #define LCD_D7 0x04;
 unsigned char odwroc(unsigned char dana);
 void polbajt(unsigned char data);
-void lcdint(void);
+void lcdinit(void); 
 void lcdwritecommand(unsigned char command);
 void lcdWrite(unsigned char data);
 void lcdclear(void);

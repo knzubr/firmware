@@ -2,7 +2,7 @@
 #define _DISKIO_H
 
 #include "integer.h"
-#include "spi.h"
+#include "spiXmega.h"
 #include "hardware.h"
 
 #define _READONLY	0	/* 1: Read-only mode */

@@ -13,7 +13,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "mcp3008.h"
-#include "spi.h"
+#include "spiXmega.h"
 
 void enableSpiMCP3008(void)   {};
 void disableSpiMCP3008(void)  {};

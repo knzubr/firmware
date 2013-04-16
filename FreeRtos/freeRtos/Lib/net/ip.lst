@@ -1126,42 +1126,42 @@
  1542               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 ip.c
-     /tmp/ccbn1jiZ.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccbn1jiZ.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccbn1jiZ.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccbn1jiZ.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccbn1jiZ.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccbn1jiZ.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccbn1jiZ.s:475    .text:00000000 ipInit
-     /tmp/ccbn1jiZ.s:1501   .eeprom:00000000 myip_eep
+     /tmp/ccqiUeaQ.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccqiUeaQ.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccqiUeaQ.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccqiUeaQ.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccqiUeaQ.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccqiUeaQ.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccqiUeaQ.s:475    .text:00000000 ipInit
+     /tmp/ccqiUeaQ.s:1501   .eeprom:00000000 myip_eep
                             *COM*:0000000f IpMyConfig
-     /tmp/ccbn1jiZ.s:1508   .eeprom:00000004 mask_eep
-     /tmp/ccbn1jiZ.s:1515   .eeprom:00000008 defGw_eep
-     /tmp/ccbn1jiZ.s:529    .text:00000056 ipSaveConfig
-     /tmp/ccbn1jiZ.s:576    .text:000000a0 netstackIPv4Process
+     /tmp/ccqiUeaQ.s:1508   .eeprom:00000004 mask_eep
+     /tmp/ccqiUeaQ.s:1515   .eeprom:00000008 defGw_eep
+     /tmp/ccqiUeaQ.s:529    .text:00000056 ipSaveConfig
+     /tmp/ccqiUeaQ.s:576    .text:000000a0 netstackIPv4Process
                             *COM*:0000000e nicState
-     /tmp/ccbn1jiZ.s:1496   .progmem.data:00000123 __c.4224
-     /tmp/ccbn1jiZ.s:1492   .progmem.data:0000010b __c.4226
-     /tmp/ccbn1jiZ.s:1488   .progmem.data:000000f3 __c.4228
-     /tmp/ccbn1jiZ.s:1484   .progmem.data:000000d7 __c.4230
-     /tmp/ccbn1jiZ.s:815    .text:0000021c setIpDebug
-     /tmp/ccbn1jiZ.s:851    .text:00000236 ipSetConfig
-     /tmp/ccbn1jiZ.s:898    .text:00000278 ipSetConfigIp
-     /tmp/ccbn1jiZ.s:925    .text:0000028a ipSetConfigMask
-     /tmp/ccbn1jiZ.s:952    .text:0000029c ipSetConfigGw
-     /tmp/ccbn1jiZ.s:978    .text:000002ae ipGetConfig
-     /tmp/ccbn1jiZ.s:1007   .text:000002b4 ipSend
-     /tmp/ccbn1jiZ.s:1480   .progmem.data:000000b6 __c.4258
-     /tmp/ccbn1jiZ.s:1476   .progmem.data:00000097 __c.4260
-     /tmp/ccbn1jiZ.s:1472   .progmem.data:00000069 __c.4262
-     /tmp/ccbn1jiZ.s:1468   .progmem.data:0000002a __c.4264
-     /tmp/ccbn1jiZ.s:1295   .text:000004be ipPrintConfig
-     /tmp/ccbn1jiZ.s:1464   .progmem.data:0000001f __c.4270
-     /tmp/ccbn1jiZ.s:1460   .progmem.data:0000001c __c.4272
-     /tmp/ccbn1jiZ.s:1456   .progmem.data:00000011 __c.4274
-     /tmp/ccbn1jiZ.s:1452   .progmem.data:0000000e __c.4276
-     /tmp/ccbn1jiZ.s:1448   .progmem.data:00000003 __c.4278
-     /tmp/ccbn1jiZ.s:1444   .progmem.data:00000000 __c.4280
+     /tmp/ccqiUeaQ.s:1496   .progmem.data:00000123 __c.4224
+     /tmp/ccqiUeaQ.s:1492   .progmem.data:0000010b __c.4226
+     /tmp/ccqiUeaQ.s:1488   .progmem.data:000000f3 __c.4228
+     /tmp/ccqiUeaQ.s:1484   .progmem.data:000000d7 __c.4230
+     /tmp/ccqiUeaQ.s:815    .text:0000021c setIpDebug
+     /tmp/ccqiUeaQ.s:851    .text:00000236 ipSetConfig
+     /tmp/ccqiUeaQ.s:898    .text:00000278 ipSetConfigIp
+     /tmp/ccqiUeaQ.s:925    .text:0000028a ipSetConfigMask
+     /tmp/ccqiUeaQ.s:952    .text:0000029c ipSetConfigGw
+     /tmp/ccqiUeaQ.s:978    .text:000002ae ipGetConfig
+     /tmp/ccqiUeaQ.s:1007   .text:000002b4 ipSend
+     /tmp/ccqiUeaQ.s:1480   .progmem.data:000000b6 __c.4258
+     /tmp/ccqiUeaQ.s:1476   .progmem.data:00000097 __c.4260
+     /tmp/ccqiUeaQ.s:1472   .progmem.data:00000069 __c.4262
+     /tmp/ccqiUeaQ.s:1468   .progmem.data:0000002a __c.4264
+     /tmp/ccqiUeaQ.s:1295   .text:000004be ipPrintConfig
+     /tmp/ccqiUeaQ.s:1464   .progmem.data:0000001f __c.4270
+     /tmp/ccqiUeaQ.s:1460   .progmem.data:0000001c __c.4272
+     /tmp/ccqiUeaQ.s:1456   .progmem.data:00000011 __c.4274
+     /tmp/ccqiUeaQ.s:1452   .progmem.data:0000000e __c.4276
+     /tmp/ccqiUeaQ.s:1448   .progmem.data:00000003 __c.4278
+     /tmp/ccqiUeaQ.s:1444   .progmem.data:00000000 __c.4280
                             *COM*:00000001 wwwport
                             *COM*:00000002 plen
                             *COM*:00000002 arpDebug

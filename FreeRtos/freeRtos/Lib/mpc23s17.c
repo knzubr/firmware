@@ -13,7 +13,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "mpc23s17.h"
-#include "spi.h"
+#include "spiXmega.h"
 
 void enableSpiMPC23S17(void)  {}
 void disableSpiMPC23S17(void) {}

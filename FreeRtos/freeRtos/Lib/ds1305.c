@@ -15,7 +15,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "ds1305.h"
-#include "spi.h"
+#include "spiXmega.h"
 
 void spiEnableDS1305(void)  {};
 void spiDisableDS1305(void) {};

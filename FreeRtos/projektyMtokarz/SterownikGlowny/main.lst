@@ -66,38 +66,40 @@
   54:main.c        **** xQueueHandle xRs485Rec;
   55:main.c        **** 
   56:main.c        **** 
-  57:main.c        **** volatile uint8_t temperature;
-  58:main.c        **** volatile uint8_t voltage;
-  59:main.c        **** 
-  60:main.c        **** 
-  61:main.c        **** void vApplicationIdleHook( void );
+  57:main.c        **** 
+  58:main.c        **** 
+  59:main.c        **** volatile uint8_t temperature;
+  60:main.c        **** volatile uint8_t voltage;
+  61:main.c        **** 
   62:main.c        **** 
-  63:main.c        **** /**
-  64:main.c        ****  * RTC clock support
-  65:main.c        ****  */
-  66:main.c        **** void vApplicationTickHook( void );
-  67:main.c        **** 
-  68:main.c        **** xTaskHandle xHandleVTY_USB;
-  69:main.c        **** xTaskHandle xHandleVTY_UDP;
-  70:main.c        **** xTaskHandle xHandleEnc;
-  71:main.c        **** xTaskHandle xHandleSensors;
-  72:main.c        **** xTaskHandle xHandleUSB;
-  73:main.c        **** 
-  74:main.c        **** //void initExternalMem(void)
-  75:main.c        **** //{
-  76:main.c        ****   //MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
-  77:main.c        ****   //MCUCR |= 0x0E;
-  78:main.c        **** //}
-  79:main.c        **** 
-  80:main.c        **** cmdState_t *CLIStateSerialUsb;
-  81:main.c        **** cmdState_t *CLIStateSerialUdp;
-  82:main.c        **** FILE usbStream;
-  83:main.c        **** FILE udpStream;
-  84:main.c        **** 
-  85:main.c        **** streamBuffers_t udpBuffers;
+  63:main.c        **** void vApplicationIdleHook( void );
+  64:main.c        **** 
+  65:main.c        **** /**
+  66:main.c        ****  * RTC clock support
+  67:main.c        ****  */
+  68:main.c        **** void vApplicationTickHook( void );
+  69:main.c        **** 
+  70:main.c        **** xTaskHandle xHandleVTY_USB;
+  71:main.c        **** xTaskHandle xHandleVTY_UDP;
+  72:main.c        **** xTaskHandle xHandleEnc;
+  73:main.c        **** xTaskHandle xHandleSensors;
+  74:main.c        **** xTaskHandle xHandleUSB;
+  75:main.c        **** 
+  76:main.c        **** //void initExternalMem(void)
+  77:main.c        **** //{
+  78:main.c        ****   //MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
+  79:main.c        ****   //MCUCR |= 0x0E;
+  80:main.c        **** //}
+  81:main.c        **** 
+  82:main.c        **** cmdState_t *CLIStateSerialUsb;
+  83:main.c        **** cmdState_t *CLIStateSerialUdp;
+  84:main.c        **** FILE usbStream;
+  85:main.c        **** FILE udpStream;
   86:main.c        **** 
-  87:main.c        **** portSHORT main( void )
-  88:main.c        **** {
+  87:main.c        **** streamBuffers_t udpBuffers;
+  88:main.c        **** 
+  89:main.c        **** portSHORT main( void )
+  90:main.c        **** {
  566               	.LM0:
  567               	.LFBB1:
  568 0000 AF92      		push r10
@@ -111,289 +113,291 @@
  576               	/* frame size = 0 */
  577               	/* stack size = 7 */
  578               	.L__stack_usage = 7
-  89:main.c        ****   //ramDyskInit();              //Inicjalizacja Ram dysku
-  90:main.c        ****   //hardwareInit();
-  91:main.c        ****   //spiInit(disableAllSpiDevices);
-  92:main.c        ****   // MOJE
-  93:main.c        ****   /* konfiguracja zewnętrznego kwarcu, bez PLL, Pres ABCD=1*/
-  94:main.c        **** 	OSC.XOSCCTRL=0b1101011;
+  91:main.c        ****   //ramDyskInit();              //Inicjalizacja Ram dysku
+  92:main.c        ****   //hardwareInit();
+  93:main.c        ****   //spiInit(disableAllSpiDevices);
+  94:main.c        ****   // MOJE
+  95:main.c        ****   /* konfiguracja zewnętrznego kwarcu, bez PLL, Pres ABCD=1*/
+  96:main.c        **** 	OSC.XOSCCTRL=0b1101011;
  580               	.LM1:
  581 000e 8BE6      		ldi r24,lo8(107)
  582 0010 E0E5      		ldi r30,lo8(80)
  583 0012 F0E0      		ldi r31,hi8(80)
  584 0014 8283      		std Z+2,r24
-  95:main.c        **** 	OSC.CTRL=0b00001000;
+  97:main.c        **** 	OSC.CTRL=0b00001000;
  586               	.LM2:
  587 0016 88E0      		ldi r24,lo8(8)
  588 0018 8093 5000 		sts 80,r24
  589               	.L2:
-  96:main.c        **** 	while(!(OSC.STATUS & OSC_XOSCEN_bm));
+  98:main.c        **** 	while(!(OSC.STATUS & OSC_XOSCEN_bm));
  591               	.LM3:
  592 001c 8091 5100 		lds r24,81
  593 0020 83FF      		sbrs r24,3
  594 0022 00C0      		rjmp .L2
-  97:main.c        **** 	CCP = CCP_IOREG_gc;
+  99:main.c        **** 	CCP = CCP_IOREG_gc;
  596               	.LM4:
  597 0024 88ED      		ldi r24,lo8(-40)
  598 0026 84BF      		out 52-0,r24
-  98:main.c        **** 	CLK.CTRL=CLK_SCLKSEL_XOSC_gc;
+ 100:main.c        **** 	CLK.CTRL=CLK_SCLKSEL_XOSC_gc;
  600               	.LM5:
  601 0028 83E0      		ldi r24,lo8(3)
  602 002a 8093 4000 		sts 64,r24
-  99:main.c        **** 	// Koniec konfuguracji, Zew kwarc 16MHz
- 100:main.c        **** 	PORTD.OUT=0xFF; //ok
+ 101:main.c        **** 	// Koniec konfuguracji, Zew kwarc 16MHz
+ 102:main.c        **** 	PORTD.OUT=0xFF; //ok
  604               	.LM6:
  605 002e E0E6      		ldi r30,lo8(1632)
  606 0030 F6E0      		ldi r31,hi8(1632)
  607 0032 9FEF      		ldi r25,lo8(-1)
  608 0034 9483      		std Z+4,r25
- 101:main.c        **** 	PORTD.DIR=PIN3_bm;//ok
+ 103:main.c        **** 	PORTD.DIR=PIN3_bm;//ok
  610               	.LM7:
  611 0036 98E0      		ldi r25,lo8(8)
  612 0038 9093 6006 		sts 1632,r25
- 102:main.c        **** 	PORTD.DIRCLR = PIN2_bm;//ok
+ 104:main.c        **** 	PORTD.DIRCLR = PIN2_bm;//ok
  614               	.LM8:
  615 003c 94E0      		ldi r25,lo8(4)
  616 003e 9283      		std Z+2,r25
- 103:main.c        **** 	USARTD0.CTRLC=0b00000011;//ok
+ 105:main.c        **** 	USARTD0.CTRLC=0b00000011;//ok
  618               	.LM9:
  619 0040 E0EA      		ldi r30,lo8(2464)
  620 0042 F9E0      		ldi r31,hi8(2464)
  621 0044 8583      		std Z+5,r24
- 104:main.c        **** 	USARTD0.CTRLA|=(USART_RXCINTLVL_LO_gc)|(USART_TXCINTLVL_LO_gc);
+ 106:main.c        **** 	USARTD0.CTRLA|=(USART_RXCINTLVL_LO_gc)|(USART_TXCINTLVL_LO_gc);
  623               	.LM10:
  624 0046 8091 A309 		lds r24,2467
  625 004a 8461      		ori r24,lo8(20)
  626 004c 8383      		std Z+3,r24
- 105:main.c        **** 	USARTD0.BAUDCTRLA=0b01100111;//12;
+ 107:main.c        **** 	USARTD0.BAUDCTRLA=0b01100111;//12;
  628               	.LM11:
  629 004e 87E6      		ldi r24,lo8(103)
  630 0050 8683      		std Z+6,r24
- 106:main.c        **** 	USARTD0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
+ 108:main.c        **** 	USARTD0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
  632               	.LM12:
  633 0052 1782      		std Z+7,__zero_reg__
- 107:main.c        **** 	USARTD0.CTRLB=0b00011000;
+ 109:main.c        **** 	USARTD0.CTRLB=0b00011000;
  635               	.LM13:
  636 0054 88E1      		ldi r24,lo8(24)
  637 0056 8483      		std Z+4,r24
- 108:main.c        ****   
- 109:main.c        ****   //MOJE
- 110:main.c        **** // VTY on serial  
- 111:main.c        ****   //xSerialPortInitMinimal(); 
- 112:main.c        ****   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
+ 110:main.c        **** 	lcdinit();
  639               	.LM14:
- 640 0058 83E2      		ldi r24,lo8(35)
- 641 005a 90E0      		ldi r25,hi8(35)
- 642 005c 0E94 0000 		call xmalloc
- 643 0060 8093 0000 		sts CLIStateSerialUsb,r24
- 644 0064 9093 0000 		sts CLIStateSerialUsb+1,r25
- 113:main.c        ****   CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
- 646               	.LM15:
- 647 0068 83E2      		ldi r24,lo8(35)
- 648 006a 90E0      		ldi r25,hi8(35)
- 649 006c 0E94 0000 		call xmalloc
- 650 0070 8093 0000 		sts CLIStateSerialUdp,r24
- 651 0074 9093 0000 		sts CLIStateSerialUdp+1,r25
- 114:main.c        **** 
- 115:main.c        **** 
- 116:main.c        **** //  cmdStateClear(newCmdState);
- 117:main.c        ****   
- 118:main.c        ****  // sensorsTaskInit();
- 119:main.c        ****   //loadConfiguration();
- 120:main.c        **** 
- 121:main.c        ****  // initQueueStreamUSB(&usbStream);
- 122:main.c        ****  // VtyInit(CLIStateSerialUsb, &usbStream);
- 123:main.c        **** 
- 124:main.c        ****  // udpInit();
- 125:main.c        ****  // socketInit();
- 126:main.c        ****  // initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
- 127:main.c        ****  // VtyInit(CLIStateSerialUdp, &udpStream);
- 128:main.c        ****   
- 129:main.c        **** //xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->
- 130:main.c        ****   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb)
- 653               	.LM16:
- 654 0078 2091 0000 		lds r18,CLIStateSerialUsb
- 655 007c 3091 0000 		lds r19,CLIStateSerialUsb+1
- 656 0080 80E0      		ldi r24,lo8(gs(vTaskVTYusb))
- 657 0082 90E0      		ldi r25,hi8(gs(vTaskVTYusb))
- 658 0084 60E0      		ldi r22,lo8(0)
- 659 0086 70E0      		ldi r23,hi8(0)
- 660 0088 4CEB      		ldi r20,lo8(700)
- 661 008a 52E0      		ldi r21,hi8(700)
- 662 008c 01E0      		ldi r16,lo8(1)
- 663 008e F0E0      		ldi r31,lo8(xHandleVTY_USB)
- 664 0090 EF2E      		mov r14,r31
- 665 0092 F0E0      		ldi r31,hi8(xHandleVTY_USB)
- 666 0094 FF2E      		mov r15,r31
- 667 0096 CC24      		clr r12
- 668 0098 DD24      		clr r13
- 669 009a AA24      		clr r10
- 670 009c BB24      		clr r11
- 671 009e 0E94 0000 		call xTaskGenericCreate
- 131:main.c        **** //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp)
- 132:main.c        **** //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                      
- 133:main.c        ****   xTaskCreate(vTaskUSB,NULL,100,NULL,0,&xHandleUSB);
- 673               	.LM17:
- 674 00a2 80E0      		ldi r24,lo8(gs(vTaskUSB))
- 675 00a4 90E0      		ldi r25,hi8(gs(vTaskUSB))
- 676 00a6 60E0      		ldi r22,lo8(0)
- 677 00a8 70E0      		ldi r23,hi8(0)
- 678 00aa 44E6      		ldi r20,lo8(100)
- 679 00ac 50E0      		ldi r21,hi8(100)
- 680 00ae 20E0      		ldi r18,lo8(0)
- 681 00b0 30E0      		ldi r19,hi8(0)
- 682 00b2 00E0      		ldi r16,lo8(0)
- 683 00b4 E0E0      		ldi r30,lo8(xHandleUSB)
- 684 00b6 EE2E      		mov r14,r30
- 685 00b8 E0E0      		ldi r30,hi8(xHandleUSB)
- 686 00ba FE2E      		mov r15,r30
- 687 00bc 0E94 0000 		call xTaskGenericCreate
- 134:main.c        ****   vTaskStartScheduler();
- 689               	.LM18:
- 690 00c0 0E94 0000 		call vTaskStartScheduler
- 135:main.c        ****   return 0;
- 136:main.c        **** }
+ 640 0058 0E94 0000 		call lcdinit
+ 111:main.c        ****   //MOJE
+ 112:main.c        **** // VTY on serial  
+ 113:main.c        ****   //xSerialPortInitMinimal(); 
+ 114:main.c        ****   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
+ 642               	.LM15:
+ 643 005c 83E2      		ldi r24,lo8(35)
+ 644 005e 90E0      		ldi r25,hi8(35)
+ 645 0060 0E94 0000 		call xmalloc
+ 646 0064 8093 0000 		sts CLIStateSerialUsb,r24
+ 647 0068 9093 0000 		sts CLIStateSerialUsb+1,r25
+ 115:main.c        ****   CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
+ 649               	.LM16:
+ 650 006c 83E2      		ldi r24,lo8(35)
+ 651 006e 90E0      		ldi r25,hi8(35)
+ 652 0070 0E94 0000 		call xmalloc
+ 653 0074 8093 0000 		sts CLIStateSerialUdp,r24
+ 654 0078 9093 0000 		sts CLIStateSerialUdp+1,r25
+ 116:main.c        **** 
+ 117:main.c        **** 
+ 118:main.c        **** //  cmdStateClear(newCmdState);
+ 119:main.c        ****   
+ 120:main.c        ****  // sensorsTaskInit();
+ 121:main.c        ****   //loadConfiguration();
+ 122:main.c        **** 
+ 123:main.c        ****  // initQueueStreamUSB(&usbStream);
+ 124:main.c        ****  // VtyInit(CLIStateSerialUsb, &usbStream);
+ 125:main.c        **** 
+ 126:main.c        ****  // udpInit();
+ 127:main.c        ****  // socketInit();
+ 128:main.c        ****  // initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
+ 129:main.c        ****  // VtyInit(CLIStateSerialUdp, &udpStream);
+ 130:main.c        ****   
+ 131:main.c        **** //xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->
+ 132:main.c        ****   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb)
+ 656               	.LM17:
+ 657 007c 2091 0000 		lds r18,CLIStateSerialUsb
+ 658 0080 3091 0000 		lds r19,CLIStateSerialUsb+1
+ 659 0084 80E0      		ldi r24,lo8(gs(vTaskVTYusb))
+ 660 0086 90E0      		ldi r25,hi8(gs(vTaskVTYusb))
+ 661 0088 60E0      		ldi r22,lo8(0)
+ 662 008a 70E0      		ldi r23,hi8(0)
+ 663 008c 4CEB      		ldi r20,lo8(700)
+ 664 008e 52E0      		ldi r21,hi8(700)
+ 665 0090 01E0      		ldi r16,lo8(1)
+ 666 0092 F0E0      		ldi r31,lo8(xHandleVTY_USB)
+ 667 0094 EF2E      		mov r14,r31
+ 668 0096 F0E0      		ldi r31,hi8(xHandleVTY_USB)
+ 669 0098 FF2E      		mov r15,r31
+ 670 009a CC24      		clr r12
+ 671 009c DD24      		clr r13
+ 672 009e AA24      		clr r10
+ 673 00a0 BB24      		clr r11
+ 674 00a2 0E94 0000 		call xTaskGenericCreate
+ 133:main.c        **** //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp)
+ 134:main.c        **** //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                      
+ 135:main.c        ****   xTaskCreate(vTaskUSB,NULL,100,NULL,0,&xHandleUSB);
+ 676               	.LM18:
+ 677 00a6 80E0      		ldi r24,lo8(gs(vTaskUSB))
+ 678 00a8 90E0      		ldi r25,hi8(gs(vTaskUSB))
+ 679 00aa 60E0      		ldi r22,lo8(0)
+ 680 00ac 70E0      		ldi r23,hi8(0)
+ 681 00ae 44E6      		ldi r20,lo8(100)
+ 682 00b0 50E0      		ldi r21,hi8(100)
+ 683 00b2 20E0      		ldi r18,lo8(0)
+ 684 00b4 30E0      		ldi r19,hi8(0)
+ 685 00b6 00E0      		ldi r16,lo8(0)
+ 686 00b8 E0E0      		ldi r30,lo8(xHandleUSB)
+ 687 00ba EE2E      		mov r14,r30
+ 688 00bc E0E0      		ldi r30,hi8(xHandleUSB)
+ 689 00be FE2E      		mov r15,r30
+ 690 00c0 0E94 0000 		call xTaskGenericCreate
+ 136:main.c        ****   vTaskStartScheduler();
  692               	.LM19:
- 693 00c4 80E0      		ldi r24,lo8(0)
- 694 00c6 90E0      		ldi r25,hi8(0)
- 695               	/* epilogue start */
- 696 00c8 0F91      		pop r16
- 697 00ca FF90      		pop r15
- 698 00cc EF90      		pop r14
- 699 00ce DF90      		pop r13
- 700 00d0 CF90      		pop r12
- 701 00d2 BF90      		pop r11
- 702 00d4 AF90      		pop r10
- 703 00d6 0895      		ret
- 705               	.Lscope1:
- 707               		.stabd	78,0,0
- 709               	.global	vApplicationIdleHook
- 711               	vApplicationIdleHook:
- 712               		.stabd	46,0,0
- 137:main.c        **** /*-----------------------------------------------------------*/
- 138:main.c        **** 
- 139:main.c        **** void vApplicationIdleHook( void )
- 140:main.c        **** {
- 714               	.LM20:
- 715               	.LFBB2:
- 716               	/* prologue: function */
- 717               	/* frame size = 0 */
- 718               	/* stack size = 0 */
- 719               	.L__stack_usage = 0
- 720               	.L5:
- 141:main.c        ****   for( ;; )
- 142:main.c        ****   {
- 143:main.c        ****     vCoRoutineSchedule();
- 722               	.LM21:
- 723 00d8 0E94 0000 		call vCoRoutineSchedule
- 724 00dc 00C0      		rjmp .L5
- 726               	.Lscope2:
- 728               		.stabd	78,0,0
- 730               	.global	vApplicationTickHook
- 732               	vApplicationTickHook:
- 733               		.stabd	46,0,0
- 144:main.c        ****   }
- 145:main.c        **** }
- 146:main.c        **** 
- 147:main.c        **** void vApplicationTickHook( void )
- 148:main.c        **** {
- 735               	.LM22:
- 736               	.LFBB3:
- 737               	/* prologue: function */
- 738               	/* frame size = 0 */
- 739               	/* stack size = 0 */
- 740               	.L__stack_usage = 0
- 149:main.c        ****   static uint16_t tickCntr = configTICK_RATE_HZ;
- 150:main.c        ****   if (--tickCntr == 0)
- 742               	.LM23:
- 743 00de 8091 0000 		lds r24,tickCntr.4948
- 744 00e2 9091 0000 		lds r25,tickCntr.4948+1
- 745 00e6 0197      		sbiw r24,1
- 746 00e8 8093 0000 		sts tickCntr.4948,r24
- 747 00ec 9093 0000 		sts tickCntr.4948+1,r25
- 748 00f0 0097      		sbiw r24,0
- 749 00f2 01F4      		brne .L6
- 151:main.c        ****   {
- 152:main.c        ****     tickCntr = configTICK_RATE_HZ;
- 751               	.LM24:
- 752 00f4 88EE      		ldi r24,lo8(1000)
- 753 00f6 93E0      		ldi r25,hi8(1000)
- 754 00f8 8093 0000 		sts tickCntr.4948,r24
- 755 00fc 9093 0000 		sts tickCntr.4948+1,r25
- 153:main.c        ****     arpTimer();    
- 757               	.LM25:
- 758 0100 0E94 0000 		call arpTimer
- 759               	.L6:
- 760 0104 0895      		ret
- 765               	.Lscope3:
- 767               		.stabd	78,0,0
- 768               	.global	timer100Hz
- 769               	.global	timer100Hz
- 770               		.section .bss
- 773               	timer100Hz:
- 774 0000 00        		.skip 1,0
- 775               		.comm klastry,128,1
- 776               		.comm wwwport,1,1
- 777               		.comm rollers,2,1
- 778               		.comm xVtyRec,2,1
- 779               		.comm xVtyTx,2,1
- 780               		.comm xSemaphoreSpiSS,2,1
- 781               		.comm portA,1,1
- 782               		.comm portB,1,1
- 783               		.comm lockSensors,2,1
- 784               		.comm xRs485Rec,2,1
- 785               		.comm xRs485Tx,2,1
- 786               		.comm xSemaphoreRs485,2,1
- 787               		.comm nicState,14,1
- 788               		.comm plen,2,1
- 789               		.comm IpMyConfig,15,1
- 790               		.comm arpDebug,2,1
- 791               		.comm arpDebugLevel,1,1
- 792               		.comm icmpDebug,2,1
- 793               		.comm icmpDebugLevel,1,1
- 794               		.comm udpSocket,2,1
- 795               		.comm udpDbgStream,2,1
- 796               		.comm udpDbgLevel,1,1
- 797               		.comm tcpDebugStream,2,1
- 798               		.comm tcpDebugLevel,1,1
- 799               		.comm sockets,2,1
- 800               		.comm temperature,1,1
- 801               		.comm voltage,1,1
- 802               		.comm czasRtc,7,1
- 803               		.comm xHandleVTY_USB,2,1
- 804               		.comm xHandleVTY_UDP,2,1
- 805               		.comm xHandleEnc,2,1
- 806               		.comm xHandleSensors,2,1
- 807               		.comm xHandleUSB,2,1
- 808               		.comm CLIStateSerialUsb,2,1
- 809               		.comm CLIStateSerialUdp,2,1
- 810               		.comm usbStream,14,1
- 811               		.comm udpStream,14,1
- 812               		.comm udpBuffers,4,1
- 813               		.data
- 816               	tickCntr.4948:
- 817 0000 E803      		.word	1000
- 857               		.text
- 859               	.Letext0:
- 860               	.global __do_copy_data
- 861               	.global __do_clear_bss
+ 693 00c4 0E94 0000 		call vTaskStartScheduler
+ 137:main.c        ****   return 0;
+ 138:main.c        **** }
+ 695               	.LM20:
+ 696 00c8 80E0      		ldi r24,lo8(0)
+ 697 00ca 90E0      		ldi r25,hi8(0)
+ 698               	/* epilogue start */
+ 699 00cc 0F91      		pop r16
+ 700 00ce FF90      		pop r15
+ 701 00d0 EF90      		pop r14
+ 702 00d2 DF90      		pop r13
+ 703 00d4 CF90      		pop r12
+ 704 00d6 BF90      		pop r11
+ 705 00d8 AF90      		pop r10
+ 706 00da 0895      		ret
+ 708               	.Lscope1:
+ 710               		.stabd	78,0,0
+ 712               	.global	vApplicationIdleHook
+ 714               	vApplicationIdleHook:
+ 715               		.stabd	46,0,0
+ 139:main.c        **** /*-----------------------------------------------------------*/
+ 140:main.c        **** 
+ 141:main.c        **** void vApplicationIdleHook( void )
+ 142:main.c        **** {
+ 717               	.LM21:
+ 718               	.LFBB2:
+ 719               	/* prologue: function */
+ 720               	/* frame size = 0 */
+ 721               	/* stack size = 0 */
+ 722               	.L__stack_usage = 0
+ 723               	.L5:
+ 143:main.c        ****   for( ;; )
+ 144:main.c        ****   {
+ 145:main.c        ****     vCoRoutineSchedule();
+ 725               	.LM22:
+ 726 00dc 0E94 0000 		call vCoRoutineSchedule
+ 727 00e0 00C0      		rjmp .L5
+ 729               	.Lscope2:
+ 731               		.stabd	78,0,0
+ 733               	.global	vApplicationTickHook
+ 735               	vApplicationTickHook:
+ 736               		.stabd	46,0,0
+ 146:main.c        ****   }
+ 147:main.c        **** }
+ 148:main.c        **** 
+ 149:main.c        **** void vApplicationTickHook( void )
+ 150:main.c        **** {
+ 738               	.LM23:
+ 739               	.LFBB3:
+ 740               	/* prologue: function */
+ 741               	/* frame size = 0 */
+ 742               	/* stack size = 0 */
+ 743               	.L__stack_usage = 0
+ 151:main.c        ****   static uint16_t tickCntr = configTICK_RATE_HZ;
+ 152:main.c        ****   if (--tickCntr == 0)
+ 745               	.LM24:
+ 746 00e2 8091 0000 		lds r24,tickCntr.5104
+ 747 00e6 9091 0000 		lds r25,tickCntr.5104+1
+ 748 00ea 0197      		sbiw r24,1
+ 749 00ec 8093 0000 		sts tickCntr.5104,r24
+ 750 00f0 9093 0000 		sts tickCntr.5104+1,r25
+ 751 00f4 0097      		sbiw r24,0
+ 752 00f6 01F4      		brne .L6
+ 153:main.c        ****   {
+ 154:main.c        ****     tickCntr = configTICK_RATE_HZ;
+ 754               	.LM25:
+ 755 00f8 88EE      		ldi r24,lo8(1000)
+ 756 00fa 93E0      		ldi r25,hi8(1000)
+ 757 00fc 8093 0000 		sts tickCntr.5104,r24
+ 758 0100 9093 0000 		sts tickCntr.5104+1,r25
+ 155:main.c        ****     arpTimer();    
+ 760               	.LM26:
+ 761 0104 0E94 0000 		call arpTimer
+ 762               	.L6:
+ 763 0108 0895      		ret
+ 768               	.Lscope3:
+ 770               		.stabd	78,0,0
+ 771               	.global	timer100Hz
+ 772               	.global	timer100Hz
+ 773               		.section .bss
+ 776               	timer100Hz:
+ 777 0000 00        		.skip 1,0
+ 778               		.comm klastry,128,1
+ 779               		.comm wwwport,1,1
+ 780               		.comm rollers,2,1
+ 781               		.comm xVtyRec,2,1
+ 782               		.comm xVtyTx,2,1
+ 783               		.comm xSemaphoreSpiSS,2,1
+ 784               		.comm portA,1,1
+ 785               		.comm portB,1,1
+ 786               		.comm lockSensors,2,1
+ 787               		.comm xRs485Rec,2,1
+ 788               		.comm xRs485Tx,2,1
+ 789               		.comm xSemaphoreRs485,2,1
+ 790               		.comm nicState,14,1
+ 791               		.comm plen,2,1
+ 792               		.comm IpMyConfig,15,1
+ 793               		.comm arpDebug,2,1
+ 794               		.comm arpDebugLevel,1,1
+ 795               		.comm icmpDebug,2,1
+ 796               		.comm icmpDebugLevel,1,1
+ 797               		.comm udpSocket,2,1
+ 798               		.comm udpDbgStream,2,1
+ 799               		.comm udpDbgLevel,1,1
+ 800               		.comm tcpDebugStream,2,1
+ 801               		.comm tcpDebugLevel,1,1
+ 802               		.comm sockets,2,1
+ 803               		.comm temperature,1,1
+ 804               		.comm voltage,1,1
+ 805               		.comm czasRtc,7,1
+ 806               		.comm xHandleVTY_USB,2,1
+ 807               		.comm xHandleVTY_UDP,2,1
+ 808               		.comm xHandleEnc,2,1
+ 809               		.comm xHandleSensors,2,1
+ 810               		.comm xHandleUSB,2,1
+ 811               		.comm CLIStateSerialUsb,2,1
+ 812               		.comm CLIStateSerialUdp,2,1
+ 813               		.comm usbStream,14,1
+ 814               		.comm udpStream,14,1
+ 815               		.comm udpBuffers,4,1
+ 816               		.data
+ 819               	tickCntr.5104:
+ 820 0000 E803      		.word	1000
+ 860               		.text
+ 862               	.Letext0:
+ 863               	.global __do_copy_data
+ 864               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-     /tmp/cckFaRJc.s:2      *ABS*:0000003f __SREG__
-     /tmp/cckFaRJc.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cckFaRJc.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cckFaRJc.s:5      *ABS*:00000034 __CCP__
-     /tmp/cckFaRJc.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/cckFaRJc.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/cckFaRJc.s:563    .text:00000000 main
+     /tmp/ccDqdbS2.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccDqdbS2.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccDqdbS2.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccDqdbS2.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccDqdbS2.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccDqdbS2.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccDqdbS2.s:563    .text:00000000 main
                             *COM*:00000002 CLIStateSerialUsb
                             *COM*:00000002 CLIStateSerialUdp
                             *COM*:00000002 xHandleVTY_USB
                             *COM*:00000002 xHandleUSB
-     /tmp/cckFaRJc.s:711    .text:000000d8 vApplicationIdleHook
-     /tmp/cckFaRJc.s:732    .text:000000de vApplicationTickHook
-     /tmp/cckFaRJc.s:816    .data:00000000 tickCntr.4948
-     /tmp/cckFaRJc.s:773    .bss:00000000 timer100Hz
+     /tmp/ccDqdbS2.s:714    .text:000000dc vApplicationIdleHook
+     /tmp/ccDqdbS2.s:735    .text:000000e2 vApplicationTickHook
+     /tmp/ccDqdbS2.s:819    .data:00000000 tickCntr.5104
+     /tmp/ccDqdbS2.s:776    .bss:00000000 timer100Hz
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers
@@ -430,6 +434,7 @@ DEFINED SYMBOLS
                             *COM*:00000004 udpBuffers
 
 UNDEFINED SYMBOLS
+lcdinit
 xmalloc
 vTaskVTYusb
 xTaskGenericCreate

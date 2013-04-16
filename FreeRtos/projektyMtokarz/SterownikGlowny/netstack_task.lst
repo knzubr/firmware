@@ -149,8 +149,8 @@
  111:netstack_task.c ****       {
  112:netstack_task.c ****         fprintf_P(netstackDebug, PSTR("Unknown packet\r\n"));
  598               	.LM6:
- 599 0026 00E0      		ldi r16,lo8(__c.4920)
- 600 0028 10E0      		ldi r17,hi8(__c.4920)
+ 599 0026 00E0      		ldi r16,lo8(__c.5076)
+ 600 0028 10E0      		ldi r17,hi8(__c.5076)
  601               	.L9:
   85:netstack_task.c ****     vTaskDelay ( 0 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwo
  603               	.LM7:
@@ -255,7 +255,7 @@
  705               		.comm sockets,2,1
  706               		.comm czasRtc,7,1
  707               		.section	.progmem.data,"a",@progbits
- 710               	__c.4920:
+ 710               	__c.5076:
  711 0000 556E 6B6E 		.string	"Unknown packet\r\n"
  711      6F77 6E20 
  711      7061 636B 
@@ -267,14 +267,14 @@
  738               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 netstack_task.c
-     /tmp/cc39waVl.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc39waVl.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc39waVl.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc39waVl.s:5      *ABS*:00000034 __CCP__
-     /tmp/cc39waVl.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/cc39waVl.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/cc39waVl.s:563    .text:00000000 encTask
-     /tmp/cc39waVl.s:710    .progmem.data:00000000 __c.4920
+     /tmp/ccgu2bE1.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccgu2bE1.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccgu2bE1.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccgu2bE1.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccgu2bE1.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccgu2bE1.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccgu2bE1.s:563    .text:00000000 encTask
+     /tmp/ccgu2bE1.s:710    .progmem.data:00000000 __c.5076
                             *COM*:0000000e nicState
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport

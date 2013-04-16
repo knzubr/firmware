@@ -16,7 +16,7 @@
 
 #include <inttypes.h>
 #include "main.h"
-#include "spi.h"
+#include "spiXmega.h"
 
 
 // functions

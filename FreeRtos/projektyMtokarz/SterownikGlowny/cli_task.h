@@ -8,6 +8,8 @@
 #include "queue.h"
 #include "cmdline.h"
 
+#include "task.h"
+
 extern xQueueHandle         xVtyRec;
 extern xQueueHandle         xVtyTx;
 
