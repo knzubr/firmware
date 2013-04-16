@@ -22,7 +22,7 @@
 #include "softwareConfig.h"
 
 #include "hardware.h"
-#include "spi.h"
+#include "spiXmega.h"
 #include "mpc23s17.h"
 #include "mcp3008.h"
 #include "ds1305.h"
@@ -33,9 +33,10 @@
 #include "sd_diskio.h"
 //#include "rtc.h"
 
+
 #include "sensors_task.h"
 #include "netstack_task.h"
-
+#include "lcd.h"
 
 #include "cmdline.h"
 #include "vty.h"

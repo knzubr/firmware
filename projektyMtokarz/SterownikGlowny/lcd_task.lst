@@ -1,0 +1,54 @@
+   1               		.file	"lcd_task.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 419               	.global	vTasklcd
+ 421               	vTasklcd:
+ 422               		.stabd	46,0,0
+   1:lcd_task.c    **** #include "lcd_task.h"
+   2:lcd_task.c    **** 
+   3:lcd_task.c    **** void vTasklcd(void *cliStatePtr)
+   4:lcd_task.c    **** {
+ 424               	.LM0:
+ 425               	.LFBB1:
+ 426               	/* prologue: function */
+ 427               	/* frame size = 0 */
+ 428               	/* stack size = 0 */
+ 429               	.L__stack_usage = 0
+ 430               	.L2:
+ 431               	.LBB2:
+   5:lcd_task.c    ****     
+   6:lcd_task.c    ****     for(;;)
+   7:lcd_task.c    ****     {
+   8:lcd_task.c    ****       vTaskDelay(100);
+ 433               	.LM1:
+ 434 0000 84E6      		ldi r24,lo8(100)
+ 435 0002 90E0      		ldi r25,hi8(100)
+ 436 0004 0E94 0000 		call vTaskDelay
+   9:lcd_task.c    ****       lcdWrite('a');
+ 438               	.LM2:
+ 439 0008 81E6      		ldi r24,lo8(97)
+ 440 000a 0E94 0000 		call lcdWrite
+ 441 000e 00C0      		rjmp .L2
+ 442               	.LBE2:
+ 444               	.Lscope1:
+ 446               		.stabd	78,0,0
+ 448               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 lcd_task.c
+     /tmp/cc0D4W39.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc0D4W39.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc0D4W39.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc0D4W39.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc0D4W39.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc0D4W39.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc0D4W39.s:421    .text:00000000 vTasklcd
+
+UNDEFINED SYMBOLS
+vTaskDelay
+lcdWrite

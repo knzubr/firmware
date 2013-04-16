@@ -256,7 +256,7 @@ uint8_t printRs485devices(FILE *stream)
     if (rolTmp->address != 0)
     {
       fprintf_P(stream, statusRollerDescStr, rolTmp->address, rolTmp->response.parsed.stateRoller1 & 0x3F, rolTmp->response.parsed.stateRoller2 & 0x3F);
-      fprintf_P(stream, statusRollerDescStrConf, rolTmp->response.parsed.settings);      
+   //   fprintf_P(stream, statusRollerDescStrConf, rolTmp->response.parsed.settings);      
       fprintf_P(stream, statusRollerDescStr2, rolTmp->response.parsed.firmware);
       result++;
     }

@@ -338,17 +338,17 @@
  879               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 vt100.c
-     /tmp/ccSikY8b.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccSikY8b.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccSikY8b.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccSikY8b.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccSikY8b.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccSikY8b.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccSikY8b.s:568    .text:00000000 vt100Init
-     /tmp/ccSikY8b.s:613    .text:00000028 vt100ClearScreen
-     /tmp/ccSikY8b.s:659    .text:00000050 vt100SetAttr
-     /tmp/ccSikY8b.s:717    .text:0000008c vt100SetCursorMode
-     /tmp/ccSikY8b.s:778    .text:000000ca vt100SetCursorPos
+     /tmp/ccjalZl2.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccjalZl2.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccjalZl2.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccjalZl2.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccjalZl2.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccjalZl2.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccjalZl2.s:568    .text:00000000 vt100Init
+     /tmp/ccjalZl2.s:613    .text:00000028 vt100ClearScreen
+     /tmp/ccjalZl2.s:659    .text:00000050 vt100SetAttr
+     /tmp/ccjalZl2.s:717    .text:0000008c vt100SetCursorMode
+     /tmp/ccjalZl2.s:778    .text:000000ca vt100SetCursorPos
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

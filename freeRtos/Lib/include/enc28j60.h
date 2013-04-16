@@ -26,7 +26,7 @@
 
 #include "main.h"
 #include "nic.h"
-#include "spi.h"
+#include "spiXmega.h"
 #include "hardwareConfig.h"
 #include "tcp.h"
 #include "memory_x.h"

@@ -54,6 +54,8 @@ xQueueHandle xRs485Tx;
 xQueueHandle xRs485Rec;
 
 
+
+
 volatile uint8_t temperature;
 volatile uint8_t voltage;
 
@@ -105,7 +107,7 @@ portSHORT main( void )
 	USARTD0.BAUDCTRLA=0b01100111;//12;
 	USARTD0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
 	USARTD0.CTRLB=0b00011000;
-  
+	lcdinit();
   //MOJE
 // VTY on serial  
   //xSerialPortInitMinimal(); 

@@ -13,7 +13,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "mcp4150.h"
-#include "spi.h"
+#include "spiXmega.h"
 
 void enableSpiMCP4150(void)  {};
 void disableSpiMCP4150(void) {};

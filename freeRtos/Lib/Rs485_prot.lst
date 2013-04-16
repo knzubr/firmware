@@ -816,7 +816,7 @@
  982 0184 E92E      		mov r14,r25
  983 0186 90E0      		ldi r25,hi8(statusRollerDescStr)
  984 0188 F92E      		mov r15,r25
- 259:../../freeRtos/Lib/Rs485_prot.c ****      // fprintf_P(stream, statusRollerDescStrConf, rolTmp->response.parsed.settings);      
+ 259:../../freeRtos/Lib/Rs485_prot.c ****    //   fprintf_P(stream, statusRollerDescStrConf, rolTmp->response.parsed.settings);      
  260:../../freeRtos/Lib/Rs485_prot.c ****       fprintf_P(stream, statusRollerDescStr2, rolTmp->response.parsed.firmware);
  986               	.LM47:
  987 018a 80E0      		ldi r24,lo8(statusRollerDescStr2)
@@ -1916,8 +1916,8 @@
  2067 0700 0D93      		st X+,r16
  2068 0702 1C93      		st X,r17
  2069 0704 1297      		sbiw r26,1+1
- 2070 0706 80E0      		ldi r24,lo8(__c.5027)
- 2071 0708 90E0      		ldi r25,hi8(__c.5027)
+ 2070 0706 80E0      		ldi r24,lo8(__c.5183)
+ 2071 0708 90E0      		ldi r25,hi8(__c.5183)
  2072 070a 1396      		adiw r26,3
  2073 070c 8D93      		st X+,r24
  2074 070e 9C93      		st X,r25
@@ -1972,8 +1972,8 @@
  2120 074c FEB7      		in r31,__SP_H__
  2121 074e 0183      		std Z+1,r16
  2122 0750 1283      		std Z+2,r17
- 2123 0752 80E0      		ldi r24,lo8(__c.5029)
- 2124 0754 90E0      		ldi r25,hi8(__c.5029)
+ 2123 0752 80E0      		ldi r24,lo8(__c.5185)
+ 2124 0754 90E0      		ldi r25,hi8(__c.5185)
  2125 0756 8383      		std Z+3,r24
  2126 0758 9483      		std Z+4,r25
  2127 075a 0E94 0000 		call fprintf_P
@@ -2298,8 +2298,8 @@
  2347 0880 FEB7      		in r31,__SP_H__
  2348 0882 0183      		std Z+1,r16
  2349 0884 1283      		std Z+2,r17
- 2350 0886 80E0      		ldi r24,lo8(__c.5031)
- 2351 0888 90E0      		ldi r25,hi8(__c.5031)
+ 2350 0886 80E0      		ldi r24,lo8(__c.5187)
+ 2351 0888 90E0      		ldi r25,hi8(__c.5187)
  2352 088a 8383      		std Z+3,r24
  2353 088c 9483      		std Z+4,r25
  2354 088e 0E94 0000 		call fprintf_P
@@ -3183,19 +3183,19 @@
  3146               		.comm czasRtc,7,1
  3147               		.comm rollers,2,1
  3148               		.comm klastry,128,1
- 3151               	__c.5031:
+ 3151               	__c.5187:
  3152 004e 626F 6F74 		.string	"bootloader nie rozpoczal odbioru danych\r\n"
  3152      6C6F 6164 
  3152      6572 206E 
  3152      6965 2072 
  3152      6F7A 706F 
- 3155               	__c.5029:
+ 3155               	__c.5185:
  3156 0078 6E61 2075 		.string	"na urzadzeniu wgrany jest tylko bootloader\r\n"
  3156      727A 6164 
  3156      7A65 6E69 
  3156      7520 7767 
  3156      7261 6E79 
- 3159               	__c.5027:
+ 3159               	__c.5183:
  3160 00a5 7246 4C41 		.string	"rFLASH timeout\r\n"
  3160      5348 2074 
  3160      696D 656F 
@@ -3207,34 +3207,34 @@
  3189               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 Rs485_prot.c
-     /tmp/ccsSvFl8.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccsSvFl8.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccsSvFl8.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccsSvFl8.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccsSvFl8.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccsSvFl8.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccsSvFl8.s:562    .text:00000000 _crc_xmodem_update
-     /tmp/ccsSvFl8.s:618    .text:00000038 takeRs485
-     /tmp/ccsSvFl8.s:640    .text:0000003a releaseRs485
-     /tmp/ccsSvFl8.s:661    .text:0000003c uartRs485SendByte
-     /tmp/ccsSvFl8.s:683    .text:0000003e rs485Receive
-     /tmp/ccsSvFl8.s:704    .text:00000042 flushRs485RecBuffer
-     /tmp/ccsSvFl8.s:727    .text:00000046 sendSettings
-     /tmp/ccsSvFl8.s:827    .text:000000ce saveSettings
-     /tmp/ccsSvFl8.s:913    .text:00000140 rollersMemInit
+     /tmp/ccTLbPel.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccTLbPel.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccTLbPel.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccTLbPel.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccTLbPel.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccTLbPel.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccTLbPel.s:562    .text:00000000 _crc_xmodem_update
+     /tmp/ccTLbPel.s:618    .text:00000038 takeRs485
+     /tmp/ccTLbPel.s:640    .text:0000003a releaseRs485
+     /tmp/ccTLbPel.s:661    .text:0000003c uartRs485SendByte
+     /tmp/ccTLbPel.s:683    .text:0000003e rs485Receive
+     /tmp/ccTLbPel.s:704    .text:00000042 flushRs485RecBuffer
+     /tmp/ccTLbPel.s:727    .text:00000046 sendSettings
+     /tmp/ccTLbPel.s:827    .text:000000ce saveSettings
+     /tmp/ccTLbPel.s:913    .text:00000140 rollersMemInit
                             *COM*:00000002 rollers
-     /tmp/ccsSvFl8.s:949    .text:0000015e printRs485devices
-     /tmp/ccsSvFl8.s:3120   .progmem.data:00000000 statusRollerDescStr
-     /tmp/ccsSvFl8.s:3125   .progmem.data:0000003e statusRollerDescStr2
-     /tmp/ccsSvFl8.s:1100   .text:00000232 rs485ping
-     /tmp/ccsSvFl8.s:1473   .text:0000040c rs485rollerHello
-     /tmp/ccsSvFl8.s:1963   .text:00000652 rs485xModemFlash
-     /tmp/ccsSvFl8.s:3159   .progmem.data:000000a5 __c.5027
-     /tmp/ccsSvFl8.s:3155   .progmem.data:00000078 __c.5029
-     /tmp/ccsSvFl8.s:3151   .progmem.data:0000004e __c.5031
-     /tmp/ccsSvFl8.s:2798   .text:00000aee rs485curtainUp
-     /tmp/ccsSvFl8.s:2916   .text:00000b90 rs485Led
-     /tmp/ccsSvFl8.s:3012   .text:00000c16 rs485curtainDown
+     /tmp/ccTLbPel.s:949    .text:0000015e printRs485devices
+     /tmp/ccTLbPel.s:3120   .progmem.data:00000000 statusRollerDescStr
+     /tmp/ccTLbPel.s:3125   .progmem.data:0000003e statusRollerDescStr2
+     /tmp/ccTLbPel.s:1100   .text:00000232 rs485ping
+     /tmp/ccTLbPel.s:1473   .text:0000040c rs485rollerHello
+     /tmp/ccTLbPel.s:1963   .text:00000652 rs485xModemFlash
+     /tmp/ccTLbPel.s:3159   .progmem.data:000000a5 __c.5183
+     /tmp/ccTLbPel.s:3155   .progmem.data:00000078 __c.5185
+     /tmp/ccTLbPel.s:3151   .progmem.data:0000004e __c.5187
+     /tmp/ccTLbPel.s:2798   .text:00000aee rs485curtainUp
+     /tmp/ccTLbPel.s:2916   .text:00000b90 rs485Led
+     /tmp/ccTLbPel.s:3012   .text:00000c16 rs485curtainDown
                             *COM*:00000001 wwwport
                             *COM*:00000002 xSemaphoreSpiSS
                             *COM*:00000001 portA

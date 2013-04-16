@@ -86,7 +86,7 @@ void nicMacInit(void)
 uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
 {
   uint8_t result;
-  spiTake();
+  //spiTake();
   spiEnableEnc28j60();
   
   // issue read command
@@ -102,25 +102,25 @@ uint8_t enc28j60ReadOp(uint8_t op, uint8_t address)
   }
 
   spiDisableEnc28j60();
-  spiGive();
+ // spiGive();
   return result; 
 }
 
 void enc28j60WriteOp(uint8_t op, uint8_t address, uint8_t data)
 {
-  spiTake();
+ // spiTake();
   spiEnableEnc28j60();
   // issue write command
   //spiSend(op | (address & ADDR_MASK));
   spiSend(op | (address & ADDR_MASK));
   spiSend(data);
   spiDisableEnc28j60();
-  spiGive();
+ // spiGive();
 }
 
 void enc28j60ReadBuffer(uint16_t len, uint8_t* data)
 {
-  spiTake();
+ // spiTake();
   spiEnableEnc28j60();
   spiSend(ENC28J60_READ_BUF_MEM);
   while(len)
@@ -131,12 +131,12 @@ void enc28j60ReadBuffer(uint16_t len, uint8_t* data)
   }
   *data='\0';
   spiDisableEnc28j60();
-  spiGive();
+ // spiGive();
 }
 
 void enc28j60WriteBuffer(uint16_t len, uint8_t* data)
 {
-  spiTake();
+  //spiTake();
   spiEnableEnc28j60();
   // issue write command
   //spiSend(ENC28J60_WRITE_BUF_MEM);      // 
@@ -148,7 +148,7 @@ void enc28j60WriteBuffer(uint16_t len, uint8_t* data)
     data++;
   }
   spiDisableEnc28j60();  
-  spiGive();
+  //spiGive();
 }
 
 // void enc28j60WriteRoundBuffer(uint8_t len, roundBuffer *buffer)

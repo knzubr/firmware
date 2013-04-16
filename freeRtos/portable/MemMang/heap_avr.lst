@@ -270,18 +270,18 @@
  591               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 heap_avr.c
-     /tmp/ccm8sE2F.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccm8sE2F.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccm8sE2F.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccm8sE2F.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccm8sE2F.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccm8sE2F.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccm8sE2F.s:441    .text:00000000 pvPortMalloc
+     /tmp/ccafdGrr.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccafdGrr.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccafdGrr.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccafdGrr.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccafdGrr.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccafdGrr.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccafdGrr.s:441    .text:00000000 pvPortMalloc
                              .bss:00000000 xNextFreeByte
-     /tmp/ccm8sE2F.s:585    .bss:00000002 xHeap
-     /tmp/ccm8sE2F.s:515    .text:00000052 vPortFree
-     /tmp/ccm8sE2F.s:535    .text:00000054 vPortInitialiseBlocks
-     /tmp/ccm8sE2F.s:559    .text:0000005e xPortGetFreeHeapSize
+     /tmp/ccafdGrr.s:585    .bss:00000002 xHeap
+     /tmp/ccafdGrr.s:515    .text:00000052 vPortFree
+     /tmp/ccafdGrr.s:535    .text:00000054 vPortInitialiseBlocks
+     /tmp/ccafdGrr.s:559    .text:0000005e xPortGetFreeHeapSize
 
 UNDEFINED SYMBOLS
 vTaskSuspendAll

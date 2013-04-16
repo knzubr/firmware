@@ -2931,38 +2931,38 @@
  3190               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 ramdysk.c
-     /tmp/ccMqfvuu.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccMqfvuu.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccMqfvuu.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccMqfvuu.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccMqfvuu.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccMqfvuu.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccMqfvuu.s:563    .text:00000000 uaktualnijRozmiarPliku
-     /tmp/ccMqfvuu.s:628    .text:00000046 czyscKlaster
-     /tmp/ccMqfvuu.s:660    .text:0000005e znajdzWolnyKlaster
+     /tmp/ccdwOu8i.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccdwOu8i.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccdwOu8i.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccdwOu8i.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccdwOu8i.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccdwOu8i.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccdwOu8i.s:563    .text:00000000 uaktualnijRozmiarPliku
+     /tmp/ccdwOu8i.s:628    .text:00000046 czyscKlaster
+     /tmp/ccdwOu8i.s:660    .text:0000005e znajdzWolnyKlaster
                             *COM*:00000080 klastry
-     /tmp/ccMqfvuu.s:716    .text:00000088 nastepnyKlaster
-     /tmp/ccMqfvuu.s:790    .text:000000ce znajdzKlasterN
-     /tmp/ccMqfvuu.s:847    .text:000000fa znajdzPlik
-     /tmp/ccMqfvuu.s:1024   .text:000001cc ramDyskInit
-     /tmp/ccMqfvuu.s:1065   .text:000001f0 ramDyskUtworzPlik
-     /tmp/ccMqfvuu.s:1274   .text:000002e2 ramDyskOtworzPlik
-     /tmp/ccMqfvuu.s:1342   .text:00000320 ramDyskUsunPlik
-     /tmp/ccMqfvuu.s:1428   .text:0000036a ramDyskZamknijPlik
-     /tmp/ccMqfvuu.s:1467   .text:00000388 ramDyskCzyscPlik
-     /tmp/ccMqfvuu.s:1558   .text:000003e4 ramDyskZapiszBajtDoPliku
-     /tmp/ccMqfvuu.s:1676   .text:00000460 putSTD
-     /tmp/ccMqfvuu.s:1707   .text:00000472 ramDyskCzytajBajtZPliku
-     /tmp/ccMqfvuu.s:1821   .text:000004e2 getSTD
-     /tmp/ccMqfvuu.s:1878   .text:00000514 ramDyskZapiszBlokDoPliku
-     /tmp/ccMqfvuu.s:2104   .text:00000624 ramDyskCzytajBlokZPliku
-     /tmp/ccMqfvuu.s:2381   .text:00000766 ramDyskUstawWskaznik
-     /tmp/ccMqfvuu.s:2510   .text:000007f0 ramDyskUstawWskaznikNaKoniec
-     /tmp/ccMqfvuu.s:2583   .text:00000834 ramDyskDodajBlokXmodem
-     /tmp/ccMqfvuu.s:2769   .text:0000090a ramDyskDir
-     /tmp/ccMqfvuu.s:2980   .text:00000a28 ramDyskLiczbaWolnychKlastrow
-     /tmp/ccMqfvuu.s:3028   .text:00000a40 ramDyskOtworzPlikStdIo
-     /tmp/ccMqfvuu.s:3096   .text:00000a8a ramDyskZamknijPlikStdIo
+     /tmp/ccdwOu8i.s:716    .text:00000088 nastepnyKlaster
+     /tmp/ccdwOu8i.s:790    .text:000000ce znajdzKlasterN
+     /tmp/ccdwOu8i.s:847    .text:000000fa znajdzPlik
+     /tmp/ccdwOu8i.s:1024   .text:000001cc ramDyskInit
+     /tmp/ccdwOu8i.s:1065   .text:000001f0 ramDyskUtworzPlik
+     /tmp/ccdwOu8i.s:1274   .text:000002e2 ramDyskOtworzPlik
+     /tmp/ccdwOu8i.s:1342   .text:00000320 ramDyskUsunPlik
+     /tmp/ccdwOu8i.s:1428   .text:0000036a ramDyskZamknijPlik
+     /tmp/ccdwOu8i.s:1467   .text:00000388 ramDyskCzyscPlik
+     /tmp/ccdwOu8i.s:1558   .text:000003e4 ramDyskZapiszBajtDoPliku
+     /tmp/ccdwOu8i.s:1676   .text:00000460 putSTD
+     /tmp/ccdwOu8i.s:1707   .text:00000472 ramDyskCzytajBajtZPliku
+     /tmp/ccdwOu8i.s:1821   .text:000004e2 getSTD
+     /tmp/ccdwOu8i.s:1878   .text:00000514 ramDyskZapiszBlokDoPliku
+     /tmp/ccdwOu8i.s:2104   .text:00000624 ramDyskCzytajBlokZPliku
+     /tmp/ccdwOu8i.s:2381   .text:00000766 ramDyskUstawWskaznik
+     /tmp/ccdwOu8i.s:2510   .text:000007f0 ramDyskUstawWskaznikNaKoniec
+     /tmp/ccdwOu8i.s:2583   .text:00000834 ramDyskDodajBlokXmodem
+     /tmp/ccdwOu8i.s:2769   .text:0000090a ramDyskDir
+     /tmp/ccdwOu8i.s:2980   .text:00000a28 ramDyskLiczbaWolnychKlastrow
+     /tmp/ccdwOu8i.s:3028   .text:00000a40 ramDyskOtworzPlikStdIo
+     /tmp/ccdwOu8i.s:3096   .text:00000a8a ramDyskZamknijPlikStdIo
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers
                             *COM*:00000002 xSemaphoreSpiSS

@@ -1338,32 +1338,32 @@
  1516               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 tcp.c
-     /tmp/cc9OpcQk.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc9OpcQk.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc9OpcQk.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc9OpcQk.s:5      *ABS*:00000034 __CCP__
-     /tmp/cc9OpcQk.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/cc9OpcQk.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/cc9OpcQk.s:477    .text:00000000 socketInit
+     /tmp/cciZIYHf.s:2      *ABS*:0000003f __SREG__
+     /tmp/cciZIYHf.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cciZIYHf.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cciZIYHf.s:5      *ABS*:00000034 __CCP__
+     /tmp/cciZIYHf.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cciZIYHf.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cciZIYHf.s:477    .text:00000000 socketInit
                             *COM*:00000002 sockets
-     /tmp/cc9OpcQk.s:605    .text:000000a2 calculateTcpChecksun
+     /tmp/cciZIYHf.s:605    .text:000000a2 calculateTcpChecksun
                             *COM*:0000000e nicState
-     /tmp/cc9OpcQk.s:642    .text:000000c4 processTcpPacket
+     /tmp/cciZIYHf.s:642    .text:000000c4 processTcpPacket
                             *COM*:00000002 tcpDebugStream
                             *COM*:00000001 tcpDebugLevel
-     /tmp/cc9OpcQk.s:1497   .progmem.data:00000159 __c.4230
-     /tmp/cc9OpcQk.s:1493   .progmem.data:00000133 __c.4235
-     /tmp/cc9OpcQk.s:1489   .progmem.data:00000109 __c.4240
-     /tmp/cc9OpcQk.s:1484   .progmem.data:000000c7 __c.4249
-     /tmp/cc9OpcQk.s:1480   .progmem.data:00000093 __c.4251
-     /tmp/cc9OpcQk.s:1475   .progmem.data:0000004b __c.4253
-     /tmp/cc9OpcQk.s:1471   .progmem.data:00000017 __c.4255
-     /tmp/cc9OpcQk.s:1298   .text:00000500 sendTcBuffer
-     /tmp/cc9OpcQk.s:1319   .text:00000504 netstackTCPIPProcess
-     /tmp/cc9OpcQk.s:1467   .progmem.data:00000000 __c.4269
-     /tmp/cc9OpcQk.s:1386   .text:0000055a setTcpDebug
-     /tmp/cc9OpcQk.s:1413   .text:00000568 flushTcpQueues
-     /tmp/cc9OpcQk.s:1433   .text:0000056a httpProcess
+     /tmp/cciZIYHf.s:1497   .progmem.data:00000159 __c.4230
+     /tmp/cciZIYHf.s:1493   .progmem.data:00000133 __c.4235
+     /tmp/cciZIYHf.s:1489   .progmem.data:00000109 __c.4240
+     /tmp/cciZIYHf.s:1484   .progmem.data:000000c7 __c.4249
+     /tmp/cciZIYHf.s:1480   .progmem.data:00000093 __c.4251
+     /tmp/cciZIYHf.s:1475   .progmem.data:0000004b __c.4253
+     /tmp/cciZIYHf.s:1471   .progmem.data:00000017 __c.4255
+     /tmp/cciZIYHf.s:1298   .text:00000500 sendTcBuffer
+     /tmp/cciZIYHf.s:1319   .text:00000504 netstackTCPIPProcess
+     /tmp/cciZIYHf.s:1467   .progmem.data:00000000 __c.4269
+     /tmp/cciZIYHf.s:1386   .text:0000055a setTcpDebug
+     /tmp/cciZIYHf.s:1413   .text:00000568 flushTcpQueues
+     /tmp/cciZIYHf.s:1433   .text:0000056a httpProcess
                             *COM*:00000001 wwwport
                             *COM*:00000002 plen
                             *COM*:0000000f IpMyConfig

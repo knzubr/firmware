@@ -239,12 +239,12 @@
  739 00c2 0895      		ret
  741               	.Lscope3:
  743               		.stabd	78,0,0
- 745               	.global	USARTF0_RX_vect
- 747               	USARTF0_RX_vect:
+ 745               	.global	__vector_119
+ 747               	__vector_119:
  748               		.stabd	46,0,0
   82:serial.c      **** 
   83:serial.c      **** /*-----------------------------------------------------------*/
-  84:serial.c      **** ISR(USARTF0_RX_vect)
+  84:serial.c      **** ISR(USARTF0_RXC_vect)
   85:serial.c      **** {
  750               	.LM18:
  751               	.LFBB4:
@@ -293,7 +293,7 @@
   90:serial.c      **** 
   91:serial.c      ****   xHigherPriorityTaskWoken = pdFALSE;
  792               	.LM20:
- 793 0108 1092 0000 		sts xHigherPriorityTaskWoken.4933,__zero_reg__
+ 793 0108 1092 0000 		sts xHigherPriorityTaskWoken.5089,__zero_reg__
   92:serial.c      **** 
   93:serial.c      **** //  xQueueSendFromISR( xRs485Rec, &cChar, NULL);
   94:serial.c      ****   xQueueSendFromISR( xRs485Rec, &cChar, &xHigherPriorityTaskWoken );
@@ -303,13 +303,13 @@
  798 0114 BE01      		movw r22,r28
  799 0116 6F5F      		subi r22,lo8(-(1))
  800 0118 7F4F      		sbci r23,hi8(-(1))
- 801 011a 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.4933)
- 802 011c 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.4933)
+ 801 011a 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.5089)
+ 802 011c 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.5089)
  803 011e 20E0      		ldi r18,lo8(0)
  804 0120 0E94 0000 		call xQueueGenericSendFromISR
   95:serial.c      ****   if( xHigherPriorityTaskWoken )
  806               	.LM22:
- 807 0124 8091 0000 		lds r24,xHigherPriorityTaskWoken.4933
+ 807 0124 8091 0000 		lds r24,xHigherPriorityTaskWoken.5089
  808 0128 8823      		tst r24
  809 012a 01F0      		breq .L7
   96:serial.c      ****   {
@@ -424,11 +424,11 @@
  928 01b0 0895      		ret
  930               	.Lscope6:
  932               		.stabd	78,0,0
- 934               	.global	USARTF0_UDRE_vect
- 936               	USARTF0_UDRE_vect:
+ 934               	.global	__vector_120
+ 936               	__vector_120:
  937               		.stabd	46,0,0
  111:serial.c      **** 
- 112:serial.c      **** ISR(USARTF0_UDRE_vect) //   USART0_UDRE_vect
+ 112:serial.c      **** ISR(USARTF0_DRE_vect) //   USART0_UDRE_vect
  113:serial.c      **** {
  939               	.LM32:
  940               	.LFBB7:
@@ -468,10 +468,10 @@
  972               	.LM33:
  973 01e6 8091 0000 		lds r24,xRs485Tx
  974 01ea 9091 0000 		lds r25,xRs485Tx+1
- 975 01ee 60E0      		ldi r22,lo8(data.4949)
- 976 01f0 70E0      		ldi r23,hi8(data.4949)
- 977 01f2 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.4948)
- 978 01f4 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.4948)
+ 975 01ee 60E0      		ldi r22,lo8(data.5105)
+ 976 01f0 70E0      		ldi r23,hi8(data.5105)
+ 977 01f2 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.5104)
+ 978 01f4 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.5104)
  979 01f6 0E94 0000 		call xQueueReceiveFromISR
  980 01fa 8130      		cpi r24,lo8(1)
  981 01fc 01F4      		brne .L12
@@ -485,7 +485,7 @@
  988 0208 8483      		std Z+4,r24
  119:serial.c      ****     USARTF0.DATA = data; 
  990               	.LM35:
- 991 020a 8091 0000 		lds r24,data.4949
+ 991 020a 8091 0000 		lds r24,data.5105
  992 020e 8093 A00B 		sts 2976,r24
  993 0212 00C0      		rjmp .L13
  994               	.L12:
@@ -494,7 +494,7 @@
  122:serial.c      ****   {
  123:serial.c      ****     xHigherPriorityTaskWoken = pdFALSE;
  996               	.LM36:
- 997 0214 1092 0000 		sts xHigherPriorityTaskWoken.4948,__zero_reg__
+ 997 0214 1092 0000 		sts xHigherPriorityTaskWoken.5104,__zero_reg__
  998               	.LBB3:
  124:serial.c      ****     vInterruptRs485Off();
  1000               	.LM37:
@@ -508,7 +508,7 @@
  125:serial.c      ****   }
  126:serial.c      ****   if( xHigherPriorityTaskWoken )
  1009               	.LM38:
- 1010 0224 8091 0000 		lds r24,xHigherPriorityTaskWoken.4948
+ 1010 0224 8091 0000 		lds r24,xHigherPriorityTaskWoken.5104
  1011 0228 8823      		tst r24
  1012 022a 01F0      		breq .L11
  127:serial.c      ****   {
@@ -804,7 +804,7 @@
  175:serial.c      **** 
  176:serial.c      ****   xHigherPriorityTaskWoken = pdFALSE;
  1312               	.LM64:
- 1313 036a 1092 0000 		sts xHigherPriorityTaskWoken.4979,__zero_reg__
+ 1313 036a 1092 0000 		sts xHigherPriorityTaskWoken.5135,__zero_reg__
  177:serial.c      ****   xQueueSendFromISR(xVtyRec, &cChar, &xHigherPriorityTaskWoken);
  1315               	.LM65:
  1316 036e 8091 0000 		lds r24,xVtyRec
@@ -812,13 +812,13 @@
  1318 0376 BE01      		movw r22,r28
  1319 0378 6F5F      		subi r22,lo8(-(1))
  1320 037a 7F4F      		sbci r23,hi8(-(1))
- 1321 037c 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.4979)
- 1322 037e 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.4979)
+ 1321 037c 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.5135)
+ 1322 037e 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.5135)
  1323 0380 20E0      		ldi r18,lo8(0)
  1324 0382 0E94 0000 		call xQueueGenericSendFromISR
  178:serial.c      ****   if( xHigherPriorityTaskWoken )
  1326               	.LM66:
- 1327 0386 8091 0000 		lds r24,xHigherPriorityTaskWoken.4979
+ 1327 0386 8091 0000 		lds r24,xHigherPriorityTaskWoken.5135
  1328 038a 8823      		tst r24
  1329 038c 01F0      		breq .L23
  179:serial.c      ****   {
@@ -970,17 +970,17 @@
  1487               	.LM77:
  1488 043a 8091 0000 		lds r24,xVtyTx
  1489 043e 9091 0000 		lds r25,xVtyTx+1
- 1490 0442 60E0      		ldi r22,lo8(data.4991)
- 1491 0444 70E0      		ldi r23,hi8(data.4991)
- 1492 0446 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.4990)
- 1493 0448 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.4990)
+ 1490 0442 60E0      		ldi r22,lo8(data.5147)
+ 1491 0444 70E0      		ldi r23,hi8(data.5147)
+ 1492 0446 40E0      		ldi r20,lo8(xHigherPriorityTaskWoken.5146)
+ 1493 0448 50E0      		ldi r21,hi8(xHigherPriorityTaskWoken.5146)
  1494 044a 0E94 0000 		call xQueueReceiveFromISR
  1495 044e 8130      		cpi r24,lo8(1)
  1496 0450 01F4      		brne .L28
  195:serial.c      ****   {
  196:serial.c      ****     USARTD0.DATA = data; 
  1498               	.LM78:
- 1499 0452 8091 0000 		lds r24,data.4991
+ 1499 0452 8091 0000 		lds r24,data.5147
  1500 0456 8093 A009 		sts 2464,r24
  1501 045a 00C0      		rjmp .L29
  1502               	.L28:
@@ -989,7 +989,7 @@
  199:serial.c      ****   {
  200:serial.c      ****     xHigherPriorityTaskWoken = pdFALSE;
  1504               	.LM79:
- 1505 045c 1092 0000 		sts xHigherPriorityTaskWoken.4990,__zero_reg__
+ 1505 045c 1092 0000 		sts xHigherPriorityTaskWoken.5146,__zero_reg__
  1506               	.LBB5:
  201:serial.c      ****     vInterruptVtyOff();
  1508               	.LM80:
@@ -1003,7 +1003,7 @@
  202:serial.c      ****   }
  203:serial.c      ****   if( xHigherPriorityTaskWoken )
  1517               	.LM81:
- 1518 046c 8091 0000 		lds r24,xHigherPriorityTaskWoken.4990
+ 1518 046c 8091 0000 		lds r24,xHigherPriorityTaskWoken.5146
  1519 0470 8823      		tst r24
  1520 0472 01F0      		breq .L27
  204:serial.c      ****   {
@@ -1062,13 +1062,13 @@
  1578               		.comm sockets,2,1
  1579               		.comm czasRtc,7,1
  1580               		.comm xSemaphoreRs485,2,1
- 1581               		.lcomm data.4991,1
- 1582               		.lcomm xHigherPriorityTaskWoken.4990,1
- 1583               		.lcomm xHigherPriorityTaskWoken.4979,1
- 1584               		.lcomm data.4949,1
- 1585               		.lcomm xHigherPriorityTaskWoken.4948,1
+ 1581               		.lcomm data.5147,1
+ 1582               		.lcomm xHigherPriorityTaskWoken.5146,1
+ 1583               		.lcomm xHigherPriorityTaskWoken.5135,1
+ 1584               		.lcomm data.5105,1
+ 1585               		.lcomm xHigherPriorityTaskWoken.5104,1
  1586               		.data
- 1589               	xHigherPriorityTaskWoken.4933:
+ 1589               	xHigherPriorityTaskWoken.5089:
  1590 0000 01        		.byte	1
  1613               		.text
  1615               	.Letext0:
@@ -1076,35 +1076,35 @@
  1617               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 serial.c
-     /tmp/ccVfOm3p.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccVfOm3p.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccVfOm3p.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccVfOm3p.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccVfOm3p.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccVfOm3p.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccVfOm3p.s:566    .text:00000000 VtyGetChar
-     /tmp/ccVfOm3p.s:623    .text:0000003a initQueueStreamUSB
-     /tmp/ccVfOm3p.s:1426   .text:000003fc VtyPutChar
-     /tmp/ccVfOm3p.s:658    .text:00000056 xSerialPortInitMinimal
+     /tmp/ccpxjtYc.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccpxjtYc.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccpxjtYc.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccpxjtYc.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccpxjtYc.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccpxjtYc.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccpxjtYc.s:566    .text:00000000 VtyGetChar
+     /tmp/ccpxjtYc.s:623    .text:0000003a initQueueStreamUSB
+     /tmp/ccpxjtYc.s:1426   .text:000003fc VtyPutChar
+     /tmp/ccpxjtYc.s:658    .text:00000056 xSerialPortInitMinimal
                             *COM*:00000002 xSemaphoreRs485
-     /tmp/ccVfOm3p.s:747    .text:000000c4 USARTF0_RX_vect
-     /tmp/ccVfOm3p.s:1589   .data:00000000 xHigherPriorityTaskWoken.4933
-     /tmp/ccVfOm3p.s:855    .text:00000164 uartRs485SendByte
-     /tmp/ccVfOm3p.s:906    .text:0000019a rs485Receive
-     /tmp/ccVfOm3p.s:936    .text:000001b2 USARTF0_UDRE_vect
-     /tmp/ccVfOm3p.s:1583   .bss:00000003 data.4949
-     /tmp/ccVfOm3p.s:1584   .bss:00000004 xHigherPriorityTaskWoken.4948
-     /tmp/ccVfOm3p.s:1054   .text:0000025e __vector_121
-     /tmp/ccVfOm3p.s:1112   .text:000002a6 flushRs485RecBuffer
-     /tmp/ccVfOm3p.s:1176   .text:000002ea takeRs485
-     /tmp/ccVfOm3p.s:1206   .text:00000302 releaseRs485
-     /tmp/ccVfOm3p.s:1236   .text:0000031a InterruptVtyOn
-     /tmp/ccVfOm3p.s:1267   .text:00000326 __vector_88
-     /tmp/ccVfOm3p.s:1582   .bss:00000002 xHigherPriorityTaskWoken.4979
-     /tmp/ccVfOm3p.s:1375   .text:000003c6 uartVtySendByte
-     /tmp/ccVfOm3p.s:1451   .text:00000406 __vector_89
-                             .bss:00000000 data.4991
-     /tmp/ccVfOm3p.s:1581   .bss:00000001 xHigherPriorityTaskWoken.4990
+     /tmp/ccpxjtYc.s:747    .text:000000c4 __vector_119
+     /tmp/ccpxjtYc.s:1589   .data:00000000 xHigherPriorityTaskWoken.5089
+     /tmp/ccpxjtYc.s:855    .text:00000164 uartRs485SendByte
+     /tmp/ccpxjtYc.s:906    .text:0000019a rs485Receive
+     /tmp/ccpxjtYc.s:936    .text:000001b2 __vector_120
+     /tmp/ccpxjtYc.s:1583   .bss:00000003 data.5105
+     /tmp/ccpxjtYc.s:1584   .bss:00000004 xHigherPriorityTaskWoken.5104
+     /tmp/ccpxjtYc.s:1054   .text:0000025e __vector_121
+     /tmp/ccpxjtYc.s:1112   .text:000002a6 flushRs485RecBuffer
+     /tmp/ccpxjtYc.s:1176   .text:000002ea takeRs485
+     /tmp/ccpxjtYc.s:1206   .text:00000302 releaseRs485
+     /tmp/ccpxjtYc.s:1236   .text:0000031a InterruptVtyOn
+     /tmp/ccpxjtYc.s:1267   .text:00000326 __vector_88
+     /tmp/ccpxjtYc.s:1582   .bss:00000002 xHigherPriorityTaskWoken.5135
+     /tmp/ccpxjtYc.s:1375   .text:000003c6 uartVtySendByte
+     /tmp/ccpxjtYc.s:1451   .text:00000406 __vector_89
+                             .bss:00000000 data.5147
+     /tmp/ccpxjtYc.s:1581   .bss:00000001 xHigherPriorityTaskWoken.5146
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

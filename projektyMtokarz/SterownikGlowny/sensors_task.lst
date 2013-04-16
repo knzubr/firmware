@@ -204,14 +204,14 @@
  735               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 sensors_task.c
-     /tmp/ccx1R8HJ.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccx1R8HJ.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccx1R8HJ.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccx1R8HJ.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccx1R8HJ.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccx1R8HJ.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccx1R8HJ.s:561    .text:00000000 sensorsTaskInit
-     /tmp/ccx1R8HJ.s:588    .text:0000000a sensorsTask
+     /tmp/ccGlNIdp.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccGlNIdp.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccGlNIdp.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccGlNIdp.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccGlNIdp.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccGlNIdp.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccGlNIdp.s:561    .text:00000000 sensorsTaskInit
+     /tmp/ccGlNIdp.s:588    .text:0000000a sensorsTask
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

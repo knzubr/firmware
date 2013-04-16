@@ -81,7 +81,7 @@ void xSerialPortInitMinimal(void)
 }
 
 /*-----------------------------------------------------------*/
-ISR(USARTF0_RX_vect)
+ISR(USARTF0_RXC_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken = pdTRUE; 
   signed portCHAR cChar;
@@ -109,7 +109,7 @@ uint8_t rs485Receive(uint8_t *c, uint8_t timeout)
   return xQueueReceive(xRs485Rec, c, timeout);
 }
 
-ISR(USARTF0_UDRE_vect) //   USART0_UDRE_vect
+ISR(USARTF0_DRE_vect) //   USART0_UDRE_vect
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
   static char data;

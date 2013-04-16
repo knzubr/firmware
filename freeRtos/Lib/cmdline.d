@@ -17,9 +17,11 @@ cmdline.o cmdline.d : ../../freeRtos/Lib/cmdline.c main.h \
  ../../freeRtos/Source/include/semphr.h \
  ../../freeRtos/Source/include/queue.h hardware.h hardwareConfig.h \
  softwareConfig.h ../../freeRtos/Lib/include/mpc23s17.h \
- ../../freeRtos/Lib/include/spi.h ../../freeRtos/Lib/include/mcp3008.h \
- ../../freeRtos/Lib/include/spi.h ../../freeRtos/Lib/include/ds1305.h \
- hardwareConfig.h ../../freeRtos/Lib/include/enc28j60.h \
+ ../../freeRtos/Lib/include/spiXmega.h \
+ ../../freeRtos/Lib/include/mcp3008.h \
+ ../../freeRtos/Lib/include/spiXmega.h \
+ ../../freeRtos/Lib/include/ds1305.h hardwareConfig.h \
+ ../../freeRtos/Lib/include/enc28j60.h \
  ../../freeRtos/Lib/net/include/nic.h \
  ../../freeRtos/Lib/net/include/net.h \
  ../../freeRtos/Lib/net/include/tcp.h ../../freeRtos/Lib/net/include/ip.h \
@@ -35,5 +37,5 @@ cmdline.o cmdline.d : ../../freeRtos/Lib/cmdline.c main.h \
  netstack_task.h ../../freeRtos/Lib/net/include/net.h \
  ../../freeRtos/Lib/net/include/ip.h ../../freeRtos/Lib/net/include/arp.h \
  ../../freeRtos/Lib/net/include/udp.h \
- ../../freeRtos/Lib/net/include/icmp.h vty.h configuration.h \
- ../../freeRtos/Lib/include/vt100.h
+ ../../freeRtos/Lib/net/include/icmp.h ../../freeRtos/Lib/include/lcd.h \
+ vty.h configuration.h ../../freeRtos/Lib/include/vt100.h

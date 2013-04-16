@@ -25,7 +25,7 @@
   13:../../freeRtos/Lib/mcp4150.c **** #include <avr/io.h>
   14:../../freeRtos/Lib/mcp4150.c **** #include <util/delay.h>
   15:../../freeRtos/Lib/mcp4150.c **** #include "mcp4150.h"
-  16:../../freeRtos/Lib/mcp4150.c **** #include "spi.h"
+  16:../../freeRtos/Lib/mcp4150.c **** #include "spiXmega.h"
   17:../../freeRtos/Lib/mcp4150.c **** 
   18:../../freeRtos/Lib/mcp4150.c **** void enableSpiMCP4150(void)  {};
  568               	.LM0:
@@ -128,15 +128,15 @@
  693               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 mcp4150.c
-     /tmp/ccZn3T5r.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccZn3T5r.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccZn3T5r.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccZn3T5r.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccZn3T5r.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccZn3T5r.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccZn3T5r.s:565    .text:00000000 enableSpiMCP4150
-     /tmp/ccZn3T5r.s:585    .text:00000002 disableSpiMCP4150
-     /tmp/ccZn3T5r.s:606    .text:00000004 MCP4150_setValue
+     /tmp/cc8VyGGj.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc8VyGGj.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc8VyGGj.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc8VyGGj.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc8VyGGj.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc8VyGGj.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc8VyGGj.s:565    .text:00000000 enableSpiMCP4150
+     /tmp/cc8VyGGj.s:585    .text:00000002 disableSpiMCP4150
+     /tmp/cc8VyGGj.s:606    .text:00000004 MCP4150_setValue
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers
