@@ -242,16 +242,16 @@
  805               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 mcp3008.c
-     /tmp/ccpuS2ml.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccpuS2ml.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccpuS2ml.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccpuS2ml.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccpuS2ml.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccpuS2ml.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccpuS2ml.s:565    .text:00000000 enableSpiMCP3008
-     /tmp/ccpuS2ml.s:585    .text:00000002 disableSpiMCP3008
-     /tmp/ccpuS2ml.s:606    .text:00000004 MCP3008_getSampleDiff
-     /tmp/ccpuS2ml.s:683    .text:0000005a MCP3008_getSampleSingle
+     /tmp/ccZ9BnEK.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccZ9BnEK.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccZ9BnEK.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccZ9BnEK.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccZ9BnEK.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccZ9BnEK.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccZ9BnEK.s:565    .text:00000000 enableSpiMCP3008
+     /tmp/ccZ9BnEK.s:585    .text:00000002 disableSpiMCP3008
+     /tmp/ccZ9BnEK.s:606    .text:00000004 MCP3008_getSampleDiff
+     /tmp/ccZ9BnEK.s:683    .text:0000005a MCP3008_getSampleSingle
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

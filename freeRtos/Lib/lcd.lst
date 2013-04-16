@@ -845,18 +845,18 @@
  992               	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 lcd.c
-     /tmp/ccuYUdPf.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccuYUdPf.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccuYUdPf.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccuYUdPf.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccuYUdPf.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccuYUdPf.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccuYUdPf.s:400    .text:00000000 odwroc
-     /tmp/ccuYUdPf.s:526    .text:0000005c polbajt
-     /tmp/ccuYUdPf.s:616    .text:000000be lcdWrite
-     /tmp/ccuYUdPf.s:706    .text:00000118 lcdwritecommand
-     /tmp/ccuYUdPf.s:737    .text:00000128 lcdsend
-     /tmp/ccuYUdPf.s:767    .text:00000138 lcdclear
-     /tmp/ccuYUdPf.s:807    .text:0000014c lcdinit
+     /tmp/ccIoLY4A.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccIoLY4A.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccIoLY4A.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccIoLY4A.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccIoLY4A.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccIoLY4A.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccIoLY4A.s:400    .text:00000000 odwroc
+     /tmp/ccIoLY4A.s:526    .text:0000005c polbajt
+     /tmp/ccIoLY4A.s:616    .text:000000be lcdWrite
+     /tmp/ccIoLY4A.s:706    .text:00000118 lcdwritecommand
+     /tmp/ccIoLY4A.s:737    .text:00000128 lcdsend
+     /tmp/ccIoLY4A.s:767    .text:00000138 lcdclear
+     /tmp/ccIoLY4A.s:807    .text:0000014c lcdinit
 
 NO UNDEFINED SYMBOLS

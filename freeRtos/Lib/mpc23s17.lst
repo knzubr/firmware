@@ -755,26 +755,26 @@
  1330               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 mpc23s17.c
-     /tmp/ccllvy7f.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccllvy7f.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccllvy7f.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccllvy7f.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccllvy7f.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccllvy7f.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccllvy7f.s:565    .text:00000000 enableSpiMPC23S17
-     /tmp/ccllvy7f.s:585    .text:00000002 disableSpiMPC23S17
-     /tmp/ccllvy7f.s:607    .text:00000004 MPC23s17SetDirA
-     /tmp/ccllvy7f.s:673    .text:00000048 MPC23s17SetDirB
-     /tmp/ccllvy7f.s:739    .text:0000008c MPC23s17SetPortA
+     /tmp/ccDdSUSC.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccDdSUSC.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccDdSUSC.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccDdSUSC.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccDdSUSC.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccDdSUSC.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccDdSUSC.s:565    .text:00000000 enableSpiMPC23S17
+     /tmp/ccDdSUSC.s:585    .text:00000002 disableSpiMPC23S17
+     /tmp/ccDdSUSC.s:607    .text:00000004 MPC23s17SetDirA
+     /tmp/ccDdSUSC.s:673    .text:00000048 MPC23s17SetDirB
+     /tmp/ccDdSUSC.s:739    .text:0000008c MPC23s17SetPortA
                             *COM*:00000001 portA
-     /tmp/ccllvy7f.s:808    .text:000000d6 MPC23s17SetBitsOnPortA
-     /tmp/ccllvy7f.s:876    .text:00000120 MPC23s17ClearBitsOnPortA
-     /tmp/ccllvy7f.s:945    .text:0000016c MPC23s17SetPortB
+     /tmp/ccDdSUSC.s:808    .text:000000d6 MPC23s17SetBitsOnPortA
+     /tmp/ccDdSUSC.s:876    .text:00000120 MPC23s17ClearBitsOnPortA
+     /tmp/ccDdSUSC.s:945    .text:0000016c MPC23s17SetPortB
                             *COM*:00000001 portB
-     /tmp/ccllvy7f.s:1011   .text:000001b0 MPC23s17SetBitsOnPortB
-     /tmp/ccllvy7f.s:1079   .text:000001fa MPC23s17ClearBitsOnPortB
-     /tmp/ccllvy7f.s:1147   .text:00000246 MPC23s17ReadPortA
-     /tmp/ccllvy7f.s:1217   .text:0000028a MPC23s17ReadPortB
+     /tmp/ccDdSUSC.s:1011   .text:000001b0 MPC23s17SetBitsOnPortB
+     /tmp/ccDdSUSC.s:1079   .text:000001fa MPC23s17ClearBitsOnPortB
+     /tmp/ccDdSUSC.s:1147   .text:00000246 MPC23s17ReadPortA
+     /tmp/ccDdSUSC.s:1217   .text:0000028a MPC23s17ReadPortB
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

@@ -181,16 +181,16 @@
  618               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 cli_task.c
-     /tmp/ccWe2zD5.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccWe2zD5.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccWe2zD5.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccWe2zD5.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccWe2zD5.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccWe2zD5.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccWe2zD5.s:456    .text:00000000 vTaskVTYusb
-     /tmp/ccWe2zD5.s:612    .progmem.data:00000000 __c.3756
-     /tmp/ccWe2zD5.s:539    .text:00000072 vTaskUSB
-     /tmp/ccWe2zD5.s:569    .text:00000084 vTaskVTYsocket
+     /tmp/ccuZMguv.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccuZMguv.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccuZMguv.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccuZMguv.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccuZMguv.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccuZMguv.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccuZMguv.s:456    .text:00000000 vTaskVTYusb
+     /tmp/ccuZMguv.s:612    .progmem.data:00000000 __c.3756
+     /tmp/ccuZMguv.s:539    .text:00000072 vTaskUSB
+     /tmp/ccuZMguv.s:569    .text:00000084 vTaskVTYsocket
                             *COM*:00000001 wwwport
 
 UNDEFINED SYMBOLS

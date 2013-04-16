@@ -267,14 +267,14 @@
  738               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 netstack_task.c
-     /tmp/ccgu2bE1.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccgu2bE1.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccgu2bE1.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccgu2bE1.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccgu2bE1.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccgu2bE1.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccgu2bE1.s:563    .text:00000000 encTask
-     /tmp/ccgu2bE1.s:710    .progmem.data:00000000 __c.5076
+     /tmp/cc25vjPm.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc25vjPm.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc25vjPm.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc25vjPm.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc25vjPm.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc25vjPm.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc25vjPm.s:563    .text:00000000 encTask
+     /tmp/cc25vjPm.s:710    .progmem.data:00000000 __c.5076
                             *COM*:0000000e nicState
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport

@@ -1076,35 +1076,35 @@
  1617               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 serial.c
-     /tmp/ccpxjtYc.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccpxjtYc.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccpxjtYc.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccpxjtYc.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccpxjtYc.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccpxjtYc.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccpxjtYc.s:566    .text:00000000 VtyGetChar
-     /tmp/ccpxjtYc.s:623    .text:0000003a initQueueStreamUSB
-     /tmp/ccpxjtYc.s:1426   .text:000003fc VtyPutChar
-     /tmp/ccpxjtYc.s:658    .text:00000056 xSerialPortInitMinimal
+     /tmp/ccLB7cOy.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccLB7cOy.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccLB7cOy.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccLB7cOy.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccLB7cOy.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccLB7cOy.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccLB7cOy.s:566    .text:00000000 VtyGetChar
+     /tmp/ccLB7cOy.s:623    .text:0000003a initQueueStreamUSB
+     /tmp/ccLB7cOy.s:1426   .text:000003fc VtyPutChar
+     /tmp/ccLB7cOy.s:658    .text:00000056 xSerialPortInitMinimal
                             *COM*:00000002 xSemaphoreRs485
-     /tmp/ccpxjtYc.s:747    .text:000000c4 __vector_119
-     /tmp/ccpxjtYc.s:1589   .data:00000000 xHigherPriorityTaskWoken.5089
-     /tmp/ccpxjtYc.s:855    .text:00000164 uartRs485SendByte
-     /tmp/ccpxjtYc.s:906    .text:0000019a rs485Receive
-     /tmp/ccpxjtYc.s:936    .text:000001b2 __vector_120
-     /tmp/ccpxjtYc.s:1583   .bss:00000003 data.5105
-     /tmp/ccpxjtYc.s:1584   .bss:00000004 xHigherPriorityTaskWoken.5104
-     /tmp/ccpxjtYc.s:1054   .text:0000025e __vector_121
-     /tmp/ccpxjtYc.s:1112   .text:000002a6 flushRs485RecBuffer
-     /tmp/ccpxjtYc.s:1176   .text:000002ea takeRs485
-     /tmp/ccpxjtYc.s:1206   .text:00000302 releaseRs485
-     /tmp/ccpxjtYc.s:1236   .text:0000031a InterruptVtyOn
-     /tmp/ccpxjtYc.s:1267   .text:00000326 __vector_88
-     /tmp/ccpxjtYc.s:1582   .bss:00000002 xHigherPriorityTaskWoken.5135
-     /tmp/ccpxjtYc.s:1375   .text:000003c6 uartVtySendByte
-     /tmp/ccpxjtYc.s:1451   .text:00000406 __vector_89
+     /tmp/ccLB7cOy.s:747    .text:000000c4 __vector_119
+     /tmp/ccLB7cOy.s:1589   .data:00000000 xHigherPriorityTaskWoken.5089
+     /tmp/ccLB7cOy.s:855    .text:00000164 uartRs485SendByte
+     /tmp/ccLB7cOy.s:906    .text:0000019a rs485Receive
+     /tmp/ccLB7cOy.s:936    .text:000001b2 __vector_120
+     /tmp/ccLB7cOy.s:1583   .bss:00000003 data.5105
+     /tmp/ccLB7cOy.s:1584   .bss:00000004 xHigherPriorityTaskWoken.5104
+     /tmp/ccLB7cOy.s:1054   .text:0000025e __vector_121
+     /tmp/ccLB7cOy.s:1112   .text:000002a6 flushRs485RecBuffer
+     /tmp/ccLB7cOy.s:1176   .text:000002ea takeRs485
+     /tmp/ccLB7cOy.s:1206   .text:00000302 releaseRs485
+     /tmp/ccLB7cOy.s:1236   .text:0000031a InterruptVtyOn
+     /tmp/ccLB7cOy.s:1267   .text:00000326 __vector_88
+     /tmp/ccLB7cOy.s:1582   .bss:00000002 xHigherPriorityTaskWoken.5135
+     /tmp/ccLB7cOy.s:1375   .text:000003c6 uartVtySendByte
+     /tmp/ccLB7cOy.s:1451   .text:00000406 __vector_89
                              .bss:00000000 data.5147
-     /tmp/ccpxjtYc.s:1581   .bss:00000001 xHigherPriorityTaskWoken.5146
+     /tmp/ccLB7cOy.s:1581   .bss:00000001 xHigherPriorityTaskWoken.5146
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

@@ -383,21 +383,21 @@
  864               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-     /tmp/ccDqdbS2.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccDqdbS2.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccDqdbS2.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccDqdbS2.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccDqdbS2.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccDqdbS2.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccDqdbS2.s:563    .text:00000000 main
+     /tmp/ccB2Of6m.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccB2Of6m.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccB2Of6m.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccB2Of6m.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccB2Of6m.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccB2Of6m.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccB2Of6m.s:563    .text:00000000 main
                             *COM*:00000002 CLIStateSerialUsb
                             *COM*:00000002 CLIStateSerialUdp
                             *COM*:00000002 xHandleVTY_USB
                             *COM*:00000002 xHandleUSB
-     /tmp/ccDqdbS2.s:714    .text:000000dc vApplicationIdleHook
-     /tmp/ccDqdbS2.s:735    .text:000000e2 vApplicationTickHook
-     /tmp/ccDqdbS2.s:819    .data:00000000 tickCntr.5104
-     /tmp/ccDqdbS2.s:776    .bss:00000000 timer100Hz
+     /tmp/ccB2Of6m.s:714    .text:000000dc vApplicationIdleHook
+     /tmp/ccB2Of6m.s:735    .text:000000e2 vApplicationTickHook
+     /tmp/ccB2Of6m.s:819    .data:00000000 tickCntr.5104
+     /tmp/ccB2Of6m.s:776    .bss:00000000 timer100Hz
                             *COM*:00000080 klastry
                             *COM*:00000001 wwwport
                             *COM*:00000002 rollers

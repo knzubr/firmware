@@ -306,23 +306,23 @@
  704               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 nic.c
-     /tmp/ccOipoxF.s:2      *ABS*:0000003f __SREG__
-     /tmp/ccOipoxF.s:3      *ABS*:0000003e __SP_H__
-     /tmp/ccOipoxF.s:4      *ABS*:0000003d __SP_L__
-     /tmp/ccOipoxF.s:5      *ABS*:00000034 __CCP__
-     /tmp/ccOipoxF.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/ccOipoxF.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/ccOipoxF.s:424    .text:00000000 nicMacInit
-     /tmp/ccOipoxF.s:445    .text:00000002 nicSend
-     /tmp/ccOipoxF.s:465    .text:00000004 nicPoll
-     /tmp/ccOipoxF.s:487    .text:0000000a saveNic
+     /tmp/cc4XKg22.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc4XKg22.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc4XKg22.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc4XKg22.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc4XKg22.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc4XKg22.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc4XKg22.s:424    .text:00000000 nicMacInit
+     /tmp/cc4XKg22.s:445    .text:00000002 nicSend
+     /tmp/cc4XKg22.s:465    .text:00000004 nicPoll
+     /tmp/cc4XKg22.s:487    .text:0000000a saveNic
                             *COM*:0000000e nicState
-     /tmp/ccOipoxF.s:690    .eeprom:00000000 mymac_eep
-     /tmp/ccOipoxF.s:516    .text:0000001c nicInit
-     /tmp/ccOipoxF.s:585    .text:0000006e nicGetMacAddress
-     /tmp/ccOipoxF.s:613    .text:0000007c nicSetMacAddress
-     /tmp/ccOipoxF.s:645    .text:00000090 nicRegDump
-     /tmp/ccOipoxF.s:685    .progmem.data:00000000 __c.3740
+     /tmp/cc4XKg22.s:690    .eeprom:00000000 mymac_eep
+     /tmp/cc4XKg22.s:516    .text:0000001c nicInit
+     /tmp/cc4XKg22.s:585    .text:0000006e nicGetMacAddress
+     /tmp/cc4XKg22.s:613    .text:0000007c nicSetMacAddress
+     /tmp/cc4XKg22.s:645    .text:00000090 nicRegDump
+     /tmp/cc4XKg22.s:685    .progmem.data:00000000 __c.3740
                             *COM*:00000001 wwwport
                             *COM*:00000002 plen
 

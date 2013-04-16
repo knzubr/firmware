@@ -85,15 +85,15 @@
  115               	.global __do_copy_data
 DEFINED SYMBOLS
                             *ABS*:00000000 memory_x.c
-     /tmp/cc3Vxswg.s:2      *ABS*:0000003f __SREG__
-     /tmp/cc3Vxswg.s:3      *ABS*:0000003e __SP_H__
-     /tmp/cc3Vxswg.s:4      *ABS*:0000003d __SP_L__
-     /tmp/cc3Vxswg.s:5      *ABS*:00000034 __CCP__
-     /tmp/cc3Vxswg.s:6      *ABS*:00000000 __tmp_reg__
-     /tmp/cc3Vxswg.s:7      *ABS*:00000001 __zero_reg__
-     /tmp/cc3Vxswg.s:43     .text:00000000 xmalloc
-     /tmp/cc3Vxswg.s:109    .data:00000000 heapEnd
-     /tmp/cc3Vxswg.s:77     .text:0000001c xmallocAvailable
+     /tmp/ccCZPwzN.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccCZPwzN.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccCZPwzN.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccCZPwzN.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccCZPwzN.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccCZPwzN.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccCZPwzN.s:43     .text:00000000 xmalloc
+     /tmp/ccCZPwzN.s:109    .data:00000000 heapEnd
+     /tmp/ccCZPwzN.s:77     .text:0000001c xmallocAvailable
 
 UNDEFINED SYMBOLS
 malloc
