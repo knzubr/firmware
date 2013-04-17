@@ -27,13 +27,21 @@
 #endif
 
 
+#ifdef USENET
+static cliExRes_t pingFunction           (cmdState_t *state);
+static cliExRes_t setIpFunction          (cmdState_t *state);
+static cliExRes_t setIpMaskFunction      (cmdState_t *state);
+static cliExRes_t setIpGwFunction        (cmdState_t *state);
+static cliExRes_t setUdpFunction         (cmdState_t *state);
+static cliExRes_t setMacAddrFunction     (cmdState_t *state);
+#endif
+
 static cliExRes_t helpFunction           (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
 static cliExRes_t statusEncFunction      (cmdState_t *state);
 static cliExRes_t curtainDownFunction    (cmdState_t *state);
 static cliExRes_t curtainUpFunction      (cmdState_t *state);
 static cliExRes_t rpingFunction          (cmdState_t *state);
-static cliExRes_t pingFunction           (cmdState_t *state);
 static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state);
 static cliExRes_t goXmodemWyslijFunction (cmdState_t *state);
 static cliExRes_t dodajRamPlikFunction   (cmdState_t *state);
@@ -55,12 +63,7 @@ static cliExRes_t enableFunction         (cmdState_t *state);
 static cliExRes_t disableFunction        (cmdState_t *state);
 static cliExRes_t configureModeFunction  (cmdState_t *state);
 
-static cliExRes_t setIpFunction(cmdState_t *state);
-static cliExRes_t setIpMaskFunction(cmdState_t *state);
-static cliExRes_t setIpGwFunction(cmdState_t *state);
-static cliExRes_t setUdpFunction(cmdState_t *state);
 
-static cliExRes_t setMacAddrFunction     (cmdState_t *state);
 static cliExRes_t setTimeFunction        (cmdState_t *state);
 
 static cliExRes_t saveConfigFunction     (cmdState_t *state);
@@ -97,7 +100,9 @@ const command_t cmdListNormal[] PROGMEM =
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_time,      cmd_help_time,      pokazCzasFunction},  
   {cmd_rping,     cmd_help_rping,     rpingFunction},
+#ifdef USENET
   {cmd_ping,      cmd_help_ping,      pingFunction},
+#endif
   {cmd_dir_rf,    cmd_help_dir_rf,    writeRamFileFunction},
   {cmd_read_rf,   cmd_help_read_rf,   readRamFIleFunction},
   {cmd_enable,    cmd_help_enable,    enableFunction},
@@ -113,7 +118,9 @@ const command_t cmdListEnable[] =
   {cmd_net_dbg,   cmd_help_net_dbg,   debugFunction},
   
   {cmd_rping,     cmd_help_rping,     rpingFunction},
+#ifdef USENET
   {cmd_ping,      cmd_help_ping,      pingFunction},
+#endif
   {cmd_xRec,      cmd_help_xRec,      goXmodemOdbierzFunction},
   {cmd_xSend,     cmd_help_xSend,     goXmodemWyslijFunction},
   {cmd_xflash,    cmd_help_xflash,    flashExModuleFunction},
@@ -145,11 +152,13 @@ const command_t cmdListConfigure[] PROGMEM =
   {cmd_status,       cmd_help_status,       statusFunction},
   {cmd_time,         cmd_help_time,         pokazCzasFunction},
   {cmd_settime,      cmd_help_settime,      setTimeFunction},
+#ifdef USENET
   {cmd_conf_ip,      cmd_help_conf_ip,      setIpFunction},
   {cmd_conf_ip_mask, cmd_conf_ip_mask_help, setIpMaskFunction},
   {cmd_conf_ip_gw,   cmd_conf_ip_gw_help,   setIpGwFunction},
   {cmd_conf_udp,     cmd_help_conf_udp,     setUdpFunction},
   {cmd_conf_mac,     cmd_help_conf_mac,     setMacAddrFunction},
+#endif
   {cmd_conf_save,    cmd_help_conf_save,    saveConfigFunction},
   {cmd_enable,       cmd_help_enable,       enableFunction},
   {cmd_disable,      cmd_help_disable,      disableFunction},
@@ -221,6 +230,7 @@ void printStatus(FILE *stream)
   //Print system configuration
   fprintf_P(stream, systemRamConfigStr);
 
+#ifdef USENET
   fprintf_P(stream, statusMacStr);
   netPrintEthAddr(stream, &nicState.mac);
   fprintf_P(stream, PSTR("\r\n"));
@@ -236,7 +246,7 @@ void printStatus(FILE *stream)
   fprintf_P(stream, statusIpGwStr);
   netPrintIPAddr(stream, ipGetConfig()->gateway);
   fprintf_P(stream, PSTR("\r\n"));
-  
+#endif
   //Print Rs485 Execitive modules
   fprintf_P(stream, statusRs485listStr);
   tmp = printRs485devices(stream);
@@ -256,7 +266,9 @@ void printStatus(FILE *stream)
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
   fprintf_P(state->myStdInOut, PSTR("%d:%d:%d\r\n"), godzina, minuta, sekunda);*/
 
+#ifdef USENET
   udpPrintStatus(stream);
+#endif
 //  arpPrintTable(stream);
 }
 
@@ -308,6 +320,7 @@ static cliExRes_t debugFunction          (cmdState_t *state)
   const char *str = (const char*)cmdlineGetArgStr(1, state);
   if (level == 0)
   {
+#ifdef USENET
     if (strncmp_P(str, PSTR("arp"), 3) == 0)
     {
       setArpDebug(NULL, 0);
@@ -342,11 +355,12 @@ static cliExRes_t debugFunction          (cmdState_t *state)
       fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
       return OK_SILENT;  
     }    
-
+#endif
 
   }
   else                   //level > 0
   {
+#ifdef USENET
     if (strncmp_P(str, PSTR("arp"), 3) == 0)
     {
       setArpDebug(state->myStdInOut, level);
@@ -381,6 +395,7 @@ static cliExRes_t debugFunction          (cmdState_t *state)
       fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
       return OK_SILENT;  
     }
+#endif
   }
   
   return SYNTAX_ERROR;
@@ -414,6 +429,7 @@ static cliExRes_t setTimeFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
+#ifdef USENET
 static cliExRes_t setIpFunction(cmdState_t *state)
 {
   if (state->argc < 4)
@@ -490,7 +506,7 @@ static cliExRes_t setMacAddrFunction(cmdState_t *state)
   nicSetMacAddress(nicState.mac.addr);
   return OK_SILENT;
 }
-
+#endif
 static cliExRes_t czytajAC_Function(cmdState_t *state)
 {
   uint8_t nrWejscia = cmdlineGetArgInt(1, state);
@@ -595,6 +611,7 @@ static cliExRes_t rpingFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
+#ifdef USENET
 static cliExRes_t pingFunction(cmdState_t *state)
 {
   if (state->argc < 4)
@@ -610,7 +627,7 @@ static cliExRes_t pingFunction(cmdState_t *state)
   
   return OK_SILENT;
 }
-
+#endif
 
 static cliExRes_t flashExModuleFunction(cmdState_t *state)
 {

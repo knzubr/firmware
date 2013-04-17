@@ -35,6 +35,11 @@ int VtyPutChar(char c, FILE *stream)
 
 void xSerialPortInitMinimal(void)
 {
+  USARTD0.CTRLC=0b00000011;//ok
+  USARTD0.CTRLA|=(USART_RXCINTLVL_LO_gc)|(USART_TXCINTLVL_LO_gc);
+  USARTD0.BAUDCTRLA=0b01100111;//12;
+  USARTD0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
+  USARTD0.CTRLB=0b00011000;
   portENTER_CRITICAL();
   {
     xVtyRec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));

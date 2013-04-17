@@ -13,6 +13,12 @@ xQueueHandle      xSpiRxEnc;
 // napisać funkcje do konfiguracji zew pam s-ram
 void hardwareInit(void)
 {
+//   PORTD.OUT=0xFF; //ok
+  PORTD.DIR=PIN3_bm;//ok
+  PORTD.DIRCLR = PIN2_bm;//ok
+
+
+  
   //DDRA = 0x00;  //External Memory
   portENTER_CRITICAL();
   xSpiRx          = xQueueCreate(1, 1);

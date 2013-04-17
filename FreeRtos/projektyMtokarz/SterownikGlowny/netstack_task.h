@@ -42,10 +42,14 @@ uint8_t verify_password(char *str);
  */
 urlSource_t analyse_get_url (const char *str, char *fname);
 
+
+#ifdef USENET
 /**
  * Enc28j60 task
  */
 void encTask(void *pvParameters);
 
 extern nicState_t nicState;
+#endif /* USENET */
+
 #endif
