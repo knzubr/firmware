@@ -74,13 +74,6 @@ $(LIB_DIR)/mcp3008.c \
 $(LIB_DIR)/mcp4150.c \
 $(LIB_DIR)/enc28j60.c \
 $(LIB_DIR)/queueStream.c \
-$(LIB_NET_DIR)/nic.c \
-$(LIB_NET_DIR)/net.c \
-$(LIB_NET_DIR)/ip.c \
-$(LIB_NET_DIR)/icmp.c \
-$(LIB_NET_DIR)/arp.c \
-$(LIB_NET_DIR)/tcp.c \
-$(LIB_NET_DIR)/udp.c \
 $(LIB_DIR)/Rs485_prot.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
@@ -88,6 +81,15 @@ $(SOURCE_DIR)/list.c \
 $(SOURCE_DIR)/croutine.c \
 $(PORT_MEM)/heap_avr.c \
 $(PORT_DIR)/port.c
+
+
+#$(LIB_NET_DIR)/udp.c \
+#$(LIB_NET_DIR)/ip.c \
+#$(LIB_NET_DIR)/icmp.c \
+#$(LIB_NET_DIR)/arp.c \
+#$(LIB_NET_DIR)/tcp.c \
+#$(LIB_NET_DIR)/nic.c \
+#$(LIB_NET_DIR)/net.c \
 
 
 #regtest.c \
