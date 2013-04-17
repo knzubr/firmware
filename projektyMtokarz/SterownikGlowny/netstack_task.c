@@ -65,7 +65,7 @@
 //   return 0;
 // }
 
-
+#ifdef USENET
 void encTask ( void *pvParameters )
 {
   FILE *netstackDebug = (FILE *) pvParameters;
@@ -116,7 +116,7 @@ void encTask ( void *pvParameters )
     continue;
   }
 }
-
+#endif
 #if 0
 //   uint16_t dat_p;
 //   uint8_t cmd_pos=0;

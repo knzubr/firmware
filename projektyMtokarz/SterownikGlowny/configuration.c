@@ -18,7 +18,9 @@ void loadConfiguration(void)
 
 void saveConfiguration(void)
 {
+#ifdef USENET
   saveNic();
   ipSaveConfig();
   udpSaveConfig();
+#endif
 }
