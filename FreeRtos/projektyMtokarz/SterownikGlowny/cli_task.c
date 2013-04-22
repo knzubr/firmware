@@ -18,12 +18,12 @@ void vTaskVTYusb(void *cliStatePtr)
 }
 void vTaskUSB(void *cliStatePtr)
 {
-(void) cliStatePtr;; 
- for(;;)
- {
-  USARTD0.DATA='X';
-  vTaskDelay(200);
- }
+  (void) cliStatePtr;; 
+  for(;;)
+  {
+    USARTD0.DATA='Z';
+    vTaskDelay(10);
+  }
 }
 
 void vTaskVTYsocket(void *cliStatePtr)
