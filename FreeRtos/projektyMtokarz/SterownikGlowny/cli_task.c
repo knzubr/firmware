@@ -16,13 +16,13 @@ void vTaskVTYusb(void *cliStatePtr)
     }  
   }
 }
-void vTaskUSB(void *cliStatePtr)
+void vTaskTestUSB(void *cliStatePtr)
 {
   (void) cliStatePtr;; 
   for(;;)
   {
-    USARTD0.DATA='Z';
-    vTaskDelay(10);
+    uartVtySendByte('Z');//    USARTD0.DATA='Z';
+    vTaskDelay(1000);
   }
 }
 

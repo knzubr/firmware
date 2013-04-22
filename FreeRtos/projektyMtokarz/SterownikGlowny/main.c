@@ -165,8 +165,8 @@ portSHORT main( void )
  // sensorsTaskInit();
  loadConfiguration();
 
- // initQueueStreamUSB(&usbStream);
- // VtyInit(CLIStateSerialUsb, &usbStream);
+ initQueueStreamUSB(&usbStream);
+ VtyInit(CLIStateSerialUsb, &usbStream);
 
 #ifdef USENET
   udpInit();
@@ -181,9 +181,10 @@ portSHORT main( void )
 
   sei();
   
-//  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
 //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
-  xTaskCreate(vTaskUSB, NULL, 300, NULL, 0, &xHandleUSB);
+
+//xTaskCreate(vTaskTestUSB, NULL, 300, NULL, 0, &xHandleUSB);
   
   vTaskStartScheduler();
    
