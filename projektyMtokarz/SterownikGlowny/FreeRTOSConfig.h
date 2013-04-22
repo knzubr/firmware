@@ -73,11 +73,11 @@
 
 #define configUSE_TICK_HOOK			0 //0
 
-#define configCPU_CLOCK_HZ			( ( unsigned long ) 16000000 )//2MHz is default value for xmega.//16MHz
+#define configCPU_CLOCK_HZ			( ( unsigned long ) 32000000 )//2MHz is default value for xmega.//16MHz
 
 //If you you want another frequency don't forget to modify period of timer counter used for tick interrupt
 
-#define configTICK_RATE_HZ			( ( portTickType ) 1000 )// czestotliwoæ RTOS przerwania tick, sluzy do odmierzania czasu
+#define configTICK_RATE_HZ			( ( portTickType ) 100 )// czestotliwoæ RTOS przerwania tick, sluzy do odmierzania czasu
 
 #define configMAX_PRIORITIES		( ( unsigned portBASE_TYPE ) 3 )//4 maksymalna liczba priorytetów obs³ugiwana przez zadanie
 
