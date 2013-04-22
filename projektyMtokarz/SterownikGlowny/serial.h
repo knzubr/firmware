@@ -57,7 +57,7 @@
  * Włączenie przerwania pusty bufor nadawczy dla VTY
  */
 
-#define vIsInterruptVtyOn()  (USARTD0.CTRLA & USART_DREINTLVL_LO_gc)
+#define vIsInterruptVtyOn()  (USARTD0.CTRLA & USART_DREINTLVL_HI_gc)
 
 /*
  * Wyłączenie przerwania pusty bufor nadawczy dla VTY
@@ -67,7 +67,7 @@
   unsigned portCHAR ucInByte;         \
                                       \
   ucInByte = USARTD0.CTRLA;           \
-  ucInByte &= ~USART_DREINTLVL_LO_gc; \
+  ucInByte &= ~USART_DREINTLVL_HI_gc; \
   USARTD0.CTRLA = ucInByte;           \
 }
 
@@ -77,7 +77,7 @@
                                       \
   ucByte = USARTD0.CTRLA;             \
   ucByte |= USART_DREINTLVL_LO_gc;    \
-  USARTD0.STATUS = ucByte;            \
+  USARTD0.CTRLA = ucByte;             \
 }
 
 /**
@@ -108,8 +108,5 @@ uint8_t rs485Receive(uint8_t *c, uint8_t timeout);
 uint8_t flushRs485RecBuffer(void);
 void    takeRs485(void);
 void    releaseRs485(void);
-
-void    InterruptVtyOn(void);
-
 
 #endif

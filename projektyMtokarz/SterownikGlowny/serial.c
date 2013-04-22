@@ -41,7 +41,7 @@ void xSerialPortInitMinimal(void)
   PORTD.DIRCLR = PIN2_bm; //ok
   PORTD.OUTSET = PIN3_bm; //ok
   
-  USARTD0.CTRLA = USART_RXCINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTD0.CTRLA = USART_RXCINTLVL_LO_gc | USART_DREINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
   USARTD0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
   USARTD0.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów 
   // 115200 @ 32MHz
@@ -146,24 +146,14 @@ void    releaseRs485(void)
   xSemaphoreGive(xSemaphoreRs485);
 }
 
-void InterruptVtyOn(void)
-{                                  
-  unsigned portCHAR ucByte;                                       
-  ucByte = USARTD0.STATUS;//UCSR1B;                 
-  ucByte |= serDATA_INT_ENABLE;    
- // UCSR1B = ucByte;       
-  USARTD0.STATUS=ucByte;
-}
-
 /*-----------------------------------------------------------*/
-ISR(USARTD0_RXC_vect)//  USART1_RX_vect
+ISR(USARTD0_RXC_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken; 
   signed portCHAR cChar;
 
-  cChar = USARTD0.DATA;//UDR1;
-//  xQueueSendFromISR(xVtyRec, &cChar, NULL);
-
+  cChar = USARTD0.DATA;
+  
   xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(xVtyRec, &cChar, &xHigherPriorityTaskWoken);
   if( xHigherPriorityTaskWoken )
