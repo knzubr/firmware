@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/interrupt.h>
+#include <avr/io.h>
 #include <util/crc16.h>
 
 #include "memory_x.h"

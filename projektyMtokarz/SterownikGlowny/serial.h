@@ -26,29 +26,30 @@
 /*
  * Włączenie przerwania pusty bufor nadawczy dla magistrali Rs485
  */
-#define vInterruptRs485On()        \
-{                                  \
-  unsigned portCHAR ucByte;        \
-                                   \
-  ucByte = USARTF0.STATUS;                 \
-  ucByte |= serDATA_INT_ENABLE;    \
-  USARTF0.STATUS = ucByte;                 \
-}
 
-#define vIsInterruptRs485On()  (USARTF0.STATUS & serDATA_INT_ENABLE)
+
+#define vIsInterruptRs485On()  (USARTF0.CTRLA & USART_DREINTLVL_LO_gc)
 
 /*
  * Wyłączenie przerwania pusty bufor nadawczy dla magistrali Rs485
  */
-#define vInterruptRs485Off()       \
-{                                  \
-  unsigned portCHAR ucInByte;      \
-                                   \
-  ucInByte = USARTF0.STATUS;               \
-  ucInByte &= ~serDATA_INT_ENABLE; \
-  USARTF0.STATUS = ucInByte;               \
+#define vInterruptRs485Off()          \
+{                                     \
+  unsigned portCHAR ucInByte;         \
+                                      \
+  ucInByte = USARTF0.CTRLA;           \
+  ucInByte &= ~USART_DREINTLVL_LO_gc; \
+  USARTF0.CTRLA = ucInByte;           \
 }
 
+#define vInterruptRs485On()           \
+{                                     \
+  unsigned portCHAR ucByte;           \
+                                      \
+  ucByte = USARTF0.CTRLA;             \
+  ucByte |= USART_DREINTLVL_LO_gc;    \
+  USARTF0.STATUS = ucByte;            \
+}
 
 // ******************************* Serial 1 USB ***********************
 
@@ -56,27 +57,27 @@
  * Włączenie przerwania pusty bufor nadawczy dla VTY
  */
 
-#define vIsInterruptVtyOn()  (USARTD0.STATUS & serDATA_INT_ENABLE)
+#define vIsInterruptVtyOn()  (USARTD0.CTRLA & USART_DREINTLVL_LO_gc)
 
 /*
  * Wyłączenie przerwania pusty bufor nadawczy dla VTY
  */
 #define vInterruptVtyOff()            \
-{                                  \
-  unsigned portCHAR ucInByte;      \
-                                   \
-  ucInByte = USARTD0.STATUS;               \
-  ucInByte &= ~serDATA_INT_ENABLE; \
-  USARTD0.STATUS = ucInByte;               \
+{                                     \
+  unsigned portCHAR ucInByte;         \
+                                      \
+  ucInByte = USARTD0.CTRLA;           \
+  ucInByte &= ~USART_DREINTLVL_LO_gc; \
+  USARTD0.CTRLA = ucInByte;           \
 }
 
 #define vInterruptVtyOn()             \
-{                                  \
-  unsigned portCHAR ucByte;        \
-                                   \
-  ucByte = USARTD0.STATUS;                  \
-  ucByte |= serDATA_INT_ENABLE;    \
-  USARTD0.STATUS = ucByte;                 \
+{                                     \
+  unsigned portCHAR ucByte;           \
+                                      \
+  ucByte = USARTD0.CTRLA;             \
+  ucByte |= USART_DREINTLVL_LO_gc;    \
+  USARTD0.STATUS = ucByte;            \
 }
 
 /**

@@ -21,8 +21,8 @@ void vTaskUSB(void *cliStatePtr)
 (void) cliStatePtr;; 
  for(;;)
  {
+  USARTD0.DATA='X';
   vTaskDelay(200);
-  USARTD0.DATA='a';
  }
 }
 

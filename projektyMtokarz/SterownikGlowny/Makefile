@@ -138,7 +138,7 @@ $(WARNINGS) \
 -Wa,-adhlns=$(<:.c=.lst) \
 $(patsubst %,-I%,$(EXTRAINCDIRS))
 
-CFLAGS += -DF_CPU=16000000UL 
+CFLAGS += -DF_CPU=32000000UL 
 
 # Set a "language standard" compiler flag.
 #   Unremark just one line below to set the language standard to use.
@@ -204,7 +204,7 @@ LDFLAGS += -lm
 
 # Programming support using avrdude.
 AVRDUDE             = avrdude
-AVRDUDE_PROGRAMMER  = pdi 
+AVRDUDE_PROGRAMMER  = avrispmkII 
 # jtag1
 #AVRDUDE_PORT        = /dev/jtag
 AVRDUDE_PORT        = usb
