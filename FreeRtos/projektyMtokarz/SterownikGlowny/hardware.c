@@ -11,14 +11,10 @@
 xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
 xQueueHandle      xSpiRxEnc;
 // napisać funkcje do konfiguracji zew pam s-ram
+
+//#include<avr/iox128a1.h>
 void hardwareInit(void)
 {
-//   PORTD.OUT=0xFF; //ok
-  PORTD.DIR=PIN3_bm;//ok
-  PORTD.DIRCLR = PIN2_bm;//ok
-
-
-  
   //DDRA = 0x00;  //External Memory
   portENTER_CRITICAL();
   xSpiRx          = xQueueCreate(1, 1);
@@ -28,25 +24,29 @@ void hardwareInit(void)
   portENTER_CRITICAL();
   xSpiRx          = xQueueCreate(1, 1);
   portEXIT_CRITICAL();
-  /* Port B
-7- JTAG TD0
-6- JTAG TCK
-5- JTAG TDI
-4- JTAG TMS
-5:2 - LCD D4:D7
-0 - ENC28J60 CS
-*/
-PORTB.DIR=0x01;
-/* Port C
-7- ENC28J60 SCK
-6- ENC28J60 SO
-5- ENC28J60 SI
-4- SD_card CS
-3- ST2378 OE
-1- I2C SCL
-0- I2C SDA
-*/
-PORTC.DIR=0xA0;
+
+/** Port B
+ * 7   - JTAG TD0
+ * 6   - JTAG TCK
+ * 5   - JTAG TDI
+ * 4   - JTAG TMS
+ * 5:2 - LCD D4:D7
+ * 0 - ENC28J60 CS
+ */
+  PORTB.DIR=0x01;
+
+/**
+ * Port C
+ * 7 - ENC28J60 SCK
+ * 6 - ENC28J60 SO
+ * 5 - ENC28J60 SI
+ * 4 - SD_card CS
+ * 3 - ST2378 OE
+ * 1 - I2C SCL
+ * 0 - I2C SDA
+ */
+  PORTC.DIR=0xA0;
+
 /* PORTD
 7- SD SCK
 6- SD S0
@@ -78,14 +78,18 @@ PORTF.DIR=0x28;
 0-   EBI WE
 */
 PORTH.DIR=0xFF;
-/* PORTJ
-7:0- EBI D7:D0/A0:A7
-*/
+
+/**
+ * PORTJ
+ * 7:0- EBI D7:D0/A0:A7
+ */
 PORTJ.DIR=0xFF;
-/* PORTK
-7:0- EBI A8:A15
-*/
-PORTK.DIR=0xFF;
+
+/**
+ * PORTK
+ * 7:0- EBI A8:A15
+ */
+  PORTK.DIR=0xFF;
 }
 
 void LockersMemInit(void)

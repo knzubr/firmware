@@ -45,6 +45,7 @@
 
 #include "main.h"
 
+
 uint8_t timer100Hz = 0;
 
 xQueueHandle xVtyTx;
@@ -75,15 +76,47 @@ xTaskHandle xHandleUSB;
 
 
 /**
-  * konfiguracja zewnętrznego kwarcu, bez PLL, Pres ABCD=1
+  * konfiguracja zegara. Zegar wewnętrzny 32 MHz
   */
 void my_init_clock(void)
 {
-  OSC.XOSCCTRL=0b01101011;
-  OSC.CTRL=0b00001000;
-  while(!(OSC.STATUS & OSC_XOSCEN_bm));
-  CCP = CCP_IOREG_gc;
-  CLK.CTRL=CLK_SCLKSEL_XOSC_gc;
+  // Internal 32 kHz RC oscillator initialization
+  // Enable the internal 32 kHz RC oscillator
+  OSC.CTRL|=OSC_RC32KEN_bm;
+  // Wait for the internal 32 kHz RC oscillator to stabilize
+  while ((OSC.STATUS & OSC_RC32KRDY_bm)==0);
+
+  // Internal 32 MHz RC oscillator initialization
+  // Enable the internal 32 MHz RC oscillator
+  OSC.CTRL|=OSC_RC32MEN_bm;
+
+  // System clock prescaler A division factor: 1
+  // System clock prescalers B & C division factors: B:1, C:1
+  // ClkPer4: 32000.000 kHz
+  // ClkPer2: 32000.000 kHz
+  // ClkPer:  32000.000 kHz
+  // ClkCPU:  32000.000 kHz
+  CCP=CCP_IOREG_gc;
+  CLK.PSCTRL=(CLK.PSCTRL & (~(CLK_PSADIV_gm | CLK_PSBCDIV1_bm | CLK_PSBCDIV0_bm))) | CLK_PSADIV_1_gc | CLK_PSBCDIV_1_1_gc;
+
+  // Internal 32 MHz RC osc. calibration reference clock source: 32.768 kHz Internal Osc.
+  OSC.DFLLCTRL&= ~(OSC_RC32MCREF_bm | OSC_RC2MCREF_bm);
+  // Enable the autocalibration of the internal 32 MHz RC oscillator
+  DFLLRC32M.CTRL|=DFLL_ENABLE_bm;
+
+  // Wait for the internal 32 MHz RC oscillator to stabilize
+  while ((OSC.STATUS & OSC_RC32MRDY_bm)==0);
+
+
+  // Select the system clock source: 32 MHz Internal RC Osc.
+  CCP=CCP_IOREG_gc;
+  CLK.CTRL=(CLK.CTRL & (~CLK_SCLKSEL_gm)) | CLK_SCLKSEL_RC32M_gc;
+
+  // Disable the unused oscillators: 2 MHz, external clock/crystal oscillator, PLL
+  OSC.CTRL&= ~(OSC_RC2MEN_bm | OSC_XOSCEN_bm | OSC_PLLEN_bm);
+
+  // Peripheral Clock output: Disabled
+  PORTCFG.CLKEVOUT=(PORTCFG.CLKEVOUT & (~PORTCFG_CLKOUT_gm)) | PORTCFG_CLKOUT_OFF_gc;
 }
 
 void initExternalMem(void)
@@ -103,18 +136,25 @@ FILE udpStream;
 
 streamBuffers_t udpBuffers;
 
+//#include <avr/iox128a1.h>
+
+// Define CPU clock frequency (if not already defined)
+#ifndef F_CPU
+   // Enable/Disable internal oscillators
+   //#define F_CPU 2000000
+   #define F_CPU 32000000
+   // Enable/Disable external 14.7456 MHz oscillator
+   //#define F_CPU 14745600
+#endif 
+
+
 portSHORT main( void )
 {
   //ramDyskInit();              //Inicjalizacja Ram dysku
   hardwareInit();
-  //spiInit(disableAllSpiDevices);
-  // MOJE
-  
-  lcdinit();
-  
-  //MOJE
-// VTY on serial  
-  xSerialPortInitMinimal(); 
+   
+  xSerialPortInitMinimal();  
+
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
 #ifdef USENET
   CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
@@ -138,9 +178,27 @@ portSHORT main( void )
   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  0, &xHandleEnc);
   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
 #endif
-  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+//  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
 //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
   xTaskCreate(vTaskUSB,NULL,100,NULL,0,&xHandleUSB);
+  
+  
+   int x = 0;
+   while(1)
+   {
+     _delay_ms(100);
+     x++;
+     if (x < 20)
+       USARTD0.DATA = 'a';
+     else
+     {
+       USARTD0.DATA = '\r';
+       USARTD0.DATA = '\n';
+       x=0; 
+     }
+   }
+
+  
   vTaskStartScheduler();
   return 0;
 }

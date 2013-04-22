@@ -33,55 +33,41 @@ int VtyPutChar(char c, FILE *stream)
   return 0;
 }
 
+//#include<avr/iox128a1.h>
 void xSerialPortInitMinimal(void)
-{
-  USARTD0.CTRLC=0b00000011;//ok
-  USARTD0.CTRLA|=(USART_RXCINTLVL_LO_gc)|(USART_TXCINTLVL_LO_gc);
-  USARTD0.BAUDCTRLA=0b01100111;//12;
-  USARTD0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
-  USARTD0.CTRLB=0b00011000;
+{ 
+  /// Konfiguracja portu D dla USARTD0 USB
+  PORTD.DIRSET = PIN3_bm; //ok
+  PORTD.DIRCLR = PIN2_bm; //ok
+  PORTD.OUTSET = PIN3_bm; //ok
+  
+  USARTD0.CTRLA = USART_RXCINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTD0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
+  USARTD0.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów 
+  // 115200 @ 32MHz
+  USARTD0.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
+  USARTD0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
+  
+  /// Konfiguracja portu F dla USARTF0 RS486
+  PORTF.DIRSET = PIN3_bm; //ok
+  PORTF.DIRCLR = PIN2_bm; //ok
+  PORTF.OUTSET = PIN3_bm; //ok
+  //USARTF0.CTRLA = USART_RXCINTLVL_LO_gc;             // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTF0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;     // Włączenie nadajnika i odbiornika
+  USARTF0.CTRLC = USART_CHSIZE_8BIT_gc;              // Tryb 8 bitów 
+  // 115200 @ 32MHz
+  USARTF0.BAUDCTRLA= 2094 & 0xFF;                    //12; BSEL = 131  BSCALE = -3
+  USARTF0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8);  
   portENTER_CRITICAL();
   {
     xVtyRec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
     xVtyTx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
-    xRs485Rec = xQueueCreate( 16, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
-    xRs485Tx = xQueueCreate( 4, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
+    //xRs485Rec = xQueueCreate( 16, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
+    //xRs485Tx = xQueueCreate( 4, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
     
-    vSemaphoreCreateBinary(xSemaphoreRs485); 
+    //vSemaphoreCreateBinary(xSemaphoreRs485); 
   }
   portEXIT_CRITICAL();
-  /*
-   * PORTD.OUT=0xFF; //ok
-	PORTD.DIR=PIN3_bm;//ok
-	PORTD.DIRCLR = PIN2_bm;//ok
-	USARTD0.CTRLC=0b00000011;//ok
-	USARTD0.CTRLA|=(USART_RXCINTLVL_LO_gc)|(USART_TXCINTLVL_LO_gc);
-	USARTD0.BAUDCTRLA=0b01100111;//12;
-	USARTD0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
-	USARTD0.CTRLB=0b00011000;
-	
-	PORTF.OUT=0xFF; //ok
-	PORTF.DIR=PIN3_bm;//ok
-	PORTF.DIRCLR = PIN2_bm;//ok
-	USARTF0.CTRLC=0b00000011;//ok
-	USARTF0.CTRLA|=(USART_RXCINTLVL_LO_gc)|(USART_TXCINTLVL_LO_gc);
-	USARTF0.BAUDCTRLA=0b01100111;//12;
-	USARTF0.BAUDCTRLB=0;//(0 << USART_BSCALE0_bp)|(12 >> 8);
-	USARTF0.CTRLB=0b00011000;
-   * 
-   * */
-  /*
-  UBRR0L = 7;
-  UBRR0H = 0;
-
-  UBRR1L = 7;
-  UBRR1H = 0;
-
-  UCSR0B = ((1<<TXCIE0)|(1<<RXCIE0)|(1<<TXEN0)|(1<<RXEN0));
-  UCSR0C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );      Set the data bits to 8. */
-  //UCSR1B = ((1<<RXCIE1)|(1<<TXEN1)|(1<<RXEN1));
-  //UCSR1C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );      Set the data bits to 8. */
-  
   return;
 }
 
