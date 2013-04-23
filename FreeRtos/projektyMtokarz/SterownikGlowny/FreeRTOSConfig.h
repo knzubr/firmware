@@ -83,7 +83,7 @@
 
 #define configMINIMAL_STACK_SIZE	( ( unsigned short ) 150 )//85 // min rozmiar stosu, który wykorzystywany jest przez zadanie IDle
 
-#define configTOTAL_HEAP_SIZE		( (size_t ) ( 3000 ) )//1500// ca³kowita iloæ pamiêci RAM dostêpna dla j¹dra RTOS
+#define configTOTAL_HEAP_SIZE		( (size_t ) ( 7000 ) )//1500// całkowita iloæ pamięci RAM dostępna dla jądra RTOS
 
 /*
 
