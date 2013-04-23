@@ -109,7 +109,7 @@ const command_t cmdListNormal[] PROGMEM =
   {NULL, NULL, NULL}
 };
 
-const command_t cmdListEnable[] =
+const command_t cmdListEnable[] PROGMEM =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
