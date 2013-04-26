@@ -124,6 +124,17 @@ void initExternalMem(void)
   //MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
   //MCUCR |= 0x0E;
 }
+void my_init_memory()
+{
+  PORTH.DIR = 0xFF;
+  PORTK.DIR = 0xFF;
+  PORTJ.DIR = 0x00;
+  
+  EBI.CTRL=0x01;
+  EBI.CS3.CTRLB=EBI_CS_SRWS_7CLK_gc;
+  EBI.CS3.BASEADDR= (((uint32_t) 0x20000UL)>>8) & (0xFFFF<<(EBI_CS_SRWS_7CLK_gc>>2));//0x20000UL;
+  EBI.CS3.CTRLA=EBI_CS_ASIZE_512B_gc|EBI_CS_MODE_LPC_gc; 
+}
 
 
 cmdState_t *CLIStateSerialUsb;
@@ -152,6 +163,7 @@ portSHORT main( void )
 {
   //ramDyskInit();              //Inicjalizacja Ram dysku
   hardwareInit();
+ 
    
   xSerialPortInitMinimal();  
 
