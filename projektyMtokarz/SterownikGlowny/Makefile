@@ -75,6 +75,7 @@ $(LIB_DIR)/mcp4150.c \
 $(LIB_DIR)/enc28j60.c \
 $(LIB_DIR)/queueStream.c \
 $(LIB_DIR)/Rs485_prot.c \
+$(LIB_DIR)/ebi.c\
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \

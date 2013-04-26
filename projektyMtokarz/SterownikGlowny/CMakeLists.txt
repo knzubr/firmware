@@ -46,7 +46,7 @@ add_executable(${IMAGENAME}
                         main.c configuration.c serial.c hardware.c sensors_task.c vty.c netstack_task.c cli_task.c lcd_task.c
                         ${LIB_DIR}/spiXmega.c ${LIB_DIR}/memory_x.c ${LIB_DIR}/ramdysk.c ${LIB_DIR}/cmdline.c ${LIB_DIR}/xmodem.c 
                         ${LIB_DIR}/vt100.c ${LIB_DIR}/ds1305.c ${LIB_DIR}/mpc23s17.c ${LIB_DIR}/mcp3008.c ${LIB_DIR}/mcp4150.c
-                        ${LIB_DIR}/enc28j60.c ${LIB_DIR}/queueStream.c ${LIB_DIR}/lcd.c
+                        ${LIB_DIR}/enc28j60.c ${LIB_DIR}/queueStream.c ${LIB_DIR}/lcd.c ${LIB_DIR}/ebi.c
                         ${LIB_NET_DIR}/nic.c ${LIB_NET_DIR}/net.c ${LIB_NET_DIR}/ip.c ${LIB_NET_DIR}/icmp.c ${LIB_NET_DIR}/arp.c 
                         ${LIB_NET_DIR}/tcp.c ${LIB_NET_DIR}/udp.c ${LIB_DIR}/Rs485_prot.c 
                         ${SOURCE_DIR}/tasks.c ${SOURCE_DIR}/queue.c ${SOURCE_DIR}/list.c ${SOURCE_DIR}/croutine.c 
@@ -108,6 +108,7 @@ add_custom_target(Hardware        DEPENDS
                         ${LIB_DIR}/enc28j60.c                   ${LIB_DIR}/include/enc28j60.h           # Obsługa sterownika ethernetowego
                         ${LIB_DIR}/sd_diskio.c                  ${LIB_DIR}/include/sd_diskio.h          # Obsługa karty SD 
                         ${LIB_DIR}/lcd.c                        ${LIB_DIR}/include/lcd.h                # Obsługa LCD
+                        ${LIB_DIR}/ebi.c 			  ${LIB_DIR}/include/ebi.h	 	   #obsługa EBI
                  )
 
 add_custom_target(NetworkStack    DEPENDS    
