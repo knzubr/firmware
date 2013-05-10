@@ -54,7 +54,7 @@ xQueueHandle xVtyRec;
 xQueueHandle xRs485Tx;
 xQueueHandle xRs485Rec;
 
-
+xQueueHandle xLCDrec; 
 
 
 volatile uint8_t temperature;
@@ -73,7 +73,7 @@ xTaskHandle xHandleVTY_UDP;
 xTaskHandle xHandleEnc;
 xTaskHandle xHandleSensors;
 xTaskHandle xHandleUSB;
-
+xTaskHandle xHandleLCD;
 
 /**
   * konfiguracja zegara. Zegar wewnętrzny 32 MHz

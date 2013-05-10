@@ -34,7 +34,7 @@
 // --------------------- Konfiguracja pamięci ------------------------------------
 //
 
-#define HEAP_BEGIN                   0x1100 // tu zmienic
+#define HEAP_BEGIN                   0x1100 // tu zmienic 0x40000UL
 #define HEAP_END                     CLI_1_BUF_ADDR - 1
 #define HEAP_SIZE                    HEAP_END - HEAP_BEGIN + 1
 

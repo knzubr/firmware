@@ -35,7 +35,6 @@ static cliExRes_t setIpGwFunction        (cmdState_t *state);
 static cliExRes_t setUdpFunction         (cmdState_t *state);
 static cliExRes_t setMacAddrFunction     (cmdState_t *state);
 #endif
-
 static cliExRes_t helpFunction           (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
 static cliExRes_t statusEncFunction      (cmdState_t *state);
@@ -116,6 +115,7 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_enc_stat,  cmd_help_enc_stat,  statusEncFunction},
   {cmd_time,      cmd_help_time,      pokazCzasFunction},
   {cmd_net_dbg,   cmd_help_net_dbg,   debugFunction},
+ 
   
   {cmd_rping,     cmd_help_rping,     rpingFunction},
 #ifdef USENET
@@ -520,6 +520,7 @@ static cliExRes_t helpFunction(cmdState_t *state)
   cmdPrintHelp(state);
   return OK_SILENT;
 }
+
 
 static cliExRes_t curtainDownFunction(cmdState_t *state)
 {
