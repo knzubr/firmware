@@ -3,6 +3,10 @@
 // PB5 D4, PB2 D7
 #include<avr/io.h>
 #include <util/delay.h>
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
+#include "main.h"
 #define LCD_RS_set PORTA.OUT|=0x04;
 #define LCD_RS_clear PORTA.OUT&=0xFB;
 #define LCD_E_set PORTA.OUT|=0x03;
@@ -12,6 +16,7 @@
 #define LCD_D5 0x10;
 #define LCD_D6 0x08;
 #define LCD_D7 0x04;
+extern xQueueHandle         xLCDrec;
 unsigned char odwroc(unsigned char dana);
 void polbajt(unsigned char data);
 void lcdinit(void); 

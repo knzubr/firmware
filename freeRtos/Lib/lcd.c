@@ -89,7 +89,11 @@ _delay_ms(2);
 }
 void lcdinit(void)
 {// PB5 D4, PB2 D7
-
+portENTER_CRITICAL();
+  {
+    xLCDrec = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+  }
+  portEXIT_CRITICAL();
 	PORTB.DIR|=(PIN5_bm|PIN4_bm|PIN3_bm|PIN2_bm);
 	PORTA.DIR|=(PIN1_bm|PIN2_bm);
 	LCD_E_set;

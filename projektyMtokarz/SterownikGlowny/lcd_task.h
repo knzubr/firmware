@@ -3,7 +3,8 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "lcd.h"
-
+#include "task.h"
+extern xQueueHandle         xLCDrec;
 void vTasklcd(void *cliStatePtr);
 
 #endif
