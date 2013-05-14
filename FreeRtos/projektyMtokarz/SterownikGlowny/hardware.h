@@ -86,6 +86,8 @@ void spiDisableDS1305(void);
 void enableSpiMCP4150(void);
 void disableSpiMCP4150(void);
 
+uint8_t spiSendENC(uint8_t data);
+uint8_t spiSendSpinBlockENC(uint8_t data);
 
 #endif
 

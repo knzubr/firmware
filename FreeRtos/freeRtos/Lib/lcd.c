@@ -6,7 +6,7 @@ unsigned char odwroc(unsigned char dana)
 	if(dana&0x01) pomoc|=0x80;
 	else pomoc&=~0x80;
 	if(dana&0x02) pomoc|=0x40;
-	else pomoc|=~0x40;
+	else pomoc&=~0x40;
 	if(dana&0x04) pomoc|=0x20;
 	else pomoc&=~0x20;
 	if(dana&0x08) pomoc|=0x10;
@@ -51,7 +51,7 @@ void polbajt(unsigned char data)
 	  PORTB.OUT&=~LCD_D6;
   }
 
-  if(data&0x08)
+  if(data&0x08)	
   {
 	  PORTB.OUT|=LCD_D7;
   }
@@ -63,17 +63,26 @@ void polbajt(unsigned char data)
 void lcdwritecommand(unsigned char command)
 {
 LCD_RS_clear;
-lcdWrite(command);
+//lcdWrite(command);
+LCD_E_set;
+polbajt(command);
+_delay_ms(5);
+LCD_E_clear;
+
 }
 void lcdWrite(unsigned char data)
 {
 uint8_t pomoc=odwroc(data>>4);
+//pomoc=pomoc<<2;
 data=odwroc(data);
+//data=data<<2;
 LCD_E_set;
 polbajt(pomoc);
+_delay_ms(5);
 LCD_E_clear;
 LCD_E_set;
 polbajt(data);
+_delay_ms(5);
 LCD_E_clear;
 _delay_us(50);
 }
@@ -94,8 +103,8 @@ portENTER_CRITICAL();
     xLCDrec = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
   }
   portEXIT_CRITICAL();
-	PORTB.DIR|=(PIN5_bm|PIN4_bm|PIN3_bm|PIN2_bm);
-	PORTA.DIR|=(PIN1_bm|PIN2_bm);
+	PORTB.DIR|=0x3C;//(PIN5_bm|PIN4_bm|PIN3_bm|PIN2_bm);
+	PORTA.DIR|=0x06;
 	LCD_E_set;
 	LCD_RS_set;
 	_delay_ms(15);
@@ -104,7 +113,7 @@ portENTER_CRITICAL();
 	for(int i = 0; i < 3; i++) 
 	{
 	   LCD_E_set;
-	   PORTB.OUT&=0xF3;
+	   polbajt(0x03);
 	   LCD_E_clear;	
 	   _delay_ms(5); // czekaj 5ms
 	}
@@ -112,10 +121,16 @@ portENTER_CRITICAL();
 	polbajt(0x02); //tryb 4 bitowy
 	LCD_E_clear;
 	_delay_ms(1); // czekaj 1ms 
-	lcdwritecommand(0x20|0|8|0);
-	lcdwritecommand(0x80|0);
+	lcdwritecommand(0x0A);//0x20|0|8|0
+	lcdwritecommand(0x08);
 	lcdwritecommand(0x01);
 	_delay_ms(2); // czekaj 2ms 
-	lcdwritecommand(0x04|0|2);
-	lcdwritecommand(0x08|4|2|1);	
+	lcdwritecommand(0x06);//0x04|0|2
+	lcdwritecommand(0x0F);	//0x08|4|2|1 WLaczenie
+	LCD_RS_clear;
+	LCD_E_set;
+	polbajt(0x04);
+	_delay_ms(5);
+	LCD_E_clear;
+	
 }

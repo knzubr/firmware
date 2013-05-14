@@ -124,7 +124,7 @@ void initExternalMem(void)
   //MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
   //MCUCR |= 0x0E;
 }
-void my_init_memory()
+void my_init_memory(void)
 {
   PORTH.DIR = 0xFF;
   PORTK.DIR = 0xFF;
@@ -163,8 +163,8 @@ portSHORT main( void )
 {
   //ramDyskInit();              //Inicjalizacja Ram dysku
   hardwareInit();
- 
-   
+ lcdinit();
+   lcdsend('a');
   xSerialPortInitMinimal();  
 
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));

@@ -9,7 +9,7 @@
 #include "main.h"
 #define LCD_RS_set PORTA.OUT|=0x04;
 #define LCD_RS_clear PORTA.OUT&=0xFB;
-#define LCD_E_set PORTA.OUT|=0x03;
+#define LCD_E_set PORTA.OUT|=0x02;
 #define LCD_E_clear PORTA.OUT&=0xFD;
 //#define LCD_DATA PORTB.0UT;
 #define LCD_D4 0x20;
