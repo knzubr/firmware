@@ -24,7 +24,8 @@ void hardwareInit(void)
   portENTER_CRITICAL();
   xSpiRx          = xQueueCreate(1, 1);
   portEXIT_CRITICAL();
-
+PORTA.DIR=0x03;
+PORTA.OUT=0x00;
 /** Port B
  * 7   - JTAG TD0
  * 6   - JTAG TCK

@@ -136,7 +136,6 @@ void my_init_memory(void)
   EBI.CS3.CTRLA=EBI_CS_ASIZE_512B_gc|EBI_CS_MODE_LPC_gc; 
 }
 
-
 cmdState_t *CLIStateSerialUsb;
 FILE usbStream;
 
@@ -163,8 +162,13 @@ portSHORT main( void )
 {
   //ramDyskInit();              //Inicjalizacja Ram dysku
   hardwareInit();
- lcdinit();
-   lcdsend('a');
+  //
+  
+ lcd_init(); 
+ 
+// clear display
+lcd_clear_and_home();
+lcd_write_data('a');
   xSerialPortInitMinimal();  
 
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
