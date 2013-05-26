@@ -1,136 +1,211 @@
 #include<lcd.h>
-// PB5 D4, PB2 D7
-unsigned char odwroc(unsigned char dana)
-{
-	unsigned char pomoc=0xFF;
-	if(dana&0x01) pomoc|=0x80;
-	else pomoc&=~0x80;
-	if(dana&0x02) pomoc|=0x40;
-	else pomoc&=~0x40;
-	if(dana&0x04) pomoc|=0x20;
-	else pomoc&=~0x20;
-	if(dana&0x08) pomoc|=0x10;
-	else pomoc&=~0x10;
-	if(dana&0x10) pomoc|=0x08;
-	else pomoc&=~0x08;
-	if(dana&0x20) pomoc|=0x04;
-	else pomoc&=~0x04;
-	if(dana&0x40) pomoc|=0x02;
-	else pomoc&=~0x02;
-	if(dana&0x80) pomoc|=0x01;
-	else pomoc&=~0x01;
+ 
+#include <avr/io.h>
+#include <avr/pgmspace.h>
+#include <util/delay.h>
+ 
+// This implementation uses Port B for the Data port, all 8 bits of it
+#define DATA_PORT PORTA
+ 
+ 
+// This implementation uses Port B for the Control port
+#define LCD_RS PIN2_bm		/* RS on pin PB2 */
+#define LCD_E  PIN1_bm		/* E on pin PB1 */
+#define COMM_PORT PORTA
 
-	return pomoc;	
-}
 void polbajt(unsigned char data)
 {
+  //PORTB.OUT=0x00;
   if(data&0x01)
   {
-	  PORTB.OUT|=LCD_D4;
+	  DATA_PORT.OUTSET=PIN4_bm;//|=0x10;//LCD_D4;
+	 
   }
   else
   {
-	  PORTB.OUT&=~LCD_D4;
+	  DATA_PORT.OUTCLR=PIN4_bm;//=~(0x10);//LCD_D4;
   }
 
   if(data&0x02)
   {
-	  PORTB.OUT|=LCD_D5;
+	  DATA_PORT.OUTSET=PIN5_bm;//|=0x20;//LCD_D5;
   }
   else
   {
-	  PORTB.OUT&=~LCD_D5;
+	  DATA_PORT.OUTCLR=PIN5_bm;//&=~(0x20);//LCD_D5;
   }
 
   if(data&0x04)
   {
-	  PORTB.OUT|=LCD_D6;
+	  DATA_PORT.OUTSET=PIN6_bm;//|=0x40;//LCD_D6;
   }
   else
   {
-	  PORTB.OUT&=~LCD_D6;
+	  DATA_PORT.OUTCLR=PIN6_bm;//&=~(0x40);//LCD_D6;
   }
 
   if(data&0x08)	
   {
-	  PORTB.OUT|=LCD_D7;
+	  PORTB.OUTSET=PIN7_bm;//|=0x80;//LCD_D7;
   }
   else
   {
-	  PORTB.OUT&=~LCD_D7;
+	 DATA_PORT.OUTCLR=PIN7_bm;//&=~(0x80);//LCD_D7;
   }
+} 
+ 
+// This function clears the RS line to write a command
+void lcd_set_write_instruction(void) {
+	COMM_PORT.OUTCLR = LCD_RS;		// set RS line low 
+	_delay_us(50);
 }
-void lcdwritecommand(unsigned char command)
-{
-LCD_RS_clear;
-//lcdWrite(command);
-LCD_E_set;
-polbajt(command);
-_delay_ms(5);
-LCD_E_clear;
-
+ 
+ 
+// This function sets the RS line to write data
+void lcd_set_write_data(void) {
+	COMM_PORT.OUTSET = LCD_RS;		// set RS line high
+	_delay_us(50);
 }
-void lcdWrite(unsigned char data)
-{
-uint8_t pomoc=odwroc(data>>4);
-//pomoc=pomoc<<2;
-data=odwroc(data);
-//data=data<<2;
-LCD_E_set;
-polbajt(pomoc);
-_delay_ms(5);
-LCD_E_clear;
-LCD_E_set;
-polbajt(data);
-_delay_ms(5);
-LCD_E_clear;
-_delay_us(50);
-}
-void lcdsend(unsigned char data)
-{
-LCD_RS_set;
-lcdWrite(data);
-}
-void lcdclear(void)
-{
-lcdwritecommand(0x01);
-_delay_ms(2);
-}
-void lcdinit(void)
-{// PB5 D4, PB2 D7
-portENTER_CRITICAL();
-  {
-    xLCDrec = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
-  }
-  portEXIT_CRITICAL();
-	PORTB.DIR|=0x3C;//(PIN5_bm|PIN4_bm|PIN3_bm|PIN2_bm);
-	PORTA.DIR|=0x06;
-	LCD_E_set;
-	LCD_RS_set;
-	_delay_ms(15);
-	LCD_RS_clear;
-	LCD_E_clear;
-	for(int i = 0; i < 3; i++) 
-	{
-	   LCD_E_set;
-	   polbajt(0x03);
-	   LCD_E_clear;	
-	   _delay_ms(5); // czekaj 5ms
-	}
-	LCD_E_set;
-	polbajt(0x02); //tryb 4 bitowy
-	LCD_E_clear;
-	_delay_ms(1); // czekaj 1ms 
-	lcdwritecommand(0x0A);//0x20|0|8|0
-	lcdwritecommand(0x08);
-	lcdwritecommand(0x01);
-	_delay_ms(2); // czekaj 2ms 
-	lcdwritecommand(0x06);//0x04|0|2
-	lcdwritecommand(0x0F);	//0x08|4|2|1 WLaczenie
-	LCD_RS_clear;
-	LCD_E_set;
-	polbajt(0x04);
-	_delay_ms(5);
-	LCD_E_clear;
+ 
+ 
+ 
+// This function writes a byte to the LCD
+void lcd_write_byte (char c) {
+	//c=(c<<2);
+	//DATA_PORT.OUT = c;			// Place data on Data Port
+	polbajt(c>>4);
+	COMM_PORT.OUTSET = LCD_E;		// set E line high
+	_delay_us(1);
+	COMM_PORT.OUTCLR = LCD_E;		// set E line low to latch data into LCD
 	
+	polbajt(c);
+	//_delay_us(1);
+	COMM_PORT.OUTSET = LCD_E;		// set E line high
+	_delay_us(1);
+	COMM_PORT.OUTCLR = LCD_E;		// set E line low to latch data into LCD
+	_delay_ms(10);
+}
+ 
+ 
+// This function clears LCD and sets address to beginning of first line
+void lcd_clear_and_home(void) {
+	lcd_set_write_instruction();
+	lcd_write_byte(0x01);
+	_delay_ms(50);
+	lcd_write_byte(0x02);
+	_delay_ms(50);
+}
+ 
+ 
+// This function sets address to beginning of first line
+	void lcd_home() {
+	lcd_set_write_instruction();
+	lcd_write_byte(0x02);
+	_delay_ms(50);
+}
+ 
+ 
+// This function moves cursor to a given line and position
+//  line is either 0 (first line) or 1 (second line)
+//  pos is the character position from 0 to 15.
+void lcd_goto(uint8_t line, uint8_t pos)
+{
+	uint8_t position = 0;
+ 
+	lcd_set_write_instruction();
+	switch(line)
+	{
+		case 0: position = 0;
+		break;
+		case 1: position = 0x40;
+		break;
+	}
+		lcd_write_byte(0x80 | (position + pos));
+	}
+ 
+ 
+// This function moves the cursor to 1st character of 1st line
+void lcd_line_one(void) { lcd_goto(0, 0); }
+ 
+ 
+// This function moves the cursor to 1st character if 2nd line
+void lcd_line_two(void) { lcd_goto(1, 0); }
+ 
+ 
+// This function writes a character to the LCD
+void lcd_write_data(char c) {
+	lcd_set_write_data();
+	lcd_write_byte(c);
+}
+ 
+ 
+// This function writes a string (in SRAM) of given length to the LCD
+void lcd_write_string(char *x, uint8_t len ) {
+	while (--len > 0)
+		lcd_write_data(*x++);
+}
+ 
+ 
+// This function writes a null-terminated string (in SRAM) to the LCD
+void lcd_write_string_0(char *x) {
+	while (*x)
+		lcd_write_data(*x++);
+}
+ 
+ 
+// Same as above, but the string is located in program memory,
+//  so "lpm" instructions are needed to fetch it, and a \0
+//  must be defined at the end of the string to terminate it.
+void lcd_write_string_p(const char *s)
+{
+	char c;
+ 
+	for (c = pgm_read_byte(s); c; ++s, c = pgm_read_byte(s))
+		lcd_write_data(c);
+}
+ 
+ 
+// This function initializes the LCD plus any AVR ports etc
+void lcd_init(void) {
+
+	// Initialise the AVR ports and any other hardware bits
+	DATA_PORT.OUT = 0x00;							// initial data lines all low
+	DATA_PORT.DIRSET = 0xff;						// set the 8-bit data port to all outputs
+	COMM_PORT.OUTCLR = LCD_E | LCD_RS;			// all LCD control lines low
+	COMM_PORT.DIRSET = LCD_E | LCD_RS;  			// set the LCD control line pins to outputs
+ 
+	// Now do the actual LCD initialisations
+ 
+	// startup delay - make it long to allow time for power to settle
+	// (you want wish to remove this line)
+	_delay_ms(500);
+	DATA_PORT.OUTSET=PIN4_bm|PIN5_bm;
+	COMM_PORT.OUTSET = LCD_E;
+	
+	_delay_us(1);
+	COMM_PORT.OUTCLR = LCD_E;
+	_delay_ms(5); // czekaj 5ms
+	
+	// LCD display initialisation by instruction magic sequence
+	lcd_set_write_instruction();
+	lcd_write_byte(0x28);//(HD44780_FUNCTION_SET | HD44780_FONT5x7 | HD44780_TWO_LINE | HD44780_4_BIT);			// function set
+	_delay_us(50);
+	lcd_set_write_instruction();
+	lcd_write_byte(0x28);//(HD44780_FUNCTION_SET | HD44780_FONT5x7 | HD44780_TWO_LINE | HD44780_4_BIT);			// function set
+	_delay_us(50);
+	lcd_set_write_instruction();
+	lcd_write_byte(HD44780_DISPLAY_ONOFF | HD44780_DISPLAY_OFF);			// display on/off control
+	_delay_us(50);
+	lcd_set_write_instruction();
+	lcd_write_byte(0x01);			// display clear
+	_delay_ms(5);
+	lcd_set_write_instruction();
+	lcd_write_byte(0x06);			// entry mode set
+	_delay_ms(5);
+	//lcd_write_byte(0x14); 			// Cursor shift
+	
+ 
+	lcd_clear_and_home(); 			// LCD cleared and cursor is brought to 
+         						// the beginning of 1st line
+ 
 }
