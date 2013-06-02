@@ -34,15 +34,16 @@
 // --------------------- Konfiguracja pamięci ------------------------------------
 //
 
-#define HEAP_BEGIN                   0x1100 // tu zmienic 0x40000UL
+#define HEAP_BEGIN                   0x004000//0x1100 // tu zmienic 0x40000UL
 #define HEAP_END                     CLI_1_BUF_ADDR - 1
 #define HEAP_SIZE                    HEAP_END - HEAP_BEGIN + 1
 
-#define CLI_BUF_TOT_LEN              0x0100
-#define CLI_1_BUF_ADDR               0x2800
-#define CLI_2_BUF_ADDR               0x2900
-#define CLI_3_BUF_ADDR               0x2A00
-#define CLI_4_BUF_ADDR               0x2B00
+#define CLI_BUF_TOT_LEN              0x000100
+#define CLI_1_BUF_ADDR               0x005700
+#define CLI_2_BUF_ADDR               0x005800
+#define CLI_3_BUF_ADDR               0x005900
+#define CLI_4_BUF_ADDR               0x005A00
+#define LCD_BUFF_ADDR		      0x005B00
 
 #define RTOS_TCP_BUF_BASE_ADDR       0x2C00
 
@@ -89,7 +90,44 @@
   32k   | Filesystem Fat8             |
  0xFFFF +-----------------------------+
 */
-
+/* Memory Map - new
+ 0x000000 +-----------------------------+ 
+  256     | Controll registers          | 
+ 0x000100 +-----------------------------+ 
+          | EEPROM                      | 
+ 0x001000 +-----------------------------+ 
+  8k      | Internal memory             | 
+ 0x002000 +-----------------------------+  8k  
+  
+ 0x004000 +-----------------------------+ 
+  5k768   | Heap                        | 
+ 0x005700 +-----------------------------+  11 k 768
+      256 * CLI 1 buffer                + 
+ 0x005800 +-----------------------------+ 
+      256 * CLI 2 buffer                + 
+ 0x005900 +-----------------------------+ 
+      256 * CLI 3 buffer                + 
+ 0x005A00 +-----------------------------+ 
+      256 * CLI 4 buffer                +
+ 0x005B00 +-----------------------------+
+      256 * LCD buffer                  +
+ 0x005C00 +-----------------------------+
+           TCP buffers 
+ 
+  
+ 0x007000 +-----------------------------+  28 k 
+          | Fat32 Buffer                |  
+ 0x007800 +-----------------------------+  30 k 
+    256   | RTOS UDP Tx buffer          | 
+ 0x007900 +-----------------------------+ 
+    256   | RTOS UDP Rx buffer          | 
+ 0x007A00 +-----------------------------+ 
+    1k512 | Enc28j60Buffer              | 
+ 0x008000 +-----------------------------+  32 K 
+    32k   | Filesystem Fat8             | 
+ 0x00FFFF +-----------------------------+ 
+*/ 
+ 
 
 //Konfiguracja biblioteki ds1305.h
 #define USE_DECODED_TIME_STRUCT 1

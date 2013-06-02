@@ -5,7 +5,7 @@
 #include <util/delay.h>
  
 // This implementation uses Port B for the Data port, all 8 bits of it
-#define DATA_PORT PORTA
+#define DATA_PORT PORTB
  
  
 // This implementation uses Port B for the Control port
@@ -18,39 +18,39 @@ void polbajt(unsigned char data)
   //PORTB.OUT=0x00;
   if(data&0x01)
   {
-	  DATA_PORT.OUTSET=PIN4_bm;//|=0x10;//LCD_D4;
+	  DATA_PORT.OUTSET=PIN5_bm;//dla portu A ->PIN4_bm;//|=0x10;//LCD_D4;
 	 
   }
   else
   {
-	  DATA_PORT.OUTCLR=PIN4_bm;//=~(0x10);//LCD_D4;
+	  DATA_PORT.OUTCLR=PIN5_bm;//PIN4_bm;//=~(0x10);//LCD_D4;
   }
 
   if(data&0x02)
   {
-	  DATA_PORT.OUTSET=PIN5_bm;//|=0x20;//LCD_D5;
+	  DATA_PORT.OUTSET=PIN4_bm;//PIN5_bm;//|=0x20;//LCD_D5;
   }
   else
   {
-	  DATA_PORT.OUTCLR=PIN5_bm;//&=~(0x20);//LCD_D5;
+	  DATA_PORT.OUTCLR=PIN4_bm;//PIN5_bm;//&=~(0x20);//LCD_D5;
   }
 
   if(data&0x04)
   {
-	  DATA_PORT.OUTSET=PIN6_bm;//|=0x40;//LCD_D6;
+	  DATA_PORT.OUTSET=PIN3_bm;//PIN6_bm;//|=0x40;//LCD_D6;
   }
   else
   {
-	  DATA_PORT.OUTCLR=PIN6_bm;//&=~(0x40);//LCD_D6;
+	  DATA_PORT.OUTCLR=PIN3_bm;//PIN6_bm;//&=~(0x40);//LCD_D6;
   }
 
   if(data&0x08)	
   {
-	  PORTB.OUTSET=PIN7_bm;//|=0x80;//LCD_D7;
+	  PORTB.OUTSET=PIN2_bm;//PIN7_bm;//|=0x80;//LCD_D7;
   }
   else
   {
-	 DATA_PORT.OUTCLR=PIN7_bm;//&=~(0x80);//LCD_D7;
+	 DATA_PORT.OUTCLR=PIN2_bm;//PIN7_bm;//&=~(0x80);//LCD_D7;
   }
 } 
  
@@ -168,6 +168,11 @@ void lcd_write_string_p(const char *s)
 // This function initializes the LCD plus any AVR ports etc
 void lcd_init(void) {
 
+  portENTER_CRITICAL();
+  {
+    xLCDrec = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    }  
+  portEXIT_CRITICAL();
 	// Initialise the AVR ports and any other hardware bits
 	DATA_PORT.OUT = 0x00;							// initial data lines all low
 	DATA_PORT.DIRSET = 0xff;						// set the 8-bit data port to all outputs
