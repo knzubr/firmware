@@ -67,7 +67,7 @@ static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
   crSTART( xHandle );
   for (;;)
   {
-    LedOn(uxIndex)
+    ledOn(uxIndex);
     crDELAY(xHandle, 100);
   }
   crEND();
