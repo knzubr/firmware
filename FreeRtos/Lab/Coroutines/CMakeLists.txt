@@ -19,7 +19,7 @@ SET(TARGET_NAME  ${IMAGENAME})
 
 
 SET(SOURCE_DIR   "../../freeRtos/Source")
-SET(PORT_DIR     "../../freeRtos/portable/GCC/ATMega88")
+SET(PORT_DIR     "../../freeRtos/portable/GCC/ATMega168")
 SET(PORT_MEM     "../../freeRtos/portable/MemMang")
 
 include_directories("./" "${SOURCE_DIR}/include" "${PORT_DIR}")
