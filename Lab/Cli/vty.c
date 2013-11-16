@@ -27,11 +27,13 @@
 #error "Vty Language not defined"
 #endif
 
-  void reboot() {
+void reboot()
+{
   wdt_disable();  
   wdt_enable(WDTO_15MS);
   while (1) {}
 }
+
 static cliExRes_t helpFunction           (cmdState_t *state);
 static cliExRes_t resetFunction          (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
@@ -77,12 +79,12 @@ static cliExRes_t testPamZewFunction     (cmdState_t *state);
 
 struct ramPlikFd    fdVty;  //TODO move it to CLI struct
 
-prog_char okStr[] = "OK\r\n";
-prog_char nlStr[] = "\r\n";
-prog_char BladBuforaPozostaloBajtowStr[]           = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
+const char okStr[]                        PROGMEM = "OK\r\n";
+const char nlStr[]                        PROGMEM = "\r\n";
+const char BladBuforaPozostaloBajtowStr[] PROGMEM = "!!! W budorze Rs485 pozostalo %d bajtow\r\n";
 
 
-prog_char __ATTR_PROGMEM__ *errorStrings[] = {
+const char * const errorStrings[] PROGMEM = {
   errorOK,
   errorNoFile,
   errorxModemFrameStartTimeout,
@@ -97,7 +99,7 @@ prog_char __ATTR_PROGMEM__ *errorStrings[] = {
   errorOpenFile
 };
 
-command_t __ATTR_PROGMEM__ cmdListNormal[] =
+const command_t PROGMEM cmdListNormal[] =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_reset,     cmd_help_reset,     resetFunction},
@@ -111,7 +113,7 @@ command_t __ATTR_PROGMEM__ cmdListNormal[] =
   {NULL, NULL, NULL}
 };
 
-command_t __ATTR_PROGMEM__ cmdListEnable[] =
+const command_t cmdListEnable[] PROGMEM =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_reset,	  cmd_help_reset,     resetFunction},
@@ -147,7 +149,7 @@ command_t __ATTR_PROGMEM__ cmdListEnable[] =
   {NULL, NULL, NULL}
 };
 
-command_t __ATTR_PROGMEM__ cmdListConfigure[] =
+const command_t cmdListConfigure[] PROGMEM =
 {
   {cmd_help,         cmd_help_help,         helpFunction},
   {cmd_reset,        cmd_help_reset,        resetFunction},
@@ -276,6 +278,7 @@ static cliExRes_t resetFunction(cmdState_t *state)
      //asm volatile ("call 0x01E000");
     wdt_enable(WDTO_15MS);
     for(;;);
+    return OK_SILENT;
   }
 static cliExRes_t statusFunction(cmdState_t *state)
 {

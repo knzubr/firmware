@@ -3,92 +3,92 @@
 
 // *************************** Error Strings *******************************************************
 
-prog_char errorOK[]                                   = "All OK\r\n";
-prog_char errorNoFile[]                               = "No File\r\n";
-prog_char errorxModemFrameStartTimeout[]              = "\r\n";
-prog_char errorxModemByteSendTimeout[]                = "\r\n";
-prog_char errorxModemWrongFrameNo[]                   = "\r\n";
-prog_char errorxModemFrameFrameNoCorrectionNotMatch[] = "\r\n";
-prog_char errorxModemFrameCrc[]                       = "xModem CRC error\r\n";
-prog_char errorxModemRemoteSideCan[]                  = "Remote side cancelled at frame no %d\r\n";
-prog_char errorxModemUnknownResponse[]                = "xModem unknown response 0x%x\r\n";
-prog_char errorNoRemoteDevice[]                       = "Device %d is not responding (%d)\r\n";
-prog_char errorBootloaderNotResponding[]              = "Bootloader is not responding\r\n";
-prog_char errorOpenFile[]                             = "Can't open file %s\r\n";
+const char errorOK[]                                   PROGMEM = "All OK\r\n";
+const char errorNoFile[]                               PROGMEM = "No File\r\n";
+const char errorxModemFrameStartTimeout[]              PROGMEM = "\r\n";
+const char errorxModemByteSendTimeout[]                PROGMEM = "\r\n";
+const char errorxModemWrongFrameNo[]                   PROGMEM = "\r\n";
+const char errorxModemFrameFrameNoCorrectionNotMatch[] PROGMEM = "\r\n";
+const char errorxModemFrameCrc[]                       PROGMEM = "xModem CRC error\r\n";
+const char errorxModemRemoteSideCan[]                  PROGMEM = "Remote side cancelled at frame no %d\r\n";
+const char errorxModemUnknownResponse[]                PROGMEM = "xModem unknown response 0x%x\r\n";
+const char errorNoRemoteDevice[]                       PROGMEM = "Device %d is not responding (%d)\r\n";
+const char errorBootloaderNotResponding[]              PROGMEM = "Bootloader is not responding\r\n";
+const char errorOpenFile[]                             PROGMEM = "Can't open file %s\r\n";
 
 // *************************** Message Strings *****************************************************
 
-prog_char systemStateStr[]            = "System state:\r\n";
-prog_char statusNumberOfTasksStr[]    = "  Number of tasks : %d\r\n";
-prog_char statusStaticHeapStateStr[]  = "  FreeRtos heap   : %d free of %d bytes\r\n";
-prog_char statusDynamicHeapStateStr[] = "  Malloc heap     : %d free of %d bytes\r\n";
-prog_char statusRamDiskStateStr[]     = "  Ram disc space  : %d free of %d clusters\r\n";
-prog_char statusTemperatureStr[]      = "  Temperature     : %d C\r\n";
-prog_char statusVoltageStr[]          = "  Voltage         : %d V\r\n";
-prog_char systemRamConfigStr[]        = "System settings:\r\n";
-prog_char statusMacStr[]              = "  Mac address     : ";
-prog_char statusIpStr[]               = "  IP address      : ";
-prog_char statusIpMaskStr[]           = "  mask            : ";
-prog_char statusIpGwStr[]             = "  gateway         : ";
+const char systemStateStr[]            PROGMEM = "System state:\r\n";
+const char statusNumberOfTasksStr[]    PROGMEM = "  Number of tasks : %d\r\n";
+const char statusStaticHeapStateStr[]  PROGMEM = "  FreeRtos heap   : %d free of %d bytes\r\n";
+const char statusDynamicHeapStateStr[] PROGMEM = "  Malloc heap     : %d free of %d bytes\r\n";
+const char statusRamDiskStateStr[]     PROGMEM = "  Ram disc space  : %d free of %d clusters\r\n";
+const char statusTemperatureStr[]      PROGMEM = "  Temperature     : %d C\r\n";
+const char statusVoltageStr[]          PROGMEM = "  Voltage         : %d V\r\n";
+const char systemRamConfigStr[]        PROGMEM = "System settings:\r\n";
+const char statusMacStr[]              PROGMEM = "  Mac address     : ";
+const char statusIpStr[]               PROGMEM = "  IP address      : ";
+const char statusIpMaskStr[]           PROGMEM = "  mask            : ";
+const char statusIpGwStr[]             PROGMEM = "  gateway         : ";
 
-prog_char statusRs485listStr[]        = "Detected RS 485 devices:\r\n";
-prog_char statusNoRs485Dev[]          = "  Can't find any device\r\n";
+const char statusRs485listStr[]        PROGMEM = "Detected RS 485 devices:\r\n";
+const char statusNoRs485Dev[]          PROGMEM = "  Can't find any device\r\n";
 
-prog_char statusLockerSensorsStr[]    = "Locker sensors states:\r\n";
-prog_char statusLockerSensorsDisStr[] = "  Locker sensors disabled\r\n";
+const char statusLockerSensorsStr[]    PROGMEM = "Locker sensors states:\r\n";
+const char statusLockerSensorsDisStr[] PROGMEM = "  Locker sensors disabled\r\n";
 
-prog_char editRamFileIntroStr[]       = "Writing to file. Press CTRL+C to quit\r\n";
-prog_char readRamFIleLenStr[]         = "File length: %d\r\n";
+const char editRamFileIntroStr[]       PROGMEM = "Writing to file. Press CTRL+C to quit\r\n";
+const char readRamFIleLenStr[]         PROGMEM = "File length: %d\r\n";
 
-prog_char xwyslijStartStr[]           = "Xmodem: Transmission start\r\n";
+const char xwyslijStartStr[]           PROGMEM = "Xmodem: Transmission start\r\n";
 
-prog_char movingCurtainUpStr[]        = "Podnoszenie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
-prog_char movingCurtainDownStr[]      = "Opuszczanie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
-prog_char movingCurtainPosStr[]       = "\tpozycja   %d\r\n";
+const char movingCurtainUpStr[]        PROGMEM = "Podnoszenie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
+const char movingCurtainDownStr[]      PROGMEM = "Opuszczanie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
+const char movingCurtainPosStr[]       PROGMEM = "\tpozycja   %d\r\n";
 
-prog_char debugEnabledInfoStr[]       = "Enabled %s debug\r\n";
-prog_char debugDisabledInfoStr[]      = "Disabled %s debug\r\n";
+const char debugEnabledInfoStr[]       PROGMEM = "Enabled %s debug\r\n";
+const char debugDisabledInfoStr[]      PROGMEM = "Disabled %s debug\r\n";
 
 // *************************** Command Strings *****************************************************
 
-prog_char cmd_help[]        = "help";             prog_char cmd_help_help[]        = "Print help string";
-prog_char cmd_reset[]      = "reset";            prog_char cmd_help_reset[]      = "Resets FreeRtos";
-prog_char cmd_status[]      = "status";           prog_char cmd_help_status[]      = "{filename} Print device status on VTY or write to file";
-prog_char cmd_enc_stat[]    = "encstat";          prog_char cmd_help_enc_stat[]    = "Print Enc 28j60 registers";
-prog_char cmd_time[]        = "time";             prog_char cmd_help_time[]        = "Print time";
-prog_char cmd_net_dbg[]     = "debug";            prog_char cmd_help_net_dbg[]     = "[arp|icmp|ip|tcp|udp] [level] write debug info. Level 0 disable debuging";
+const char cmd_help[]         PROGMEM = "help";             const char cmd_help_help[]         PROGMEM = "Print help string";
+const char cmd_reset[]        PROGMEM = "reset";            const char cmd_help_reset[]        PROGMEM = "Resets FreeRtos";
+const char cmd_status[]       PROGMEM = "status";           const char cmd_help_status[]       PROGMEM = "{filename} Print device status on VTY or write to file";
+const char cmd_enc_stat[]     PROGMEM = "encstat";          const char cmd_help_enc_stat[]     PROGMEM = "Print Enc 28j60 registers";
+const char cmd_time[]         PROGMEM = "time";             const char cmd_help_time[]         PROGMEM = "Print time";
+const char cmd_net_dbg[]      PROGMEM = "debug";            const char cmd_help_net_dbg[]      PROGMEM = "[arp|icmp|ip|tcp|udp] [level] write debug info. Level 0 disable debuging";
 
-prog_char cmd_rping[]       = "rping";            prog_char cmd_help_rping[]       = "[Device no] Send ping to Rs485 device";
-prog_char cmd_ping[]        = "ping";             prog_char cmd_help_ping[]        = "[A1] [A2] [A3] [A4] Sends ping throught ethernet";
-prog_char cmd_xRec[]        = "xrec";             prog_char cmd_help_xRec[]        = "[file name] receive file using xModem";
-prog_char cmd_xSend[]       = "xsend";            prog_char cmd_help_xSend[]       = "[file name] send file using xModem";
-prog_char cmd_xflash[]      = "xflash";           prog_char cmd_help_xflash[]      = "[device no] [file name] flash device connected to Rs485";
+const char cmd_rping[]        PROGMEM = "rping";            const char cmd_help_rping[]        PROGMEM = "[Device no] Send ping to Rs485 device";
+const char cmd_ping[]         PROGMEM = "ping";             const char cmd_help_ping[]         PROGMEM = "[A1] [A2] [A3] [A4] Sends ping throught ethernet";
+const char cmd_xRec[]         PROGMEM = "xrec";             const char cmd_help_xRec[]         PROGMEM = "[file name] receive file using xModem";
+const char cmd_xSend[]        PROGMEM = "xsend";            const char cmd_help_xSend[]        PROGMEM = "[file name] send file using xModem";
+const char cmd_xflash[]       PROGMEM = "xflash";           const char cmd_help_xflash[]       PROGMEM = "[device no] [file name] flash device connected to Rs485";
 #ifdef testZewPamiec
-prog_char cmd_rtest[]       = "rtest";            prog_char cmd_help_rtest[]       = "External ram test";
+const char cmd_rtest[]        PROGMEM = "rtest";            const char cmd_help_rtest[]        PROGMEM = "External ram test";
 #endif
-prog_char cmd_dir_rf[]      = "dirrf";            prog_char cmd_help_dir_rf[]      = "Print ramdisk files";
-prog_char cmd_create_rf[]   = "crf";              prog_char cmd_help_create_rf[]   = "[file name] create ram file";
-prog_char cmd_erase_rf[]    = "eraserf";          prog_char cmd_help_erase_rf[]    = "[file name] erase file from ram disk";
-prog_char cmd_edit_rf[]     = "editrf";           prog_char cmd_help_edit_rf[]     = "[file name] edit file located on ram disk";
-prog_char cmd_read_rf[]     = "readrf";           prog_char cmd_help_read_rf[]     = "[file name] read file located on ram disk";
+const char cmd_dir_rf[]       PROGMEM = "dirrf";            const char cmd_help_dir_rf[]       PROGMEM = "Print ramdisk files";
+const char cmd_create_rf[]    PROGMEM = "crf";              const char cmd_help_create_rf[]    PROGMEM = "[file name] create ram file";
+const char cmd_erase_rf[]     PROGMEM = "eraserf";          const char cmd_help_erase_rf[]     PROGMEM = "[file name] erase file from ram disk";
+const char cmd_edit_rf[]      PROGMEM = "editrf";           const char cmd_help_edit_rf[]      PROGMEM = "[file name] edit file located on ram disk";
+const char cmd_read_rf[]      PROGMEM = "readrf";           const char cmd_help_read_rf[]      PROGMEM = "[file name] read file located on ram disk";
 
-prog_char cmd_up[]          = "up";               prog_char cmd_help_up[]          = "[driver no] [channel] {value} move up";
-prog_char cmd_down[]        = "down";             prog_char cmd_help_down[]        = "[driver no] [channel] {value} move down";
-prog_char cmd_spa[]         = "spa";              prog_char cmd_help_spa[]         = "[value] set port A";
-prog_char cmd_spb[]         = "spb";              prog_char cmd_help_spb[]         = "[value] set port B";
+const char cmd_up[]           PROGMEM = "up";               const char cmd_help_up[]           PROGMEM = "[driver no] [channel] {value} move up";
+const char cmd_down[]         PROGMEM = "down";             const char cmd_help_down[]         PROGMEM = "[driver no] [channel] {value} move down";
+const char cmd_spa[]          PROGMEM = "spa";              const char cmd_help_spa[]          PROGMEM = "[value] set port A";
+const char cmd_spb[]          PROGMEM = "spb";              const char cmd_help_spb[]          PROGMEM = "[value] set port B";
 
-prog_char cmd_settime[]     = "settime";          prog_char cmd_help_settime[]     = "[h] [m] [s] set time (24h format)";
-prog_char cmd_ac[]          = "ac";               prog_char cmd_help_ac[]          = "[channel 0-7] read analog value";
-prog_char cmd_enable[]      = "enable";           prog_char cmd_help_enable[]      = "Enable mode";
-prog_char cmd_disable[]     = "disable";          prog_char cmd_help_disable[]     = "View mode";
-prog_char cmd_configure[]   = "config";           prog_char cmd_help_configure[]   = "Configure mode";
-prog_char cmd_conf_ip[]     = "ip";               prog_char cmd_help_conf_ip[]     = "[A1] [A2] [A3] [A4] set IP address";
-prog_char cmd_conf_udp[]    = "udp";              prog_char cmd_help_conf_udp[]    = "[A1] [A2] [A3] [A4] [src port] {dst port} set udp client IP address and ports";
-prog_char cmd_conf_ip_mask[]= "mask";             prog_char cmd_conf_ip_mask_help[]= "[mask] set mask";
-prog_char cmd_conf_ip_gw[]  = "gw";               prog_char cmd_conf_ip_gw_help[]  = "[A1] [A2] [A3] [A4] set default gateway";
-prog_char cmd_conf_mac[]    = "mac";              prog_char cmd_help_conf_mac[]    = "[A1] [A2] [A3] [A4] [A5] [A6] set MAC address";
-prog_char cmd_conf_save[]   = "save";             prog_char cmd_help_conf_save[]   = "Save configuration";
-prog_char cmd_ustawR[]      = "setr";             prog_char cmd_help_ustawR[]      = "[value] set resistance value";
+const char cmd_settime[]      PROGMEM = "settime";          const char cmd_help_settime[]      PROGMEM = "[h] [m] [s] set time (24h format)";
+const char cmd_ac[]           PROGMEM = "ac";               const char cmd_help_ac[]           PROGMEM = "[channel 0-7] read analog value";
+const char cmd_enable[]       PROGMEM = "enable";           const char cmd_help_enable[]       PROGMEM = "Enable mode";
+const char cmd_disable[]      PROGMEM = "disable";          const char cmd_help_disable[]      PROGMEM = "View mode";
+const char cmd_configure[]    PROGMEM = "config";           const char cmd_help_configure[]    PROGMEM = "Configure mode";
+const char cmd_conf_ip[]      PROGMEM = "ip";               const char cmd_help_conf_ip[]      PROGMEM = "[A1] [A2] [A3] [A4] set IP address";
+const char cmd_conf_udp[]     PROGMEM = "udp";              const char cmd_help_conf_udp[]     PROGMEM = "[A1] [A2] [A3] [A4] [src port] {dst port} set udp client IP address and ports";
+const char cmd_conf_ip_mask[] PROGMEM = "mask";             const char cmd_conf_ip_mask_help[] PROGMEM = "[mask] set mask";
+const char cmd_conf_ip_gw[]   PROGMEM = "gw";               const char cmd_conf_ip_gw_help[]   PROGMEM = "[A1] [A2] [A3] [A4] set default gateway";
+const char cmd_conf_mac[]     PROGMEM = "mac";              const char cmd_help_conf_mac[]     PROGMEM = "[A1] [A2] [A3] [A4] [A5] [A6] set MAC address";
+const char cmd_conf_save[]    PROGMEM = "save";             const char cmd_help_conf_save[]    PROGMEM = "Save configuration";
+const char cmd_ustawR[]       PROGMEM = "setr";             const char cmd_help_ustawR[]       PROGMEM = "[value] set resistance value";
 
 
 #endif
