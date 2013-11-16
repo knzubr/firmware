@@ -149,6 +149,14 @@ uint8_t spiSend(uint8_t data)
   return result;
 }
 
+uint8_t spiSendENC(uint8_t data)
+{
+  uint8_t result;
+  SPDR = data;
+  xQueueReceive(xSpiRx, &result, 10); 
+  return result;
+}
+
 uint8_t spiSendSpinBlock(uint8_t data)
 {
   SPDR = data;
