@@ -3,6 +3,7 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="Coroutines" />
+		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="avr-gcc" />
 		<Build>
@@ -15,6 +16,14 @@
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+				<MakeCommands>
+					<Build command="$make -f $makefile" />
+					<CompileFile command="$make -f $makefile $file" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile" />
+					<SilentBuild command="$make -f $makefile &gt; $(CMD_NULL)" />
+				</MakeCommands>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/Coroutines.elf" prefix_auto="1" extension_auto="0" />
@@ -50,26 +59,12 @@
 			<Add after="srec_cat $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).fuse -Intel -crop 0x01 0x02 -offset -0x01 -O $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).hfs -Intel " />
 			<Add after="srec_cat $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).fuse -Intel -crop 0x02 0x03 -offset -0x02 -O $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).efs -Intel " />
 		</ExtraCommands>
-		<Unit filename="../FreeRTOSConfig.h" />
-		<Unit filename="../automat.c">
+		<Unit filename="FreeRTOSConfig.h" />
+		<Unit filename="Makefile" />
+		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../automat.h" />
-		<Unit filename="../hardware.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../hardware.h" />
-		<Unit filename="../main.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../main.h" />
-		<Unit filename="../serial.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../serial.h" />
-		<Unit filename="fuse.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="main.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
