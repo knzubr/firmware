@@ -11,9 +11,7 @@
 #include "croutine.h"
 #include "queue.h"
 #include "task.h"
-//#include "serial.h"
 #include "hardware.h"
-#include "automat.h"
 
 #define mainCHECK_TASK_PRIORITY 1
 #define mainCHECK_PERIOD 100
