@@ -7,13 +7,8 @@ void hardwareInit(void)
   PORTB = 0x38; //3 - Adr3, 4 - Adr4, 5 - Adr5
   DDRC  = 0x00; //0 - Adr0, 1 - Adr1, 2 - Key1, 3 - Key2
   PORTC = 0x3F; //4 - Key3, 5 - Key4
-  DDRD  = 0xEE; //0 - RXD, 1 - TXD, 2 - !RxEn, 3 - TxEn, 
+  DDRD  = 0xEE; //0 - RXD, 1 - TXD, 2 - !RxEn, 3 - TxEn,
   PORTD = 0x00; //5 - ExtLed1, 6 - ExtLed2, 7 - Led4)
-  /*Reading Rs485 address
-    bit 7, 6 = 0 dla sterowników rolet i światła
-   */
-  address =  (PINB & 0x38) >> 1;
-  address |= (PINC & 0x03);
 }
 
 void ledOn(uint8_t ledNo)
@@ -105,7 +100,7 @@ inline void led1toggle(void)
 
 inline void led2on(void)
 {
-  PORTB |=  0x02;	
+  PORTB |=  0x02;
 }
 inline void led2off(void)
 {
@@ -118,7 +113,7 @@ inline void led2toggle(void)
 
 inline void led3on(void)
 {
-  PORTB |=  0x01;	
+  PORTB |=  0x01;
 }
 inline void led3off(void)
 {
@@ -131,7 +126,7 @@ inline void led3toggle(void)
 
 inline void led4on(void)
 {
-  PORTD |=  0x80;	
+  PORTD |=  0x80;
 }
 inline void led4off(void)
 {

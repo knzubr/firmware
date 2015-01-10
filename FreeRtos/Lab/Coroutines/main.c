@@ -3,7 +3,7 @@
 /**
  * Korutyna odpowiedzialna za sprawdzanie stanu przycisków.
  * @param xHandle uchwyt do korutyny umożliwiający zastosowanie makr. Programista nie może go używać bezpośrednio.
- * @param uxIndex indeks korutyny. Umożliwia wykonywanie tej samej funkcji przez kilka korutyn. 
+ * @param uxIndex indeks korutyny. Umożliwia wykonywanie tej samej funkcji przez kilka korutyn.
  *                W przypadku tej funkcji, parametr nie jest wykorzystywany.
  *                By uniknąć ostrzeżeń, należy na początku funkcji wpisać (void) uxIndex;
  */
@@ -23,16 +23,6 @@ void vApplicationIdleHook( void );
 
 
 /*-----------------------------------------------------------*/
-
-/**
- * Adres modułu wykonawczego.
- * Moduły wykonawcze podłączone są do wpólnej magistrali Rs485.
- * Każdy z nich ma inny adres, co umożliwia wydanie polecenia do określonego modułu.
- * Adres określany jest na podstawie stanu zworek urządzenia.
- * Umożliwia to wgranie do każdego urządzenia takiego samego programu.
- */
-uint8_t address;
-
 
 portSHORT main( void )
 {
@@ -63,7 +53,7 @@ static void vKlawisze(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
 }
 
 static void vDioda(xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex)
-{ 
+{
   crSTART( xHandle );
   for (;;)
   {
