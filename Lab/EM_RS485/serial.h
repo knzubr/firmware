@@ -3,7 +3,9 @@
 
 #include "main.h"
 #include "semphr.h"
-#include "../../freeRtos/Lib/include/protocol1.h"
+
+extern xQueueHandle xRxedChars;       /// Bufor, który przechowuje odebrane znaki z magistrali RS 485
+extern xQueueHandle xCharsForTx;      /// Bufor, który przechowuje znaki do wysłania przez magistralę RS 485
 
 #define BOOT_START 0x1C00
 
