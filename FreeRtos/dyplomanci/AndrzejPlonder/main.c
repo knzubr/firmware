@@ -1,20 +1,20 @@
 /*
- 
+
 	FreeRTOS.org V5.2.0 - Copyright (C) 2003-2009 Richard Barry.
 	This file is part of the FreeRTOS.org distribution.
-	FreeRTOS.org is free software; you can redistribute it and/or modify it 
+	FreeRTOS.org is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License (version 2) as published
 	by the Free Software Foundation and modified by the FreeRTOS exception.
 	FreeRTOS.org is distributed in the hope that it will be useful,	but WITHOUT
-	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-	FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
+	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+	FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 	more details.
 
-	You should have received a copy of the GNU General Public License along 
-	with FreeRTOS.org; if not, write to the Free Software Foundation, Inc., 59 
+	You should have received a copy of the GNU General Public License along
+	with FreeRTOS.org; if not, write to the Free Software Foundation, Inc., 59
 	Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 
-	A special exception to the GPL is included to allow you to distribute a 
+	A special exception to the GPL is included to allow you to distribute a
 	combined work that includes FreeRTOS.org without being obliged to provide
 	the source code for any proprietary components.  See the licensing section
 	of http://www.FreeRTOS.org for full details.
@@ -54,7 +54,7 @@ xQueueHandle xVtyRec;
 xQueueHandle xRs485Tx;
 xQueueHandle xRs485Rec;
 
-xQueueHandle xLCDrec; 
+xQueueHandle xLCDrec;
 
 
 volatile uint8_t temperature;
@@ -126,11 +126,11 @@ void initExternalMem(void)
   PORTH.DIR = 0xFF;
   PORTK.DIR = 0xFF;
   PORTJ.DIR = 0x00;
-  
+
   EBI.CTRL=0x01;
   EBI.CS3.CTRLB=EBI_CS_SRWS_7CLK_gc;
   EBI.CS3.BASEADDR= (((uint32_t) 0x20000UL)>>8) & (0xFFFF<<(EBI_CS_SRWS_7CLK_gc>>2));//0x20000UL;
-  EBI.CS3.CTRLA=EBI_CS_ASIZE_512B_gc|EBI_CS_MODE_LPC_gc; 
+  EBI.CS3.CTRLA=EBI_CS_ASIZE_512B_gc|EBI_CS_MODE_LPC_gc;
 }
 
 cmdState_t *CLIStateSerialUsb;
@@ -152,7 +152,7 @@ streamBuffers_t udpBuffers;
    #define F_CPU 32000000
    // Enable/Disable external 14.7456 MHz oscillator
    //#define F_CPU 14745600
-#endif 
+#endif
 
 
 portSHORT main( void )
@@ -161,12 +161,12 @@ portSHORT main( void )
   hardwareInit();
   //
   //my_init_memory();
- lcd_init(); 
- 
+ lcd_init();
+
 // clear display
-lcd_clear_and_home();
-lcd_write_data('a');
-  xSerialPortInitMinimal();  
+  lcd_clear_and_home();
+  lcd_write_data('a');
+  xSerialPortInitMinimal();
 
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
 #ifdef USENET
@@ -174,7 +174,7 @@ lcd_write_data('a');
 #endif
 
   //  cmdStateClear(newCmdState);
-  
+
  // sensorsTaskInit();
  loadConfiguration();
 
@@ -184,23 +184,23 @@ lcd_write_data('a');
 #ifdef USENET
   udpInit();
   socketInit();
-  
+
   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
   VtyInit(CLIStateSerialUdp, &udpStream);
-  
+
   xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  0, &xHandleEnc);
   xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
 #endif
 
   sei();
-  
+
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
 //xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
 
 //xTaskCreate(vTaskTestUSB, NULL, 300, NULL, 0, &xHandleUSB);
-  
+
   vTaskStartScheduler();
-   
+
   return 0;
 }
 /*-----------------------------------------------------------*/
