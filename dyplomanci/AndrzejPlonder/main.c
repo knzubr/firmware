@@ -54,6 +54,13 @@ xQueueHandle xVtyRec;
 xQueueHandle xRs485Tx;
 xQueueHandle xRs485Rec;
 
+xQueueHandle xRs485_1_Rec;
+xQueueHandle xRs485_2_Rec;
+
+xQueueHandle xRs485_1_Tx;
+xQueueHandle xRs485_2_Tx;
+
+
 xQueueHandle xLCDrec;
 
 
@@ -69,9 +76,7 @@ void vApplicationIdleHook( void );
 void vApplicationTickHook( void );
 
 xTaskHandle xHandleVTY_USB;
-xTaskHandle xHandleVTY_UDP;
-xTaskHandle xHandleEnc;
-xTaskHandle xHandleSensors;
+xTaskHandle xHandleTranslator;
 xTaskHandle xHandleUSB;
 xTaskHandle xHandleLCD;
 
@@ -155,6 +160,23 @@ streamBuffers_t udpBuffers;
 #endif
 
 
+
+void translatorTask(void *cliStatePtr)  //Przenieść do osobnego pliku
+{
+  uint8_t znak;
+  for( ;; )
+  {
+    if( xQueueReceive(xRs485_1_Rec, &znak, portMAX_DELAY))
+    {
+        //Dopisać
+
+//        if (false)
+//            xQueueSend();
+
+    }
+  }
+}
+
 portSHORT main( void )
 {
   //ramDyskInit();              //Inicjalizacja Ram dysku
@@ -166,38 +188,24 @@ portSHORT main( void )
 // clear display
   lcd_clear_and_home();
   lcd_write_data('a');
-  xSerialPortInitMinimal();
+
+  xSerialPortInitMinimal(); //Przerobić dodać drigi Rs485
 
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
-#ifdef USENET
-  CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
-#endif
 
   //  cmdStateClear(newCmdState);
 
- // sensorsTaskInit();
  loadConfiguration();
 
  initQueueStreamUSB(&usbStream);
  VtyInit(CLIStateSerialUsb, &usbStream);
 
-#ifdef USENET
-  udpInit();
-  socketInit();
 
-  initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
-  VtyInit(CLIStateSerialUdp, &udpStream);
-
-  xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  0, &xHandleEnc);
-  xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
-#endif
 
   sei();
 
-  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
-//xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
-
-//xTaskCreate(vTaskTestUSB, NULL, 300, NULL, 0, &xHandleUSB);
+  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"            */, STACK_SIZE_VTY,         (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+  xTaskCreate(translatorTask, NULL /*"konwerter Rs485"*/, STACK_SIZE_TRANSLATOR,   NULL,                                  1, &xHandleTranslator);
 
   vTaskStartScheduler();
 

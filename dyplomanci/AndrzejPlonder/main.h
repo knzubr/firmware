@@ -11,10 +11,10 @@
 #include "memory_x.h"
 #include "Rs485_prot.h"
 
-#include "FreeRTOS.h"
-#include "croutine.h"
-#include "queue.h"
-#include "task.h"
+#include "../../freeRtos/Source/include/FreeRTOS.h"
+#include "../../freeRtos/Source/include/croutine.h"
+#include "../../freeRtos/Source/include/queue.h"
+#include "../../freeRtos/Source/include/task.h"
 #include "queueStream.h"
 #include "cli_task.h"
 #include "serial.h"
@@ -24,10 +24,10 @@
 
 #include "hardware.h"
 #include "spiXmega.h"
-#include "mpc23s17.h"
-#include "mcp3008.h"
-#include "ds1305.h"
-#include "enc28j60.h"
+//#include "mpc23s17.h"
+//#include "mcp3008.h"
+//#include "ds1305.h"
+//#include "enc28j60.h"
 
 #include "ramdysk.h"
 #include "ff.h"
@@ -35,8 +35,8 @@
 //#include "rtc.h"
 
 
-#include "sensors_task.h"
-#include "netstack_task.h"
+//#include "sensors_task.h"
+//#include "netstack_task.h"
 #include "lcd.h"
 
 #include "cmdline.h"

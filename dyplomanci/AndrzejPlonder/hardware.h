@@ -40,19 +40,8 @@ void hardwareInit(void);
  */
 void LockersMemInit(void);
 
-// ************************ Printing hardware info *********************
-/**
- * Prints lockers
- * @param stream - output stream
- * @return number of printed lockers
- */
-uint8_t printLockers(FILE *stream);
 
 // ************************ I/O module *********************************
-/**
- * Checks locker sensors
- */
-void checkLockerSensors(void);
 
 
 // ************************ Obsługa Rs485 ******************************

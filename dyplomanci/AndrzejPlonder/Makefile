@@ -56,9 +56,7 @@ main.c \
 configuration.c \
 serial.c \
 hardware.c \
-sensors_task.c \
 vty.c \
-netstack_task.c \
 cli_task.c \
 lcd_task.c\
 $(LIB_DIR)/lcd.c \
@@ -68,11 +66,6 @@ $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/xmodem.c \
 $(LIB_DIR)/vt100.c \
-$(LIB_DIR)/ds1305.c \
-$(LIB_DIR)/mpc23s17.c \
-$(LIB_DIR)/mcp3008.c \
-$(LIB_DIR)/mcp4150.c \
-$(LIB_DIR)/enc28j60.c \
 $(LIB_DIR)/queueStream.c \
 $(LIB_DIR)/Rs485_prot.c \
 $(SOURCE_DIR)/tasks.c \
@@ -84,6 +77,13 @@ $(PORT_DIR)/port.c
 
 
 #$(LIB_DIR)/ebi.c\ To zostało usunięte. Gdzie jest ten plik ???
+#netstack_task.c \
+#$(LIB_DIR)/enc28j60.c \
+#sensors_task.c \
+#$(LIB_DIR)/ds1305.c \
+#$$(LIB_DIR)/mpc23s17.c \
+#$(LIB_DIR)/mcp3008.c \
+#$(LIB_DIR)/mcp4150.c \
 
 
 #$(LIB_NET_DIR)/udp.c \
