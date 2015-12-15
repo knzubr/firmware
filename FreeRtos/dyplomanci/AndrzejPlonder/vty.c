@@ -88,7 +88,7 @@ const command_t cmdListConfigure[] PROGMEM =
 
 void VtyInit(cmdState_t* state, FILE *stream)
 {
-  cmdStateConfigure(state, (char *)(CLI_1_BUF_ADDR), CLI_BUF_TOT_LEN, stream, &cmdListNormal[0], NR_NORMAL);
+  cmdStateConfigure(state, (char *)(xmalloc(CLI_BUF_TOT_LEN)), CLI_BUF_TOT_LEN, stream, &cmdListNormal[0], NR_NORMAL);
 }
 
 void printErrorInfo(cmdState_t *state)

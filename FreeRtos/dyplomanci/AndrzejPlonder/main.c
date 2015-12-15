@@ -183,29 +183,27 @@ portSHORT main( void )
   hardwareInit();
   //
   //my_init_memory();
- lcd_init();
+  //lcd_init();
 
-// clear display
-  lcd_clear_and_home();
-  lcd_write_data('a');
+  //clear display
+  //lcd_clear_and_home();
+  //lcd_write_data('a');
 
   xSerialPortInitMinimal(); //Przerobić dodać drigi Rs485
-
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
 
   //  cmdStateClear(newCmdState);
 
- loadConfiguration();
+  loadConfiguration();
 
- initQueueStreamUSB(&usbStream);
- VtyInit(CLIStateSerialUsb, &usbStream);
-
+  initQueueStreamUSB(&usbStream);
+  VtyInit(CLIStateSerialUsb, &usbStream);
 
 
   sei();
 
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"            */, STACK_SIZE_VTY,         (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
-  xTaskCreate(translatorTask, NULL /*"konwerter Rs485"*/, STACK_SIZE_TRANSLATOR,   NULL,                                  1, &xHandleTranslator);
+  //xTaskCreate(translatorTask, NULL /*"konwerter Rs485"*/, STACK_SIZE_TRANSLATOR,   NULL,                                  1, &xHandleTranslator);
 
   vTaskStartScheduler();
 
