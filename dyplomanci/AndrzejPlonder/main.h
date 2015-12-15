@@ -8,8 +8,8 @@
 #include <avr/io.h>
 #include <util/crc16.h>
 
-#include "memory_x.h"
-#include "Rs485_prot.h"
+#include "../../freeRtos/Lib/include/memory_x.h"
+//#include "Rs485_prot.h"
 
 #include "../../freeRtos/Source/include/FreeRTOS.h"
 #include "../../freeRtos/Source/include/croutine.h"
