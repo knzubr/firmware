@@ -55,14 +55,6 @@
 /*
  * Włączenie przerwania pusty bufor nadawczy dla VTY
  */
-#define vInterruptVtyOn()             \
-{                                  \
-  unsigned portCHAR ucByte;        \
-                                   \
-  ucByte = UCSR1B;                 \
-  ucByte |= serDATA_INT_ENABLE;    \
-  UCSR1B = ucByte;                 \
-}
 
 #define vIsInterruptVtyOn()  (UCSR1B & serDATA_INT_ENABLE)
 
@@ -78,20 +70,45 @@
   UCSR1B = ucInByte;               \
 }
 
+#define vInterruptVtyOn()             \
+{                                  \
+  unsigned portCHAR ucByte;        \
+                                   \
+  ucByte = UCSR1B;                 \
+  ucByte |= serDATA_INT_ENABLE;    \
+  UCSR1B = ucByte;                 \
+}
+
 /**
  * Serial 1 (VTY) receiver que
  */
 extern xQueueHandle         xVtyRec;
-extern xQueueHandle         xRs485Rec;
 extern xQueueHandle         xVtyTx;
+
+/**
+ * Serial 0 (Rs485) receiver que
+ */
+extern xQueueHandle         xRs485Rec;
 extern xQueueHandle         xRs485Tx;
 
+xSemaphoreHandle            xSemaphoreRs485;    /// Flaga blokująca jednoczesny dostęp do magistrali wielu zadaniom
+
+
+void initQueueStreamUSB(FILE *stream);
 
 int     VtyPutChar(char c, FILE *stream);
+int     VtyGetChar(FILE *stream);
 
 void    xSerialPortInitMinimal(void);
 void    uartVtySendByte(uint8_t data);
+
 void    uartRs485SendByte(uint8_t data);
+uint8_t rs485Receive(uint8_t *c, uint8_t timeout);
+uint8_t flushRs485RecBuffer(void);
+void    takeRs485(void);
+void    releaseRs485(void);
+
+void    InterruptVtyOn(void);
+
 
 #endif
-

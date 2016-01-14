@@ -3,13 +3,22 @@
 
 #include "main.h"
 #include <stdio.h>
+#include <avr/pgmspace.h>
 #include <util/crc16.h>
+
 #include "ds1305.h"
 #include "enc28j60.h"
 #include "memory_x.h"
 #include "configuration.h"
+#include "Rs485_prot.h"
+#include "sensors_task.h"
+#include "nic.h"
+#include "ip.h"
+#include "net.h"
+#include "arp.h"
+#include "cmdline.h"
+#include "udp.h"
 
-#define LANG EN
 
 // Znaki kontrolne w protokole Xmodem
 #define SOH                     0x01
@@ -31,22 +40,25 @@
 #define XMODEM_BUFFER_SIZE		128
 
 
+extern nicState_t  nicState;
+extern UdpSocket_t *udpSocket;
 
-void VtyInit(cmdState_t *state);
+void VtyInit(cmdState_t *state, FILE *stream);
+
 void printErrorInfo(cmdState_t *state);
 
-extern uint8_t mymac[6];
-extern uint8_t myip[4];
-extern uint8_t mask;
+void printStatus(FILE *stream);
 
-extern xQueueHandle           xVtyRec;
-extern xQueueHandle           xVtyTx;
+extern volatile uint8_t temperature;
+extern volatile uint8_t voltage;
 
 extern xQueueHandle           xRs485Rec;
 extern xQueueHandle           xRs485Tx;
 
 extern volatile timeDecoded_t czasRtc;
 extern struct Enc28j60_config Enc28j60_global;
+
+extern struct sterRolet       *rollers;
 
 enum errorType
 {
@@ -59,7 +71,9 @@ enum errorType
   xModemFrameCrc = 6,
   xModemRemoteSideCan = 7,
   xModemUnknownResponse = 8,
-  bootloaderNotResponding = 9
+  noRemoteDevice = 9,
+  bootloaderNotResponding = 10,
+  cantOpenFile = 11
 };
 
 typedef enum errorType errorType_t;

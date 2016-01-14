@@ -1,11 +1,22 @@
 #include "hardware.h"
-#include "hardwareConfig.h"
-#include "spi.h"
-#include <avr/io.h>
+
+#if LANG_EN
+#include "hardware_en.h"
+#endif
+
+#if LANG_PL
+#include "hardware_pl.h"
+#endif
+
+xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
 
 void hardwareInit(void)
 {
   //DDRA = 0x00;  //External Memory
+  portENTER_CRITICAL();
+  xSpiRx          = xQueueCreate(1, 1);
+  portEXIT_CRITICAL();
+
   DDRB = 0xF7;
   PORTB = 0xD1;
   /*
@@ -14,11 +25,11 @@ void hardwareInit(void)
    2 - MOSI
    3 - MISO
    4 - External SPI ASR 4
-   5 - External SPI ASR 5 (DS1305)     0 - off; 1 - on 
+   5 - External SPI ASR 5 (DS1305)     0 - off; 1 - on
    6 - External SPI ASR 6 (MCP3008)    0 - on;  1 - off
    7 - External SPI ASR 7 (MPC23S17)   0 - on;  1 - off
   */
-  
+
   //DDRC = 0x00;  //External Memory
 
   DDRD = 0x00;
@@ -53,14 +64,123 @@ void hardwareInit(void)
    2 - ALE
    3 - SD CS
    4 - RS485 TxEn
-   5 - 
-   6 - 
-   7 - 
+   5 -
+   6 -
+   7 -
    */
 }
 
+void LockersMemInit(void)
+{
+  lockSensors = xmalloc(4 * sizeof(struct lockerSensor));
+}
+
+uint8_t printLockers(FILE *stream)
+{
+  uint8_t i;
+  uint8_t result = 0;
+  struct lockerSensor *tmpLock = lockSensors;
+  for (i=1; i<=4; i++)
+  {
+    if (tmpLock->enabled)
+    {
+      fprintf_P(stream, statusLockerSensDescStr, i);
+      if (tmpLock->threshold > tmpLock->acVal)
+        fprintf_P(stream, statusLockerOpenStr);
+      else
+        fprintf_P(stream, statusLockerCloseStr);
+      fprintf_P(stream, statusLockerSensAdditionalDescStr, tmpLock->threshold, tmpLock->acVal);
+      result++;
+    }
+    tmpLock++;
+  }
+  return result;
+}
+
+void checkLockerSensors(void)
+{
+  if (lockSensors[0].enabled)
+  {
+    MPC23s17SetBitsOnPortA(LOCK_SENS_1_LIGHT, 0);
+    vTaskDelay(30);
+    lockSensors[0].acVal = MCP3008_getSampleSingle(LOCK_SENS_1_AC_IN);
+    MPC23s17ClearBitsOnPortA(LOCK_SENS_1_LIGHT, 0);
+    lockSensors[0].locked = (lockSensors[0].acVal > lockSensors[0].threshold) ? 1 : 0;
+    vTaskDelay(10);
+  }
+
+  if (lockSensors[1].enabled)
+  {
+    MPC23s17SetBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
+    vTaskDelay(30);
+    lockSensors[1].acVal = MCP3008_getSampleSingle(LOCK_SENS_2_AC_IN);
+    MPC23s17ClearBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
+    lockSensors[1].locked = (lockSensors[1].acVal > lockSensors[1].threshold) ? 1 : 0;
+    vTaskDelay(10);
+  }
+
+  if (lockSensors[2].enabled)
+  {
+    MPC23s17SetBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
+    vTaskDelay(30);
+    lockSensors[2].acVal = MCP3008_getSampleSingle(LOCK_SENS_3_AC_IN);
+    MPC23s17ClearBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
+    lockSensors[2].locked = (lockSensors[2].acVal > lockSensors[2].threshold) ? 1 : 0;
+    vTaskDelay(10);
+  }
+
+  if (lockSensors[3].enabled)
+  {
+    MPC23s17SetBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
+    vTaskDelay(30);
+    lockSensors[3].acVal = MCP3008_getSampleSingle(LOCK_SENS_4_AC_IN);
+    MPC23s17ClearBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
+    lockSensors[3].locked = (lockSensors[3].acVal > lockSensors[3].threshold) ? 1 : 0;
+    vTaskDelay(10);
+  }
+}
+
+
+uint8_t spiSend(uint8_t data)
+{
+  uint8_t result;
+  SPDR = data;
+  xQueueReceive(xSpiRx, &result, 10);
+  return result;
+}
+
+uint8_t spiSendENC(uint8_t data)
+{
+  uint8_t result;
+  SPDR = data;
+  xQueueReceive(xSpiRx, &result, 10);
+  return result;
+}
+
+uint8_t spiSendSpinBlock(uint8_t data)
+{
+  SPDR = data;
+  SPCR &= ~(1<<SPIE);                //Disable SPI interrupt
+  while(!(SPSR&(1<<SPIF)));
+  data = SPSR;                       //Clearing interrupt flag
+  data = SPDR;                       //Resfing DPI buffer register
+  SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
+  return data;
+}
+
+uint8_t spiSendENCSpinBlock(uint8_t data)
+{
+  SPDR = data;
+  SPCR &= ~(1<<SPIE);                //Disable SPI interrupt
+  while(!(SPSR&(1<<SPIF)));
+  data = SPSR;                       //Clearing interrupt flag
+  data = SPDR;                       //Resfing DPI buffer register
+  SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
+  return data;
+}
+
 void disableAllSpiDevices(void)
-{ 
+{
 #if disableSpiPORTA_OR != 0
 #error Port A is memory bus
   PORTA |= disableSpiPORTA_OR;
@@ -92,7 +212,6 @@ void disableAllSpiDevices(void)
 #if disableSpiPORTD_AND != 0xFF
   PORTD &= disableSpiPORTD_AND;
 #endif
-
 #if disableSpiPORTE_OR != 0
   PORTE |= disableSpiPORTE_OR;
 #endif
@@ -115,7 +234,7 @@ void disableAllSpiDevices(void)
 #endif
 }
 
-void enableSpiEnc28j60(void)
+void spiEnableEnc28j60(void)
 {
 #if ENC_SPI_CS_EN_MASK_OR != 0
   ENC_SPI_CS_PORT |= ENC_SPI_CS_EN_MASK_OR;
@@ -125,7 +244,7 @@ void enableSpiEnc28j60(void)
 #endif
 }
 
-void disableSpiEnc28j60(void)
+void spiDisableEnc28j60(void)
 {
 #if ENC_SPI_CS_EN_MASK_OR != 0
   ENC_SPI_CS_PORT &= (~ENC_SPI_CS_EN_MASK_OR);
@@ -142,7 +261,7 @@ void enableSpiSd(void)
 #endif
 #if SD_SPI_CS_EN_MASK_AND != 0xFF
   SD_SPI_CS_PORT &= SD_SPI_CS_EN_MASK_AND;
-#endif   
+#endif
 }
 
 void disableSpiSd(void)
@@ -152,7 +271,7 @@ void disableSpiSd(void)
 #endif
 #if SD_SPI_CS_EN_MASK_AND != 0xFF
   SD_SPI_CS_PORT |= (~SD_SPI_CS_EN_MASK_AND);
-#endif  
+#endif
 }
 
 void enableSpiMPC23S17(void)
@@ -184,7 +303,8 @@ void enableSpiMCP3008(void)
 #endif
 #if MCP3008_SPI_CS_EN_MASK_AND != 0xFF
   MCP3008_SPI_CS_PORT &= MCP3008_SPI_CS_EN_MASK_AND;
-#endif  
+#endif
+
 }
 
 void disableSpiMCP3008(void)
@@ -198,13 +318,34 @@ void disableSpiMCP3008(void)
 #endif
 }
 
-//#define DS_SPCR_OR_MASK            (1<<SPR1)
+
+#define MCP4150_SPCR_OR_MASK ((1<<SPR1)|(1<<SPR0))
+void enableSpiMCP4150(void)
+{
+  SPCR |= MCP4150_SPCR_OR_MASK;
+#if MCP4150_SPI_CS_EN_MASK_OR != 0
+  MCP4150_SPI_CS_PORT |= MCP4150_SPI_CS_EN_MASK_OR;
+#endif
+#if MCP4150_SPI_CS_EN_MASK_AND != 0xFF
+  MCP4150_SPI_CS_PORT &= MCP4150_SPI_CS_EN_MASK_AND;
+#endif
+}
+void disableSpiMCP4150(void)
+{
+  SPCR &= ~MCP4150_SPCR_OR_MASK;
+  #if MCP4150_SPI_CS_EN_MASK_OR != 0
+  MCP4150_SPI_CS_PORT &= (~MCP4150_SPI_CS_EN_MASK_OR);
+#endif
+#if MCP4150_SPI_CS_EN_MASK_AND != 0xFF
+  MCP4150_SPI_CS_PORT |= (~MCP4150_SPI_CS_EN_MASK_AND);
+#endif
+}
+
 #define DS_SPCR_OR_MASK ((1<<CPHA)|(1<<SPR0))
-//#define DS_SPCR_OR_MASK (1<<CPHA)
-void enableSpiDs1305(void)
+
+void spiEnableDS1305(void)
 {
   SPCR |= DS_SPCR_OR_MASK;
-//spiSetCPHA();
 #if DS1305_SPI_CS_EN_MASK_OR != 0
   DS1305_SPI_CS_PORT |= DS1305_SPI_CS_EN_MASK_OR;
 #endif
@@ -213,14 +354,30 @@ void enableSpiDs1305(void)
 #endif
 }
 
-void disableSpiDs1305(void)
+void spiDisableDS1305(void)
 {
-  SPCR &= ~DS_SPCR_OR_MASK;
-//  spiClearCPHA();
+  SPCR &= (~(DS_SPCR_OR_MASK));
 #if DS1305_SPI_CS_EN_MASK_OR != 0
-  DS1305_SPI_CS_PORT &= (~DS1305_SPI_CS_EN_MASK_OR);
+  DS1305_SPI_CS_PORT &= (~(DS1305_SPI_CS_EN_MASK_OR));
 #endif
 #if DS1305_SPI_CS_EN_MASK_AND != 0xFF
-  DS1305_SPI_CS_PORT |= (~DS1305_SPI_CS_EN_MASK_AND);
-#endif  
+  DS1305_SPI_CS_PORT |= (~(DS1305_SPI_CS_EN_MASK_AND));
+#endif
+}
+
+ISR(SPI_STC_vect)
+{
+  static signed portBASE_TYPE xHigherPriorityTaskWoken;
+
+  static uint8_t data;
+  data = SPDR;
+
+  xQueueSendFromISR(xSpiRx, &data, &xHigherPriorityTaskWoken);
+
+  if( xHigherPriorityTaskWoken )
+  {
+    taskYIELD();
+  }
+
+  //clear SPI interrupt SPI |= 1;
 }

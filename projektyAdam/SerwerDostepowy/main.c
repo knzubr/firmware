@@ -1,4 +1,5 @@
 /*
+ 
 	FreeRTOS.org V5.2.0 - Copyright (C) 2003-2009 Richard Barry.
 	This file is part of the FreeRTOS.org distribution.
 	FreeRTOS.org is free software; you can redistribute it and/or modify it 
@@ -43,123 +44,74 @@
 */
 
 #include "main.h"
-#include "task.h"
-#include "enc_task.h"
-#include "sensors_task.h"
-#include "protRs485.h"
-#include "serial.h"
-#include "mpc23s17.h"
-#include "mcp3008.h"
-#include "enc28j60.h"
-#include "memory_x.h"
-#include "configuration.h"
 
-//struct sterRolet sterownikiRolet[MAKS_L_STER_ROLET];
-
-xQueueHandle xVtyRec;
-xQueueHandle xRs485Rec;
+uint8_t timer100Hz = 0;
 
 xQueueHandle xVtyTx;
+xQueueHandle xVtyRec;
+
 xQueueHandle xRs485Tx;
+xQueueHandle xRs485Rec;
 
-//xSemaphoreHandle xSemaphoreVty;
-//xSemaphoreHandle xSemaphoreRs485;
-//xSemaphoreHandle xSemaphoreVtyBusy;
-//xSemaphoreHandle xSemaphoreRs485Busy;
 
-#ifdef ENABLE_RESET_COUNTER
-static void prvIncrementResetCount( void );
-#endif
+volatile uint8_t temperature;
+volatile uint8_t voltage;
+
 
 void vApplicationIdleHook( void );
 
 /**
- * Proces odpowiedzialny za obsługę VTY
- * @param pvParameters ignorowane parametry
+ * RTC clock support
  */
-void vTaskVTY( void * pvParameters );
+void vApplicationTickHook( void );
 
-/**
- * Proces odpowiedzialny za obsługę komunikacji po magistrali Rs485
- * @param pvParameters ignorowane parametry
- */
-void vTaskMag(void *pvParameters);
-
-/*-----------------------------------------------------------*/
-
-void vTaskVTY( void * pvParameters )
-{
-  cmdState_t *state = (cmdState_t *)(pvParameters);
-  cmdlineInputFunc('\r', state);
-  
-  static char znak;
-  for( ;; )
-  {
-    if( xQueueReceive( xVtyRec, &znak, portMAX_DELAY))
-    {
-      cmdlineInputFunc(znak, state);
-      cmdlineMainLoop(state);
-    }  
-  }
-}
-
-void vTaskMag(void *pvParameters)
-{
-  pvParameters = NULL;
-
-  static uint8_t adr;
-  static char znak;
-  for(;;)
-  {
-    if(xQueueReceive(xRs485Rec, &znak, portMAX_DELAY))
-    {
-      sendPing(adr, 8, uartRs485SendByte);
-      vTaskDelay(10);
-    }
-    adr++;
-  }
-}
-
-xTaskHandle xHandleVTY;
-//xTaskHandle xHandleRs485;
+xTaskHandle xHandleVTY_USB;
+xTaskHandle xHandleVTY_UDP;
 xTaskHandle xHandleEnc;
 xTaskHandle xHandleSensors;
 
 void initExternalMem(void)
 {
   MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
+  MCUCR |= 0x0E;
 }
 
-cmdState_t *CLIStateSerial1;
+cmdState_t *CLIStateSerialUsb;
+cmdState_t *CLIStateSerialUdp;
+FILE usbStream;
+FILE udpStream;
+
+streamBuffers_t udpBuffers;
 
 portSHORT main( void )
 {
-  loadConfiguration();
-//   
   ramDyskInit();              //Inicjalizacja Ram dysku
-#ifdef ENABLE_RESET_COUNTER
-  prvIncrementResetCount();
-#endif
-
-  CLIStateSerial1  = xmalloc(sizeof(cmdState_t));
   hardwareInit();
-  
   spiInit(disableAllSpiDevices);
-  MPC23S17_init(spiSend, enableSpiMPC23S17, disableSpiMPC23S17);
-  MCP3008_init(spiSend, enableSpiMCP3008, disableSpiMCP3008);
-  Ds1305_init(spiSend, enableSpiDs1305, disableSpiDs1305); 
+
+// VTY on serial  
+  xSerialPortInitMinimal(); 
+  CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
+  CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
 
 
-  xSerialPortInitMinimal();
+//  cmdStateClear(newCmdState);
   
-  VtyInit(CLIStateSerial1);
+  sensorsTaskInit();
+  loadConfiguration();
 
-  Enc28j60Mem_init(spiSendSpinBlock, spiSend, enableSpiEnc28j60, disableSpiEnc28j60, 550 /*BUFFER_SIZE*/ /*231 OK, 232 FAIL */);
+  initQueueStreamUSB(&usbStream);
+  VtyInit(CLIStateSerialUsb, &usbStream);
+
+  udpInit();
+  socketInit();
+  initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
+  VtyInit(CLIStateSerialUdp, &udpStream);
   
-  xTaskCreate(vTaskVTY,     NULL /*"VTY"    */, STACK_SIZE_VTY,     (void *)(CLIStateSerial1), 1, &xHandleVTY);
-//xTaskCreate(sensorsTask,  NULL /*"Sensors"*/, STACK_SIZE_SENSORS, NULL,                      1, &xHandleSensors);
-  xTaskCreate(encTask,      NULL /*"ENC"    */, STACK_SIZE_ENC,     NULL,                      0, &xHandleEnc);
-//xTaskCreate(vTaskMag,     NULL /*"Rs485"*/,   STACK_SIZE_VTY,     NULL,       tskIDLE_PRIORITY, &xHandleRs485);
+//xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  0, &xHandleEnc);
+  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+//xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
+  xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
   vTaskStartScheduler();
   return 0;
 }
@@ -173,12 +125,12 @@ void vApplicationIdleHook( void )
   }
 }
 
-#ifdef ENABLE_RESET_COUNTER
-static void prvIncrementResetCount( void )
+void vApplicationTickHook( void )
 {
-  unsigned portCHAR ucCount;
-  eeprom_read_block( &ucCount, mainRESET_COUNT_ADDRESS, sizeof( ucCount ) );
-  ucCount++;
-  eeprom_write_byte( mainRESET_COUNT_ADDRESS, ucCount );
+  static uint8_t tickCntr = configTICK_RATE_HZ;
+  if (--tickCntr == 0)
+  {
+    tickCntr = configTICK_RATE_HZ;
+    arpTimer();    
+  }
 }
-#endif
