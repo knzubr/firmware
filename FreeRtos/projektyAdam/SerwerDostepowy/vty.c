@@ -189,8 +189,6 @@ void printStatus(FILE *stream)
   fprintf_P(stream, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
   fprintf_P(stream, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
   fprintf_P(stream, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);
-  fprintf_P(stream, statusTemperatureStr, temperature);
-  fprintf_P(stream, statusVoltageStr, voltage);
 
   uint8_t tmp = ramDyskLiczbaWolnychKlastrow();
   fprintf_P(stream, statusRamDiskStateStr,     tmp,  L_KLASTROW);
@@ -218,12 +216,6 @@ void printStatus(FILE *stream)
   //Print Rs485 Execitive modules
   fprintf_P(stream, statusRs485listStr);
 
-
-  //Print locker sensors
-  fprintf_P(stream, statusLockerSensorsStr);
-  tmp = printLockers(stream);
-  if (tmp == 0)
-    fprintf_P(stream, statusLockerSensorsDisStr);
 
   //Print time FIXME deadlock problem
 /*  readTimeDecoded((timeDecoded_t *)(&czasRtc));
