@@ -19,9 +19,32 @@
 #include <avr/pgmspace.h>
 
 #include "main.h"
+#include "memory_x.h"
+#include "Rs485_prot.h"
 
 #ifndef SENSORS_TASK_H
 #define SENSORS_TASK_H
+
+
+
+
+#define NOT_DETECTED          0x01
+#define BOOTLOADER_MODE       0x02
+#define NEW_STATE             0x04
+#define RESERVED              0x08
+#define ROLLER1_UP            0x10
+#define ROLLER1_DOWN          0x20
+#define ROLLER2_UP            0x40
+#define ROLLER2_DOWN          0x80
+
+
+extern volatile uint8_t temperature;
+extern volatile uint8_t voltage;
+
+
+
+
+void sensorsTaskInit(void);
 
 void sensorsTask(void *pvParameters);
 
