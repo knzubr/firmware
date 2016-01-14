@@ -78,7 +78,6 @@ $(LIB_NET_DIR)/icmp.c \
 $(LIB_NET_DIR)/arp.c \
 $(LIB_NET_DIR)/tcp.c \
 $(LIB_NET_DIR)/udp.c \
-$(LIB_DIR)/Rs485_prot.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \

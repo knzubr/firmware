@@ -31,12 +31,6 @@ prog_char statusIpStr[]               = "  IP adres            : ";
 prog_char statusIpMaskStr[]           = "  maska               : ";
 prog_char statusIpGwStr[]             = "  brama               : ";
 
-prog_char statusRs485listStr[]        = "Wykryte urzadzenia na magistrali RS 485:\r\n";
-prog_char statusNoRs485Dev[]          = "  Nie moge znale ani jednego urzadzenia\r\n";
-
-prog_char statusLockerSensorsStr[]    = "Stan czujników rygli:\r\n";
-prog_char statusLockerSensorsDisStr[] = "  Czujniki rygli wyłączone\r\n";
-
 prog_char editRamFileIntroStr[]       = "Zapis do pliku. CTRL+C koniec\r\n";
 prog_char readRamFIleLenStr[]         = "Dlugosc pliku: %d\r\n";
 
