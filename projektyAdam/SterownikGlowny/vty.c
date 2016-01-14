@@ -98,7 +98,7 @@ const command_t cmdListNormal[] PROGMEM =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
-  {cmd_time,      cmd_help_time,      pokazCzasFunction},  
+  {cmd_time,      cmd_help_time,      pokazCzasFunction},
   {cmd_rping,     cmd_help_rping,     rpingFunction},
   {cmd_ping,      cmd_help_ping,      pingFunction},
   {cmd_dir_rf,    cmd_help_dir_rf,    writeRamFileFunction},
@@ -114,7 +114,7 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_enc_stat,  cmd_help_enc_stat,  statusEncFunction},
   {cmd_time,      cmd_help_time,      pokazCzasFunction},
   {cmd_net_dbg,   cmd_help_net_dbg,   debugFunction},
-  
+
   {cmd_rping,     cmd_help_rping,     rpingFunction},
   {cmd_ping,      cmd_help_ping,      pingFunction},
   {cmd_xRec,      cmd_help_xRec,      goXmodemOdbierzFunction},
@@ -210,26 +210,26 @@ static cliExRes_t configureModeFunction(cmdState_t *state)
 // ************************** VTY API ***************************************************************************************
 void printStatus(FILE *stream)
 {
-  fprintf_P(stream, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n")); 
+  fprintf_P(stream, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n"));
   //Print system state
   fprintf_P(stream, systemStateStr);
   fprintf_P(stream, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
   fprintf_P(stream, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
   fprintf_P(stream, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);
-  fprintf_P(stream, statusTemperatureStr, temperature); 
-  fprintf_P(stream, statusVoltageStr, voltage); 
+  fprintf_P(stream, statusTemperatureStr, temperature);
+  fprintf_P(stream, statusVoltageStr, voltage);
 
   uint8_t tmp = ramDyskLiczbaWolnychKlastrow();
   fprintf_P(stream, statusRamDiskStateStr,     tmp,  L_KLASTROW);
 //  printErrorInfo(state); //TODO fix and uncomment
-  
+
   //Print system configuration
   fprintf_P(stream, systemRamConfigStr);
 
   fprintf_P(stream, statusMacStr);
   netPrintEthAddr(stream, &nicState.mac);
   fprintf_P(stream, PSTR("\r\n"));
-  
+
   fprintf_P(stream, statusIpStr);
   netPrintIPAddr(stream, ipGetConfig()->ip);
   fprintf_P(stream, PSTR("\r\n"));
@@ -237,26 +237,26 @@ void printStatus(FILE *stream)
   fprintf_P(stream, statusIpMaskStr);
   netPrintIPAddr(stream, ipGetConfig()->netmask);
   fprintf_P(stream, PSTR("\r\n"));
-  
+
   fprintf_P(stream, statusIpGwStr);
   netPrintIPAddr(stream, ipGetConfig()->gateway);
   fprintf_P(stream, PSTR("\r\n"));
-  
+
   //Print Rs485 Execitive modules
   fprintf_P(stream, statusRs485listStr);
   tmp = printRs485devices(stream);
   if (tmp == 0)
-    fprintf_P(stream, statusNoRs485Dev);  
-  
+    fprintf_P(stream, statusNoRs485Dev);
+
   //Print locker sensors
   fprintf_P(stream, statusLockerSensorsStr);
   tmp = printLockers(stream);
   if (tmp == 0)
     fprintf_P(stream, statusLockerSensorsDisStr);
-  
+
   //Print time FIXME deadlock problem
 /*  readTimeDecoded((timeDecoded_t *)(&czasRtc));
-  uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
+  uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
   uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
   fprintf_P(state->myStdInOut, PSTR("%d:%d:%d\r\n"), godzina, minuta, sekunda);*/
@@ -273,9 +273,9 @@ static cliExRes_t statusFunction(cmdState_t *state)
   if (state->argc < 1)
   {
     printStatus(state->myStdInOut);
-    return OK_SILENT; 
+    return OK_SILENT;
   }
-  
+
   FILE stream;
   if (ramDyskOtworzPlikStdIo(cmdlineGetArgStr(1, state), &fdVty, &stream, __SWR | __SRD) != 0)
   {
@@ -285,7 +285,7 @@ static cliExRes_t statusFunction(cmdState_t *state)
 
   printStatus(&stream);
   ramDyskZamknijPlikStdIo(&stream);
-  return OK_SILENT; 
+  return OK_SILENT;
 }
 
 static cliExRes_t statusEncFunction(cmdState_t *state)
@@ -297,9 +297,9 @@ static cliExRes_t statusEncFunction(cmdState_t *state)
 static cliExRes_t pokazCzasFunction(cmdState_t *state)
 {
   readTimeDecoded((timeDecoded_t *)(&czasRtc));
-  uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;  
+  uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;
   uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
-  uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;  
+  uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
   fprintf_P(state->myStdInOut, PSTR("Aktualny czas %d:%d:%d\r\n"), godzina, minuta, sekunda);
   return OK_SILENT;
 }
@@ -317,36 +317,36 @@ static cliExRes_t debugFunction          (cmdState_t *state)
     {
       setArpDebug(NULL, 0);
       fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;  
-    }    
+      return OK_SILENT;
+    }
 
     if (strncmp_P(str, PSTR("ip"), 2) == 0)
     {
       setIpDebug(NULL, 0);
       fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;  
-    }    
+      return OK_SILENT;
+    }
 
     if (strncmp_P(str, PSTR("icmp"), 2) == 0)
     {
       setIcmpDebug(NULL, 0);
       fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;  
-    }    
+      return OK_SILENT;
+    }
 
     if (strncmp_P(str, PSTR("tcp"), 2) == 0)
     {
       setTcpDebug(NULL, 0);
       fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;  
-    }    
+      return OK_SILENT;
+    }
 
     if (strncmp_P(str, PSTR("udp"), 2) == 0)
     {
       setUdpDebug(NULL, 0);
       fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;  
-    }    
+      return OK_SILENT;
+    }
 
 
   }
@@ -356,38 +356,38 @@ static cliExRes_t debugFunction          (cmdState_t *state)
     {
       setArpDebug(state->myStdInOut, level);
       fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;  
-    }   
-    
+      return OK_SILENT;
+    }
+
     if (strncmp_P(str, PSTR("ip"), 2) == 0)
     {
       setIpDebug(state->myStdInOut, level);
       fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;  
+      return OK_SILENT;
     }
 
     if (strncmp_P(str, PSTR("icmp"), 2) == 0)
     {
       setIcmpDebug(state->myStdInOut, level);
       fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;  
+      return OK_SILENT;
     }
 
     if (strncmp_P(str, PSTR("tcp"), 2) == 0)
     {
       setTcpDebug(state->myStdInOut, level);
       fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;  
+      return OK_SILENT;
     }
-    
+
     if (strncmp_P(str, PSTR("udp"), 2) == 0)
     {
       setUdpDebug(state->myStdInOut, level);
       fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;  
+      return OK_SILENT;
     }
   }
-  
+
   return SYNTAX_ERROR;
 }
 
@@ -397,24 +397,24 @@ static cliExRes_t setTimeFunction(cmdState_t *state)
   uint8_t godzina =  cmdlineGetArgInt(1, state);
   uint8_t minuta  =  cmdlineGetArgInt(2, state);
   uint8_t sekunda =  cmdlineGetArgInt(3, state);
-  
+
   ds1305start();
 
   uint8_t cDzies = godzina/10;
   uint8_t cJedn = godzina - cDzies*10;
   czasRtc.hours.syst24.cDzies = cDzies;
   czasRtc.hours.syst24.cJedn  = cJedn;
-  
+
   cDzies = minuta/10;
   cJedn = minuta - cDzies * 10;
   czasRtc.minutes.cDzies = cDzies;
   czasRtc.minutes.cJedn  = cJedn;
-  
+
   cDzies = sekunda/10;
   cJedn  = sekunda - cDzies * 10;
   czasRtc.seconds.cDzies = cDzies;
   czasRtc.seconds.cJedn  = cJedn;
-  
+
   setTimeDecoded((timeDecoded_t *)(&czasRtc));
   return OK_SILENT;
 }
@@ -423,12 +423,12 @@ static cliExRes_t setIpFunction(cmdState_t *state)
 {
   if (state->argc < 4)
     return SYNTAX_ERROR;
-  
-  uint32_t ip = cmdlineGetArgInt(1, state) + 
-                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) + 
-                (((uint32_t)(cmdlineGetArgInt(3, state)))<<16) + 
-                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
-  
+
+  uint32_t ip = cmdlineGetArgInt(1, state) +
+                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) +
+                (((uint32_t)(cmdlineGetArgInt(3, state)))<<16) +
+                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24);
+
   ipSetConfigIp(ip);
   return OK_SILENT;
 }
@@ -437,20 +437,20 @@ static cliExRes_t setUdpFunction(cmdState_t *state)
 {
   if (state->argc < 5)
     return SYNTAX_ERROR;
-  
-  uint32_t ip = cmdlineGetArgInt(1, state) + 
-                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) + 
-                (((uint32_t)(cmdlineGetArgInt(3, state)))<<16) + 
-                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
+
+  uint32_t ip = cmdlineGetArgInt(1, state) +
+                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) +
+                (((uint32_t)(cmdlineGetArgInt(3, state)))<<16) +
+                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24);
   udpSocket->dstIp = ip;
-  
+
   uint16_t port = cmdlineGetArgInt(5, state);
   udpSocket->srcPort = htons(port);
-  
+
   if (state->argc > 5)
   {
     port = cmdlineGetArgInt(6, state);
-    udpSocket->dstPort = htons(port);    
+    udpSocket->dstPort = htons(port);
   }
   return OK_SILENT;
 }
@@ -460,9 +460,9 @@ static cliExRes_t setIpMaskFunction(cmdState_t *state)
 {
   if (state->argc < 1)
     return SYNTAX_ERROR;
-  
+
   uint32_t mask = ((uint32_t)(0xFFFFFFFF))>>(32-cmdlineGetArgInt(1, state));
-  
+
   ipSetConfigMask(mask);
   return OK_SILENT;
 }
@@ -472,11 +472,11 @@ static cliExRes_t setIpGwFunction(cmdState_t *state)
 {
   if (state->argc < 4)
     return SYNTAX_ERROR;
-  
-  uint32_t gw = cmdlineGetArgInt(1, state) + 
-                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) + 
+
+  uint32_t gw = cmdlineGetArgInt(1, state) +
+                (((uint32_t)(cmdlineGetArgInt(2, state)))<< 8) +
                 (((uint32_t)(cmdlineGetArgInt(3, state)))<<16)  +
-                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24); 
+                (((uint32_t)(cmdlineGetArgInt(4, state)))<<24);
   ipSetConfigGw(gw);
   return OK_SILENT;
 }
@@ -485,7 +485,7 @@ static cliExRes_t ustawModWykFunction(cmdState_t *state)
 {
   if (state->argc < 2)
     return SYNTAX_ERROR;
-  
+
   uint8_t adres =   cmdlineGetArgInt(1, state);
   uint8_t wartosc = cmdlineGetArgHex(2, state);
 
@@ -497,7 +497,7 @@ static cliExRes_t zapiszModWykFunction(cmdState_t *state)
 {
   if (state->argc < 1)
     return SYNTAX_ERROR;
-  
+
   uint8_t adres =  cmdlineGetArgInt(1, state);
   saveSettings(adres);
   return OK_SILENT;
@@ -506,8 +506,8 @@ static cliExRes_t zapiszModWykFunction(cmdState_t *state)
 static cliExRes_t setMacAddrFunction(cmdState_t *state)
 {
   if (state->argc < 6)
-    return SYNTAX_ERROR;  
-  
+    return SYNTAX_ERROR;
+
   nicState.mac.addr[0] = cmdlineGetArgHex(1, state);
   nicState.mac.addr[1] = cmdlineGetArgHex(2, state);
   nicState.mac.addr[2] = cmdlineGetArgHex(3, state);
@@ -522,7 +522,7 @@ static cliExRes_t czytajAC_Function(cmdState_t *state)
 {
   uint8_t nrWejscia = cmdlineGetArgInt(1, state);
   uint16_t wynik = MCP3008_getSampleSingle(nrWejscia);
-  fprintf_P(state->myStdInOut, PSTR("Wartosc probki na wejsciu %d: %d\r\n"), nrWejscia, wynik);  
+  fprintf_P(state->myStdInOut, PSTR("Wartosc probki na wejsciu %d: %d\r\n"), nrWejscia, wynik);
   return OK_SILENT;
 }
 
@@ -537,7 +537,7 @@ static cliExRes_t curtainDownFunction(cmdState_t *state)
   uint8_t nrRolety;
   uint8_t nrSterownika;
   uint8_t wartosc;
-  
+
   nrSterownika = cmdlineGetArgInt(1, state);
   nrRolety = cmdlineGetArgInt(2, state);
   nrRolety &= 0x01;
@@ -549,10 +549,10 @@ static cliExRes_t curtainDownFunction(cmdState_t *state)
     fprintf_P(state->myStdInOut, movingCurtainPosStr, wartosc);
 
   uint8_t result = rs485curtainDown(nrSterownika, nrRolety, wartosc);
-  
+
   if (result == 0)
     return OK_INFORM;
-  
+
   return ERROR_SILENT;
 }
 
@@ -560,7 +560,7 @@ static cliExRes_t curtainUpFunction(cmdState_t *state)
 {
   if (state->argc < 2)
     return SYNTAX_ERROR;
-  
+
   uint8_t nrSterownika = (cmdlineGetArgInt(1, state) & 0x3F);
   uint8_t nrRolety     = (cmdlineGetArgInt(2, state) & 0x01);
   uint8_t wartosc = 255;
@@ -572,10 +572,10 @@ static cliExRes_t curtainUpFunction(cmdState_t *state)
     fprintf_P(state->myStdInOut, movingCurtainPosStr, wartosc);
 
   uint8_t result = rs485curtainUp(nrSterownika, nrRolety, wartosc);
-  
+
   if (result == 0)
     return OK_INFORM;
-  
+
   return ERROR_SILENT;
 }
 
@@ -601,9 +601,9 @@ static cliExRes_t ustawPortRezystor(cmdState_t *state)
     return SYNTAX_ERROR;
 
   uint8_t wartosc = cmdlineGetArgInt(1, state);
-  
+
   MCP4150_setValue(wartosc);
-  
+
   return OK_SILENT;
 }
 
@@ -611,7 +611,7 @@ static cliExRes_t rpingFunction(cmdState_t *state)
 {
   if (state->argc < 1)
     return SYNTAX_ERROR;
-  
+
   uint8_t nrSterownika = (uint8_t)(cmdlineGetArgInt(1, state));
   if ((state->err2 = rs485ping(nrSterownika)) == 0)
     return OK_INFORM;
@@ -626,15 +626,14 @@ static cliExRes_t pingFunction(cmdState_t *state)
 {
   if (state->argc < 4)
     return SYNTAX_ERROR;
-  
-  uint8_t ip[4];
-  ip[0] = (uint8_t)(cmdlineGetArgInt(1, state));
-  ip[1] = (uint8_t)(cmdlineGetArgInt(2, state));
-  ip[2] = (uint8_t)(cmdlineGetArgInt(3, state));
-  ip[3] = (uint8_t)(cmdlineGetArgInt(4, state));
 
-//  Ipv4Ping(*((uint32_t *)(ip)));
-  
+  //uint8_t ip[4];
+  //ip[0] = (uint8_t)(cmdlineGetArgInt(1, state));
+  //ip[1] = (uint8_t)(cmdlineGetArgInt(2, state));
+  //ip[2] = (uint8_t)(cmdlineGetArgInt(3, state));
+  //ip[3] = (uint8_t)(cmdlineGetArgInt(4, state));
+  //Ipv4Ping(*((uint32_t *)(ip)));
+
   return OK_SILENT;
 }
 
@@ -643,11 +642,11 @@ static cliExRes_t flashExModuleFunction(cmdState_t *state)
 {
   if (state->argc != 2)
     return SYNTAX_ERROR;
-  
+
   uint8_t  nrUrzadzenia = cmdlineGetArgInt(1, state);
   char *nazwaPliku      = cmdlineGetArgStr(2, state);
   uint8_t  blad;
-  
+
   // Sprawdzanie, czy moduł wykonawczy odpowiada
   if (rs485ping(nrUrzadzenia) != 0)
   {
@@ -655,18 +654,18 @@ static cliExRes_t flashExModuleFunction(cmdState_t *state)
     printErrorInfo(state);
     return ERROR_INFORM;
   }
-  
+
   //Sprawdzanie, czy istnieje odpowiedni plik z firmware
   if (ramDyskOtworzPlik(nazwaPliku, &fdVty) != 0)
   {
     fprintf_P(state->myStdInOut, errorOpenFile, nazwaPliku);
     return ERROR_INFORM;
   }
-  
+
   blad = rs485xModemFlash(&fdVty, nrUrzadzenia, state->myStdInOut);
 
   ramDyskZamknijPlik(&fdVty);
-  
+
   if (blad != 0)
     return ERROR_INFORM;
 
@@ -692,7 +691,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
     fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
     return ERROR_INFORM;
   }
-   
+
   uint8_t  i = 25;
 
   uint8_t  temp1;
@@ -702,7 +701,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
   uint8_t  liczbaProb;
   uint8_t  *zapPtr;
   uint8_t  *zapPtrKopia;
- 
+
   uint16_t crcLokalne;
   uint8_t nrBloku;
 
@@ -732,7 +731,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
       return ERROR_INFORM;
     }
   }
-  
+
   nrBloku = 1;
   liczbaProb = 10;
 
@@ -743,15 +742,15 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
     if (!xQueueReceive(xVtyRec, &nrBlokuZdalny, 100))
     {
       state->errno = (uint8_t)(xModemFrameStartTimeout);
-      break; 
+      break;
     }
-    
+
     if (!xQueueReceive(xVtyRec, &nrBlokuZdalnyNeg, 1))
     {
       state->errno = (uint8_t)(xModemByteSendTimeout);
-      break; 
+      break;
     }
-  
+
     //1 Sprawdzanie, czy pasuje numer bloku z numerem bloku w usupełnieniu bitowym do 1
     c = 255-nrBlokuZdalnyNeg;
     if (nrBlokuZdalny != c)
@@ -761,7 +760,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
       state->err2 = nrBlokuZdalnyNeg;
       break;
     }
-    
+
     //Sprawdzenie, czy nie jest wznowiona transmisja poprzedniego bloku lub nie zaczęła się od bloku 0
     c = nrBloku-1;
     if (nrBlokuZdalny == c)
@@ -770,7 +769,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
       zapPtr = ramDyskDodajBlokXmodem(&fdVty, nrBloku);
       zapPtrKopia = zapPtr;
     }
-    
+
     //2 Sprawdzanie, czy pasuje numer bloku
     if (nrBlokuZdalny != nrBloku)
     {
@@ -779,7 +778,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
       state->err2 = nrBloku;
       break;
     }
-        
+
     for (i=0; i < XMODEM_BUFFER_SIZE; i++)
     {
       if(xQueueReceive(xVtyRec, &c, 10))
@@ -794,41 +793,41 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
     {
         state->errno = (uint8_t)(xModemFrameCrc);
         state->err1 = 2;
-        break;      
+        break;
     }
     if (!xQueueReceive(xVtyRec, &crcLo, 10))
     {
         state->errno = (uint8_t)(xModemFrameCrc);
         state->err1 = 1;
-        break;      
+        break;
     }
 
     //3 Zerowanie CRC
-    crcLokalne=0; 
-    
+    crcLokalne=0;
+
     //4 Obliczanie CRC
     for (i=0; i < XMODEM_BUFFER_SIZE; i++)
       crcLokalne = _crc_xmodem_update(crcLokalne, *(zapPtrKopia++));
-     
+
     //5 Srawdzanie CRC
     if ((crcHi == crcLokalne / 256) && (crcLo == crcLokalne % 256))
     {
       liczbaProb = 10;
-      uartVtySendByte(ACK);      
+      uartVtySendByte(ACK);
     }
     else
     {
       liczbaProb--;
       nrBloku--;
-      uartVtySendByte(NAK);   
+      uartVtySendByte(NAK);
     }
-    
+
     if (liczbaProb == 0)
     {
       state->err1 = nrBlokuZdalny;
       state->err2 = nrBloku;
       state->errno = (uint8_t)(xModemWrongFrameNo);
-      break; 
+      break;
     }
 
     if (!xQueueReceive(xVtyRec, &temp1, 100))
@@ -836,7 +835,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
       state->errno = (uint8_t)(xModemFrameStartTimeout);
       break;
     }
-    
+
     if (temp1 == SOH)
     {
       nrBloku++;
@@ -858,7 +857,7 @@ static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmod
       if (xQueueReceive(xVtyRec, &temp1, 10))
       {
         if (temp1 == EOT)
-          uartVtySendByte(ACK);  
+          uartVtySendByte(ACK);
       }
       state->errno = (uint8_t)(AllOK);
       break;
@@ -938,7 +937,7 @@ static cliExRes_t readRamFIleFunction(cmdState_t *state) //TODO move this code t
   while (rezultat == 0)
   {
     rezultat = ramDyskCzytajBajtZPliku(&fdVty, &znak);
-    
+
     uartVtySendByte(znak);
     if (znak == '\r')
       uartVtySendByte('\n');
@@ -950,7 +949,7 @@ static cliExRes_t readRamFIleFunction(cmdState_t *state) //TODO move this code t
 
 static cliExRes_t saveConfigFunction(cmdState_t *state)
 {
-  state = NULL;
+  (void) state;
   saveConfiguration();
   return OK_SILENT;
 }
@@ -974,7 +973,7 @@ static cliExRes_t testPamZewFunction(cmdState_t *state)
     uartVtySendByte('\r');
     uartVtySendByte('\n');
     for (tmp2=0; tmp2<64; tmp2++)
-    {  
+    {
       uartVtySendByte(*(ptr));
       ptr++;
     }
