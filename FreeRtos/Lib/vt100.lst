@@ -1,0 +1,329 @@
+   1               		.file	"vt100.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 272               		.section	.rodata.str1.1,"aMS",@progbits,1
+ 273               	.LC0:
+ 274 0000 1B63 00   		.string	"\033c"
+ 275               		.text
+ 278               	.global	vt100Init
+ 280               	vt100Init:
+ 281               		.stabd	46,0,0
+   1:../../freeRtos/Lib/vt100.c **** /*! \file vt100.c \brief VT100 terminal function library. */
+   2:../../freeRtos/Lib/vt100.c **** //*****************************************************************************
+   3:../../freeRtos/Lib/vt100.c **** //
+   4:../../freeRtos/Lib/vt100.c **** // File Name	: 'vt100.c'
+   5:../../freeRtos/Lib/vt100.c **** // Title		: VT100 terminal function library
+   6:../../freeRtos/Lib/vt100.c **** // Author		: Pascal Stang - Copyright (C) 2002
+   7:../../freeRtos/Lib/vt100.c **** // Created		: 2002.08.27
+   8:../../freeRtos/Lib/vt100.c **** // Revised		: 2002.08.27
+   9:../../freeRtos/Lib/vt100.c **** // Version		: 0.1
+  10:../../freeRtos/Lib/vt100.c **** // Target MCU	: Atmel AVR Series
+  11:../../freeRtos/Lib/vt100.c **** // Editor Tabs	: 4
+  12:../../freeRtos/Lib/vt100.c **** //
+  13:../../freeRtos/Lib/vt100.c **** // NOTE: This code is currently below version 1.0, and therefore is considered
+  14:../../freeRtos/Lib/vt100.c **** // to be lacking in some functionality or documentation, or may not be fully
+  15:../../freeRtos/Lib/vt100.c **** // tested.  Nonetheless, you can expect most functions to work.
+  16:../../freeRtos/Lib/vt100.c **** //
+  17:../../freeRtos/Lib/vt100.c **** // This code is distributed under the GNU Public License
+  18:../../freeRtos/Lib/vt100.c **** //		which can be found at http://www.gnu.org/licenses/gpl.txt
+  19:../../freeRtos/Lib/vt100.c **** //
+  20:../../freeRtos/Lib/vt100.c **** //*****************************************************************************
+  21:../../freeRtos/Lib/vt100.c **** 
+  22:../../freeRtos/Lib/vt100.c **** #ifndef WIN32
+  23:../../freeRtos/Lib/vt100.c **** 	#include <avr/io.h>
+  24:../../freeRtos/Lib/vt100.c **** 	#include <avr/interrupt.h>
+  25:../../freeRtos/Lib/vt100.c **** 	#include <avr/pgmspace.h>
+  26:../../freeRtos/Lib/vt100.c **** #endif
+  27:../../freeRtos/Lib/vt100.c **** 
+  28:../../freeRtos/Lib/vt100.c **** #include "main.h"
+  29:../../freeRtos/Lib/vt100.c **** #include "vt100.h"
+  30:../../freeRtos/Lib/vt100.c **** #include <stdio.h>
+  31:../../freeRtos/Lib/vt100.c **** 
+  32:../../freeRtos/Lib/vt100.c **** // Program ROM constants
+  33:../../freeRtos/Lib/vt100.c **** 
+  34:../../freeRtos/Lib/vt100.c **** // Global variables
+  35:../../freeRtos/Lib/vt100.c **** 
+  36:../../freeRtos/Lib/vt100.c **** // Functions
+  37:../../freeRtos/Lib/vt100.c **** void vt100Init(cmdState_t *state)
+  38:../../freeRtos/Lib/vt100.c **** {
+ 283               	.LM0:
+ 284               	.LFBB1:
+ 285               	/* prologue: function */
+ 286               	/* frame size = 0 */
+ 287               	/* stack size = 0 */
+ 288               	.L__stack_usage = 0
+  39:../../freeRtos/Lib/vt100.c ****   // initializes terminal to "power-on" settings
+  40:../../freeRtos/Lib/vt100.c ****   // ESC c
+  41:../../freeRtos/Lib/vt100.c **** 
+  42:../../freeRtos/Lib/vt100.c ****  fprintf_P(state->myStdInOut, "\x1B\x63");
+ 290               	.LM1:
+ 291 0000 20E0      		ldi r18,lo8(.LC0)
+ 292 0002 30E0      		ldi r19,hi8(.LC0)
+ 293 0004 3F93      		push r19
+ 294 0006 2F93      		push r18
+ 295 0008 FC01      		movw r30,r24
+ 296 000a 238D      		ldd r18,Z+27
+ 297 000c 2F93      		push r18
+ 298 000e 828D      		ldd r24,Z+26
+ 299 0010 8F93      		push r24
+ 300 0012 0E94 0000 		call fprintf_P
+ 301 0016 0F90      		pop __tmp_reg__
+ 302 0018 0F90      		pop __tmp_reg__
+ 303 001a 0F90      		pop __tmp_reg__
+ 304 001c 0F90      		pop __tmp_reg__
+ 305 001e 0895      		ret
+ 307               	.Lscope1:
+ 309               		.stabd	78,0,0
+ 310               		.section	.rodata.str1.1
+ 311               	.LC1:
+ 312 0003 1B5B 324A 		.string	"\033[2J"
+ 312      00
+ 313               		.text
+ 316               	.global	vt100ClearScreen
+ 318               	vt100ClearScreen:
+ 319               		.stabd	46,0,0
+  43:../../freeRtos/Lib/vt100.c **** }
+  44:../../freeRtos/Lib/vt100.c **** 
+  45:../../freeRtos/Lib/vt100.c **** void vt100ClearScreen(cmdState_t *state)
+  46:../../freeRtos/Lib/vt100.c **** {
+ 321               	.LM2:
+ 322               	.LFBB2:
+ 323               	/* prologue: function */
+ 324               	/* frame size = 0 */
+ 325               	/* stack size = 0 */
+ 326               	.L__stack_usage = 0
+  47:../../freeRtos/Lib/vt100.c ****   // ESC [ 2 J
+  48:../../freeRtos/Lib/vt100.c ****   fprintf_P(state->myStdInOut, "\x1B[2J");
+ 328               	.LM3:
+ 329 0020 20E0      		ldi r18,lo8(.LC1)
+ 330 0022 30E0      		ldi r19,hi8(.LC1)
+ 331 0024 3F93      		push r19
+ 332 0026 2F93      		push r18
+ 333 0028 FC01      		movw r30,r24
+ 334 002a 238D      		ldd r18,Z+27
+ 335 002c 2F93      		push r18
+ 336 002e 828D      		ldd r24,Z+26
+ 337 0030 8F93      		push r24
+ 338 0032 0E94 0000 		call fprintf_P
+ 339 0036 0F90      		pop __tmp_reg__
+ 340 0038 0F90      		pop __tmp_reg__
+ 341 003a 0F90      		pop __tmp_reg__
+ 342 003c 0F90      		pop __tmp_reg__
+ 343 003e 0895      		ret
+ 345               	.Lscope2:
+ 347               		.stabd	78,0,0
+ 348               		.section	.rodata.str1.1
+ 349               	.LC2:
+ 350 0008 1B5B 2564 		.string	"\033[%dm"
+ 350      6D00 
+ 351               		.text
+ 355               	.global	vt100SetAttr
+ 357               	vt100SetAttr:
+ 358               		.stabd	46,0,0
+  49:../../freeRtos/Lib/vt100.c **** }
+  50:../../freeRtos/Lib/vt100.c **** 
+  51:../../freeRtos/Lib/vt100.c **** void vt100SetAttr(uint8_t attr, cmdState_t *state)
+  52:../../freeRtos/Lib/vt100.c **** {
+ 360               	.LM4:
+ 361               	.LFBB3:
+ 362               	/* prologue: function */
+ 363               	/* frame size = 0 */
+ 364               	/* stack size = 0 */
+ 365               	.L__stack_usage = 0
+  53:../../freeRtos/Lib/vt100.c ****   // ESC [ Ps m
+  54:../../freeRtos/Lib/vt100.c ****   fprintf_P(state->myStdInOut, "\x1B[%dm",attr);
+ 367               	.LM5:
+ 368 0040 1F92      		push __zero_reg__
+ 369 0042 8F93      		push r24
+ 370 0044 80E0      		ldi r24,lo8(.LC2)
+ 371 0046 90E0      		ldi r25,hi8(.LC2)
+ 372 0048 9F93      		push r25
+ 373 004a 8F93      		push r24
+ 374 004c FB01      		movw r30,r22
+ 375 004e 838D      		ldd r24,Z+27
+ 376 0050 8F93      		push r24
+ 377 0052 828D      		ldd r24,Z+26
+ 378 0054 8F93      		push r24
+ 379 0056 0E94 0000 		call fprintf_P
+ 380 005a 0F90      		pop __tmp_reg__
+ 381 005c 0F90      		pop __tmp_reg__
+ 382 005e 0F90      		pop __tmp_reg__
+ 383 0060 0F90      		pop __tmp_reg__
+ 384 0062 0F90      		pop __tmp_reg__
+ 385 0064 0F90      		pop __tmp_reg__
+ 386 0066 0895      		ret
+ 388               	.Lscope3:
+ 390               		.stabd	78,0,0
+ 391               		.section	.rodata.str1.1
+ 392               	.LC3:
+ 393 000e 1B5B 3F32 		.string	"\033[?25h"
+ 393      3568 00
+ 394               	.LC4:
+ 395 0015 1B5B 3F32 		.string	"\033[?25l"
+ 395      356C 00
+ 396               		.text
+ 400               	.global	vt100SetCursorMode
+ 402               	vt100SetCursorMode:
+ 403               		.stabd	46,0,0
+  55:../../freeRtos/Lib/vt100.c **** }
+  56:../../freeRtos/Lib/vt100.c **** 
+  57:../../freeRtos/Lib/vt100.c **** void vt100SetCursorMode(uint8_t visible, cmdState_t *state)
+  58:../../freeRtos/Lib/vt100.c **** {
+ 405               	.LM6:
+ 406               	.LFBB4:
+ 407               	/* prologue: function */
+ 408               	/* frame size = 0 */
+ 409               	/* stack size = 0 */
+ 410               	.L__stack_usage = 0
+ 411 0068 FB01      		movw r30,r22
+ 412 006a 338D      		ldd r19,Z+27
+ 413 006c 228D      		ldd r18,Z+26
+  59:../../freeRtos/Lib/vt100.c ****   if(visible)
+ 415               	.LM7:
+ 416 006e 8823      		tst r24
+ 417 0070 01F0      		breq .L5
+  60:../../freeRtos/Lib/vt100.c ****   // ESC [ ? 25 h
+  61:../../freeRtos/Lib/vt100.c ****     fprintf_P(state->myStdInOut, "\x1B[?25h");
+ 419               	.LM8:
+ 420 0072 80E0      		ldi r24,lo8(.LC3)
+ 421 0074 90E0      		ldi r25,hi8(.LC3)
+ 422 0076 00C0      		rjmp .L7
+ 423               	.L5:
+  62:../../freeRtos/Lib/vt100.c ****   else
+  63:../../freeRtos/Lib/vt100.c ****   // ESC [ ? 25 l
+  64:../../freeRtos/Lib/vt100.c ****     fprintf_P(state->myStdInOut, "\x1B[?25l");
+ 425               	.LM9:
+ 426 0078 80E0      		ldi r24,lo8(.LC4)
+ 427 007a 90E0      		ldi r25,hi8(.LC4)
+ 428               	.L7:
+ 429 007c 9F93      		push r25
+ 430 007e 8F93      		push r24
+ 431 0080 3F93      		push r19
+ 432 0082 2F93      		push r18
+ 433 0084 0E94 0000 		call fprintf_P
+ 434 0088 0F90      		pop __tmp_reg__
+ 435 008a 0F90      		pop __tmp_reg__
+ 436 008c 0F90      		pop __tmp_reg__
+ 437 008e 0F90      		pop __tmp_reg__
+ 438 0090 0895      		ret
+ 440               	.Lscope4:
+ 442               		.stabd	78,0,0
+ 443               		.section	.rodata.str1.1
+ 444               	.LC5:
+ 445 001c 1B5B 2564 		.string	"\033[%d;%dH"
+ 445      3B25 6448 
+ 445      00
+ 446               		.text
+ 451               	.global	vt100SetCursorPos
+ 453               	vt100SetCursorPos:
+ 454               		.stabd	46,0,0
+  65:../../freeRtos/Lib/vt100.c **** }
+  66:../../freeRtos/Lib/vt100.c **** 
+  67:../../freeRtos/Lib/vt100.c **** void vt100SetCursorPos(uint8_t line, uint8_t col, cmdState_t *state)
+  68:../../freeRtos/Lib/vt100.c **** {
+ 456               	.LM10:
+ 457               	.LFBB5:
+ 458               	/* prologue: function */
+ 459               	/* frame size = 0 */
+ 460               	/* stack size = 0 */
+ 461               	.L__stack_usage = 0
+  69:../../freeRtos/Lib/vt100.c ****   // ESC [ Pl ; Pc H
+  70:../../freeRtos/Lib/vt100.c ****   fprintf_P(state->myStdInOut, "\x1B[%d;%dH",line,col);
+ 463               	.LM11:
+ 464 0092 1F92      		push __zero_reg__
+ 465 0094 6F93      		push r22
+ 466 0096 1F92      		push __zero_reg__
+ 467 0098 8F93      		push r24
+ 468 009a 80E0      		ldi r24,lo8(.LC5)
+ 469 009c 90E0      		ldi r25,hi8(.LC5)
+ 470 009e 9F93      		push r25
+ 471 00a0 8F93      		push r24
+ 472 00a2 FA01      		movw r30,r20
+ 473 00a4 838D      		ldd r24,Z+27
+ 474 00a6 8F93      		push r24
+ 475 00a8 828D      		ldd r24,Z+26
+ 476 00aa 8F93      		push r24
+ 477 00ac 0E94 0000 		call fprintf_P
+ 478 00b0 8DB7      		in r24,__SP_L__
+ 479 00b2 9EB7      		in r25,__SP_H__
+ 480 00b4 0896      		adiw r24,8
+ 481 00b6 0FB6      		in __tmp_reg__,__SREG__
+ 482 00b8 F894      		cli
+ 483 00ba 9EBF      		out __SP_H__,r25
+ 484 00bc 0FBE      		out __SREG__,__tmp_reg__
+ 485 00be 8DBF      		out __SP_L__,r24
+ 486 00c0 0895      		ret
+ 488               	.Lscope5:
+ 490               		.stabd	78,0,0
+ 491               		.comm	czasRtc,7,1
+ 492               		.comm	sockets,2,1
+ 493               		.comm	tcpDebugLevel,1,1
+ 494               		.comm	tcpDebugStream,2,1
+ 495               		.comm	IpMyConfig,15,1
+ 496               		.comm	udpDbgLevel,1,1
+ 497               		.comm	udpDbgStream,2,1
+ 498               		.comm	udpSocket,2,1
+ 499               		.comm	icmpDebugLevel,1,1
+ 500               		.comm	icmpDebug,2,1
+ 501               		.comm	arpDebugLevel,1,1
+ 502               		.comm	arpDebug,2,1
+ 503               		.comm	plen,2,1
+ 504               		.comm	nicState,14,1
+ 505               		.comm	xSemaphoreRs485,2,1
+ 506               		.comm	lockSensors,2,1
+ 507               		.comm	portB,1,1
+ 508               		.comm	portA,1,1
+ 509               		.comm	xSemaphoreSpiSS,2,1
+ 510               		.comm	rollers,2,1
+ 511               		.comm	wwwport,1,1
+ 512               		.comm	klastry,128,1
+ 536               	.Letext0:
+ 537               		.ident	"GCC: (GNU) 4.8.2"
+ 538               	.global __do_copy_data
+ 539               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 vt100.c
+     /tmp/ccOv2NIW.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccOv2NIW.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccOv2NIW.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccOv2NIW.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccOv2NIW.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccOv2NIW.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccOv2NIW.s:280    .text:0000000000000000 vt100Init
+     /tmp/ccOv2NIW.s:318    .text:0000000000000020 vt100ClearScreen
+     /tmp/ccOv2NIW.s:357    .text:0000000000000040 vt100SetAttr
+     /tmp/ccOv2NIW.s:402    .text:0000000000000068 vt100SetCursorMode
+     /tmp/ccOv2NIW.s:453    .text:0000000000000092 vt100SetCursorPos
+                            *COM*:0000000000000007 czasRtc
+                            *COM*:0000000000000002 sockets
+                            *COM*:0000000000000001 tcpDebugLevel
+                            *COM*:0000000000000002 tcpDebugStream
+                            *COM*:000000000000000f IpMyConfig
+                            *COM*:0000000000000001 udpDbgLevel
+                            *COM*:0000000000000002 udpDbgStream
+                            *COM*:0000000000000002 udpSocket
+                            *COM*:0000000000000001 icmpDebugLevel
+                            *COM*:0000000000000002 icmpDebug
+                            *COM*:0000000000000001 arpDebugLevel
+                            *COM*:0000000000000002 arpDebug
+                            *COM*:0000000000000002 plen
+                            *COM*:000000000000000e nicState
+                            *COM*:0000000000000002 xSemaphoreRs485
+                            *COM*:0000000000000002 lockSensors
+                            *COM*:0000000000000001 portB
+                            *COM*:0000000000000001 portA
+                            *COM*:0000000000000002 xSemaphoreSpiSS
+                            *COM*:0000000000000002 rollers
+                            *COM*:0000000000000001 wwwport
+                            *COM*:0000000000000080 klastry
+
+UNDEFINED SYMBOLS
+fprintf_P
+__do_copy_data
+__do_clear_bss

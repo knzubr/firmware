@@ -1,0 +1,312 @@
+   1               		.file	"nic.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 131               		.weak	nicMacInit
+ 133               	nicMacInit:
+ 134               		.stabd	46,0,0
+   1:../../freeRtos/Lib/net/nic.c **** /**
+   2:../../freeRtos/Lib/net/nic.c ****  * @file     nic.h 
+   3:../../freeRtos/Lib/net/nic.c ****  * @version  0.2
+   4:../../freeRtos/Lib/net/nic.c ****  * @brief    Network Interface Card (NIC) software definition. 
+   5:../../freeRtos/Lib/net/nic.c ****  * @ingroup  network
+   6:../../freeRtos/Lib/net/nic.c ****  * @author   Pascal Stang, Adam Kaliszan
+   7:../../freeRtos/Lib/net/nic.c ****  * @defgroup nic Network Interface Card (NIC) software definition (nic.h)
+   8:../../freeRtos/Lib/net/nic.c ****  * @code #include "net/nic.h" @endcode
+   9:../../freeRtos/Lib/net/nic.c ****  * @par Description
+  10:../../freeRtos/Lib/net/nic.c ****  *      This is the software interface standard for network interface hardware
+  11:../../freeRtos/Lib/net/nic.c ****  *      as used by AVRlib.  Drivers for network hardware must implement these
+  12:../../freeRtos/Lib/net/nic.c ****  *      functions to allow upper network layers to initialize the interface,
+  13:../../freeRtos/Lib/net/nic.c ****  *      and send and receive net traffic.
+  14:../../freeRtos/Lib/net/nic.c ****  * 
+  15:../../freeRtos/Lib/net/nic.c ****  * Editor Tabs  : 4
+  16:../../freeRtos/Lib/net/nic.c ****  * Target MCU   : Atmel AVR series
+  17:../../freeRtos/Lib/net/nic.c ****  * Created      : 22.08.2004
+  18:../../freeRtos/Lib/net/nic.c ****  * Revised      : 28.11.2010
+  19:../../freeRtos/Lib/net/nic.c ****  *
+  20:../../freeRtos/Lib/net/nic.c ****  * This code is distributed under the GNU Public License
+  21:../../freeRtos/Lib/net/nic.c ****  * which can be found at http://www.gnu.org/licenses/gpl.txt
+  22:../../freeRtos/Lib/net/nic.c ****  */
+  23:../../freeRtos/Lib/net/nic.c **** //@{
+  24:../../freeRtos/Lib/net/nic.c **** 
+  25:../../freeRtos/Lib/net/nic.c **** #include "nic.h"
+  26:../../freeRtos/Lib/net/nic.c **** 
+  27:../../freeRtos/Lib/net/nic.c **** static uint8_t   mymac_eep[6] __attribute__((section (".eeprom"))) = {0x00,0x11,0x22,0x33,0x44,0x55
+  28:../../freeRtos/Lib/net/nic.c **** 
+  29:../../freeRtos/Lib/net/nic.c **** 
+  30:../../freeRtos/Lib/net/nic.c **** /* Weak functions, that hast to be overriden in hardware specyfic driver implementation i.e. in enc
+  31:../../freeRtos/Lib/net/nic.c **** void         nicMacInit(void)                                    { }
+ 136               	.LM0:
+ 137               	.LFBB1:
+ 138               	/* prologue: function */
+ 139               	/* frame size = 0 */
+ 140               	/* stack size = 0 */
+ 141               	.L__stack_usage = 0
+ 142 0000 0895      		ret
+ 144               	.Lscope1:
+ 146               		.stabd	78,0,0
+ 149               		.weak	nicSend
+ 151               	nicSend:
+ 152               		.stabd	46,0,0
+  32:../../freeRtos/Lib/net/nic.c **** void         nicSend(uint16_t len)                               {len    = 0; }
+ 154               	.LM1:
+ 155               	.LFBB2:
+ 156               	/* prologue: function */
+ 157               	/* frame size = 0 */
+ 158               	/* stack size = 0 */
+ 159               	.L__stack_usage = 0
+ 160 0002 0895      		ret
+ 162               	.Lscope2:
+ 164               		.stabd	78,0,0
+ 166               		.weak	nicPoll
+ 168               	nicPoll:
+ 169               		.stabd	46,0,0
+  33:../../freeRtos/Lib/net/nic.c **** unsigned int nicPoll(void)                                       { return 0; }
+ 171               	.LM2:
+ 172               	.LFBB3:
+ 173               	/* prologue: function */
+ 174               	/* frame size = 0 */
+ 175               	/* stack size = 0 */
+ 176               	.L__stack_usage = 0
+ 178               	.LM3:
+ 179 0004 80E0      		ldi r24,0
+ 180 0006 90E0      		ldi r25,0
+ 181 0008 0895      		ret
+ 183               	.Lscope3:
+ 185               		.stabd	78,0,0
+ 187               	.global	saveNic
+ 189               	saveNic:
+ 190               		.stabd	46,0,0
+  34:../../freeRtos/Lib/net/nic.c **** 
+  35:../../freeRtos/Lib/net/nic.c **** 
+  36:../../freeRtos/Lib/net/nic.c **** static void nicBufferInit(void)
+  37:../../freeRtos/Lib/net/nic.c **** {
+  38:../../freeRtos/Lib/net/nic.c ****   nicState.bufferSize  = NETWORK_STACK_BUF_SIZE;
+  39:../../freeRtos/Lib/net/nic.c ****   nicState.layer2.buf  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR);
+  40:../../freeRtos/Lib/net/nic.c ****   nicState.layer3.ip   = (struct netIpHeader *)   (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); //Te w
+  41:../../freeRtos/Lib/net/nic.c ****   nicState.layer4.icmp = (struct  netIcmpHeader *)(NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN + IP_HEA
+  42:../../freeRtos/Lib/net/nic.c ****   #if IPV6_SUPPORT
+  43:../../freeRtos/Lib/net/nic.c ****   nicState.layer3.ipv6 = (struct netIpHeader *)   (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); 
+  44:../../freeRtos/Lib/net/nic.c ****   nicState.layer3.buf  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); 
+  45:../../freeRtos/Lib/net/nic.c ****   //nicState.layer4.icmpv6  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); /
+  46:../../freeRtos/Lib/net/nic.c ****   #endif /*IPV6_SUPPORT*/
+  47:../../freeRtos/Lib/net/nic.c ****   memset(nicState.layer2.buf, 0, nicState.bufferSize);
+  48:../../freeRtos/Lib/net/nic.c ****   eeprom_read_block(&nicState.mac.addr, mymac_eep, 6);
+  49:../../freeRtos/Lib/net/nic.c **** }
+  50:../../freeRtos/Lib/net/nic.c **** 
+  51:../../freeRtos/Lib/net/nic.c **** void saveNic(void)
+  52:../../freeRtos/Lib/net/nic.c **** {
+ 192               	.LM4:
+ 193               	.LFBB4:
+ 194               	/* prologue: function */
+ 195               	/* frame size = 0 */
+ 196               	/* stack size = 0 */
+ 197               	.L__stack_usage = 0
+  53:../../freeRtos/Lib/net/nic.c ****   eeprom_update_block(&nicState.mac.addr, mymac_eep, 6);
+ 199               	.LM5:
+ 200 000a 46E0      		ldi r20,lo8(6)
+ 201 000c 50E0      		ldi r21,0
+ 202 000e 60E0      		ldi r22,lo8(mymac_eep)
+ 203 0010 70E0      		ldi r23,hi8(mymac_eep)
+ 204 0012 80E0      		ldi r24,lo8(nicState+2)
+ 205 0014 90E0      		ldi r25,hi8(nicState+2)
+ 206 0016 0C94 0000 		jmp __eeupd_block_m128
+ 208               	.Lscope4:
+ 210               		.stabd	78,0,0
+ 212               	.global	nicInit
+ 214               	nicInit:
+ 215               		.stabd	46,0,0
+  54:../../freeRtos/Lib/net/nic.c **** }
+  55:../../freeRtos/Lib/net/nic.c **** 
+  56:../../freeRtos/Lib/net/nic.c **** void nicInit()
+  57:../../freeRtos/Lib/net/nic.c **** {
+ 217               	.LM6:
+ 218               	.LFBB5:
+ 219               	/* prologue: function */
+ 220               	/* frame size = 0 */
+ 221               	/* stack size = 0 */
+ 222               	.L__stack_usage = 0
+ 223               	.LBB4:
+ 224               	.LBB5:
+  38:../../freeRtos/Lib/net/nic.c ****   nicState.bufferSize  = NETWORK_STACK_BUF_SIZE;
+ 226               	.LM7:
+ 227 001a 80E0      		ldi r24,0
+ 228 001c 96E0      		ldi r25,lo8(6)
+ 229 001e 9093 0000 		sts nicState+1,r25
+ 230 0022 8093 0000 		sts nicState,r24
+  39:../../freeRtos/Lib/net/nic.c ****   nicState.layer2.buf  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR);
+ 232               	.LM8:
+ 233 0026 E0E0      		ldi r30,0
+ 234 0028 FAE7      		ldi r31,lo8(122)
+ 235 002a F093 0000 		sts nicState+8+1,r31
+ 236 002e E093 0000 		sts nicState+8,r30
+  40:../../freeRtos/Lib/net/nic.c ****   nicState.layer3.ip   = (struct netIpHeader *)   (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); //Te w
+ 238               	.LM9:
+ 239 0032 2EE0      		ldi r18,lo8(14)
+ 240 0034 3AE7      		ldi r19,lo8(122)
+ 241 0036 3093 0000 		sts nicState+10+1,r19
+ 242 003a 2093 0000 		sts nicState+10,r18
+  41:../../freeRtos/Lib/net/nic.c ****   nicState.layer4.icmp = (struct  netIcmpHeader *)(NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN + IP_HEA
+ 244               	.LM10:
+ 245 003e 22E2      		ldi r18,lo8(34)
+ 246 0040 3AE7      		ldi r19,lo8(122)
+ 247 0042 3093 0000 		sts nicState+12+1,r19
+ 248 0046 2093 0000 		sts nicState+12,r18
+  47:../../freeRtos/Lib/net/nic.c ****   memset(nicState.layer2.buf, 0, nicState.bufferSize);
+ 250               	.LM11:
+ 251 004a DF01      		movw r26,r30
+ 252 004c 9C01      		movw r18,r24
+ 253               		0:
+ 254 004e 1D92      		st X+,__zero_reg__
+ 255 0050 2150      		subi r18,1
+ 256 0052 3040      		sbci r19,0
+ 257 0054 01F4      		brne 0b
+  48:../../freeRtos/Lib/net/nic.c ****   eeprom_read_block(&nicState.mac.addr, mymac_eep, 6);
+ 259               	.LM12:
+ 260 0056 46E0      		ldi r20,lo8(6)
+ 261 0058 50E0      		ldi r21,0
+ 262 005a 60E0      		ldi r22,lo8(mymac_eep)
+ 263 005c 70E0      		ldi r23,hi8(mymac_eep)
+ 264 005e 80E0      		ldi r24,lo8(nicState+2)
+ 265 0060 90E0      		ldi r25,hi8(nicState+2)
+ 266 0062 0E94 0000 		call __eerd_block_m128
+ 267               	.LBE5:
+ 268               	.LBE4:
+  58:../../freeRtos/Lib/net/nic.c ****   nicBufferInit();
+  59:../../freeRtos/Lib/net/nic.c ****   nicMacInit();
+ 270               	.LM13:
+ 271 0066 0C94 0000 		jmp nicMacInit
+ 273               	.Lscope5:
+ 275               		.stabd	78,0,0
+ 278               		.weak	nicGetMacAddress
+ 280               	nicGetMacAddress:
+ 281               		.stabd	46,0,0
+  60:../../freeRtos/Lib/net/nic.c **** }
+  61:../../freeRtos/Lib/net/nic.c **** 
+  62:../../freeRtos/Lib/net/nic.c **** void         nicGetMacAddress(uint8_t* macaddr)
+  63:../../freeRtos/Lib/net/nic.c **** {
+ 283               	.LM14:
+ 284               	.LFBB6:
+ 285               	/* prologue: function */
+ 286               	/* frame size = 0 */
+ 287               	/* stack size = 0 */
+ 288               	.L__stack_usage = 0
+  64:../../freeRtos/Lib/net/nic.c ****   strncpy((void *)(macaddr), (void *)(nicState.mac.addr), 6);
+ 290               	.LM15:
+ 291 006a 46E0      		ldi r20,lo8(6)
+ 292 006c 50E0      		ldi r21,0
+ 293 006e 60E0      		ldi r22,lo8(nicState+2)
+ 294 0070 70E0      		ldi r23,hi8(nicState+2)
+ 295 0072 0C94 0000 		jmp strncpy
+ 297               	.Lscope6:
+ 299               		.stabd	78,0,0
+ 302               		.weak	nicSetMacAddress
+ 304               	nicSetMacAddress:
+ 305               		.stabd	46,0,0
+  65:../../freeRtos/Lib/net/nic.c **** }
+  66:../../freeRtos/Lib/net/nic.c **** 
+  67:../../freeRtos/Lib/net/nic.c **** void         nicSetMacAddress(uint8_t* macaddr)
+  68:../../freeRtos/Lib/net/nic.c **** {
+ 307               	.LM16:
+ 308               	.LFBB7:
+ 309               	/* prologue: function */
+ 310               	/* frame size = 0 */
+ 311               	/* stack size = 0 */
+ 312               	.L__stack_usage = 0
+  69:../../freeRtos/Lib/net/nic.c ****   strncpy((void *)(nicState.mac.addr), (void *)(macaddr), 6);
+ 314               	.LM17:
+ 315 0076 46E0      		ldi r20,lo8(6)
+ 316 0078 50E0      		ldi r21,0
+ 317 007a BC01      		movw r22,r24
+ 318 007c 80E0      		ldi r24,lo8(nicState+2)
+ 319 007e 90E0      		ldi r25,hi8(nicState+2)
+ 320 0080 0E94 0000 		call strncpy
+  70:../../freeRtos/Lib/net/nic.c ****   nicMacInit();
+ 322               	.LM18:
+ 323 0084 0C94 0000 		jmp nicMacInit
+ 325               	.Lscope7:
+ 327               		.stabd	78,0,0
+ 329               		.weak	nicRegDump
+ 331               	nicRegDump:
+ 332               		.stabd	46,0,0
+  71:../../freeRtos/Lib/net/nic.c **** }
+  72:../../freeRtos/Lib/net/nic.c **** 
+  73:../../freeRtos/Lib/net/nic.c **** void         nicRegDump(FILE *stream)
+  74:../../freeRtos/Lib/net/nic.c **** {
+ 334               	.LM19:
+ 335               	.LFBB8:
+ 336               	/* prologue: function */
+ 337               	/* frame size = 0 */
+ 338               	/* stack size = 0 */
+ 339               	.L__stack_usage = 0
+  75:../../freeRtos/Lib/net/nic.c ****   fprintf_P(stream, PSTR("NIC reg dump not implemented\r\n"));
+ 341               	.LM20:
+ 342 0088 20E0      		ldi r18,lo8(__c.2115)
+ 343 008a 30E0      		ldi r19,hi8(__c.2115)
+ 344 008c 3F93      		push r19
+ 345 008e 2F93      		push r18
+ 346 0090 9F93      		push r25
+ 347 0092 8F93      		push r24
+ 348 0094 0E94 0000 		call fprintf_P
+ 349 0098 0F90      		pop __tmp_reg__
+ 350 009a 0F90      		pop __tmp_reg__
+ 351 009c 0F90      		pop __tmp_reg__
+ 352 009e 0F90      		pop __tmp_reg__
+ 353 00a0 0895      		ret
+ 355               	.Lscope8:
+ 357               		.stabd	78,0,0
+ 358               		.section	.progmem.data,"a",@progbits
+ 361               	__c.2115:
+ 362 0000 4E49 4320 		.string	"NIC reg dump not implemented\r\n"
+ 362      7265 6720 
+ 362      6475 6D70 
+ 362      206E 6F74 
+ 362      2069 6D70 
+ 363               		.section	.eeprom,"aw",@progbits
+ 366               	mymac_eep:
+ 367 0000 00        		.byte	0
+ 368 0001 11        		.byte	17
+ 369 0002 22        		.byte	34
+ 370 0003 33        		.byte	51
+ 371 0004 44        		.byte	68
+ 372 0005 55        		.byte	85
+ 373               		.comm	plen,2,1
+ 374               		.comm	nicState,14,1
+ 375               		.comm	wwwport,1,1
+ 380               		.text
+ 382               	.Letext0:
+ 383               		.ident	"GCC: (GNU) 4.8.2"
+ 384               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 nic.c
+     /tmp/ccdNKsVe.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccdNKsVe.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccdNKsVe.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccdNKsVe.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccdNKsVe.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccdNKsVe.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccdNKsVe.s:133    .text:0000000000000000 nicMacInit
+     /tmp/ccdNKsVe.s:151    .text:0000000000000002 nicSend
+     /tmp/ccdNKsVe.s:168    .text:0000000000000004 nicPoll
+     /tmp/ccdNKsVe.s:189    .text:000000000000000a saveNic
+     /tmp/ccdNKsVe.s:366    .eeprom:0000000000000000 mymac_eep
+                            *COM*:000000000000000e nicState
+     /tmp/ccdNKsVe.s:214    .text:000000000000001a nicInit
+     /tmp/ccdNKsVe.s:280    .text:000000000000006a nicGetMacAddress
+     /tmp/ccdNKsVe.s:304    .text:0000000000000076 nicSetMacAddress
+     /tmp/ccdNKsVe.s:331    .text:0000000000000088 nicRegDump
+     /tmp/ccdNKsVe.s:361    .progmem.data:0000000000000000 __c.2115
+                            *COM*:0000000000000002 plen
+                            *COM*:0000000000000001 wwwport
+
+UNDEFINED SYMBOLS
+__eeupd_block_m128
+__eerd_block_m128
+strncpy
+fprintf_P
+__do_clear_bss
