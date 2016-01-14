@@ -1,0 +1,2671 @@
+   1               		.file	"cmdline.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 275               	cmdlinePrintPrompt:
+ 276               		.stabd	46,0,0
+   1:../../freeRtos/Lib/cmdline.c **** /**
+   2:../../freeRtos/Lib/cmdline.c ****  * @file        cmdline.h 
+   3:../../freeRtos/Lib/cmdline.c ****  * @author      Pascal Stang, Adam Kaliszan
+   4:../../freeRtos/Lib/cmdline.c ****  * @brief       Command-Line Interface Library
+   5:../../freeRtos/Lib/cmdline.c ****  * @ingroup     protocols
+   6:../../freeRtos/Lib/cmdline.c ****  * @version     0.6
+   7:../../freeRtos/Lib/cmdline.c ****  * Created      2003.07.16
+   8:../../freeRtos/Lib/cmdline.c ****  * Revised      2010.04.23
+   9:../../freeRtos/Lib/cmdline.c ****  * Editor Tabs  2
+  10:../../freeRtos/Lib/cmdline.c ****  * Target MCU   Atmel AVR Series
+  11:../../freeRtos/Lib/cmdline.c ****  *
+  12:../../freeRtos/Lib/cmdline.c ****  * @par Description
+  13:../../freeRtos/Lib/cmdline.c ****  * This library provides cammand lineinterpreter, that works on many instances. 
+  14:../../freeRtos/Lib/cmdline.c ****  * Each instance requires: separate input/output stream, and separate instance of cmdState struct
+  15:../../freeRtos/Lib/cmdline.c ****  * The library was optimised under memory consumption.
+  16:../../freeRtos/Lib/cmdline.c ****  *
+  17:../../freeRtos/Lib/cmdline.c ****  * @note: This code is currently below version 1.0, and therefore is considered
+  18:../../freeRtos/Lib/cmdline.c ****  * to be lacking in some functionality or documentation, or may not be fully
+  19:../../freeRtos/Lib/cmdline.c ****  * tested.  Nonetheless, you can expect most functions to work.
+  20:../../freeRtos/Lib/cmdline.c ****  *
+  21:../../freeRtos/Lib/cmdline.c ****  * This code is distributed under the GNU Public License
+  22:../../freeRtos/Lib/cmdline.c ****  * which can be found at http://www.gnu.org/licenses/gpl.txt
+  23:../../freeRtos/Lib/cmdline.c **** */
+  24:../../freeRtos/Lib/cmdline.c **** //----- Include Files ---------------------------------------------------------
+  25:../../freeRtos/Lib/cmdline.c **** 
+  26:../../freeRtos/Lib/cmdline.c **** #include "main.h"
+  27:../../freeRtos/Lib/cmdline.c **** 
+  28:../../freeRtos/Lib/cmdline.c **** #include <stdio.h>          // fprint() support
+  29:../../freeRtos/Lib/cmdline.c **** #include <avr/io.h>         // include I/O definitions (port names, pin names, etc)
+  30:../../freeRtos/Lib/cmdline.c **** #include <avr/interrupt.h>  // include interrupt support
+  31:../../freeRtos/Lib/cmdline.c **** #include <avr/pgmspace.h>   // include AVR program memory support
+  32:../../freeRtos/Lib/cmdline.c **** #include <string.h>         // include standard C string functions
+  33:../../freeRtos/Lib/cmdline.c **** #include <stdlib.h>         // include stdlib for string conversion functions
+  34:../../freeRtos/Lib/cmdline.c **** 
+  35:../../freeRtos/Lib/cmdline.c **** #include "cmdline.h"        // Configuration
+  36:../../freeRtos/Lib/cmdline.c **** #include "vt100.h"          // vty100 constans
+  37:../../freeRtos/Lib/cmdline.c **** 
+  38:../../freeRtos/Lib/cmdline.c **** 
+  39:../../freeRtos/Lib/cmdline.c **** // Constans Strings
+  40:../../freeRtos/Lib/cmdline.c **** const char CmdlinePromptNormal[]    PROGMEM  = "DomOs>";
+  41:../../freeRtos/Lib/cmdline.c **** const char CmdlinePromptEnable[]    PROGMEM  = "DomOs#";
+  42:../../freeRtos/Lib/cmdline.c **** const char CmdlinePromptConfigure[] PROGMEM  = "DomOs@";
+  43:../../freeRtos/Lib/cmdline.c **** const char CmdlineNotice[]          PROGMEM  = "cmdline: ";
+  44:../../freeRtos/Lib/cmdline.c **** const char CmdlineCmdNotFound[]     PROGMEM  = "# nk";
+  45:../../freeRtos/Lib/cmdline.c **** 
+  46:../../freeRtos/Lib/cmdline.c **** 
+  47:../../freeRtos/Lib/cmdline.c **** // internal commands
+  48:../../freeRtos/Lib/cmdline.c **** static void cmdlineRepaint            (cmdState_t *state, char *buf);
+  49:../../freeRtos/Lib/cmdline.c **** static void cmdlineDoHistory          (enum cliHistoryAction action, cmdState_t *state);
+  50:../../freeRtos/Lib/cmdline.c **** static void cmdlineProcessInputString (cmdState_t *state);
+  51:../../freeRtos/Lib/cmdline.c **** static void cmdlinePrintPrompt        (cmdState_t *state);
+  52:../../freeRtos/Lib/cmdline.c **** static void cmdlinePrintError         (cmdState_t *state);
+  53:../../freeRtos/Lib/cmdline.c **** static void cmdStateClear             (cmdState_t *state);
+  54:../../freeRtos/Lib/cmdline.c **** static void cmdHistoryCopy            (cmdState_t *state);
+  55:../../freeRtos/Lib/cmdline.c **** static void cmdHistoryMove            (cmdState_t *state);
+  56:../../freeRtos/Lib/cmdline.c **** 
+  57:../../freeRtos/Lib/cmdline.c **** 
+  58:../../freeRtos/Lib/cmdline.c **** void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSize, FILE *stream, c
+  59:../../freeRtos/Lib/cmdline.c **** {
+  60:../../freeRtos/Lib/cmdline.c ****   memset(state, 0, sizeof(cmdState_t));
+  61:../../freeRtos/Lib/cmdline.c ****   memset(buffPtr, 0, bufferTotalSize);
+  62:../../freeRtos/Lib/cmdline.c ****     
+  63:../../freeRtos/Lib/cmdline.c ****   state->CmdlineBuffer = buffPtr;
+  64:../../freeRtos/Lib/cmdline.c ****   state->bufferMaxSize    = (uint8_t)(bufferTotalSize / CMD_STATE_HISTORY);
+  65:../../freeRtos/Lib/cmdline.c **** 
+  66:../../freeRtos/Lib/cmdline.c ****   state->cliMode = mode;
+  67:../../freeRtos/Lib/cmdline.c ****   state->cmdList = commands;
+  68:../../freeRtos/Lib/cmdline.c ****   
+  69:../../freeRtos/Lib/cmdline.c ****   uint8_t i;
+  70:../../freeRtos/Lib/cmdline.c ****   char *tmpPtr = buffPtr;
+  71:../../freeRtos/Lib/cmdline.c ****   for (i=0; i < CMD_STATE_HISTORY; i++)
+  72:../../freeRtos/Lib/cmdline.c ****   {
+  73:../../freeRtos/Lib/cmdline.c ****     state->CmdlineHistory[i] = tmpPtr;
+  74:../../freeRtos/Lib/cmdline.c ****     tmpPtr += state->bufferMaxSize;
+  75:../../freeRtos/Lib/cmdline.c ****   }
+  76:../../freeRtos/Lib/cmdline.c ****   state->myStdInOut = stream;
+  77:../../freeRtos/Lib/cmdline.c **** }
+  78:../../freeRtos/Lib/cmdline.c **** 
+  79:../../freeRtos/Lib/cmdline.c **** void cmdStateClear(cmdState_t *state)
+  80:../../freeRtos/Lib/cmdline.c **** {
+  81:../../freeRtos/Lib/cmdline.c ****   // reset vt100 processing state
+  82:../../freeRtos/Lib/cmdline.c ****   state->CmdlineInputVT100State = 0;
+  83:../../freeRtos/Lib/cmdline.c **** 
+  84:../../freeRtos/Lib/cmdline.c ****   // initialize input buffer
+  85:../../freeRtos/Lib/cmdline.c ****   state->CmdlineBufferLength = 0;
+  86:../../freeRtos/Lib/cmdline.c ****   state->CmdlineBufferEditPos = 0;
+  87:../../freeRtos/Lib/cmdline.c **** 
+  88:../../freeRtos/Lib/cmdline.c ****   // initialize executing function
+  89:../../freeRtos/Lib/cmdline.c ****   state->CmdlineExecFunction = 0;
+  90:../../freeRtos/Lib/cmdline.c **** }
+  91:../../freeRtos/Lib/cmdline.c **** 
+  92:../../freeRtos/Lib/cmdline.c **** void cmdlineInputFunc(char c, cmdState_t *state)
+  93:../../freeRtos/Lib/cmdline.c **** {
+  94:../../freeRtos/Lib/cmdline.c ****   uint8_t i;
+  95:../../freeRtos/Lib/cmdline.c ****   // process the received character
+  96:../../freeRtos/Lib/cmdline.c **** 
+  97:../../freeRtos/Lib/cmdline.c ****   // VT100 handling
+  98:../../freeRtos/Lib/cmdline.c ****   // are we processing a VT100 command?
+  99:../../freeRtos/Lib/cmdline.c ****   if(state->CmdlineInputVT100State == 2)
+ 100:../../freeRtos/Lib/cmdline.c ****   {
+ 101:../../freeRtos/Lib/cmdline.c ****     // we have already received ESC and [
+ 102:../../freeRtos/Lib/cmdline.c ****     // now process the vt100 codeCmdlineExcBuffer
+ 103:../../freeRtos/Lib/cmdline.c ****     switch(c)
+ 104:../../freeRtos/Lib/cmdline.c ****     {
+ 105:../../freeRtos/Lib/cmdline.c ****     case VT100_ARROWUP:
+ 106:../../freeRtos/Lib/cmdline.c ****       cmdlineDoHistory(CMDLINE_HISTORY_PREV, state);
+ 107:../../freeRtos/Lib/cmdline.c ****       break;
+ 108:../../freeRtos/Lib/cmdline.c ****     case VT100_ARROWDOWN:
+ 109:../../freeRtos/Lib/cmdline.c ****       cmdlineDoHistory(CMDLINE_HISTORY_NEXT, state);
+ 110:../../freeRtos/Lib/cmdline.c ****       break;
+ 111:../../freeRtos/Lib/cmdline.c ****     case VT100_ARROWRIGHT:
+ 112:../../freeRtos/Lib/cmdline.c ****       if (state->bufferHistoryState == NOT_COPIED)
+ 113:../../freeRtos/Lib/cmdline.c ****         cmdHistoryCopy(state);
+ 114:../../freeRtos/Lib/cmdline.c ****       // if the edit position less than current string length
+ 115:../../freeRtos/Lib/cmdline.c ****       if(state->CmdlineBufferEditPos < state->CmdlineBufferLength)
+ 116:../../freeRtos/Lib/cmdline.c ****       {
+ 117:../../freeRtos/Lib/cmdline.c ****         // increment the edit position
+ 118:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferEditPos++;
+ 119:../../freeRtos/Lib/cmdline.c ****         // move cursor forward one space (no erase)
+ 120:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_ESC        , state->myStdInOut);
+ 121:../../freeRtos/Lib/cmdline.c ****         fputc('['              , state->myStdInOut);
+ 122:../../freeRtos/Lib/cmdline.c ****         fputc(VT100_ARROWRIGHT , state->myStdInOut);
+ 123:../../freeRtos/Lib/cmdline.c ****       }
+ 124:../../freeRtos/Lib/cmdline.c ****       else
+ 125:../../freeRtos/Lib/cmdline.c ****       {
+ 126:../../freeRtos/Lib/cmdline.c ****         // else, ring the bell
+ 127:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BEL        , state->myStdInOut);
+ 128:../../freeRtos/Lib/cmdline.c ****       }
+ 129:../../freeRtos/Lib/cmdline.c ****       break;
+ 130:../../freeRtos/Lib/cmdline.c ****     case VT100_ARROWLEFT:
+ 131:../../freeRtos/Lib/cmdline.c ****       // if the edit position is non-zero
+ 132:../../freeRtos/Lib/cmdline.c ****       if (state->bufferHistoryState == NOT_COPIED)
+ 133:../../freeRtos/Lib/cmdline.c ****         cmdHistoryCopy(state);
+ 134:../../freeRtos/Lib/cmdline.c ****       
+ 135:../../freeRtos/Lib/cmdline.c ****       if(state->CmdlineBufferEditPos)
+ 136:../../freeRtos/Lib/cmdline.c ****       {
+ 137:../../freeRtos/Lib/cmdline.c ****         // decrement the edit position
+ 138:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferEditPos--;
+ 139:../../freeRtos/Lib/cmdline.c ****         // move cursor back one space (no erase)
+ 140:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BS         , state->myStdInOut);
+ 141:../../freeRtos/Lib/cmdline.c ****       }
+ 142:../../freeRtos/Lib/cmdline.c ****       else
+ 143:../../freeRtos/Lib/cmdline.c ****       {
+ 144:../../freeRtos/Lib/cmdline.c ****         // else, ring the bell
+ 145:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BEL        , state->myStdInOut);
+ 146:../../freeRtos/Lib/cmdline.c ****       }
+ 147:../../freeRtos/Lib/cmdline.c ****       break;
+ 148:../../freeRtos/Lib/cmdline.c ****     default:
+ 149:../../freeRtos/Lib/cmdline.c ****       break;
+ 150:../../freeRtos/Lib/cmdline.c ****     }
+ 151:../../freeRtos/Lib/cmdline.c ****     // done, reset state
+ 152:../../freeRtos/Lib/cmdline.c ****     state->CmdlineInputVT100State = 0;
+ 153:../../freeRtos/Lib/cmdline.c ****     return;
+ 154:../../freeRtos/Lib/cmdline.c ****   }
+ 155:../../freeRtos/Lib/cmdline.c ****   else if(state->CmdlineInputVT100State == 1)
+ 156:../../freeRtos/Lib/cmdline.c ****   {
+ 157:../../freeRtos/Lib/cmdline.c ****     // we last received [ESC]
+ 158:../../freeRtos/Lib/cmdline.c ****     if(c == '[')
+ 159:../../freeRtos/Lib/cmdline.c ****     {
+ 160:../../freeRtos/Lib/cmdline.c ****       state->CmdlineInputVT100State = 2;
+ 161:../../freeRtos/Lib/cmdline.c ****       return;
+ 162:../../freeRtos/Lib/cmdline.c ****     }
+ 163:../../freeRtos/Lib/cmdline.c ****     else
+ 164:../../freeRtos/Lib/cmdline.c ****       state->CmdlineInputVT100State = 0;
+ 165:../../freeRtos/Lib/cmdline.c ****   }
+ 166:../../freeRtos/Lib/cmdline.c ****   else
+ 167:../../freeRtos/Lib/cmdline.c ****   {
+ 168:../../freeRtos/Lib/cmdline.c ****     // anything else, reset state
+ 169:../../freeRtos/Lib/cmdline.c ****     state->CmdlineInputVT100State = 0;
+ 170:../../freeRtos/Lib/cmdline.c ****   }
+ 171:../../freeRtos/Lib/cmdline.c **** 
+ 172:../../freeRtos/Lib/cmdline.c ****   // Regular handling
+ 173:../../freeRtos/Lib/cmdline.c ****   //Protection against buffer Overflow
+ 174:../../freeRtos/Lib/cmdline.c ****   if (state->CmdlineBufferLength == state->bufferMaxSize)
+ 175:../../freeRtos/Lib/cmdline.c ****   {
+ 176:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength--;
+ 177:../../freeRtos/Lib/cmdline.c ****     for (i=1; i < state->bufferMaxSize; i++)
+ 178:../../freeRtos/Lib/cmdline.c ****     {
+ 179:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBuffer[i-1] = state->CmdlineBuffer[i];
+ 180:../../freeRtos/Lib/cmdline.c ****     }
+ 181:../../freeRtos/Lib/cmdline.c ****   }
+ 182:../../freeRtos/Lib/cmdline.c ****   
+ 183:../../freeRtos/Lib/cmdline.c ****   if( (c >= 0x20) && (c < 0x7F) )
+ 184:../../freeRtos/Lib/cmdline.c ****   {
+ 185:../../freeRtos/Lib/cmdline.c ****     if (state->bufferHistoryState == NOT_COPIED)
+ 186:../../freeRtos/Lib/cmdline.c ****       cmdHistoryCopy(state);
+ 187:../../freeRtos/Lib/cmdline.c ****     // character is printable
+ 188:../../freeRtos/Lib/cmdline.c ****     // is this a simple append
+ 189:../../freeRtos/Lib/cmdline.c ****     if(state->CmdlineBufferEditPos == state->CmdlineBufferLength)
+ 190:../../freeRtos/Lib/cmdline.c ****     {
+ 191:../../freeRtos/Lib/cmdline.c ****       // echo character to the output
+ 192:../../freeRtos/Lib/cmdline.c ****       fputc(c                , state->myStdInOut);
+ 193:../../freeRtos/Lib/cmdline.c ****       // add it to the command line buffer
+ 194:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBuffer[state->CmdlineBufferEditPos++] = c;
+ 195:../../freeRtos/Lib/cmdline.c ****       // update buffer length
+ 196:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBufferLength++;
+ 197:../../freeRtos/Lib/cmdline.c ****     }
+ 198:../../freeRtos/Lib/cmdline.c ****     else
+ 199:../../freeRtos/Lib/cmdline.c ****     {
+ 200:../../freeRtos/Lib/cmdline.c ****       // edit/cursor position != end of buffer
+ 201:../../freeRtos/Lib/cmdline.c ****       // we're inserting characters at a mid-line edit position
+ 202:../../freeRtos/Lib/cmdline.c ****       // make room at the insert point
+ 203:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBufferLength++;
+ 204:../../freeRtos/Lib/cmdline.c ****       for(i=state->CmdlineBufferLength; i>state->CmdlineBufferEditPos; i--)
+ 205:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBuffer[i] = state->CmdlineBuffer[i-1];
+ 206:../../freeRtos/Lib/cmdline.c ****       // insert character
+ 207:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBuffer[state->CmdlineBufferEditPos++] = c;
+ 208:../../freeRtos/Lib/cmdline.c ****       // repaint
+ 209:../../freeRtos/Lib/cmdline.c ****       cmdlineRepaint(state, state->CmdlineBuffer);
+ 210:../../freeRtos/Lib/cmdline.c ****       // reposition cursor
+ 211:../../freeRtos/Lib/cmdline.c ****       for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
+ 212:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BS         , state->myStdInOut);
+ 213:../../freeRtos/Lib/cmdline.c ****     }
+ 214:../../freeRtos/Lib/cmdline.c ****   }
+ 215:../../freeRtos/Lib/cmdline.c ****   // handle special characters
+ 216:../../freeRtos/Lib/cmdline.c ****   else if(c == ASCII_CR)
+ 217:../../freeRtos/Lib/cmdline.c ****   {
+ 218:../../freeRtos/Lib/cmdline.c ****     if (state->bufferHistoryState == NOT_COPIED)
+ 219:../../freeRtos/Lib/cmdline.c ****       cmdHistoryMove(state);
+ 220:../../freeRtos/Lib/cmdline.c ****     
+ 221:../../freeRtos/Lib/cmdline.c ****     // user pressed [ENTER]
+ 222:../../freeRtos/Lib/cmdline.c ****     // echo CR and LF to terminal
+ 223:../../freeRtos/Lib/cmdline.c ****     fputc(ASCII_CR         , state->myStdInOut);
+ 224:../../freeRtos/Lib/cmdline.c ****     fputc(ASCII_LF         , state->myStdInOut);
+ 225:../../freeRtos/Lib/cmdline.c ****     // add null termination to command
+ 226:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBuffer[state->CmdlineBufferLength++] = 0;
+ 227:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos++;
+ 228:../../freeRtos/Lib/cmdline.c ****     // command is complete, process it
+ 229:../../freeRtos/Lib/cmdline.c ****     cmdlineProcessInputString(state);
+ 230:../../freeRtos/Lib/cmdline.c ****     // reset buffer
+ 231:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength = 0;
+ 232:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos = 0;
+ 233:../../freeRtos/Lib/cmdline.c ****   }
+ 234:../../freeRtos/Lib/cmdline.c ****   else if(c == ASCII_BS)
+ 235:../../freeRtos/Lib/cmdline.c ****   {
+ 236:../../freeRtos/Lib/cmdline.c ****     if(state->CmdlineBufferEditPos)
+ 237:../../freeRtos/Lib/cmdline.c ****     {
+ 238:../../freeRtos/Lib/cmdline.c ****       // is this a simple delete (off the end of the line)
+ 239:../../freeRtos/Lib/cmdline.c ****       if(state->CmdlineBufferEditPos == state->CmdlineBufferLength)
+ 240:../../freeRtos/Lib/cmdline.c ****       {
+ 241:../../freeRtos/Lib/cmdline.c ****         // destructive backspace
+ 242:../../freeRtos/Lib/cmdline.c ****         // echo backspace-space-backspace
+ 243:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BS         , state->myStdInOut);
+ 244:../../freeRtos/Lib/cmdline.c ****         fputc(' '              , state->myStdInOut);
+ 245:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BS         , state->myStdInOut);
+ 246:../../freeRtos/Lib/cmdline.c ****         // decrement our buffer length and edit position
+ 247:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferLength--;
+ 248:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferEditPos--;
+ 249:../../freeRtos/Lib/cmdline.c ****       }
+ 250:../../freeRtos/Lib/cmdline.c ****       else
+ 251:../../freeRtos/Lib/cmdline.c ****       {
+ 252:../../freeRtos/Lib/cmdline.c ****         // edit/cursor position != end of buffer
+ 253:../../freeRtos/Lib/cmdline.c ****         // we're deleting characters at a mid-line edit position
+ 254:../../freeRtos/Lib/cmdline.c ****         // shift characters down, effectively deleting
+ 255:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferLength--;
+ 256:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferEditPos--;
+ 257:../../freeRtos/Lib/cmdline.c ****         for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
+ 258:../../freeRtos/Lib/cmdline.c ****           state->CmdlineBuffer[i] = state->CmdlineBuffer[i+1];
+ 259:../../freeRtos/Lib/cmdline.c ****         // repaint
+ 260:../../freeRtos/Lib/cmdline.c ****         cmdlineRepaint(state, state->CmdlineBuffer);
+ 261:../../freeRtos/Lib/cmdline.c ****         // add space to clear leftover characters
+ 262:../../freeRtos/Lib/cmdline.c ****         fputc(' '              , state->myStdInOut);
+ 263:../../freeRtos/Lib/cmdline.c ****         // reposition cursor
+ 264:../../freeRtos/Lib/cmdline.c ****         for(i=state->CmdlineBufferEditPos; i<(state->CmdlineBufferLength+1); i++)
+ 265:../../freeRtos/Lib/cmdline.c ****           fputc(ASCII_BS       , state->myStdInOut);
+ 266:../../freeRtos/Lib/cmdline.c ****       }
+ 267:../../freeRtos/Lib/cmdline.c ****     }
+ 268:../../freeRtos/Lib/cmdline.c ****     else
+ 269:../../freeRtos/Lib/cmdline.c ****     {
+ 270:../../freeRtos/Lib/cmdline.c ****       // else, ring the bell
+ 271:../../freeRtos/Lib/cmdline.c ****       fputc(ASCII_BEL          , state->myStdInOut);
+ 272:../../freeRtos/Lib/cmdline.c ****     }
+ 273:../../freeRtos/Lib/cmdline.c ****   }
+ 274:../../freeRtos/Lib/cmdline.c ****   else if(c == ASCII_DEL)
+ 275:../../freeRtos/Lib/cmdline.c ****   {
+ 276:../../freeRtos/Lib/cmdline.c ****     // not yet handled
+ 277:../../freeRtos/Lib/cmdline.c ****   }
+ 278:../../freeRtos/Lib/cmdline.c ****   else if(c == ASCII_ESC)
+ 279:../../freeRtos/Lib/cmdline.c ****   {
+ 280:../../freeRtos/Lib/cmdline.c ****     state->CmdlineInputVT100State = 1;
+ 281:../../freeRtos/Lib/cmdline.c ****   }
+ 282:../../freeRtos/Lib/cmdline.c **** }
+ 283:../../freeRtos/Lib/cmdline.c **** 
+ 284:../../freeRtos/Lib/cmdline.c **** void cmdlineRepaint(cmdState_t *state, char *buf)
+ 285:../../freeRtos/Lib/cmdline.c **** {
+ 286:../../freeRtos/Lib/cmdline.c ****   uint8_t i;
+ 287:../../freeRtos/Lib/cmdline.c **** 
+ 288:../../freeRtos/Lib/cmdline.c ****   // carriage return
+ 289:../../freeRtos/Lib/cmdline.c ****   fputc(ASCII_CR         , state->myStdInOut);
+ 290:../../freeRtos/Lib/cmdline.c ****   // print fresh prompt
+ 291:../../freeRtos/Lib/cmdline.c ****   cmdlinePrintPrompt(state);
+ 292:../../freeRtos/Lib/cmdline.c ****   // print the new command line buffer
+ 293:../../freeRtos/Lib/cmdline.c ****   i = state->CmdlineBufferLength;
+ 294:../../freeRtos/Lib/cmdline.c ****   while(i--) 
+ 295:../../freeRtos/Lib/cmdline.c ****     fputc(*buf++         , state->myStdInOut);
+ 296:../../freeRtos/Lib/cmdline.c ****   i = state->bufferMaxSize - state->CmdlineBufferLength;
+ 297:../../freeRtos/Lib/cmdline.c ****   while (i--)
+ 298:../../freeRtos/Lib/cmdline.c ****     fputc(' ', state->myStdInOut);
+ 299:../../freeRtos/Lib/cmdline.c ****   i = state->bufferMaxSize - state->CmdlineBufferLength;
+ 300:../../freeRtos/Lib/cmdline.c ****   while (i--)
+ 301:../../freeRtos/Lib/cmdline.c ****     fputc(ASCII_BS,  state->myStdInOut);
+ 302:../../freeRtos/Lib/cmdline.c **** }
+ 303:../../freeRtos/Lib/cmdline.c **** 
+ 304:../../freeRtos/Lib/cmdline.c **** void cmdHistoryCopy(cmdState_t *state)
+ 305:../../freeRtos/Lib/cmdline.c **** {
+ 306:../../freeRtos/Lib/cmdline.c ****   if (state->historyDepthIdx != 0)
+ 307:../../freeRtos/Lib/cmdline.c ****   {
+ 308:../../freeRtos/Lib/cmdline.c ****     uint8_t historyReadIdx = (state->historyWrIdx - state->historyDepthIdx) & CMD_STATE_HISTORY_MAS
+ 309:../../freeRtos/Lib/cmdline.c ****     memset(state->CmdlineBuffer, 0, state->bufferMaxSize);
+ 310:../../freeRtos/Lib/cmdline.c ****     strcpy(state->CmdlineBuffer, state->CmdlineHistory[historyReadIdx]);
+ 311:../../freeRtos/Lib/cmdline.c ****   }
+ 312:../../freeRtos/Lib/cmdline.c ****   
+ 313:../../freeRtos/Lib/cmdline.c ****   state->historyDepthIdx = 0;
+ 314:../../freeRtos/Lib/cmdline.c ****   state->bufferHistoryState = COPIED;
+ 315:../../freeRtos/Lib/cmdline.c **** }
+ 316:../../freeRtos/Lib/cmdline.c **** 
+ 317:../../freeRtos/Lib/cmdline.c **** void cmdHistoryMove(cmdState_t *state)
+ 318:../../freeRtos/Lib/cmdline.c **** {
+ 319:../../freeRtos/Lib/cmdline.c ****   uint8_t i=state->historyDepthIdx;
+ 320:../../freeRtos/Lib/cmdline.c **** 
+ 321:../../freeRtos/Lib/cmdline.c ****   if (state->historyDepthIdx != 0)
+ 322:../../freeRtos/Lib/cmdline.c ****   {
+ 323:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBuffer = state->CmdlineHistory[(state->historyWrIdx-i) & CMD_STATE_HISTORY_MASK];
+ 324:../../freeRtos/Lib/cmdline.c ****     for ( ; i<CMD_STATE_HISTORY; i++)
+ 325:../../freeRtos/Lib/cmdline.c ****     {
+ 326:../../freeRtos/Lib/cmdline.c ****       state->CmdlineHistory[(state->historyWrIdx-i) & CMD_STATE_HISTORY_MASK] = state->CmdlineHisto
+ 327:../../freeRtos/Lib/cmdline.c ****     }
+ 328:../../freeRtos/Lib/cmdline.c ****   }
+ 329:../../freeRtos/Lib/cmdline.c ****   state->CmdlineHistory[state->historyWrIdx] = state->CmdlineBuffer;
+ 330:../../freeRtos/Lib/cmdline.c **** 
+ 331:../../freeRtos/Lib/cmdline.c ****   state->historyDepthIdx = 0;
+ 332:../../freeRtos/Lib/cmdline.c ****   state->bufferHistoryState = COPIED;
+ 333:../../freeRtos/Lib/cmdline.c **** }
+ 334:../../freeRtos/Lib/cmdline.c **** 
+ 335:../../freeRtos/Lib/cmdline.c **** void cmdlineDoHistory(enum cliHistoryAction action, cmdState_t *state)
+ 336:../../freeRtos/Lib/cmdline.c **** {
+ 337:../../freeRtos/Lib/cmdline.c ****   uint8_t historyReadIdx;
+ 338:../../freeRtos/Lib/cmdline.c ****   switch(action)
+ 339:../../freeRtos/Lib/cmdline.c ****   {
+ 340:../../freeRtos/Lib/cmdline.c ****   case CMDLINE_HISTORY_SAVE:
+ 341:../../freeRtos/Lib/cmdline.c ****     // copy CmdlineBuffer to history if not null string
+ 342:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength  = 0;
+ 343:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos = 0;     
+ 344:../../freeRtos/Lib/cmdline.c ****     state->bufferHistoryState   = NOT_COPIED;
+ 345:../../freeRtos/Lib/cmdline.c **** 
+ 346:../../freeRtos/Lib/cmdline.c ****     if( strlen(state->CmdlineBuffer) )
+ 347:../../freeRtos/Lib/cmdline.c ****     {
+ 348:../../freeRtos/Lib/cmdline.c ****       state->historyWrIdx++;
+ 349:../../freeRtos/Lib/cmdline.c ****       state->historyWrIdx &= CMD_STATE_HISTORY_MASK;
+ 350:../../freeRtos/Lib/cmdline.c ****       
+ 351:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBuffer = state->CmdlineHistory[state->historyWrIdx];
+ 352:../../freeRtos/Lib/cmdline.c ****     }
+ 353:../../freeRtos/Lib/cmdline.c ****     break;
+ 354:../../freeRtos/Lib/cmdline.c ****   case CMDLINE_HISTORY_PREV:
+ 355:../../freeRtos/Lib/cmdline.c ****     if (state->historyDepthIdx == CMD_STATE_HISTORY - 1)
+ 356:../../freeRtos/Lib/cmdline.c ****       break;                                               //We are on the end of the history list
+ 357:../../freeRtos/Lib/cmdline.c ****     
+ 358:../../freeRtos/Lib/cmdline.c ****     historyReadIdx = (state->historyWrIdx - state->historyDepthIdx - 1) & CMD_STATE_HISTORY_MASK;
+ 359:../../freeRtos/Lib/cmdline.c ****     
+ 360:../../freeRtos/Lib/cmdline.c ****     if (state->CmdlineHistory[historyReadIdx][0] == 0)
+ 361:../../freeRtos/Lib/cmdline.c ****       break;
+ 362:../../freeRtos/Lib/cmdline.c ****     
+ 363:../../freeRtos/Lib/cmdline.c ****     state->historyDepthIdx++;
+ 364:../../freeRtos/Lib/cmdline.c ****     state->historyDepthIdx &= CMD_STATE_HISTORY_MASK;
+ 365:../../freeRtos/Lib/cmdline.c ****     
+ 366:../../freeRtos/Lib/cmdline.c ****     // set the buffer position to the end of the line
+ 367:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength = strlen(state->CmdlineHistory[historyReadIdx]);
+ 368:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos = state->CmdlineBufferLength;
+ 369:../../freeRtos/Lib/cmdline.c ****     
+ 370:../../freeRtos/Lib/cmdline.c ****     state->bufferHistoryState = NOT_COPIED;
+ 371:../../freeRtos/Lib/cmdline.c **** 
+ 372:../../freeRtos/Lib/cmdline.c ****     // "re-paint" line
+ 373:../../freeRtos/Lib/cmdline.c ****     cmdlineRepaint(state, state->CmdlineHistory[historyReadIdx]);
+ 374:../../freeRtos/Lib/cmdline.c ****     
+ 375:../../freeRtos/Lib/cmdline.c ****     break;
+ 376:../../freeRtos/Lib/cmdline.c ****   case CMDLINE_HISTORY_NEXT:      
+ 377:../../freeRtos/Lib/cmdline.c ****     if (state->historyDepthIdx == 0)
+ 378:../../freeRtos/Lib/cmdline.c ****       break;                                               //We are on the begining of the history 
+ 379:../../freeRtos/Lib/cmdline.c **** 
+ 380:../../freeRtos/Lib/cmdline.c ****     state->historyDepthIdx --;
+ 381:../../freeRtos/Lib/cmdline.c ****     historyReadIdx = (state->historyWrIdx - state->historyDepthIdx) & CMD_STATE_HISTORY_MASK;
+ 382:../../freeRtos/Lib/cmdline.c ****    
+ 383:../../freeRtos/Lib/cmdline.c ****     // set the buffer position to the end of the line
+ 384:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength = strlen(state->CmdlineHistory[historyReadIdx]);
+ 385:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos = state->CmdlineBufferLength;
+ 386:../../freeRtos/Lib/cmdline.c ****     
+ 387:../../freeRtos/Lib/cmdline.c ****     state->bufferHistoryState = NOT_COPIED;
+ 388:../../freeRtos/Lib/cmdline.c **** 
+ 389:../../freeRtos/Lib/cmdline.c ****     // "re-paint" line
+ 390:../../freeRtos/Lib/cmdline.c ****     cmdlineRepaint(state, state->CmdlineHistory[historyReadIdx]);
+ 391:../../freeRtos/Lib/cmdline.c ****     break;
+ 392:../../freeRtos/Lib/cmdline.c ****   }
+ 393:../../freeRtos/Lib/cmdline.c **** }
+ 394:../../freeRtos/Lib/cmdline.c **** 
+ 395:../../freeRtos/Lib/cmdline.c **** void cmdlineProcessInputString(cmdState_t *state)
+ 396:../../freeRtos/Lib/cmdline.c **** {
+ 397:../../freeRtos/Lib/cmdline.c ****   uint8_t i=0;
+ 398:../../freeRtos/Lib/cmdline.c ****   state->CmdlineExcBuffer = state->CmdlineBuffer;                     // We will use exec buffer la
+ 399:../../freeRtos/Lib/cmdline.c **** 
+ 400:../../freeRtos/Lib/cmdline.c ****   while( !((state->CmdlineExcBuffer[i] == ' ')                        // find the end of the comman
+ 401:../../freeRtos/Lib/cmdline.c ****     || (state->CmdlineExcBuffer[i] == 0)) )                           // find first whitespace char
+ 402:../../freeRtos/Lib/cmdline.c ****     i++;                                                              // i determines the cammand l
+ 403:../../freeRtos/Lib/cmdline.c **** 
+ 404:../../freeRtos/Lib/cmdline.c ****   if(!i)                                                              // command was null or empty
+ 405:../../freeRtos/Lib/cmdline.c ****   {
+ 406:../../freeRtos/Lib/cmdline.c ****     cmdlinePrintPrompt(state);                                        // output a new prompt
+ 407:../../freeRtos/Lib/cmdline.c ****     return;
+ 408:../../freeRtos/Lib/cmdline.c ****   }
+ 409:../../freeRtos/Lib/cmdline.c **** 
+ 410:../../freeRtos/Lib/cmdline.c ****   const command_t *tmpPtr = state->cmdList;                           // Set list of commands. The 
+ 411:../../freeRtos/Lib/cmdline.c ****   command_t  tmp;                                                     // We need to create this obj
+ 412:../../freeRtos/Lib/cmdline.c ****   memcpy_P(&tmp, tmpPtr, sizeof(command_t));                          // read from flash. We need t
+ 413:../../freeRtos/Lib/cmdline.c **** 
+ 414:../../freeRtos/Lib/cmdline.c ****   do                                                                  // search command list for ma
+ 415:../../freeRtos/Lib/cmdline.c ****   {
+ 416:../../freeRtos/Lib/cmdline.c ****     if( !strncmp_P(state->CmdlineExcBuffer, tmp.commandStr, i) )      // user-entered command match
+ 417:../../freeRtos/Lib/cmdline.c ****     {                                                                 // 
+ 418:../../freeRtos/Lib/cmdline.c ****       state->CmdlineExecFunction = tmp.commandFun;                    // set function pointer
+ 419:../../freeRtos/Lib/cmdline.c ****       state->command_str         = tmp.commandStr;
+ 420:../../freeRtos/Lib/cmdline.c ****       state->command_help_str    = tmp.commandHelpStr;
+ 421:../../freeRtos/Lib/cmdline.c ****       cmdlineDoHistory(CMDLINE_HISTORY_SAVE, state);                  // save command in history
+ 422:../../freeRtos/Lib/cmdline.c ****       return;
+ 423:../../freeRtos/Lib/cmdline.c ****     }
+ 424:../../freeRtos/Lib/cmdline.c ****     tmpPtr++;                                                         // Next command
+ 425:../../freeRtos/Lib/cmdline.c ****     memcpy_P(&tmp, tmpPtr, sizeof(command_t));                        // Copy this command from fla
+ 426:../../freeRtos/Lib/cmdline.c ****   }
+ 427:../../freeRtos/Lib/cmdline.c ****   while (tmp.commandStr != NULL);                                     // Last command on the list i
+ 428:../../freeRtos/Lib/cmdline.c ****   
+ 429:../../freeRtos/Lib/cmdline.c ****   // if we did not get a match
+ 430:../../freeRtos/Lib/cmdline.c ****   cmdlinePrintError(state);                                           // output an error message
+ 431:../../freeRtos/Lib/cmdline.c ****   cmdlinePrintPrompt(state);                                          // output a new prompt
+ 432:../../freeRtos/Lib/cmdline.c **** }
+ 433:../../freeRtos/Lib/cmdline.c **** 
+ 434:../../freeRtos/Lib/cmdline.c **** void cmdlineMainLoop(cmdState_t *state)
+ 435:../../freeRtos/Lib/cmdline.c **** {
+ 436:../../freeRtos/Lib/cmdline.c ****   cliExRes_t result;
+ 437:../../freeRtos/Lib/cmdline.c ****   if(state->CmdlineExecFunction)                // do we have a command/function to be executed
+ 438:../../freeRtos/Lib/cmdline.c ****   {
+ 439:../../freeRtos/Lib/cmdline.c ****     state->argc = cmdLineGetLastArgIdx(state);  // get number of arguments
+ 440:../../freeRtos/Lib/cmdline.c ****     result = state->CmdlineExecFunction(state); // run it
+ 441:../../freeRtos/Lib/cmdline.c ****     
+ 442:../../freeRtos/Lib/cmdline.c ****     switch(result)
+ 443:../../freeRtos/Lib/cmdline.c ****     {
+ 444:../../freeRtos/Lib/cmdline.c ****       case OK_INFORM:
+ 445:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("OK\r\n"));
+ 446:../../freeRtos/Lib/cmdline.c ****         break;
+ 447:../../freeRtos/Lib/cmdline.c ****       case SYNTAX_ERROR:
+ 448:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Syntax Error. Use: "));
+ 449:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, state->command_str);
+ 450:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR(" "));
+ 451:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, state->command_help_str);
+ 452:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("\r\n"));
+ 453:../../freeRtos/Lib/cmdline.c ****         break;
+ 454:../../freeRtos/Lib/cmdline.c ****       case ERROR_INFORM:
+ 455:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Operation failed\r\n"));
+ 456:../../freeRtos/Lib/cmdline.c ****         break;
+ 457:../../freeRtos/Lib/cmdline.c ****       case ERROR_OPERATION_NOT_ALLOWED:
+ 458:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Operation not allowed\r\n"));
+ 459:../../freeRtos/Lib/cmdline.c ****         break;
+ 460:../../freeRtos/Lib/cmdline.c ****       default:
+ 461:../../freeRtos/Lib/cmdline.c ****         break;
+ 462:../../freeRtos/Lib/cmdline.c ****     }
+ 463:../../freeRtos/Lib/cmdline.c ****     state->CmdlineExecFunction = NULL;          // reset
+ 464:../../freeRtos/Lib/cmdline.c ****     state->command_str         = NULL;
+ 465:../../freeRtos/Lib/cmdline.c ****     state->command_help_str    = NULL;
+ 466:../../freeRtos/Lib/cmdline.c ****     cmdlinePrintPrompt(state);                  // output new prompt
+ 467:../../freeRtos/Lib/cmdline.c ****   }
+ 468:../../freeRtos/Lib/cmdline.c **** }
+ 469:../../freeRtos/Lib/cmdline.c **** 
+ 470:../../freeRtos/Lib/cmdline.c **** void cmdlinePrintPrompt(cmdState_t *state)
+ 471:../../freeRtos/Lib/cmdline.c **** {
+ 278               	.LM0:
+ 279               	.LFBB1:
+ 280 0000 0F93      		push r16
+ 281 0002 1F93      		push r17
+ 282 0004 CF93      		push r28
+ 283 0006 DF93      		push r29
+ 284               	/* prologue: function */
+ 285               	/* frame size = 0 */
+ 286               	/* stack size = 4 */
+ 287               	.L__stack_usage = 4
+ 288 0008 8C01      		movw r16,r24
+ 472:../../freeRtos/Lib/cmdline.c ****   const char* ptr;
+ 473:../../freeRtos/Lib/cmdline.c ****   // print a new command prompt
+ 474:../../freeRtos/Lib/cmdline.c ****   switch (state->cliMode)
+ 290               	.LM1:
+ 291 000a FC01      		movw r30,r24
+ 292 000c 80A1      		ldd r24,Z+32
+ 293 000e 8130      		cpi r24,lo8(1)
+ 294 0010 01F0      		breq .L7
+ 295 0012 8230      		cpi r24,lo8(2)
+ 296 0014 01F0      		breq .L4
+ 475:../../freeRtos/Lib/cmdline.c ****   {
+ 476:../../freeRtos/Lib/cmdline.c ****     case NR_NORMAL:
+ 477:../../freeRtos/Lib/cmdline.c ****       ptr = CmdlinePromptNormal;
+ 298               	.LM2:
+ 299 0016 C0E0      		ldi r28,lo8(CmdlinePromptNormal)
+ 300 0018 D0E0      		ldi r29,hi8(CmdlinePromptNormal)
+ 301 001a 00C0      		rjmp .L5
+ 302               	.L7:
+ 478:../../freeRtos/Lib/cmdline.c ****       break;
+ 479:../../freeRtos/Lib/cmdline.c ****     case NR_ENABLE:
+ 480:../../freeRtos/Lib/cmdline.c ****       ptr = CmdlinePromptEnable;
+ 304               	.LM3:
+ 305 001c C0E0      		ldi r28,lo8(CmdlinePromptEnable)
+ 306 001e D0E0      		ldi r29,hi8(CmdlinePromptEnable)
+ 307 0020 00C0      		rjmp .L5
+ 308               	.L4:
+ 481:../../freeRtos/Lib/cmdline.c ****       break;
+ 482:../../freeRtos/Lib/cmdline.c ****     case NR_CONFIGURE:
+ 483:../../freeRtos/Lib/cmdline.c ****       ptr = CmdlinePromptConfigure;
+ 310               	.LM4:
+ 311 0022 C0E0      		ldi r28,lo8(CmdlinePromptConfigure)
+ 312 0024 D0E0      		ldi r29,hi8(CmdlinePromptConfigure)
+ 313               	.L5:
+ 314               	.LBB2:
+ 484:../../freeRtos/Lib/cmdline.c ****       break;
+ 485:../../freeRtos/Lib/cmdline.c ****     default:
+ 486:../../freeRtos/Lib/cmdline.c ****       ptr = CmdlinePromptNormal;
+ 487:../../freeRtos/Lib/cmdline.c ****       break;      
+ 488:../../freeRtos/Lib/cmdline.c ****   }
+ 489:../../freeRtos/Lib/cmdline.c ****   while(pgm_read_byte(ptr))
+ 316               	.LM5:
+ 317 0026 CE01      		movw r24,r28
+ 318 0028 FE01      		movw r30,r28
+ 319               	/* #APP */
+ 320               	 ;  489 "../../freeRtos/Lib/cmdline.c" 1
+ 321 002a 2491      		lpm r18, Z
+ 322               		
+ 323               	 ;  0 "" 2
+ 324               	/* #NOAPP */
+ 325               	.LBE2:
+ 326 002c 2223      		tst r18
+ 327 002e 01F0      		breq .L9
+ 328               	.LBB3:
+ 490:../../freeRtos/Lib/cmdline.c ****     fputc(pgm_read_byte(ptr++)    , state->myStdInOut);
+ 330               	.LM6:
+ 331 0030 2196      		adiw r28,1
+ 332 0032 FC01      		movw r30,r24
+ 333               	/* #APP */
+ 334               	 ;  490 "../../freeRtos/Lib/cmdline.c" 1
+ 335 0034 8491      		lpm r24, Z
+ 336               		
+ 337               	 ;  0 "" 2
+ 338               	/* #NOAPP */
+ 339               	.LBE3:
+ 340 0036 F801      		movw r30,r16
+ 341 0038 628D      		ldd r22,Z+26
+ 342 003a 738D      		ldd r23,Z+27
+ 343 003c 90E0      		ldi r25,0
+ 344 003e 0E94 0000 		call fputc
+ 345 0042 00C0      		rjmp .L5
+ 346               	.L9:
+ 347               	/* epilogue start */
+ 491:../../freeRtos/Lib/cmdline.c **** }
+ 349               	.LM7:
+ 350 0044 DF91      		pop r29
+ 351 0046 CF91      		pop r28
+ 352 0048 1F91      		pop r17
+ 353 004a 0F91      		pop r16
+ 354 004c 0895      		ret
+ 362               	.Lscope1:
+ 364               		.stabd	78,0,0
+ 368               	cmdlineRepaint:
+ 369               		.stabd	46,0,0
+ 285:../../freeRtos/Lib/cmdline.c **** {
+ 371               	.LM8:
+ 372               	.LFBB2:
+ 373 004e DF92      		push r13
+ 374 0050 EF92      		push r14
+ 375 0052 FF92      		push r15
+ 376 0054 0F93      		push r16
+ 377 0056 1F93      		push r17
+ 378 0058 CF93      		push r28
+ 379 005a DF93      		push r29
+ 380               	/* prologue: function */
+ 381               	/* frame size = 0 */
+ 382               	/* stack size = 7 */
+ 383               	.L__stack_usage = 7
+ 384 005c EC01      		movw r28,r24
+ 385 005e E62E      		mov r14,r22
+ 386 0060 D72E      		mov r13,r23
+ 289:../../freeRtos/Lib/cmdline.c ****   fputc(ASCII_CR         , state->myStdInOut);
+ 388               	.LM9:
+ 389 0062 6A8D      		ldd r22,Y+26
+ 390 0064 7B8D      		ldd r23,Y+27
+ 391 0066 8DE0      		ldi r24,lo8(13)
+ 392 0068 90E0      		ldi r25,0
+ 393 006a 0E94 0000 		call fputc
+ 291:../../freeRtos/Lib/cmdline.c ****   cmdlinePrintPrompt(state);
+ 395               	.LM10:
+ 396 006e CE01      		movw r24,r28
+ 397 0070 0E94 0000 		call cmdlinePrintPrompt
+ 293:../../freeRtos/Lib/cmdline.c ****   i = state->CmdlineBufferLength;
+ 399               	.LM11:
+ 400 0074 FD84      		ldd r15,Y+13
+ 294:../../freeRtos/Lib/cmdline.c ****   while(i--) 
+ 402               	.LM12:
+ 403 0076 0E2D      		mov r16,r14
+ 404 0078 1D2D      		mov r17,r13
+ 405 007a FE0C      		add r15,r14
+ 406               	.L11:
+ 294:../../freeRtos/Lib/cmdline.c ****   while(i--) 
+ 408               	.LM13:
+ 409 007c F016      		cp r15,r16
+ 410 007e 01F0      		breq .L17
+ 295:../../freeRtos/Lib/cmdline.c ****     fputc(*buf++         , state->myStdInOut);
+ 412               	.LM14:
+ 413 0080 F801      		movw r30,r16
+ 414 0082 8191      		ld r24,Z+
+ 415 0084 8F01      		movw r16,r30
+ 416 0086 6A8D      		ldd r22,Y+26
+ 417 0088 7B8D      		ldd r23,Y+27
+ 418 008a 9927      		clr r25
+ 419 008c 87FD      		sbrc r24,7
+ 420 008e 9095      		com r25
+ 421 0090 0E94 0000 		call fputc
+ 422 0094 00C0      		rjmp .L11
+ 423               	.L17:
+ 296:../../freeRtos/Lib/cmdline.c ****   i = state->bufferMaxSize - state->CmdlineBufferLength;
+ 425               	.LM15:
+ 426 0096 1C85      		ldd r17,Y+12
+ 427 0098 8D85      		ldd r24,Y+13
+ 428 009a 181B      		sub r17,r24
+ 429               	.L13:
+ 297:../../freeRtos/Lib/cmdline.c ****   while (i--)
+ 431               	.LM16:
+ 432 009c 1123      		tst r17
+ 433 009e 01F0      		breq .L18
+ 298:../../freeRtos/Lib/cmdline.c ****     fputc(' ', state->myStdInOut);
+ 435               	.LM17:
+ 436 00a0 6A8D      		ldd r22,Y+26
+ 437 00a2 7B8D      		ldd r23,Y+27
+ 438 00a4 80E2      		ldi r24,lo8(32)
+ 439 00a6 90E0      		ldi r25,0
+ 440 00a8 0E94 0000 		call fputc
+ 441 00ac 1150      		subi r17,lo8(-(-1))
+ 442 00ae 00C0      		rjmp .L13
+ 443               	.L18:
+ 299:../../freeRtos/Lib/cmdline.c ****   i = state->bufferMaxSize - state->CmdlineBufferLength;
+ 445               	.LM18:
+ 446 00b0 1C85      		ldd r17,Y+12
+ 447 00b2 8D85      		ldd r24,Y+13
+ 448 00b4 181B      		sub r17,r24
+ 449               	.L15:
+ 300:../../freeRtos/Lib/cmdline.c ****   while (i--)
+ 451               	.LM19:
+ 452 00b6 1123      		tst r17
+ 453 00b8 01F0      		breq .L19
+ 301:../../freeRtos/Lib/cmdline.c ****     fputc(ASCII_BS,  state->myStdInOut);
+ 455               	.LM20:
+ 456 00ba 6A8D      		ldd r22,Y+26
+ 457 00bc 7B8D      		ldd r23,Y+27
+ 458 00be 88E0      		ldi r24,lo8(8)
+ 459 00c0 90E0      		ldi r25,0
+ 460 00c2 0E94 0000 		call fputc
+ 461 00c6 1150      		subi r17,lo8(-(-1))
+ 462 00c8 00C0      		rjmp .L15
+ 463               	.L19:
+ 464               	/* epilogue start */
+ 302:../../freeRtos/Lib/cmdline.c **** }
+ 466               	.LM21:
+ 467 00ca DF91      		pop r29
+ 468 00cc CF91      		pop r28
+ 469 00ce 1F91      		pop r17
+ 470 00d0 0F91      		pop r16
+ 471 00d2 FF90      		pop r15
+ 472 00d4 EF90      		pop r14
+ 473 00d6 DF90      		pop r13
+ 474 00d8 0895      		ret
+ 476               	.Lscope2:
+ 478               		.stabd	78,0,0
+ 482               	cmdHistoryCopy:
+ 483               		.stabd	46,0,0
+ 305:../../freeRtos/Lib/cmdline.c **** {
+ 485               	.LM22:
+ 486               	.LFBB3:
+ 487 00da 1F93      		push r17
+ 488 00dc CF93      		push r28
+ 489 00de DF93      		push r29
+ 490               	/* prologue: function */
+ 491               	/* frame size = 0 */
+ 492               	/* stack size = 3 */
+ 493               	.L__stack_usage = 3
+ 494 00e0 EC01      		movw r28,r24
+ 306:../../freeRtos/Lib/cmdline.c ****   if (state->historyDepthIdx != 0)
+ 496               	.LM23:
+ 497 00e2 8889      		ldd r24,Y+16
+ 498 00e4 8823      		tst r24
+ 499 00e6 01F0      		breq .L21
+ 500               	.LBB4:
+ 308:../../freeRtos/Lib/cmdline.c ****     uint8_t historyReadIdx = (state->historyWrIdx - state->historyDepthIdx) & CMD_STATE_HISTORY_MAS
+ 502               	.LM24:
+ 503 00e8 1F85      		ldd r17,Y+15
+ 504 00ea 181B      		sub r17,r24
+ 505 00ec 1370      		andi r17,lo8(3)
+ 309:../../freeRtos/Lib/cmdline.c ****     memset(state->CmdlineBuffer, 0, state->bufferMaxSize);
+ 507               	.LM25:
+ 508 00ee 4C85      		ldd r20,Y+12
+ 509 00f0 50E0      		ldi r21,0
+ 510 00f2 60E0      		ldi r22,0
+ 511 00f4 70E0      		ldi r23,0
+ 512 00f6 8881      		ld r24,Y
+ 513 00f8 9981      		ldd r25,Y+1
+ 514 00fa 0E94 0000 		call memset
+ 310:../../freeRtos/Lib/cmdline.c ****     strcpy(state->CmdlineBuffer, state->CmdlineHistory[historyReadIdx]);
+ 516               	.LM26:
+ 517 00fe FE01      		movw r30,r28
+ 518 0100 E10F      		add r30,r17
+ 519 0102 F11D      		adc r31,__zero_reg__
+ 520 0104 E10F      		add r30,r17
+ 521 0106 F11D      		adc r31,__zero_reg__
+ 522 0108 6481      		ldd r22,Z+4
+ 523 010a 7581      		ldd r23,Z+5
+ 524 010c 8881      		ld r24,Y
+ 525 010e 9981      		ldd r25,Y+1
+ 526 0110 0E94 0000 		call strcpy
+ 527               	.L21:
+ 528               	.LBE4:
+ 313:../../freeRtos/Lib/cmdline.c ****   state->historyDepthIdx = 0;
+ 530               	.LM27:
+ 531 0114 188A      		std Y+16,__zero_reg__
+ 314:../../freeRtos/Lib/cmdline.c ****   state->bufferHistoryState = COPIED;
+ 533               	.LM28:
+ 534 0116 81E0      		ldi r24,lo8(1)
+ 535 0118 898B      		std Y+17,r24
+ 536               	/* epilogue start */
+ 315:../../freeRtos/Lib/cmdline.c **** }
+ 538               	.LM29:
+ 539 011a DF91      		pop r29
+ 540 011c CF91      		pop r28
+ 541 011e 1F91      		pop r17
+ 542 0120 0895      		ret
+ 547               	.Lscope3:
+ 549               		.stabd	78,0,0
+ 557               	.global	cmdStateConfigure
+ 559               	cmdStateConfigure:
+ 560               		.stabd	46,0,0
+  59:../../freeRtos/Lib/cmdline.c **** {
+ 562               	.LM30:
+ 563               	.LFBB4:
+ 564 0122 8F92      		push r8
+ 565 0124 9F92      		push r9
+ 566 0126 AF92      		push r10
+ 567 0128 BF92      		push r11
+ 568 012a CF92      		push r12
+ 569 012c DF92      		push r13
+ 570 012e EF92      		push r14
+ 571 0130 0F93      		push r16
+ 572 0132 1F93      		push r17
+ 573 0134 CF93      		push r28
+ 574 0136 DF93      		push r29
+ 575               	/* prologue: function */
+ 576               	/* frame size = 0 */
+ 577               	/* stack size = 11 */
+ 578               	.L__stack_usage = 11
+ 579 0138 EC01      		movw r28,r24
+ 580 013a 6B01      		movw r12,r22
+ 581 013c 5A01      		movw r10,r20
+ 582 013e 4901      		movw r8,r18
+  60:../../freeRtos/Lib/cmdline.c ****   memset(state, 0, sizeof(cmdState_t));
+ 584               	.LM31:
+ 585 0140 83E2      		ldi r24,lo8(35)
+ 586 0142 FE01      		movw r30,r28
+ 587               		0:
+ 588 0144 1192      		st Z+,__zero_reg__
+ 589 0146 8A95      		dec r24
+ 590 0148 01F4      		brne 0b
+  61:../../freeRtos/Lib/cmdline.c ****   memset(buffPtr, 0, bufferTotalSize);
+ 592               	.LM32:
+ 593 014a 60E0      		ldi r22,0
+ 594 014c 70E0      		ldi r23,0
+ 595 014e C601      		movw r24,r12
+ 596 0150 0E94 0000 		call memset
+  63:../../freeRtos/Lib/cmdline.c ****   state->CmdlineBuffer = buffPtr;
+ 598               	.LM33:
+ 599 0154 D982      		std Y+1,r13
+ 600 0156 C882      		st Y,r12
+  64:../../freeRtos/Lib/cmdline.c ****   state->bufferMaxSize    = (uint8_t)(bufferTotalSize / CMD_STATE_HISTORY);
+ 602               	.LM34:
+ 603 0158 B694      		lsr r11
+ 604 015a A794      		ror r10
+ 605 015c B694      		lsr r11
+ 606 015e A794      		ror r10
+ 607 0160 AC86      		std Y+12,r10
+  66:../../freeRtos/Lib/cmdline.c ****   state->cliMode = mode;
+ 609               	.LM35:
+ 610 0162 E8A2      		std Y+32,r14
+  67:../../freeRtos/Lib/cmdline.c ****   state->cmdList = commands;
+ 612               	.LM36:
+ 613 0164 1AA3      		std Y+34,r17
+ 614 0166 09A3      		std Y+33,r16
+ 615 0168 80E0      		ldi r24,0
+ 616 016a 90E0      		ldi r25,0
+  74:../../freeRtos/Lib/cmdline.c ****     tmpPtr += state->bufferMaxSize;
+ 618               	.LM37:
+ 619 016c BB24      		clr r11
+ 620               	.L27:
+ 621 016e FE01      		movw r30,r28
+ 622 0170 E80F      		add r30,r24
+ 623 0172 F91F      		adc r31,r25
+  73:../../freeRtos/Lib/cmdline.c ****     state->CmdlineHistory[i] = tmpPtr;
+ 625               	.LM38:
+ 626 0174 D582      		std Z+5,r13
+ 627 0176 C482      		std Z+4,r12
+  74:../../freeRtos/Lib/cmdline.c ****     tmpPtr += state->bufferMaxSize;
+ 629               	.LM39:
+ 630 0178 CA0C      		add r12,r10
+ 631 017a DB1C      		adc r13,r11
+ 632 017c 0296      		adiw r24,2
+  71:../../freeRtos/Lib/cmdline.c ****   for (i=0; i < CMD_STATE_HISTORY; i++)
+ 634               	.LM40:
+ 635 017e 8830      		cpi r24,8
+ 636 0180 9105      		cpc r25,__zero_reg__
+ 637 0182 01F4      		brne .L27
+  76:../../freeRtos/Lib/cmdline.c ****   state->myStdInOut = stream;
+ 639               	.LM41:
+ 640 0184 9B8E      		std Y+27,r9
+ 641 0186 8A8E      		std Y+26,r8
+ 642               	/* epilogue start */
+  77:../../freeRtos/Lib/cmdline.c **** }
+ 644               	.LM42:
+ 645 0188 DF91      		pop r29
+ 646 018a CF91      		pop r28
+ 647 018c 1F91      		pop r17
+ 648 018e 0F91      		pop r16
+ 649 0190 EF90      		pop r14
+ 650 0192 DF90      		pop r13
+ 651 0194 CF90      		pop r12
+ 652 0196 BF90      		pop r11
+ 653 0198 AF90      		pop r10
+ 654 019a 9F90      		pop r9
+ 655 019c 8F90      		pop r8
+ 656 019e 0895      		ret
+ 658               	.Lscope4:
+ 660               		.stabd	78,0,0
+ 664               	.global	cmdlineInputFunc
+ 666               	cmdlineInputFunc:
+ 667               		.stabd	46,0,0
+  93:../../freeRtos/Lib/cmdline.c **** {
+ 669               	.LM43:
+ 670               	.LFBB5:
+ 671 01a0 AF92      		push r10
+ 672 01a2 BF92      		push r11
+ 673 01a4 CF92      		push r12
+ 674 01a6 DF92      		push r13
+ 675 01a8 EF92      		push r14
+ 676 01aa FF92      		push r15
+ 677 01ac 0F93      		push r16
+ 678 01ae 1F93      		push r17
+ 679 01b0 CF93      		push r28
+ 680 01b2 DF93      		push r29
+ 681 01b4 CDB7      		in r28,__SP_L__
+ 682 01b6 DEB7      		in r29,__SP_H__
+ 683 01b8 2797      		sbiw r28,7
+ 684 01ba 0FB6      		in __tmp_reg__,__SREG__
+ 685 01bc F894      		cli
+ 686 01be DEBF      		out __SP_H__,r29
+ 687 01c0 0FBE      		out __SREG__,__tmp_reg__
+ 688 01c2 CDBF      		out __SP_L__,r28
+ 689               	/* prologue: function */
+ 690               	/* frame size = 7 */
+ 691               	/* stack size = 17 */
+ 692               	.L__stack_usage = 17
+ 693 01c4 482F      		mov r20,r24
+ 694 01c6 8B01      		movw r16,r22
+  99:../../freeRtos/Lib/cmdline.c ****   if(state->CmdlineInputVT100State == 2)
+ 696               	.LM44:
+ 697 01c8 DB01      		movw r26,r22
+ 698 01ca 5296      		adiw r26,18
+ 699 01cc 8C91      		ld r24,X
+ 700 01ce 8230      		cpi r24,lo8(2)
+ 701 01d0 01F0      		breq .+2
+ 702 01d2 00C0      		rjmp .L29
+ 103:../../freeRtos/Lib/cmdline.c ****     switch(c)
+ 704               	.LM45:
+ 705 01d4 4234      		cpi r20,lo8(66)
+ 706 01d6 01F0      		breq .L31
+ 707 01d8 04F4      		brge .L32
+ 708 01da 4134      		cpi r20,lo8(65)
+ 709 01dc 01F0      		breq .L33
+ 710 01de 00C0      		rjmp .L30
+ 711               	.L32:
+ 712 01e0 4334      		cpi r20,lo8(67)
+ 713 01e2 01F4      		brne .+2
+ 714 01e4 00C0      		rjmp .L34
+ 715 01e6 4434      		cpi r20,lo8(68)
+ 716 01e8 01F4      		brne .+2
+ 717 01ea 00C0      		rjmp .L35
+ 718 01ec 00C0      		rjmp .L30
+ 719               	.L33:
+ 720               	.LBB21:
+ 721               	.LBB22:
+ 355:../../freeRtos/Lib/cmdline.c ****     if (state->historyDepthIdx == CMD_STATE_HISTORY - 1)
+ 723               	.LM46:
+ 724 01ee FB01      		movw r30,r22
+ 725 01f0 9089      		ldd r25,Z+16
+ 726 01f2 9330      		cpi r25,lo8(3)
+ 727 01f4 01F4      		brne .+2
+ 728 01f6 00C0      		rjmp .L30
+ 358:../../freeRtos/Lib/cmdline.c ****     historyReadIdx = (state->historyWrIdx - state->historyDepthIdx - 1) & CMD_STATE_HISTORY_MASK;
+ 730               	.LM47:
+ 731 01f8 8785      		ldd r24,Z+15
+ 732 01fa 8150      		subi r24,lo8(-(-1))
+ 733 01fc 891B      		sub r24,r25
+ 734 01fe 8370      		andi r24,lo8(3)
+ 360:../../freeRtos/Lib/cmdline.c ****     if (state->CmdlineHistory[historyReadIdx][0] == 0)
+ 736               	.LM48:
+ 737 0200 E80F      		add r30,r24
+ 738 0202 F11D      		adc r31,__zero_reg__
+ 739 0204 E80F      		add r30,r24
+ 740 0206 F11D      		adc r31,__zero_reg__
+ 741 0208 6481      		ldd r22,Z+4
+ 742 020a 7581      		ldd r23,Z+5
+ 743 020c DB01      		movw r26,r22
+ 744 020e 8C91      		ld r24,X
+ 745 0210 8823      		tst r24
+ 746 0212 01F4      		brne .+2
+ 747 0214 00C0      		rjmp .L30
+ 363:../../freeRtos/Lib/cmdline.c ****     state->historyDepthIdx++;
+ 749               	.LM49:
+ 750 0216 81E0      		ldi r24,lo8(1)
+ 751 0218 890F      		add r24,r25
+ 364:../../freeRtos/Lib/cmdline.c ****     state->historyDepthIdx &= CMD_STATE_HISTORY_MASK;
+ 753               	.LM50:
+ 754 021a 8370      		andi r24,lo8(3)
+ 755 021c F801      		movw r30,r16
+ 756 021e 808B      		std Z+16,r24
+ 757 0220 00C0      		rjmp .L95
+ 758               	.L31:
+ 759               	.LBE22:
+ 760               	.LBE21:
+ 761               	.LBB23:
+ 762               	.LBB24:
+ 377:../../freeRtos/Lib/cmdline.c ****     if (state->historyDepthIdx == 0)
+ 764               	.LM51:
+ 765 0222 FB01      		movw r30,r22
+ 766 0224 9089      		ldd r25,Z+16
+ 767 0226 9923      		tst r25
+ 768 0228 01F4      		brne .+2
+ 769 022a 00C0      		rjmp .L30
+ 380:../../freeRtos/Lib/cmdline.c ****     state->historyDepthIdx --;
+ 771               	.LM52:
+ 772 022c 9150      		subi r25,lo8(-(-1))
+ 773 022e 908B      		std Z+16,r25
+ 381:../../freeRtos/Lib/cmdline.c ****     historyReadIdx = (state->historyWrIdx - state->historyDepthIdx) & CMD_STATE_HISTORY_MASK;
+ 775               	.LM53:
+ 776 0230 8785      		ldd r24,Z+15
+ 777 0232 891B      		sub r24,r25
+ 778 0234 8370      		andi r24,lo8(3)
+ 384:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength = strlen(state->CmdlineHistory[historyReadIdx]);
+ 780               	.LM54:
+ 781 0236 E80F      		add r30,r24
+ 782 0238 F11D      		adc r31,__zero_reg__
+ 783 023a E80F      		add r30,r24
+ 784 023c F11D      		adc r31,__zero_reg__
+ 785 023e 6481      		ldd r22,Z+4
+ 786 0240 7581      		ldd r23,Z+5
+ 787               	.L95:
+ 788 0242 FB01      		movw r30,r22
+ 789               		0:
+ 790 0244 0190      		ld __tmp_reg__,Z+
+ 791 0246 0020      		tst __tmp_reg__
+ 792 0248 01F4      		brne 0b
+ 793 024a 3197      		sbiw r30,1
+ 794 024c E61B      		sub r30,r22
+ 795 024e F70B      		sbc r31,r23
+ 796 0250 D801      		movw r26,r16
+ 797 0252 1D96      		adiw r26,13
+ 798 0254 EC93      		st X,r30
+ 799 0256 1D97      		sbiw r26,13
+ 385:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos = state->CmdlineBufferLength;
+ 801               	.LM55:
+ 802 0258 1E96      		adiw r26,14
+ 803 025a EC93      		st X,r30
+ 804 025c 1E97      		sbiw r26,14
+ 387:../../freeRtos/Lib/cmdline.c ****     state->bufferHistoryState = NOT_COPIED;
+ 806               	.LM56:
+ 807 025e 5196      		adiw r26,17
+ 808 0260 1C92      		st X,__zero_reg__
+ 390:../../freeRtos/Lib/cmdline.c ****     cmdlineRepaint(state, state->CmdlineHistory[historyReadIdx]);
+ 810               	.LM57:
+ 811 0262 C801      		movw r24,r16
+ 812 0264 0E94 0000 		call cmdlineRepaint
+ 813 0268 00C0      		rjmp .L30
+ 814               	.L34:
+ 815               	.LBE24:
+ 816               	.LBE23:
+ 112:../../freeRtos/Lib/cmdline.c ****       if (state->bufferHistoryState == NOT_COPIED)
+ 818               	.LM58:
+ 819 026a FB01      		movw r30,r22
+ 820 026c 8189      		ldd r24,Z+17
+ 821 026e 8111      		cpse r24,__zero_reg__
+ 822 0270 00C0      		rjmp .L36
+ 113:../../freeRtos/Lib/cmdline.c ****         cmdHistoryCopy(state);
+ 824               	.LM59:
+ 825 0272 CB01      		movw r24,r22
+ 826 0274 0E94 0000 		call cmdHistoryCopy
+ 827               	.L36:
+ 115:../../freeRtos/Lib/cmdline.c ****       if(state->CmdlineBufferEditPos < state->CmdlineBufferLength)
+ 829               	.LM60:
+ 830 0278 D801      		movw r26,r16
+ 831 027a 1E96      		adiw r26,14
+ 832 027c 8C91      		ld r24,X
+ 833 027e 1E97      		sbiw r26,14
+ 834 0280 1D96      		adiw r26,13
+ 835 0282 9C91      		ld r25,X
+ 836 0284 1D97      		sbiw r26,13
+ 837 0286 5A96      		adiw r26,26
+ 838 0288 6D91      		ld r22,X+
+ 839 028a 7C91      		ld r23,X
+ 840 028c 5B97      		sbiw r26,26+1
+ 841 028e 8917      		cp r24,r25
+ 842 0290 00F4      		brsh .L39
+ 118:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferEditPos++;
+ 844               	.LM61:
+ 845 0292 8F5F      		subi r24,lo8(-(1))
+ 846 0294 1E96      		adiw r26,14
+ 847 0296 8C93      		st X,r24
+ 120:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_ESC        , state->myStdInOut);
+ 849               	.LM62:
+ 850 0298 8BE1      		ldi r24,lo8(27)
+ 851 029a 90E0      		ldi r25,0
+ 852 029c 0E94 0000 		call fputc
+ 121:../../freeRtos/Lib/cmdline.c ****         fputc('['              , state->myStdInOut);
+ 854               	.LM63:
+ 855 02a0 F801      		movw r30,r16
+ 856 02a2 628D      		ldd r22,Z+26
+ 857 02a4 738D      		ldd r23,Z+27
+ 858 02a6 8BE5      		ldi r24,lo8(91)
+ 859 02a8 90E0      		ldi r25,0
+ 860 02aa 0E94 0000 		call fputc
+ 122:../../freeRtos/Lib/cmdline.c ****         fputc(VT100_ARROWRIGHT , state->myStdInOut);
+ 862               	.LM64:
+ 863 02ae D801      		movw r26,r16
+ 864 02b0 5A96      		adiw r26,26
+ 865 02b2 6D91      		ld r22,X+
+ 866 02b4 7C91      		ld r23,X
+ 867 02b6 5B97      		sbiw r26,26+1
+ 868 02b8 83E4      		ldi r24,lo8(67)
+ 869 02ba 90E0      		ldi r25,0
+ 870 02bc 00C0      		rjmp .L96
+ 871               	.L35:
+ 132:../../freeRtos/Lib/cmdline.c ****       if (state->bufferHistoryState == NOT_COPIED)
+ 873               	.LM65:
+ 874 02be FB01      		movw r30,r22
+ 875 02c0 8189      		ldd r24,Z+17
+ 876 02c2 8111      		cpse r24,__zero_reg__
+ 877 02c4 00C0      		rjmp .L38
+ 133:../../freeRtos/Lib/cmdline.c ****         cmdHistoryCopy(state);
+ 879               	.LM66:
+ 880 02c6 CB01      		movw r24,r22
+ 881 02c8 0E94 0000 		call cmdHistoryCopy
+ 882               	.L38:
+ 135:../../freeRtos/Lib/cmdline.c ****       if(state->CmdlineBufferEditPos)
+ 884               	.LM67:
+ 885 02cc D801      		movw r26,r16
+ 886 02ce 1E96      		adiw r26,14
+ 887 02d0 8C91      		ld r24,X
+ 888 02d2 1E97      		sbiw r26,14
+ 889 02d4 5A96      		adiw r26,26
+ 890 02d6 6D91      		ld r22,X+
+ 891 02d8 7C91      		ld r23,X
+ 892 02da 5B97      		sbiw r26,26+1
+ 893 02dc 8823      		tst r24
+ 894 02de 01F0      		breq .L39
+ 138:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferEditPos--;
+ 896               	.LM68:
+ 897 02e0 8150      		subi r24,lo8(-(-1))
+ 898 02e2 1E96      		adiw r26,14
+ 899 02e4 8C93      		st X,r24
+ 140:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BS         , state->myStdInOut);
+ 901               	.LM69:
+ 902 02e6 88E0      		ldi r24,lo8(8)
+ 903 02e8 90E0      		ldi r25,0
+ 904 02ea 00C0      		rjmp .L96
+ 905               	.L39:
+ 145:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BEL        , state->myStdInOut);
+ 907               	.LM70:
+ 908 02ec 87E0      		ldi r24,lo8(7)
+ 909 02ee 90E0      		ldi r25,0
+ 910               	.L96:
+ 911 02f0 0E94 0000 		call fputc
+ 912               	.L30:
+ 152:../../freeRtos/Lib/cmdline.c ****     state->CmdlineInputVT100State = 0;
+ 914               	.LM71:
+ 915 02f4 F801      		movw r30,r16
+ 916 02f6 128A      		std Z+18,__zero_reg__
+ 153:../../freeRtos/Lib/cmdline.c ****     return;
+ 918               	.LM72:
+ 919 02f8 00C0      		rjmp .L28
+ 920               	.L29:
+ 155:../../freeRtos/Lib/cmdline.c ****   else if(state->CmdlineInputVT100State == 1)
+ 922               	.LM73:
+ 923 02fa 8130      		cpi r24,lo8(1)
+ 924 02fc 01F4      		brne .L41
+ 158:../../freeRtos/Lib/cmdline.c ****     if(c == '[')
+ 926               	.LM74:
+ 927 02fe 4B35      		cpi r20,lo8(91)
+ 928 0300 01F4      		brne .L41
+ 160:../../freeRtos/Lib/cmdline.c ****       state->CmdlineInputVT100State = 2;
+ 930               	.LM75:
+ 931 0302 82E0      		ldi r24,lo8(2)
+ 932 0304 00C0      		rjmp .L98
+ 933               	.L41:
+ 164:../../freeRtos/Lib/cmdline.c ****       state->CmdlineInputVT100State = 0;
+ 935               	.LM76:
+ 936 0306 F801      		movw r30,r16
+ 937 0308 128A      		std Z+18,__zero_reg__
+ 174:../../freeRtos/Lib/cmdline.c ****   if (state->CmdlineBufferLength == state->bufferMaxSize)
+ 939               	.LM77:
+ 940 030a 8585      		ldd r24,Z+13
+ 941 030c 9485      		ldd r25,Z+12
+ 942 030e 8917      		cp r24,r25
+ 943 0310 01F0      		breq .L42
+ 944               	.L47:
+ 183:../../freeRtos/Lib/cmdline.c ****   if( (c >= 0x20) && (c < 0x7F) )
+ 946               	.LM78:
+ 947 0312 80EE      		ldi r24,lo8(-32)
+ 948 0314 840F      		add r24,r20
+ 949 0316 8F35      		cpi r24,lo8(95)
+ 950 0318 00F0      		brlo .L43
+ 951 031a 00C0      		rjmp .L99
+ 952               	.L42:
+ 176:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength--;
+ 954               	.LM79:
+ 955 031c 8150      		subi r24,lo8(-(-1))
+ 956 031e 8587      		std Z+13,r24
+ 177:../../freeRtos/Lib/cmdline.c ****     for (i=1; i < state->bufferMaxSize; i++)
+ 958               	.LM80:
+ 959 0320 81E0      		ldi r24,lo8(1)
+ 960               	.L45:
+ 177:../../freeRtos/Lib/cmdline.c ****     for (i=1; i < state->bufferMaxSize; i++)
+ 962               	.LM81:
+ 963 0322 F801      		movw r30,r16
+ 964 0324 9485      		ldd r25,Z+12
+ 965 0326 8917      		cp r24,r25
+ 966 0328 00F4      		brsh .L47
+ 179:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBuffer[i-1] = state->CmdlineBuffer[i];
+ 968               	.LM82:
+ 969 032a D801      		movw r26,r16
+ 970 032c ED91      		ld r30,X+
+ 971 032e FC91      		ld r31,X
+ 972 0330 E80F      		add r30,r24
+ 973 0332 F11D      		adc r31,__zero_reg__
+ 974 0334 9081      		ld r25,Z
+ 975 0336 3197      		sbiw r30,1
+ 976 0338 9083      		st Z,r25
+ 177:../../freeRtos/Lib/cmdline.c ****     for (i=1; i < state->bufferMaxSize; i++)
+ 978               	.LM83:
+ 979 033a 8F5F      		subi r24,lo8(-(1))
+ 980 033c 00C0      		rjmp .L45
+ 981               	.L43:
+ 185:../../freeRtos/Lib/cmdline.c ****     if (state->bufferHistoryState == NOT_COPIED)
+ 983               	.LM84:
+ 984 033e D801      		movw r26,r16
+ 985 0340 5196      		adiw r26,17
+ 986 0342 8C91      		ld r24,X
+ 987 0344 8111      		cpse r24,__zero_reg__
+ 988 0346 00C0      		rjmp .L48
+ 186:../../freeRtos/Lib/cmdline.c ****       cmdHistoryCopy(state);
+ 990               	.LM85:
+ 991 0348 C801      		movw r24,r16
+ 992 034a 4F83      		std Y+7,r20
+ 993 034c 0E94 0000 		call cmdHistoryCopy
+ 994 0350 4F81      		ldd r20,Y+7
+ 995               	.L48:
+ 189:../../freeRtos/Lib/cmdline.c ****     if(state->CmdlineBufferEditPos == state->CmdlineBufferLength)
+ 997               	.LM86:
+ 998 0352 F801      		movw r30,r16
+ 999 0354 8585      		ldd r24,Z+13
+ 1000 0356 9685      		ldd r25,Z+14
+ 1001 0358 9813      		cpse r25,r24
+ 1002 035a 00C0      		rjmp .L49
+ 192:../../freeRtos/Lib/cmdline.c ****       fputc(c                , state->myStdInOut);
+ 1004               	.LM87:
+ 1005 035c 628D      		ldd r22,Z+26
+ 1006 035e 738D      		ldd r23,Z+27
+ 1007 0360 842F      		mov r24,r20
+ 1008 0362 9927      		clr r25
+ 1009 0364 87FD      		sbrc r24,7
+ 1010 0366 9095      		com r25
+ 1011 0368 4F83      		std Y+7,r20
+ 1012 036a 0E94 0000 		call fputc
+ 194:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBuffer[state->CmdlineBufferEditPos++] = c;
+ 1014               	.LM88:
+ 1015 036e D801      		movw r26,r16
+ 1016 0370 ED91      		ld r30,X+
+ 1017 0372 FC91      		ld r31,X
+ 1018 0374 1197      		sbiw r26,1
+ 1019 0376 1E96      		adiw r26,14
+ 1020 0378 8C91      		ld r24,X
+ 1021 037a 1E97      		sbiw r26,14
+ 1022 037c 91E0      		ldi r25,lo8(1)
+ 1023 037e 980F      		add r25,r24
+ 1024 0380 1E96      		adiw r26,14
+ 1025 0382 9C93      		st X,r25
+ 1026 0384 1E97      		sbiw r26,14
+ 1027 0386 E80F      		add r30,r24
+ 1028 0388 F11D      		adc r31,__zero_reg__
+ 1029 038a 4F81      		ldd r20,Y+7
+ 1030 038c 4083      		st Z,r20
+ 196:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBufferLength++;
+ 1032               	.LM89:
+ 1033 038e 1D96      		adiw r26,13
+ 1034 0390 8C91      		ld r24,X
+ 1035 0392 1D97      		sbiw r26,13
+ 1036 0394 8F5F      		subi r24,lo8(-(1))
+ 1037 0396 1D96      		adiw r26,13
+ 1038 0398 8C93      		st X,r24
+ 1039 039a 00C0      		rjmp .L28
+ 1040               	.L49:
+ 203:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBufferLength++;
+ 1042               	.LM90:
+ 1043 039c 8F5F      		subi r24,lo8(-(1))
+ 1044 039e F801      		movw r30,r16
+ 1045 03a0 8587      		std Z+13,r24
+ 1046               	.L50:
+ 204:../../freeRtos/Lib/cmdline.c ****       for(i=state->CmdlineBufferLength; i>state->CmdlineBufferEditPos; i--)
+ 1048               	.LM91:
+ 1049 03a2 D801      		movw r26,r16
+ 1050 03a4 1E96      		adiw r26,14
+ 1051 03a6 9C91      		ld r25,X
+ 1052 03a8 1E97      		sbiw r26,14
+ 1053 03aa 2D91      		ld r18,X+
+ 1054 03ac 3C91      		ld r19,X
+ 1055 03ae 1197      		sbiw r26,1
+ 1056 03b0 9817      		cp r25,r24
+ 1057 03b2 00F4      		brsh .L100
+ 205:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBuffer[i] = state->CmdlineBuffer[i-1];
+ 1059               	.LM92:
+ 1060 03b4 D901      		movw r26,r18
+ 1061 03b6 A80F      		add r26,r24
+ 1062 03b8 B11D      		adc r27,__zero_reg__
+ 1063 03ba FD01      		movw r30,r26
+ 1064 03bc 3197      		sbiw r30,1
+ 1065 03be 9081      		ld r25,Z
+ 1066 03c0 9C93      		st X,r25
+ 204:../../freeRtos/Lib/cmdline.c ****       for(i=state->CmdlineBufferLength; i>state->CmdlineBufferEditPos; i--)
+ 1068               	.LM93:
+ 1069 03c2 8150      		subi r24,lo8(-(-1))
+ 1070 03c4 00C0      		rjmp .L50
+ 1071               	.L100:
+ 207:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBuffer[state->CmdlineBufferEditPos++] = c;
+ 1073               	.LM94:
+ 1074 03c6 81E0      		ldi r24,lo8(1)
+ 1075 03c8 890F      		add r24,r25
+ 1076 03ca 1E96      		adiw r26,14
+ 1077 03cc 8C93      		st X,r24
+ 1078 03ce 1E97      		sbiw r26,14
+ 1079 03d0 F901      		movw r30,r18
+ 1080 03d2 E90F      		add r30,r25
+ 1081 03d4 F11D      		adc r31,__zero_reg__
+ 1082 03d6 4083      		st Z,r20
+ 209:../../freeRtos/Lib/cmdline.c ****       cmdlineRepaint(state, state->CmdlineBuffer);
+ 1084               	.LM95:
+ 1085 03d8 6D91      		ld r22,X+
+ 1086 03da 7C91      		ld r23,X
+ 1087 03dc C801      		movw r24,r16
+ 1088 03de 0E94 0000 		call cmdlineRepaint
+ 211:../../freeRtos/Lib/cmdline.c ****       for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
+ 1090               	.LM96:
+ 1091 03e2 F801      		movw r30,r16
+ 1092 03e4 F684      		ldd r15,Z+14
+ 1093               	.L52:
+ 211:../../freeRtos/Lib/cmdline.c ****       for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
+ 1095               	.LM97:
+ 1096 03e6 F801      		movw r30,r16
+ 1097 03e8 8585      		ldd r24,Z+13
+ 1098 03ea F816      		cp r15,r24
+ 1099 03ec 00F0      		brlo .+2
+ 1100 03ee 00C0      		rjmp .L28
+ 212:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BS         , state->myStdInOut);
+ 1102               	.LM98:
+ 1103 03f0 D801      		movw r26,r16
+ 1104 03f2 5A96      		adiw r26,26
+ 1105 03f4 6D91      		ld r22,X+
+ 1106 03f6 7C91      		ld r23,X
+ 1107 03f8 5B97      		sbiw r26,26+1
+ 1108 03fa 88E0      		ldi r24,lo8(8)
+ 1109 03fc 90E0      		ldi r25,0
+ 1110 03fe 0E94 0000 		call fputc
+ 211:../../freeRtos/Lib/cmdline.c ****       for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
+ 1112               	.LM99:
+ 1113 0402 F394      		inc r15
+ 1114 0404 00C0      		rjmp .L52
+ 1115               	.L99:
+ 216:../../freeRtos/Lib/cmdline.c ****   else if(c == ASCII_CR)
+ 1117               	.LM100:
+ 1118 0406 4D30      		cpi r20,lo8(13)
+ 1119 0408 01F0      		breq .+2
+ 1120 040a 00C0      		rjmp .L54
+ 218:../../freeRtos/Lib/cmdline.c ****     if (state->bufferHistoryState == NOT_COPIED)
+ 1122               	.LM101:
+ 1123 040c D801      		movw r26,r16
+ 1124 040e 5196      		adiw r26,17
+ 1125 0410 8C91      		ld r24,X
+ 1126 0412 5197      		sbiw r26,17
+ 1127 0414 8111      		cpse r24,__zero_reg__
+ 1128 0416 00C0      		rjmp .L55
+ 1129               	.LBB25:
+ 1130               	.LBB26:
+ 319:../../freeRtos/Lib/cmdline.c ****   uint8_t i=state->historyDepthIdx;
+ 1132               	.LM102:
+ 1133 0418 5096      		adiw r26,16
+ 1134 041a 6C91      		ld r22,X
+ 1135 041c 5097      		sbiw r26,16
+ 1136 041e 1F96      		adiw r26,15
+ 1137 0420 7C91      		ld r23,X
+ 321:../../freeRtos/Lib/cmdline.c ****   if (state->historyDepthIdx != 0)
+ 1139               	.LM103:
+ 1140 0422 6111      		cpse r22,__zero_reg__
+ 1141 0424 00C0      		rjmp .L56
+ 1142               	.L59:
+ 329:../../freeRtos/Lib/cmdline.c ****   state->CmdlineHistory[state->historyWrIdx] = state->CmdlineBuffer;
+ 1144               	.LM104:
+ 1145 0426 F801      		movw r30,r16
+ 1146 0428 E70F      		add r30,r23
+ 1147 042a F11D      		adc r31,__zero_reg__
+ 1148 042c E70F      		add r30,r23
+ 1149 042e F11D      		adc r31,__zero_reg__
+ 1150 0430 D801      		movw r26,r16
+ 1151 0432 8D91      		ld r24,X+
+ 1152 0434 9C91      		ld r25,X
+ 1153 0436 1197      		sbiw r26,1
+ 1154 0438 9583      		std Z+5,r25
+ 1155 043a 8483      		std Z+4,r24
+ 331:../../freeRtos/Lib/cmdline.c ****   state->historyDepthIdx = 0;
+ 1157               	.LM105:
+ 1158 043c 5096      		adiw r26,16
+ 1159 043e 1C92      		st X,__zero_reg__
+ 1160 0440 5097      		sbiw r26,16
+ 332:../../freeRtos/Lib/cmdline.c ****   state->bufferHistoryState = COPIED;
+ 1162               	.LM106:
+ 1163 0442 81E0      		ldi r24,lo8(1)
+ 1164 0444 5196      		adiw r26,17
+ 1165 0446 8C93      		st X,r24
+ 1166 0448 00C0      		rjmp .L55
+ 1167               	.L56:
+ 323:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBuffer = state->CmdlineHistory[(state->historyWrIdx-i) & CMD_STATE_HISTORY_MASK];
+ 1169               	.LM107:
+ 1170 044a 872F      		mov r24,r23
+ 1171 044c 90E0      		ldi r25,0
+ 1172 044e FC01      		movw r30,r24
+ 1173 0450 E61B      		sub r30,r22
+ 1174 0452 F109      		sbc r31,__zero_reg__
+ 1175 0454 E370      		andi r30,3
+ 1176 0456 FF27      		clr r31
+ 1177 0458 3296      		adiw r30,2
+ 1178 045a EE0F      		lsl r30
+ 1179 045c FF1F      		rol r31
+ 1180 045e E00F      		add r30,r16
+ 1181 0460 F11F      		adc r31,r17
+ 1182 0462 2081      		ld r18,Z
+ 1183 0464 3181      		ldd r19,Z+1
+ 1184 0466 F801      		movw r30,r16
+ 1185 0468 3183      		std Z+1,r19
+ 1186 046a 2083      		st Z,r18
+ 1187               	.L57:
+ 324:../../freeRtos/Lib/cmdline.c ****     for ( ; i<CMD_STATE_HISTORY; i++)
+ 1189               	.LM108:
+ 1190 046c 6430      		cpi r22,lo8(4)
+ 1191 046e 00F4      		brsh .L59
+ 326:../../freeRtos/Lib/cmdline.c ****       state->CmdlineHistory[(state->historyWrIdx-i) & CMD_STATE_HISTORY_MASK] = state->CmdlineHisto
+ 1193               	.LM109:
+ 1194 0470 9C01      		movw r18,r24
+ 1195 0472 261B      		sub r18,r22
+ 1196 0474 3109      		sbc r19,__zero_reg__
+ 1197 0476 F901      		movw r30,r18
+ 1198 0478 3197      		sbiw r30,1
+ 1199 047a E370      		andi r30,3
+ 1200 047c FF27      		clr r31
+ 1201 047e 3296      		adiw r30,2
+ 1202 0480 EE0F      		lsl r30
+ 1203 0482 FF1F      		rol r31
+ 1204 0484 E00F      		add r30,r16
+ 1205 0486 F11F      		adc r31,r17
+ 1206 0488 4081      		ld r20,Z
+ 1207 048a 5181      		ldd r21,Z+1
+ 1208 048c F901      		movw r30,r18
+ 1209 048e E370      		andi r30,3
+ 1210 0490 FF27      		clr r31
+ 1211 0492 3296      		adiw r30,2
+ 1212 0494 EE0F      		lsl r30
+ 1213 0496 FF1F      		rol r31
+ 1214 0498 E00F      		add r30,r16
+ 1215 049a F11F      		adc r31,r17
+ 1216 049c 5183      		std Z+1,r21
+ 1217 049e 4083      		st Z,r20
+ 324:../../freeRtos/Lib/cmdline.c ****     for ( ; i<CMD_STATE_HISTORY; i++)
+ 1219               	.LM110:
+ 1220 04a0 6F5F      		subi r22,lo8(-(1))
+ 1221 04a2 00C0      		rjmp .L57
+ 1222               	.L55:
+ 1223               	.LBE26:
+ 1224               	.LBE25:
+ 223:../../freeRtos/Lib/cmdline.c ****     fputc(ASCII_CR         , state->myStdInOut);
+ 1226               	.LM111:
+ 1227 04a4 D801      		movw r26,r16
+ 1228 04a6 5A96      		adiw r26,26
+ 1229 04a8 6D91      		ld r22,X+
+ 1230 04aa 7C91      		ld r23,X
+ 1231 04ac 5B97      		sbiw r26,26+1
+ 1232 04ae 8DE0      		ldi r24,lo8(13)
+ 1233 04b0 90E0      		ldi r25,0
+ 1234 04b2 0E94 0000 		call fputc
+ 224:../../freeRtos/Lib/cmdline.c ****     fputc(ASCII_LF         , state->myStdInOut);
+ 1236               	.LM112:
+ 1237 04b6 F801      		movw r30,r16
+ 1238 04b8 628D      		ldd r22,Z+26
+ 1239 04ba 738D      		ldd r23,Z+27
+ 1240 04bc 8AE0      		ldi r24,lo8(10)
+ 1241 04be 90E0      		ldi r25,0
+ 1242 04c0 0E94 0000 		call fputc
+ 226:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBuffer[state->CmdlineBufferLength++] = 0;
+ 1244               	.LM113:
+ 1245 04c4 D801      		movw r26,r16
+ 1246 04c6 ED91      		ld r30,X+
+ 1247 04c8 FC91      		ld r31,X
+ 1248 04ca 1197      		sbiw r26,1
+ 1249 04cc 1D96      		adiw r26,13
+ 1250 04ce 8C91      		ld r24,X
+ 1251 04d0 1D97      		sbiw r26,13
+ 1252 04d2 91E0      		ldi r25,lo8(1)
+ 1253 04d4 980F      		add r25,r24
+ 1254 04d6 1D96      		adiw r26,13
+ 1255 04d8 9C93      		st X,r25
+ 1256 04da 1D97      		sbiw r26,13
+ 1257 04dc E80F      		add r30,r24
+ 1258 04de F11D      		adc r31,__zero_reg__
+ 1259 04e0 1082      		st Z,__zero_reg__
+ 227:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos++;
+ 1261               	.LM114:
+ 1262 04e2 1E96      		adiw r26,14
+ 1263 04e4 8C91      		ld r24,X
+ 1264 04e6 1E97      		sbiw r26,14
+ 1265 04e8 8F5F      		subi r24,lo8(-(1))
+ 1266 04ea 1E96      		adiw r26,14
+ 1267 04ec 8C93      		st X,r24
+ 1268 04ee 1E97      		sbiw r26,14
+ 1269               	.LBB27:
+ 1270               	.LBB28:
+ 398:../../freeRtos/Lib/cmdline.c ****   state->CmdlineExcBuffer = state->CmdlineBuffer;                     // We will use exec buffer la
+ 1272               	.LM115:
+ 1273 04f0 8D91      		ld r24,X+
+ 1274 04f2 9C91      		ld r25,X
+ 1275 04f4 1197      		sbiw r26,1
+ 1276 04f6 1396      		adiw r26,2+1
+ 1277 04f8 9C93      		st X,r25
+ 1278 04fa 8E93      		st -X,r24
+ 1279 04fc 1297      		sbiw r26,2
+ 397:../../freeRtos/Lib/cmdline.c ****   uint8_t i=0;
+ 1281               	.LM116:
+ 1282 04fe 20E0      		ldi r18,0
+ 1283               	.L60:
+ 400:../../freeRtos/Lib/cmdline.c ****   while( !((state->CmdlineExcBuffer[i] == ' ')                        // find the end of the comman
+ 1285               	.LM117:
+ 1286 0500 C22E      		mov r12,r18
+ 1287 0502 D12C      		mov r13,__zero_reg__
+ 1288 0504 FC01      		movw r30,r24
+ 1289 0506 EC0D      		add r30,r12
+ 1290 0508 FD1D      		adc r31,r13
+ 1291 050a 3081      		ld r19,Z
+ 1292 050c 3F7D      		andi r19,lo8(-33)
+ 1293 050e 01F0      		breq .L101
+ 402:../../freeRtos/Lib/cmdline.c ****     i++;                                                              // i determines the cammand l
+ 1295               	.LM118:
+ 1296 0510 2F5F      		subi r18,lo8(-(1))
+ 1297 0512 00C0      		rjmp .L60
+ 1298               	.L101:
+ 404:../../freeRtos/Lib/cmdline.c ****   if(!i)                                                              // command was null or empty
+ 1300               	.LM119:
+ 1301 0514 2223      		tst r18
+ 1302 0516 01F4      		brne .+2
+ 1303 0518 00C0      		rjmp .L97
+ 410:../../freeRtos/Lib/cmdline.c ****   const command_t *tmpPtr = state->cmdList;                           // Set list of commands. The 
+ 1305               	.LM120:
+ 1306 051a F801      		movw r30,r16
+ 1307 051c E1A0      		ldd r14,Z+33
+ 1308 051e F2A0      		ldd r15,Z+34
+ 412:../../freeRtos/Lib/cmdline.c ****   memcpy_P(&tmp, tmpPtr, sizeof(command_t));                          // read from flash. We need t
+ 1310               	.LM121:
+ 1311 0520 46E0      		ldi r20,lo8(6)
+ 1312 0522 50E0      		ldi r21,0
+ 1313 0524 B701      		movw r22,r14
+ 1314 0526 CE01      		movw r24,r28
+ 1315 0528 0196      		adiw r24,1
+ 1316 052a 0E94 0000 		call memcpy_P
+ 1317               	.L67:
+ 416:../../freeRtos/Lib/cmdline.c ****     if( !strncmp_P(state->CmdlineExcBuffer, tmp.commandStr, i) )      // user-entered command match
+ 1319               	.LM122:
+ 1320 052e A980      		ldd r10,Y+1
+ 1321 0530 BA80      		ldd r11,Y+2
+ 1322 0532 A601      		movw r20,r12
+ 1323 0534 B501      		movw r22,r10
+ 1324 0536 D801      		movw r26,r16
+ 1325 0538 1296      		adiw r26,2
+ 1326 053a 8D91      		ld r24,X+
+ 1327 053c 9C91      		ld r25,X
+ 1328 053e 1397      		sbiw r26,2+1
+ 1329 0540 0E94 0000 		call strncmp_P
+ 1330 0544 892B      		or r24,r25
+ 1331 0546 01F4      		brne .L64
+ 418:../../freeRtos/Lib/cmdline.c ****       state->CmdlineExecFunction = tmp.commandFun;                    // set function pointer
+ 1333               	.LM123:
+ 1334 0548 8D81      		ldd r24,Y+5
+ 1335 054a 9E81      		ldd r25,Y+6
+ 1336 054c F801      		movw r30,r16
+ 1337 054e 908F      		std Z+24,r25
+ 1338 0550 878B      		std Z+23,r24
+ 419:../../freeRtos/Lib/cmdline.c ****       state->command_str         = tmp.commandStr;
+ 1340               	.LM124:
+ 1341 0552 B48A      		std Z+20,r11
+ 1342 0554 A38A      		std Z+19,r10
+ 420:../../freeRtos/Lib/cmdline.c ****       state->command_help_str    = tmp.commandHelpStr;
+ 1344               	.LM125:
+ 1345 0556 8B81      		ldd r24,Y+3
+ 1346 0558 9C81      		ldd r25,Y+4
+ 1347 055a 968B      		std Z+22,r25
+ 1348 055c 858B      		std Z+21,r24
+ 1349               	.LBB29:
+ 1350               	.LBB30:
+ 342:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength  = 0;
+ 1352               	.LM126:
+ 1353 055e 1586      		std Z+13,__zero_reg__
+ 343:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos = 0;     
+ 1355               	.LM127:
+ 1356 0560 1686      		std Z+14,__zero_reg__
+ 344:../../freeRtos/Lib/cmdline.c ****     state->bufferHistoryState   = NOT_COPIED;
+ 1358               	.LM128:
+ 1359 0562 118A      		std Z+17,__zero_reg__
+ 346:../../freeRtos/Lib/cmdline.c ****     if( strlen(state->CmdlineBuffer) )
+ 1361               	.LM129:
+ 1362 0564 0190      		ld __tmp_reg__,Z+
+ 1363 0566 F081      		ld r31,Z
+ 1364 0568 E02D      		mov r30,__tmp_reg__
+ 1365 056a 8081      		ld r24,Z
+ 1366 056c 8823      		tst r24
+ 1367 056e 01F4      		brne .+2
+ 1368 0570 00C0      		rjmp .L73
+ 348:../../freeRtos/Lib/cmdline.c ****       state->historyWrIdx++;
+ 1370               	.LM130:
+ 1371 0572 D801      		movw r26,r16
+ 1372 0574 1F96      		adiw r26,15
+ 1373 0576 8C91      		ld r24,X
+ 1374 0578 1F97      		sbiw r26,15
+ 1375 057a 8F5F      		subi r24,lo8(-(1))
+ 349:../../freeRtos/Lib/cmdline.c ****       state->historyWrIdx &= CMD_STATE_HISTORY_MASK;
+ 1377               	.LM131:
+ 1378 057c 8370      		andi r24,lo8(3)
+ 1379 057e 1F96      		adiw r26,15
+ 1380 0580 8C93      		st X,r24
+ 351:../../freeRtos/Lib/cmdline.c ****       state->CmdlineBuffer = state->CmdlineHistory[state->historyWrIdx];
+ 1382               	.LM132:
+ 1383 0582 F801      		movw r30,r16
+ 1384 0584 E80F      		add r30,r24
+ 1385 0586 F11D      		adc r31,__zero_reg__
+ 1386 0588 E80F      		add r30,r24
+ 1387 058a F11D      		adc r31,__zero_reg__
+ 1388 058c 8481      		ldd r24,Z+4
+ 1389 058e 9581      		ldd r25,Z+5
+ 1390 0590 F801      		movw r30,r16
+ 1391 0592 9183      		std Z+1,r25
+ 1392 0594 8083      		st Z,r24
+ 1393 0596 00C0      		rjmp .L73
+ 1394               	.L64:
+ 1395               	.LBE30:
+ 1396               	.LBE29:
+ 424:../../freeRtos/Lib/cmdline.c ****     tmpPtr++;                                                         // Next command
+ 1398               	.LM133:
+ 1399 0598 F6E0      		ldi r31,6
+ 1400 059a EF0E      		add r14,r31
+ 1401 059c F11C      		adc r15,__zero_reg__
+ 425:../../freeRtos/Lib/cmdline.c ****     memcpy_P(&tmp, tmpPtr, sizeof(command_t));                        // Copy this command from fla
+ 1403               	.LM134:
+ 1404 059e 46E0      		ldi r20,lo8(6)
+ 1405 05a0 50E0      		ldi r21,0
+ 1406 05a2 B701      		movw r22,r14
+ 1407 05a4 CE01      		movw r24,r28
+ 1408 05a6 0196      		adiw r24,1
+ 1409 05a8 0E94 0000 		call memcpy_P
+ 427:../../freeRtos/Lib/cmdline.c ****   while (tmp.commandStr != NULL);                                     // Last command on the list i
+ 1411               	.LM135:
+ 1412 05ac 8981      		ldd r24,Y+1
+ 1413 05ae 9A81      		ldd r25,Y+2
+ 1414 05b0 892B      		or r24,r25
+ 1415 05b2 01F0      		breq .+2
+ 1416 05b4 00C0      		rjmp .L67
+ 1417 05b6 20E0      		ldi r18,lo8(CmdlineNotice)
+ 1418 05b8 E22E      		mov r14,r18
+ 1419 05ba 20E0      		ldi r18,hi8(CmdlineNotice)
+ 1420 05bc F22E      		mov r15,r18
+ 1421               	.L66:
+ 1422               	.LBB31:
+ 1423               	.LBB32:
+ 1424               	.LBB33:
+ 492:../../freeRtos/Lib/cmdline.c **** 
+ 493:../../freeRtos/Lib/cmdline.c **** void cmdlinePrintError(cmdState_t *state)
+ 494:../../freeRtos/Lib/cmdline.c **** {
+ 495:../../freeRtos/Lib/cmdline.c ****   char * ptr;
+ 496:../../freeRtos/Lib/cmdline.c **** 
+ 497:../../freeRtos/Lib/cmdline.c ****   // print a notice header
+ 498:../../freeRtos/Lib/cmdline.c ****   // (uint8_t*) cast used to avoid compiler warning
+ 499:../../freeRtos/Lib/cmdline.c ****   ptr = (char*)CmdlineNotice;
+ 500:../../freeRtos/Lib/cmdline.c ****   while(pgm_read_byte(ptr))
+ 1426               	.LM136:
+ 1427 05be C701      		movw r24,r14
+ 1428 05c0 F701      		movw r30,r14
+ 1429               	/* #APP */
+ 1430               	 ;  500 "../../freeRtos/Lib/cmdline.c" 1
+ 1431 05c2 2491      		lpm r18, Z
+ 1432               		
+ 1433               	 ;  0 "" 2
+ 1434               	/* #NOAPP */
+ 1435               	.LBE33:
+ 1436 05c4 2223      		tst r18
+ 1437 05c6 01F0      		breq .L102
+ 1438               	.LBB34:
+ 501:../../freeRtos/Lib/cmdline.c ****     fputc(pgm_read_byte(ptr++)    , state->myStdInOut);
+ 1440               	.LM137:
+ 1441 05c8 2FEF      		ldi r18,-1
+ 1442 05ca E21A      		sub r14,r18
+ 1443 05cc F20A      		sbc r15,r18
+ 1444 05ce FC01      		movw r30,r24
+ 1445               	/* #APP */
+ 1446               	 ;  501 "../../freeRtos/Lib/cmdline.c" 1
+ 1447 05d0 8491      		lpm r24, Z
+ 1448               		
+ 1449               	 ;  0 "" 2
+ 1450               	/* #NOAPP */
+ 1451               	.LBE34:
+ 1452 05d2 D801      		movw r26,r16
+ 1453 05d4 5A96      		adiw r26,26
+ 1454 05d6 6D91      		ld r22,X+
+ 1455 05d8 7C91      		ld r23,X
+ 1456 05da 5B97      		sbiw r26,26+1
+ 1457 05dc 90E0      		ldi r25,0
+ 1458 05de 0E94 0000 		call fputc
+ 1459 05e2 00C0      		rjmp .L66
+ 1460               	.L102:
+ 1461 05e4 D801      		movw r26,r16
+ 1462 05e6 ED90      		ld r14,X+
+ 1463 05e8 FC90      		ld r15,X
+ 1464               	.L69:
+ 502:../../freeRtos/Lib/cmdline.c ****   
+ 503:../../freeRtos/Lib/cmdline.c ****   // print the offending command
+ 504:../../freeRtos/Lib/cmdline.c ****   ptr = state->CmdlineBuffer;
+ 505:../../freeRtos/Lib/cmdline.c ****   while((*ptr) && (*ptr != ' '))
+ 1466               	.LM138:
+ 1467 05ea F701      		movw r30,r14
+ 1468 05ec 8191      		ld r24,Z+
+ 1469 05ee 7F01      		movw r14,r30
+ 1470 05f0 982F      		mov r25,r24
+ 1471 05f2 9F7D      		andi r25,lo8(-33)
+ 1472 05f4 D801      		movw r26,r16
+ 1473 05f6 5A96      		adiw r26,26
+ 1474 05f8 6D91      		ld r22,X+
+ 1475 05fa 7C91      		ld r23,X
+ 1476 05fc 5B97      		sbiw r26,26+1
+ 1477 05fe 9923      		tst r25
+ 1478 0600 01F0      		breq .L103
+ 506:../../freeRtos/Lib/cmdline.c ****     fputc(*ptr++    , state->myStdInOut);
+ 1480               	.LM139:
+ 1481 0602 9927      		clr r25
+ 1482 0604 87FD      		sbrc r24,7
+ 1483 0606 9095      		com r25
+ 1484 0608 0E94 0000 		call fputc
+ 1485 060c 00C0      		rjmp .L69
+ 1486               	.L103:
+ 507:../../freeRtos/Lib/cmdline.c **** 
+ 508:../../freeRtos/Lib/cmdline.c ****   fputc(':'         , state->myStdInOut);
+ 1488               	.LM140:
+ 1489 060e 8AE3      		ldi r24,lo8(58)
+ 1490 0610 90E0      		ldi r25,0
+ 1491 0612 0E94 0000 		call fputc
+ 509:../../freeRtos/Lib/cmdline.c ****   fputc(' '         , state->myStdInOut);
+ 1493               	.LM141:
+ 1494 0616 F801      		movw r30,r16
+ 1495 0618 628D      		ldd r22,Z+26
+ 1496 061a 738D      		ldd r23,Z+27
+ 1497 061c 80E2      		ldi r24,lo8(32)
+ 1498 061e 90E0      		ldi r25,0
+ 1499 0620 0E94 0000 		call fputc
+ 510:../../freeRtos/Lib/cmdline.c **** 
+ 511:../../freeRtos/Lib/cmdline.c ****   // print the not-found message
+ 512:../../freeRtos/Lib/cmdline.c ****   // (uint8_t*) cast used to avoid compiler warning
+ 513:../../freeRtos/Lib/cmdline.c ****   ptr = (char*)CmdlineCmdNotFound;
+ 1501               	.LM142:
+ 1502 0624 90E0      		ldi r25,lo8(CmdlineCmdNotFound)
+ 1503 0626 E92E      		mov r14,r25
+ 1504 0628 90E0      		ldi r25,hi8(CmdlineCmdNotFound)
+ 1505 062a F92E      		mov r15,r25
+ 1506               	.L71:
+ 1507               	.LBB35:
+ 514:../../freeRtos/Lib/cmdline.c ****   while(pgm_read_byte(ptr))
+ 1509               	.LM143:
+ 1510 062c C701      		movw r24,r14
+ 1511 062e F701      		movw r30,r14
+ 1512               	/* #APP */
+ 1513               	 ;  514 "../../freeRtos/Lib/cmdline.c" 1
+ 1514 0630 2491      		lpm r18, Z
+ 1515               		
+ 1516               	 ;  0 "" 2
+ 1517               	/* #NOAPP */
+ 1518 0632 D801      		movw r26,r16
+ 1519 0634 5A96      		adiw r26,26
+ 1520 0636 6D91      		ld r22,X+
+ 1521 0638 7C91      		ld r23,X
+ 1522 063a 5B97      		sbiw r26,26+1
+ 1523               	.LBE35:
+ 1524 063c 2223      		tst r18
+ 1525 063e 01F0      		breq .L104
+ 1526               	.LBB36:
+ 515:../../freeRtos/Lib/cmdline.c ****     fputc(pgm_read_byte(ptr++)    , state->myStdInOut);
+ 1528               	.LM144:
+ 1529 0640 FFEF      		ldi r31,-1
+ 1530 0642 EF1A      		sub r14,r31
+ 1531 0644 FF0A      		sbc r15,r31
+ 1532 0646 FC01      		movw r30,r24
+ 1533               	/* #APP */
+ 1534               	 ;  515 "../../freeRtos/Lib/cmdline.c" 1
+ 1535 0648 8491      		lpm r24, Z
+ 1536               		
+ 1537               	 ;  0 "" 2
+ 1538               	/* #NOAPP */
+ 1539               	.LBE36:
+ 1540 064a 90E0      		ldi r25,0
+ 1541 064c 0E94 0000 		call fputc
+ 1542 0650 00C0      		rjmp .L71
+ 1543               	.L104:
+ 516:../../freeRtos/Lib/cmdline.c **** 
+ 517:../../freeRtos/Lib/cmdline.c ****   fputc('\r'        , state->myStdInOut);
+ 1545               	.LM145:
+ 1546 0652 8DE0      		ldi r24,lo8(13)
+ 1547 0654 90E0      		ldi r25,0
+ 1548 0656 0E94 0000 		call fputc
+ 518:../../freeRtos/Lib/cmdline.c ****   fputc('\n'        , state->myStdInOut);
+ 1550               	.LM146:
+ 1551 065a F801      		movw r30,r16
+ 1552 065c 628D      		ldd r22,Z+26
+ 1553 065e 738D      		ldd r23,Z+27
+ 1554 0660 8AE0      		ldi r24,lo8(10)
+ 1555 0662 90E0      		ldi r25,0
+ 1556 0664 0E94 0000 		call fputc
+ 1557               	.L97:
+ 1558               	.LBE32:
+ 1559               	.LBE31:
+ 431:../../freeRtos/Lib/cmdline.c ****   cmdlinePrintPrompt(state);                                          // output a new prompt
+ 1561               	.LM147:
+ 1562 0668 C801      		movw r24,r16
+ 1563 066a 0E94 0000 		call cmdlinePrintPrompt
+ 1564               	.L73:
+ 1565               	.LBE28:
+ 1566               	.LBE27:
+ 231:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferLength = 0;
+ 1568               	.LM148:
+ 1569 066e D801      		movw r26,r16
+ 1570 0670 1D96      		adiw r26,13
+ 1571 0672 1C92      		st X,__zero_reg__
+ 1572 0674 1D97      		sbiw r26,13
+ 232:../../freeRtos/Lib/cmdline.c ****     state->CmdlineBufferEditPos = 0;
+ 1574               	.LM149:
+ 1575 0676 1E96      		adiw r26,14
+ 1576 0678 1C92      		st X,__zero_reg__
+ 1577 067a 00C0      		rjmp .L28
+ 1578               	.L54:
+ 234:../../freeRtos/Lib/cmdline.c ****   else if(c == ASCII_BS)
+ 1580               	.LM150:
+ 1581 067c 4830      		cpi r20,lo8(8)
+ 1582 067e 01F0      		breq .+2
+ 1583 0680 00C0      		rjmp .L74
+ 236:../../freeRtos/Lib/cmdline.c ****     if(state->CmdlineBufferEditPos)
+ 1585               	.LM151:
+ 1586 0682 F801      		movw r30,r16
+ 1587 0684 8685      		ldd r24,Z+14
+ 1588 0686 8823      		tst r24
+ 1589 0688 01F4      		brne .+2
+ 1590 068a 00C0      		rjmp .L75
+ 239:../../freeRtos/Lib/cmdline.c ****       if(state->CmdlineBufferEditPos == state->CmdlineBufferLength)
+ 1592               	.LM152:
+ 1593 068c 9585      		ldd r25,Z+13
+ 1594 068e 8913      		cpse r24,r25
+ 1595 0690 00C0      		rjmp .L76
+ 243:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BS         , state->myStdInOut);
+ 1597               	.LM153:
+ 1598 0692 628D      		ldd r22,Z+26
+ 1599 0694 738D      		ldd r23,Z+27
+ 1600 0696 88E0      		ldi r24,lo8(8)
+ 1601 0698 90E0      		ldi r25,0
+ 1602 069a 0E94 0000 		call fputc
+ 244:../../freeRtos/Lib/cmdline.c ****         fputc(' '              , state->myStdInOut);
+ 1604               	.LM154:
+ 1605 069e D801      		movw r26,r16
+ 1606 06a0 5A96      		adiw r26,26
+ 1607 06a2 6D91      		ld r22,X+
+ 1608 06a4 7C91      		ld r23,X
+ 1609 06a6 5B97      		sbiw r26,26+1
+ 1610 06a8 80E2      		ldi r24,lo8(32)
+ 1611 06aa 90E0      		ldi r25,0
+ 1612 06ac 0E94 0000 		call fputc
+ 245:../../freeRtos/Lib/cmdline.c ****         fputc(ASCII_BS         , state->myStdInOut);
+ 1614               	.LM155:
+ 1615 06b0 F801      		movw r30,r16
+ 1616 06b2 628D      		ldd r22,Z+26
+ 1617 06b4 738D      		ldd r23,Z+27
+ 1618 06b6 88E0      		ldi r24,lo8(8)
+ 1619 06b8 90E0      		ldi r25,0
+ 1620 06ba 0E94 0000 		call fputc
+ 247:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferLength--;
+ 1622               	.LM156:
+ 1623 06be D801      		movw r26,r16
+ 1624 06c0 1D96      		adiw r26,13
+ 1625 06c2 8C91      		ld r24,X
+ 1626 06c4 1D97      		sbiw r26,13
+ 1627 06c6 8150      		subi r24,lo8(-(-1))
+ 1628 06c8 1D96      		adiw r26,13
+ 1629 06ca 8C93      		st X,r24
+ 1630 06cc 1D97      		sbiw r26,13
+ 248:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferEditPos--;
+ 1632               	.LM157:
+ 1633 06ce 1E96      		adiw r26,14
+ 1634 06d0 8C91      		ld r24,X
+ 1635 06d2 1E97      		sbiw r26,14
+ 1636 06d4 8150      		subi r24,lo8(-(-1))
+ 1637 06d6 1E96      		adiw r26,14
+ 1638 06d8 8C93      		st X,r24
+ 1639 06da 00C0      		rjmp .L28
+ 1640               	.L76:
+ 255:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferLength--;
+ 1642               	.LM158:
+ 1643 06dc 9150      		subi r25,lo8(-(-1))
+ 1644 06de F801      		movw r30,r16
+ 1645 06e0 9587      		std Z+13,r25
+ 256:../../freeRtos/Lib/cmdline.c ****         state->CmdlineBufferEditPos--;
+ 1647               	.LM159:
+ 1648 06e2 8150      		subi r24,lo8(-(-1))
+ 1649 06e4 8687      		std Z+14,r24
+ 1650               	.L77:
+ 257:../../freeRtos/Lib/cmdline.c ****         for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
+ 1652               	.LM160:
+ 1653 06e6 D801      		movw r26,r16
+ 1654 06e8 1D96      		adiw r26,13
+ 1655 06ea 9C91      		ld r25,X
+ 1656 06ec 1D97      		sbiw r26,13
+ 1657 06ee 6D91      		ld r22,X+
+ 1658 06f0 7C91      		ld r23,X
+ 1659 06f2 8917      		cp r24,r25
+ 1660 06f4 00F4      		brsh .L105
+ 258:../../freeRtos/Lib/cmdline.c ****           state->CmdlineBuffer[i] = state->CmdlineBuffer[i+1];
+ 1662               	.LM161:
+ 1663 06f6 FB01      		movw r30,r22
+ 1664 06f8 E80F      		add r30,r24
+ 1665 06fa F11D      		adc r31,__zero_reg__
+ 1666 06fc 9181      		ldd r25,Z+1
+ 1667 06fe 9083      		st Z,r25
+ 257:../../freeRtos/Lib/cmdline.c ****         for(i=state->CmdlineBufferEditPos; i<state->CmdlineBufferLength; i++)
+ 1669               	.LM162:
+ 1670 0700 8F5F      		subi r24,lo8(-(1))
+ 1671 0702 00C0      		rjmp .L77
+ 1672               	.L105:
+ 260:../../freeRtos/Lib/cmdline.c ****         cmdlineRepaint(state, state->CmdlineBuffer);
+ 1674               	.LM163:
+ 1675 0704 C801      		movw r24,r16
+ 1676 0706 0E94 0000 		call cmdlineRepaint
+ 262:../../freeRtos/Lib/cmdline.c ****         fputc(' '              , state->myStdInOut);
+ 1678               	.LM164:
+ 1679 070a F801      		movw r30,r16
+ 1680 070c 628D      		ldd r22,Z+26
+ 1681 070e 738D      		ldd r23,Z+27
+ 1682 0710 80E2      		ldi r24,lo8(32)
+ 1683 0712 90E0      		ldi r25,0
+ 1684 0714 0E94 0000 		call fputc
+ 264:../../freeRtos/Lib/cmdline.c ****         for(i=state->CmdlineBufferEditPos; i<(state->CmdlineBufferLength+1); i++)
+ 1686               	.LM165:
+ 1687 0718 D801      		movw r26,r16
+ 1688 071a 1E96      		adiw r26,14
+ 1689 071c FC90      		ld r15,X
+ 1690               	.L79:
+ 264:../../freeRtos/Lib/cmdline.c ****         for(i=state->CmdlineBufferEditPos; i<(state->CmdlineBufferLength+1); i++)
+ 1692               	.LM166:
+ 1693 071e D801      		movw r26,r16
+ 1694 0720 1D96      		adiw r26,13
+ 1695 0722 2C91      		ld r18,X
+ 1696 0724 30E0      		ldi r19,0
+ 1697 0726 8F2D      		mov r24,r15
+ 1698 0728 90E0      		ldi r25,0
+ 1699 072a 2817      		cp r18,r24
+ 1700 072c 3907      		cpc r19,r25
+ 1701 072e 04F0      		brlt .L28
+ 265:../../freeRtos/Lib/cmdline.c ****           fputc(ASCII_BS       , state->myStdInOut);
+ 1703               	.LM167:
+ 1704 0730 F801      		movw r30,r16
+ 1705 0732 628D      		ldd r22,Z+26
+ 1706 0734 738D      		ldd r23,Z+27
+ 1707 0736 88E0      		ldi r24,lo8(8)
+ 1708 0738 90E0      		ldi r25,0
+ 1709 073a 0E94 0000 		call fputc
+ 264:../../freeRtos/Lib/cmdline.c ****         for(i=state->CmdlineBufferEditPos; i<(state->CmdlineBufferLength+1); i++)
+ 1711               	.LM168:
+ 1712 073e F394      		inc r15
+ 1713 0740 00C0      		rjmp .L79
+ 1714               	.L75:
+ 271:../../freeRtos/Lib/cmdline.c ****       fputc(ASCII_BEL          , state->myStdInOut);
+ 1716               	.LM169:
+ 1717 0742 F801      		movw r30,r16
+ 1718 0744 628D      		ldd r22,Z+26
+ 1719 0746 738D      		ldd r23,Z+27
+ 1720 0748 87E0      		ldi r24,lo8(7)
+ 1721 074a 90E0      		ldi r25,0
+ 1722 074c 0E94 0000 		call fputc
+ 1723 0750 00C0      		rjmp .L28
+ 1724               	.L74:
+ 278:../../freeRtos/Lib/cmdline.c ****   else if(c == ASCII_ESC)
+ 1726               	.LM170:
+ 1727 0752 4B31      		cpi r20,lo8(27)
+ 1728 0754 01F4      		brne .L28
+ 280:../../freeRtos/Lib/cmdline.c ****     state->CmdlineInputVT100State = 1;
+ 1730               	.LM171:
+ 1731 0756 81E0      		ldi r24,lo8(1)
+ 1732               	.L98:
+ 1733 0758 D801      		movw r26,r16
+ 1734 075a 5296      		adiw r26,18
+ 1735 075c 8C93      		st X,r24
+ 1736               	.L28:
+ 1737               	/* epilogue start */
+ 282:../../freeRtos/Lib/cmdline.c **** }
+ 1739               	.LM172:
+ 1740 075e 2796      		adiw r28,7
+ 1741 0760 0FB6      		in __tmp_reg__,__SREG__
+ 1742 0762 F894      		cli
+ 1743 0764 DEBF      		out __SP_H__,r29
+ 1744 0766 0FBE      		out __SREG__,__tmp_reg__
+ 1745 0768 CDBF      		out __SP_L__,r28
+ 1746 076a DF91      		pop r29
+ 1747 076c CF91      		pop r28
+ 1748 076e 1F91      		pop r17
+ 1749 0770 0F91      		pop r16
+ 1750 0772 FF90      		pop r15
+ 1751 0774 EF90      		pop r14
+ 1752 0776 DF90      		pop r13
+ 1753 0778 CF90      		pop r12
+ 1754 077a BF90      		pop r11
+ 1755 077c AF90      		pop r10
+ 1756 077e 0895      		ret
+ 1772               	.Lscope5:
+ 1774               		.stabd	78,0,0
+ 1777               	.global	cmdLineGetLastArgIdx
+ 1779               	cmdLineGetLastArgIdx:
+ 1780               		.stabd	46,0,0
+ 519:../../freeRtos/Lib/cmdline.c **** }
+ 520:../../freeRtos/Lib/cmdline.c **** 
+ 521:../../freeRtos/Lib/cmdline.c **** 
+ 522:../../freeRtos/Lib/cmdline.c **** uint8_t cmdLineGetLastArgIdx(cmdState_t *state)
+ 523:../../freeRtos/Lib/cmdline.c **** {
+ 1782               	.LM173:
+ 1783               	.LFBB6:
+ 1784               	/* prologue: function */
+ 1785               	/* frame size = 0 */
+ 1786               	/* stack size = 0 */
+ 1787               	.L__stack_usage = 0
+ 1788 0780 DC01      		movw r26,r24
+ 1789 0782 1296      		adiw r26,2
+ 1790 0784 ED91      		ld r30,X+
+ 1791 0786 FC91      		ld r31,X
+ 1792 0788 1397      		sbiw r26,2+1
+ 524:../../freeRtos/Lib/cmdline.c ****   uint8_t result = 0;
+ 525:../../freeRtos/Lib/cmdline.c ****   uint8_t lastWhite = 1;
+ 1794               	.LM174:
+ 1795 078a 91E0      		ldi r25,lo8(1)
+ 524:../../freeRtos/Lib/cmdline.c ****   uint8_t result = 0;
+ 1797               	.LM175:
+ 1798 078c 80E0      		ldi r24,0
+ 1799               	.L107:
+ 526:../../freeRtos/Lib/cmdline.c ****   char *str = state->CmdlineExcBuffer;
+ 527:../../freeRtos/Lib/cmdline.c ****   while(*str != 0)
+ 1801               	.LM176:
+ 1802 078e 2191      		ld r18,Z+
+ 1803 0790 2223      		tst r18
+ 1804 0792 01F0      		breq .L112
+ 528:../../freeRtos/Lib/cmdline.c ****   {
+ 529:../../freeRtos/Lib/cmdline.c ****     if (*str == ' ')
+ 1806               	.LM177:
+ 1807 0794 2032      		cpi r18,lo8(32)
+ 1808 0796 01F4      		brne .L110
+ 530:../../freeRtos/Lib/cmdline.c ****     {
+ 531:../../freeRtos/Lib/cmdline.c ****       if (lastWhite == 0)
+ 1810               	.LM178:
+ 1811 0798 9111      		cpse r25,__zero_reg__
+ 1812 079a 00C0      		rjmp .L111
+ 532:../../freeRtos/Lib/cmdline.c ****         result++;
+ 1814               	.LM179:
+ 1815 079c 8F5F      		subi r24,lo8(-(1))
+ 1816 079e 00C0      		rjmp .L111
+ 1817               	.L110:
+ 533:../../freeRtos/Lib/cmdline.c ****       lastWhite = 1;
+ 534:../../freeRtos/Lib/cmdline.c ****     }
+ 535:../../freeRtos/Lib/cmdline.c ****     else
+ 536:../../freeRtos/Lib/cmdline.c ****       lastWhite = 0;
+ 1819               	.LM180:
+ 1820 07a0 90E0      		ldi r25,0
+ 1821 07a2 00C0      		rjmp .L107
+ 1822               	.L111:
+ 533:../../freeRtos/Lib/cmdline.c ****       lastWhite = 1;
+ 1824               	.LM181:
+ 1825 07a4 91E0      		ldi r25,lo8(1)
+ 1826 07a6 00C0      		rjmp .L107
+ 1827               	.L112:
+ 1828               	/* epilogue start */
+ 537:../../freeRtos/Lib/cmdline.c ****     str++;
+ 538:../../freeRtos/Lib/cmdline.c ****   }
+ 539:../../freeRtos/Lib/cmdline.c ****   return result;
+ 540:../../freeRtos/Lib/cmdline.c **** }
+ 1830               	.LM182:
+ 1831 07a8 0895      		ret
+ 1837               	.Lscope6:
+ 1839               		.stabd	78,0,0
+ 1842               	.global	cmdlineMainLoop
+ 1844               	cmdlineMainLoop:
+ 1845               		.stabd	46,0,0
+ 435:../../freeRtos/Lib/cmdline.c **** {
+ 1847               	.LM183:
+ 1848               	.LFBB7:
+ 1849 07aa 0F93      		push r16
+ 1850 07ac 1F93      		push r17
+ 1851 07ae CF93      		push r28
+ 1852 07b0 DF93      		push r29
+ 1853               	/* prologue: function */
+ 1854               	/* frame size = 0 */
+ 1855               	/* stack size = 4 */
+ 1856               	.L__stack_usage = 4
+ 1857 07b2 EC01      		movw r28,r24
+ 437:../../freeRtos/Lib/cmdline.c ****   if(state->CmdlineExecFunction)                // do we have a command/function to be executed
+ 1859               	.LM184:
+ 1860 07b4 0F89      		ldd r16,Y+23
+ 1861 07b6 188D      		ldd r17,Y+24
+ 1862 07b8 0115      		cp r16,__zero_reg__
+ 1863 07ba 1105      		cpc r17,__zero_reg__
+ 1864 07bc 01F4      		brne .+2
+ 1865 07be 00C0      		rjmp .L113
+ 439:../../freeRtos/Lib/cmdline.c ****     state->argc = cmdLineGetLastArgIdx(state);  // get number of arguments
+ 1867               	.LM185:
+ 1868 07c0 0E94 0000 		call cmdLineGetLastArgIdx
+ 1869 07c4 898F      		std Y+25,r24
+ 440:../../freeRtos/Lib/cmdline.c ****     result = state->CmdlineExecFunction(state); // run it
+ 1871               	.LM186:
+ 1872 07c6 CE01      		movw r24,r28
+ 1873 07c8 F801      		movw r30,r16
+ 1874 07ca 0995      		icall
+ 442:../../freeRtos/Lib/cmdline.c ****     switch(result)
+ 1876               	.LM187:
+ 1877 07cc 8230      		cpi r24,2
+ 1878 07ce 9105      		cpc r25,__zero_reg__
+ 1879 07d0 01F0      		breq .L116
+ 1880 07d2 00F4      		brsh .L117
+ 1881 07d4 0197      		sbiw r24,1
+ 1882 07d6 01F0      		breq .+2
+ 1883 07d8 00C0      		rjmp .L115
+ 445:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("OK\r\n"));
+ 1885               	.LM188:
+ 1886 07da 80E0      		ldi r24,lo8(__c.3459)
+ 1887 07dc 90E0      		ldi r25,hi8(__c.3459)
+ 1888 07de 00C0      		rjmp .L121
+ 1889               	.L117:
+ 442:../../freeRtos/Lib/cmdline.c ****     switch(result)
+ 1891               	.LM189:
+ 1892 07e0 8430      		cpi r24,4
+ 1893 07e2 9105      		cpc r25,__zero_reg__
+ 1894 07e4 01F4      		brne .+2
+ 1895 07e6 00C0      		rjmp .L119
+ 1896 07e8 0597      		sbiw r24,5
+ 1897 07ea 01F0      		breq .+2
+ 1898 07ec 00C0      		rjmp .L115
+ 458:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Operation not allowed\r\n"));
+ 1900               	.LM190:
+ 1901 07ee 80E0      		ldi r24,lo8(__c.3473)
+ 1902 07f0 90E0      		ldi r25,hi8(__c.3473)
+ 1903 07f2 00C0      		rjmp .L121
+ 1904               	.L116:
+ 448:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Syntax Error. Use: "));
+ 1906               	.LM191:
+ 1907 07f4 80E0      		ldi r24,lo8(__c.3463)
+ 1908 07f6 90E0      		ldi r25,hi8(__c.3463)
+ 1909 07f8 9F93      		push r25
+ 1910 07fa 8F93      		push r24
+ 1911 07fc 8B8D      		ldd r24,Y+27
+ 1912 07fe 8F93      		push r24
+ 1913 0800 8A8D      		ldd r24,Y+26
+ 1914 0802 8F93      		push r24
+ 1915 0804 0E94 0000 		call fprintf_P
+ 449:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, state->command_str);
+ 1917               	.LM192:
+ 1918 0808 8C89      		ldd r24,Y+20
+ 1919 080a 8F93      		push r24
+ 1920 080c 8B89      		ldd r24,Y+19
+ 1921 080e 8F93      		push r24
+ 1922 0810 8B8D      		ldd r24,Y+27
+ 1923 0812 8F93      		push r24
+ 1924 0814 8A8D      		ldd r24,Y+26
+ 1925 0816 8F93      		push r24
+ 1926 0818 0E94 0000 		call fprintf_P
+ 450:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR(" "));
+ 1928               	.LM193:
+ 1929 081c 80E0      		ldi r24,lo8(__c.3465)
+ 1930 081e 90E0      		ldi r25,hi8(__c.3465)
+ 1931 0820 9F93      		push r25
+ 1932 0822 8F93      		push r24
+ 1933 0824 8B8D      		ldd r24,Y+27
+ 1934 0826 8F93      		push r24
+ 1935 0828 8A8D      		ldd r24,Y+26
+ 1936 082a 8F93      		push r24
+ 1937 082c 0E94 0000 		call fprintf_P
+ 451:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, state->command_help_str);
+ 1939               	.LM194:
+ 1940 0830 8E89      		ldd r24,Y+22
+ 1941 0832 8F93      		push r24
+ 1942 0834 8D89      		ldd r24,Y+21
+ 1943 0836 8F93      		push r24
+ 1944 0838 8B8D      		ldd r24,Y+27
+ 1945 083a 8F93      		push r24
+ 1946 083c 8A8D      		ldd r24,Y+26
+ 1947 083e 8F93      		push r24
+ 1948 0840 0E94 0000 		call fprintf_P
+ 452:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("\r\n"));
+ 1950               	.LM195:
+ 1951 0844 80E0      		ldi r24,lo8(__c.3467)
+ 1952 0846 90E0      		ldi r25,hi8(__c.3467)
+ 1953 0848 9F93      		push r25
+ 1954 084a 8F93      		push r24
+ 1955 084c 8B8D      		ldd r24,Y+27
+ 1956 084e 8F93      		push r24
+ 1957 0850 8A8D      		ldd r24,Y+26
+ 1958 0852 8F93      		push r24
+ 1959 0854 0E94 0000 		call fprintf_P
+ 453:../../freeRtos/Lib/cmdline.c ****         break;
+ 1961               	.LM196:
+ 1962 0858 8DB7      		in r24,__SP_L__
+ 1963 085a 9EB7      		in r25,__SP_H__
+ 1964 085c 4496      		adiw r24,20
+ 1965 085e 0FB6      		in __tmp_reg__,__SREG__
+ 1966 0860 F894      		cli
+ 1967 0862 9EBF      		out __SP_H__,r25
+ 1968 0864 0FBE      		out __SREG__,__tmp_reg__
+ 1969 0866 8DBF      		out __SP_L__,r24
+ 1970 0868 00C0      		rjmp .L115
+ 1971               	.L119:
+ 455:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Operation failed\r\n"));
+ 1973               	.LM197:
+ 1974 086a 80E0      		ldi r24,lo8(__c.3470)
+ 1975 086c 90E0      		ldi r25,hi8(__c.3470)
+ 1976               	.L121:
+ 458:../../freeRtos/Lib/cmdline.c ****         fprintf_P(state->myStdInOut, PSTR("Operation not allowed\r\n"));
+ 1978               	.LM198:
+ 1979 086e 9F93      		push r25
+ 1980 0870 8F93      		push r24
+ 1981 0872 8B8D      		ldd r24,Y+27
+ 1982 0874 8F93      		push r24
+ 1983 0876 8A8D      		ldd r24,Y+26
+ 1984 0878 8F93      		push r24
+ 1985 087a 0E94 0000 		call fprintf_P
+ 459:../../freeRtos/Lib/cmdline.c ****         break;
+ 1987               	.LM199:
+ 1988 087e 0F90      		pop __tmp_reg__
+ 1989 0880 0F90      		pop __tmp_reg__
+ 1990 0882 0F90      		pop __tmp_reg__
+ 1991 0884 0F90      		pop __tmp_reg__
+ 1992               	.L115:
+ 463:../../freeRtos/Lib/cmdline.c ****     state->CmdlineExecFunction = NULL;          // reset
+ 1994               	.LM200:
+ 1995 0886 188E      		std Y+24,__zero_reg__
+ 1996 0888 1F8A      		std Y+23,__zero_reg__
+ 464:../../freeRtos/Lib/cmdline.c ****     state->command_str         = NULL;
+ 1998               	.LM201:
+ 1999 088a 1C8A      		std Y+20,__zero_reg__
+ 2000 088c 1B8A      		std Y+19,__zero_reg__
+ 465:../../freeRtos/Lib/cmdline.c ****     state->command_help_str    = NULL;
+ 2002               	.LM202:
+ 2003 088e 1E8A      		std Y+22,__zero_reg__
+ 2004 0890 1D8A      		std Y+21,__zero_reg__
+ 466:../../freeRtos/Lib/cmdline.c ****     cmdlinePrintPrompt(state);                  // output new prompt
+ 2006               	.LM203:
+ 2007 0892 CE01      		movw r24,r28
+ 2008               	/* epilogue start */
+ 468:../../freeRtos/Lib/cmdline.c **** }
+ 2010               	.LM204:
+ 2011 0894 DF91      		pop r29
+ 2012 0896 CF91      		pop r28
+ 2013 0898 1F91      		pop r17
+ 2014 089a 0F91      		pop r16
+ 466:../../freeRtos/Lib/cmdline.c ****     cmdlinePrintPrompt(state);                  // output new prompt
+ 2016               	.LM205:
+ 2017 089c 0C94 0000 		jmp cmdlinePrintPrompt
+ 2018               	.L113:
+ 2019               	/* epilogue start */
+ 468:../../freeRtos/Lib/cmdline.c **** }
+ 2021               	.LM206:
+ 2022 08a0 DF91      		pop r29
+ 2023 08a2 CF91      		pop r28
+ 2024 08a4 1F91      		pop r17
+ 2025 08a6 0F91      		pop r16
+ 2026 08a8 0895      		ret
+ 2031               	.Lscope7:
+ 2033               		.stabd	78,0,0
+ 2037               	.global	cmdlineGetArgStr
+ 2039               	cmdlineGetArgStr:
+ 2040               		.stabd	46,0,0
+ 541:../../freeRtos/Lib/cmdline.c **** 
+ 542:../../freeRtos/Lib/cmdline.c **** char* cmdlineGetArgStr(uint8_t argnum, cmdState_t *state)
+ 543:../../freeRtos/Lib/cmdline.c **** {
+ 2042               	.LM207:
+ 2043               	.LFBB8:
+ 2044               	/* prologue: function */
+ 2045               	/* frame size = 0 */
+ 2046               	/* stack size = 0 */
+ 2047               	.L__stack_usage = 0
+ 544:../../freeRtos/Lib/cmdline.c ****   // find the offset of argument number [argnum]
+ 545:../../freeRtos/Lib/cmdline.c ****   uint8_t idx=0;
+ 546:../../freeRtos/Lib/cmdline.c ****   uint8_t arg;
+ 547:../../freeRtos/Lib/cmdline.c ****   
+ 548:../../freeRtos/Lib/cmdline.c ****   // find the first non-whitespace character
+ 549:../../freeRtos/Lib/cmdline.c ****   while( (state->CmdlineExcBuffer[idx] != 0) && (state->CmdlineExcBuffer[idx] == ' ')) idx++;
+ 2049               	.LM208:
+ 2050 08aa FB01      		movw r30,r22
+ 2051 08ac 2281      		ldd r18,Z+2
+ 2052 08ae 3381      		ldd r19,Z+3
+ 545:../../freeRtos/Lib/cmdline.c ****   uint8_t idx=0;
+ 2054               	.LM209:
+ 2055 08b0 90E0      		ldi r25,0
+ 2056               	.L123:
+ 2058               	.LM210:
+ 2059 08b2 F901      		movw r30,r18
+ 2060 08b4 E90F      		add r30,r25
+ 2061 08b6 F11D      		adc r31,__zero_reg__
+ 2062 08b8 4081      		ld r20,Z
+ 2063 08ba 4032      		cpi r20,lo8(32)
+ 2064 08bc 01F4      		brne .L131
+ 2066               	.LM211:
+ 2067 08be 9F5F      		subi r25,lo8(-(1))
+ 2068 08c0 00C0      		rjmp .L123
+ 2069               	.L131:
+ 2071               	.LM212:
+ 2072 08c2 40E0      		ldi r20,0
+ 2073               	.L125:
+ 550:../../freeRtos/Lib/cmdline.c ****   
+ 551:../../freeRtos/Lib/cmdline.c ****   // we are at the first argument
+ 552:../../freeRtos/Lib/cmdline.c ****   for(arg=0; arg<argnum; arg++)
+ 2075               	.LM213:
+ 2076 08c4 4817      		cp r20,r24
+ 2077 08c6 01F0      		breq .L132
+ 2078               	.L130:
+ 553:../../freeRtos/Lib/cmdline.c ****   {
+ 554:../../freeRtos/Lib/cmdline.c ****     // find the next whitespace character
+ 555:../../freeRtos/Lib/cmdline.c ****     while( (state->CmdlineExcBuffer[idx] != 0) && (state->CmdlineExcBuffer[idx] != ' ')) idx++;
+ 2080               	.LM214:
+ 2081 08c8 F901      		movw r30,r18
+ 2082 08ca E90F      		add r30,r25
+ 2083 08cc F11D      		adc r31,__zero_reg__
+ 2084 08ce 5081      		ld r21,Z
+ 2085 08d0 5F7D      		andi r21,lo8(-33)
+ 2086 08d2 01F0      		breq .L127
+ 2087 08d4 9F5F      		subi r25,lo8(-(1))
+ 2088 08d6 00C0      		rjmp .L130
+ 2089               	.L127:
+ 556:../../freeRtos/Lib/cmdline.c ****     // find the first non-whitespace character
+ 557:../../freeRtos/Lib/cmdline.c ****     while( (state->CmdlineExcBuffer[idx] != 0) && (state->CmdlineExcBuffer[idx] == ' ')) idx++;
+ 2091               	.LM215:
+ 2092 08d8 F901      		movw r30,r18
+ 2093 08da E90F      		add r30,r25
+ 2094 08dc F11D      		adc r31,__zero_reg__
+ 2095 08de 5081      		ld r21,Z
+ 2096 08e0 5032      		cpi r21,lo8(32)
+ 2097 08e2 01F4      		brne .L133
+ 2099               	.LM216:
+ 2100 08e4 9F5F      		subi r25,lo8(-(1))
+ 2101 08e6 00C0      		rjmp .L127
+ 2102               	.L133:
+ 552:../../freeRtos/Lib/cmdline.c ****   for(arg=0; arg<argnum; arg++)
+ 2104               	.LM217:
+ 2105 08e8 4F5F      		subi r20,lo8(-(1))
+ 2106 08ea 00C0      		rjmp .L125
+ 2107               	.L132:
+ 558:../../freeRtos/Lib/cmdline.c ****   }
+ 559:../../freeRtos/Lib/cmdline.c ****   // we are at the requested argument or the end of the buffer
+ 560:../../freeRtos/Lib/cmdline.c ****   return &state->CmdlineExcBuffer[idx];
+ 561:../../freeRtos/Lib/cmdline.c **** }
+ 2109               	.LM218:
+ 2110 08ec A901      		movw r20,r18
+ 2111 08ee 490F      		add r20,r25
+ 2112 08f0 511D      		adc r21,__zero_reg__
+ 2113 08f2 CA01      		movw r24,r20
+ 2114 08f4 0895      		ret
+ 2120               	.Lscope8:
+ 2122               		.stabd	78,0,0
+ 2126               	.global	cmdlineGetArgInt
+ 2128               	cmdlineGetArgInt:
+ 2129               		.stabd	46,0,0
+ 562:../../freeRtos/Lib/cmdline.c **** 
+ 563:../../freeRtos/Lib/cmdline.c **** // return argument [argnum] interpreted as a decimal integer
+ 564:../../freeRtos/Lib/cmdline.c **** long cmdlineGetArgInt(uint8_t argnum, cmdState_t *state)
+ 565:../../freeRtos/Lib/cmdline.c **** {
+ 2131               	.LM219:
+ 2132               	.LFBB9:
+ 2133 08f6 CF93      		push r28
+ 2134 08f8 DF93      		push r29
+ 2135 08fa 00D0      		rcall .
+ 2136 08fc CDB7      		in r28,__SP_L__
+ 2137 08fe DEB7      		in r29,__SP_H__
+ 2138               	/* prologue: function */
+ 2139               	/* frame size = 2 */
+ 2140               	/* stack size = 4 */
+ 2141               	.L__stack_usage = 4
+ 566:../../freeRtos/Lib/cmdline.c ****   char* endptr;
+ 567:../../freeRtos/Lib/cmdline.c ****   return strtol(cmdlineGetArgStr(argnum, state), &endptr, 10);
+ 2143               	.LM220:
+ 2144 0900 0E94 0000 		call cmdlineGetArgStr
+ 2145 0904 4AE0      		ldi r20,lo8(10)
+ 2146 0906 50E0      		ldi r21,0
+ 2147 0908 BE01      		movw r22,r28
+ 2148 090a 6F5F      		subi r22,-1
+ 2149 090c 7F4F      		sbci r23,-1
+ 2150 090e 0E94 0000 		call strtol
+ 2151               	/* epilogue start */
+ 568:../../freeRtos/Lib/cmdline.c **** }
+ 2153               	.LM221:
+ 2154 0912 0F90      		pop __tmp_reg__
+ 2155 0914 0F90      		pop __tmp_reg__
+ 2156 0916 DF91      		pop r29
+ 2157 0918 CF91      		pop r28
+ 2158 091a 0895      		ret
+ 2163               	.Lscope9:
+ 2165               		.stabd	78,0,0
+ 2169               	.global	cmdlineGetArgHex
+ 2171               	cmdlineGetArgHex:
+ 2172               		.stabd	46,0,0
+ 569:../../freeRtos/Lib/cmdline.c **** 
+ 570:../../freeRtos/Lib/cmdline.c **** // return argument [argnum] interpreted as a hex integer
+ 571:../../freeRtos/Lib/cmdline.c **** long cmdlineGetArgHex(uint8_t argnum, cmdState_t *state)
+ 572:../../freeRtos/Lib/cmdline.c **** {
+ 2174               	.LM222:
+ 2175               	.LFBB10:
+ 2176 091c CF93      		push r28
+ 2177 091e DF93      		push r29
+ 2178 0920 00D0      		rcall .
+ 2179 0922 CDB7      		in r28,__SP_L__
+ 2180 0924 DEB7      		in r29,__SP_H__
+ 2181               	/* prologue: function */
+ 2182               	/* frame size = 2 */
+ 2183               	/* stack size = 4 */
+ 2184               	.L__stack_usage = 4
+ 573:../../freeRtos/Lib/cmdline.c ****   char* endptr;
+ 574:../../freeRtos/Lib/cmdline.c ****   return strtol(cmdlineGetArgStr(argnum, state), &endptr, 16);
+ 2186               	.LM223:
+ 2187 0926 0E94 0000 		call cmdlineGetArgStr
+ 2188 092a 40E1      		ldi r20,lo8(16)
+ 2189 092c 50E0      		ldi r21,0
+ 2190 092e BE01      		movw r22,r28
+ 2191 0930 6F5F      		subi r22,-1
+ 2192 0932 7F4F      		sbci r23,-1
+ 2193 0934 0E94 0000 		call strtol
+ 2194               	/* epilogue start */
+ 575:../../freeRtos/Lib/cmdline.c **** }
+ 2196               	.LM224:
+ 2197 0938 0F90      		pop __tmp_reg__
+ 2198 093a 0F90      		pop __tmp_reg__
+ 2199 093c DF91      		pop r29
+ 2200 093e CF91      		pop r28
+ 2201 0940 0895      		ret
+ 2206               	.Lscope10:
+ 2208               		.stabd	78,0,0
+ 2211               	.global	cmdPrintHelp
+ 2213               	cmdPrintHelp:
+ 2214               		.stabd	46,0,0
+ 576:../../freeRtos/Lib/cmdline.c **** 
+ 577:../../freeRtos/Lib/cmdline.c **** void cmdPrintHelp(cmdState_t *state)
+ 578:../../freeRtos/Lib/cmdline.c **** {
+ 2216               	.LM225:
+ 2217               	.LFBB11:
+ 2218 0942 AF92      		push r10
+ 2219 0944 BF92      		push r11
+ 2220 0946 CF92      		push r12
+ 2221 0948 DF92      		push r13
+ 2222 094a EF92      		push r14
+ 2223 094c FF92      		push r15
+ 2224 094e 0F93      		push r16
+ 2225 0950 1F93      		push r17
+ 2226 0952 CF93      		push r28
+ 2227 0954 DF93      		push r29
+ 2228 0956 00D0      		rcall .
+ 2229 0958 00D0      		rcall .
+ 2230 095a 00D0      		rcall .
+ 2231 095c CDB7      		in r28,__SP_L__
+ 2232 095e DEB7      		in r29,__SP_H__
+ 2233               	/* prologue: function */
+ 2234               	/* frame size = 6 */
+ 2235               	/* stack size = 16 */
+ 2236               	.L__stack_usage = 16
+ 2237 0960 8C01      		movw r16,r24
+ 579:../../freeRtos/Lib/cmdline.c ****   command_t  tmp;
+ 580:../../freeRtos/Lib/cmdline.c ****   const command_t *tmpPtr = state->cmdList;
+ 2239               	.LM226:
+ 2240 0962 FC01      		movw r30,r24
+ 2241 0964 E1A0      		ldd r14,Z+33
+ 2242 0966 F2A0      		ldd r15,Z+34
+ 581:../../freeRtos/Lib/cmdline.c ****   
+ 582:../../freeRtos/Lib/cmdline.c ****   memcpy_P(&tmp, tmpPtr, sizeof(command_t));
+ 2244               	.LM227:
+ 2245 0968 46E0      		ldi r20,lo8(6)
+ 2246 096a 50E0      		ldi r21,0
+ 2247 096c B701      		movw r22,r14
+ 2248 096e CE01      		movw r24,r28
+ 2249 0970 0196      		adiw r24,1
+ 2250 0972 0E94 0000 		call memcpy_P
+ 583:../../freeRtos/Lib/cmdline.c ****   do
+ 584:../../freeRtos/Lib/cmdline.c ****   {
+ 585:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, tmp.commandStr);
+ 586:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, PSTR("\t"));
+ 2252               	.LM228:
+ 2253 0976 80E0      		ldi r24,lo8(__c.3561)
+ 2254 0978 A82E      		mov r10,r24
+ 2255 097a 80E0      		ldi r24,hi8(__c.3561)
+ 2256 097c B82E      		mov r11,r24
+ 587:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, tmp.commandHelpStr);
+ 588:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, PSTR("\r\n"));
+ 2258               	.LM229:
+ 2259 097e 90E0      		ldi r25,lo8(__c.3563)
+ 2260 0980 C92E      		mov r12,r25
+ 2261 0982 90E0      		ldi r25,hi8(__c.3563)
+ 2262 0984 D92E      		mov r13,r25
+ 2263               	.L138:
+ 585:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, tmp.commandStr);
+ 2265               	.LM230:
+ 2266 0986 8A81      		ldd r24,Y+2
+ 2267 0988 8F93      		push r24
+ 2268 098a 8981      		ldd r24,Y+1
+ 2269 098c 8F93      		push r24
+ 2270 098e F801      		movw r30,r16
+ 2271 0990 838D      		ldd r24,Z+27
+ 2272 0992 8F93      		push r24
+ 2273 0994 828D      		ldd r24,Z+26
+ 2274 0996 8F93      		push r24
+ 2275 0998 0E94 0000 		call fprintf_P
+ 586:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, PSTR("\t"));
+ 2277               	.LM231:
+ 2278 099c BF92      		push r11
+ 2279 099e AF92      		push r10
+ 2280 09a0 F801      		movw r30,r16
+ 2281 09a2 838D      		ldd r24,Z+27
+ 2282 09a4 8F93      		push r24
+ 2283 09a6 828D      		ldd r24,Z+26
+ 2284 09a8 8F93      		push r24
+ 2285 09aa 0E94 0000 		call fprintf_P
+ 587:../../freeRtos/Lib/cmdline.c ****     fprintf_P(state->myStdInOut, tmp.commandHelpStr);
+ 2287               	.LM232:
+ 2288 09ae 8C81      		ldd r24,Y+4
+ 2289 09b0 8F93      		push r24
+ 2290 09b2 8B81      		ldd r24,Y+3
+ 2291 09b4 8F93      		push r24
+ 2292 09b6 F801      		movw r30,r16
+ 2293 09b8 838D      		ldd r24,Z+27
+ 2294 09ba 8F93      		push r24
+ 2295 09bc 828D      		ldd r24,Z+26
+ 2296 09be 8F93      		push r24
+ 2297 09c0 0E94 0000 		call fprintf_P
+ 2299               	.LM233:
+ 2300 09c4 DF92      		push r13
+ 2301 09c6 CF92      		push r12
+ 2302 09c8 F801      		movw r30,r16
+ 2303 09ca 838D      		ldd r24,Z+27
+ 2304 09cc 8F93      		push r24
+ 2305 09ce 828D      		ldd r24,Z+26
+ 2306 09d0 8F93      		push r24
+ 2307 09d2 0E94 0000 		call fprintf_P
+ 589:../../freeRtos/Lib/cmdline.c **** 
+ 590:../../freeRtos/Lib/cmdline.c ****     tmpPtr++;
+ 2309               	.LM234:
+ 2310 09d6 F6E0      		ldi r31,6
+ 2311 09d8 EF0E      		add r14,r31
+ 2312 09da F11C      		adc r15,__zero_reg__
+ 591:../../freeRtos/Lib/cmdline.c ****     memcpy_P(&tmp, tmpPtr, sizeof(command_t));
+ 2314               	.LM235:
+ 2315 09dc 46E0      		ldi r20,lo8(6)
+ 2316 09de 50E0      		ldi r21,0
+ 2317 09e0 B701      		movw r22,r14
+ 2318 09e2 CE01      		movw r24,r28
+ 2319 09e4 0196      		adiw r24,1
+ 2320 09e6 0E94 0000 		call memcpy_P
+ 592:../../freeRtos/Lib/cmdline.c ****   }
+ 593:../../freeRtos/Lib/cmdline.c ****   while (tmp.commandFun != NULL);
+ 2322               	.LM236:
+ 2323 09ea 0FB6      		in __tmp_reg__,__SREG__
+ 2324 09ec F894      		cli
+ 2325 09ee DEBF      		out __SP_H__,r29
+ 2326 09f0 0FBE      		out __SREG__,__tmp_reg__
+ 2327 09f2 CDBF      		out __SP_L__,r28
+ 2328 09f4 8D81      		ldd r24,Y+5
+ 2329 09f6 9E81      		ldd r25,Y+6
+ 2330 09f8 892B      		or r24,r25
+ 2331 09fa 01F4      		brne .L138
+ 2332               	/* epilogue start */
+ 594:../../freeRtos/Lib/cmdline.c **** }
+ 2334               	.LM237:
+ 2335 09fc 2696      		adiw r28,6
+ 2336 09fe 0FB6      		in __tmp_reg__,__SREG__
+ 2337 0a00 F894      		cli
+ 2338 0a02 DEBF      		out __SP_H__,r29
+ 2339 0a04 0FBE      		out __SREG__,__tmp_reg__
+ 2340 0a06 CDBF      		out __SP_L__,r28
+ 2341 0a08 DF91      		pop r29
+ 2342 0a0a CF91      		pop r28
+ 2343 0a0c 1F91      		pop r17
+ 2344 0a0e 0F91      		pop r16
+ 2345 0a10 FF90      		pop r15
+ 2346 0a12 EF90      		pop r14
+ 2347 0a14 DF90      		pop r13
+ 2348 0a16 CF90      		pop r12
+ 2349 0a18 BF90      		pop r11
+ 2350 0a1a AF90      		pop r10
+ 2351 0a1c 0895      		ret
+ 2357               	.Lscope11:
+ 2359               		.stabd	78,0,0
+ 2360               		.section	.progmem.data,"a",@progbits
+ 2363               	__c.3563:
+ 2364 0000 0D0A 00   		.string	"\r\n"
+ 2367               	__c.3561:
+ 2368 0003 0900      		.string	"\t"
+ 2371               	__c.3473:
+ 2372 0005 4F70 6572 		.string	"Operation not allowed\r\n"
+ 2372      6174 696F 
+ 2372      6E20 6E6F 
+ 2372      7420 616C 
+ 2372      6C6F 7765 
+ 2375               	__c.3470:
+ 2376 001d 4F70 6572 		.string	"Operation failed\r\n"
+ 2376      6174 696F 
+ 2376      6E20 6661 
+ 2376      696C 6564 
+ 2376      0D0A 00
+ 2379               	__c.3467:
+ 2380 0030 0D0A 00   		.string	"\r\n"
+ 2383               	__c.3465:
+ 2384 0033 2000      		.string	" "
+ 2387               	__c.3463:
+ 2388 0035 5379 6E74 		.string	"Syntax Error. Use: "
+ 2388      6178 2045 
+ 2388      7272 6F72 
+ 2388      2E20 5573 
+ 2388      653A 2000 
+ 2391               	__c.3459:
+ 2392 0049 4F4B 0D0A 		.string	"OK\r\n"
+ 2392      00
+ 2393               	.global	CmdlineCmdNotFound
+ 2396               	CmdlineCmdNotFound:
+ 2397 004e 2320 6E6B 		.string	"# nk"
+ 2397      00
+ 2398               	.global	CmdlineNotice
+ 2401               	CmdlineNotice:
+ 2402 0053 636D 646C 		.string	"cmdline: "
+ 2402      696E 653A 
+ 2402      2000 
+ 2403               	.global	CmdlinePromptConfigure
+ 2406               	CmdlinePromptConfigure:
+ 2407 005d 446F 6D4F 		.string	"DomOs@"
+ 2407      7340 00
+ 2408               	.global	CmdlinePromptEnable
+ 2411               	CmdlinePromptEnable:
+ 2412 0064 446F 6D4F 		.string	"DomOs#"
+ 2412      7323 00
+ 2413               	.global	CmdlinePromptNormal
+ 2416               	CmdlinePromptNormal:
+ 2417 006b 446F 6D4F 		.string	"DomOs>"
+ 2417      733E 00
+ 2418               		.comm	czasRtc,7,1
+ 2419               		.comm	sockets,2,1
+ 2420               		.comm	tcpDebugLevel,1,1
+ 2421               		.comm	tcpDebugStream,2,1
+ 2422               		.comm	IpMyConfig,15,1
+ 2423               		.comm	udpDbgLevel,1,1
+ 2424               		.comm	udpDbgStream,2,1
+ 2425               		.comm	udpSocket,2,1
+ 2426               		.comm	icmpDebugLevel,1,1
+ 2427               		.comm	icmpDebug,2,1
+ 2428               		.comm	arpDebugLevel,1,1
+ 2429               		.comm	arpDebug,2,1
+ 2430               		.comm	plen,2,1
+ 2431               		.comm	nicState,14,1
+ 2432               		.comm	xSemaphoreRs485,2,1
+ 2433               		.comm	lockSensors,2,1
+ 2434               		.comm	portB,1,1
+ 2435               		.comm	portA,1,1
+ 2436               		.comm	xSemaphoreSpiSS,2,1
+ 2437               		.comm	rollers,2,1
+ 2438               		.comm	wwwport,1,1
+ 2439               		.comm	klastry,128,1
+ 2467               		.text
+ 2469               	.Letext0:
+ 2470               		.ident	"GCC: (GNU) 4.8.2"
+ 2471               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 cmdline.c
+     /tmp/ccR598IH.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccR598IH.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccR598IH.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccR598IH.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccR598IH.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccR598IH.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccR598IH.s:275    .text:0000000000000000 cmdlinePrintPrompt
+     /tmp/ccR598IH.s:2416   .progmem.data:000000000000006b CmdlinePromptNormal
+     /tmp/ccR598IH.s:2411   .progmem.data:0000000000000064 CmdlinePromptEnable
+     /tmp/ccR598IH.s:2406   .progmem.data:000000000000005d CmdlinePromptConfigure
+     /tmp/ccR598IH.s:368    .text:000000000000004e cmdlineRepaint
+     /tmp/ccR598IH.s:482    .text:00000000000000da cmdHistoryCopy
+     /tmp/ccR598IH.s:559    .text:0000000000000122 cmdStateConfigure
+     /tmp/ccR598IH.s:666    .text:00000000000001a0 cmdlineInputFunc
+     /tmp/ccR598IH.s:2401   .progmem.data:0000000000000053 CmdlineNotice
+     /tmp/ccR598IH.s:2396   .progmem.data:000000000000004e CmdlineCmdNotFound
+     /tmp/ccR598IH.s:1779   .text:0000000000000780 cmdLineGetLastArgIdx
+     /tmp/ccR598IH.s:1844   .text:00000000000007aa cmdlineMainLoop
+     /tmp/ccR598IH.s:2391   .progmem.data:0000000000000049 __c.3459
+     /tmp/ccR598IH.s:2371   .progmem.data:0000000000000005 __c.3473
+     /tmp/ccR598IH.s:2387   .progmem.data:0000000000000035 __c.3463
+     /tmp/ccR598IH.s:2383   .progmem.data:0000000000000033 __c.3465
+     /tmp/ccR598IH.s:2379   .progmem.data:0000000000000030 __c.3467
+     /tmp/ccR598IH.s:2375   .progmem.data:000000000000001d __c.3470
+     /tmp/ccR598IH.s:2039   .text:00000000000008aa cmdlineGetArgStr
+     /tmp/ccR598IH.s:2128   .text:00000000000008f6 cmdlineGetArgInt
+     /tmp/ccR598IH.s:2171   .text:000000000000091c cmdlineGetArgHex
+     /tmp/ccR598IH.s:2213   .text:0000000000000942 cmdPrintHelp
+     /tmp/ccR598IH.s:2367   .progmem.data:0000000000000003 __c.3561
+     /tmp/ccR598IH.s:2363   .progmem.data:0000000000000000 __c.3563
+                            *COM*:0000000000000007 czasRtc
+                            *COM*:0000000000000002 sockets
+                            *COM*:0000000000000001 tcpDebugLevel
+                            *COM*:0000000000000002 tcpDebugStream
+                            *COM*:000000000000000f IpMyConfig
+                            *COM*:0000000000000001 udpDbgLevel
+                            *COM*:0000000000000002 udpDbgStream
+                            *COM*:0000000000000002 udpSocket
+                            *COM*:0000000000000001 icmpDebugLevel
+                            *COM*:0000000000000002 icmpDebug
+                            *COM*:0000000000000001 arpDebugLevel
+                            *COM*:0000000000000002 arpDebug
+                            *COM*:0000000000000002 plen
+                            *COM*:000000000000000e nicState
+                            *COM*:0000000000000002 xSemaphoreRs485
+                            *COM*:0000000000000002 lockSensors
+                            *COM*:0000000000000001 portB
+                            *COM*:0000000000000001 portA
+                            *COM*:0000000000000002 xSemaphoreSpiSS
+                            *COM*:0000000000000002 rollers
+                            *COM*:0000000000000001 wwwport
+                            *COM*:0000000000000080 klastry
+
+UNDEFINED SYMBOLS
+fputc
+memset
+strcpy
+memcpy_P
+strncmp_P
+fprintf_P
+strtol
+__do_clear_bss
