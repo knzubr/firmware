@@ -6,7 +6,6 @@
 #include "hardware.h"
 #include "ip.h"
 #include "nic.h"
-#include "sensors_task.h"
 #include "udp.h"
 
 extern struct lockerSensor *lockSensors;

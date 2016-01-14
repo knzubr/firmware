@@ -1,20 +1,20 @@
 /*
- 
+
 	FreeRTOS.org V5.2.0 - Copyright (C) 2003-2009 Richard Barry.
 	This file is part of the FreeRTOS.org distribution.
-	FreeRTOS.org is free software; you can redistribute it and/or modify it 
+	FreeRTOS.org is free software; you can redistribute it and/or modify it
 	under the terms of the GNU General Public License (version 2) as published
 	by the Free Software Foundation and modified by the FreeRTOS exception.
 	FreeRTOS.org is distributed in the hope that it will be useful,	but WITHOUT
-	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-	FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for 
+	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+	FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 	more details.
 
-	You should have received a copy of the GNU General Public License along 
-	with FreeRTOS.org; if not, write to the Free Software Foundation, Inc., 59 
+	You should have received a copy of the GNU General Public License along
+	with FreeRTOS.org; if not, write to the Free Software Foundation, Inc., 59
 	Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 
-	A special exception to the GPL is included to allow you to distribute a 
+	A special exception to the GPL is included to allow you to distribute a
 	combined work that includes FreeRTOS.org without being obliged to provide
 	the source code for any proprietary components.  See the licensing section
 	of http://www.FreeRTOS.org for full details.
@@ -89,14 +89,14 @@ portSHORT main( void )
   hardwareInit();
   spiInit(disableAllSpiDevices);
 
-// VTY on serial  
-  xSerialPortInitMinimal(); 
+// VTY on serial
+  xSerialPortInitMinimal();
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
   CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
 
 
 //  cmdStateClear(newCmdState);
-  
+
   sensorsTaskInit();
   loadConfiguration();
 
@@ -107,11 +107,10 @@ portSHORT main( void )
   socketInit();
   initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
   VtyInit(CLIStateSerialUdp, &udpStream);
-  
+
 //xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  0, &xHandleEnc);
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
 //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
-  xTaskCreate(sensorsTask,    NULL /*"Sensors"*/, STACK_SIZE_SENSORS,   NULL,                                   1, &xHandleSensors);
   vTaskStartScheduler();
   return 0;
 }
@@ -131,6 +130,6 @@ void vApplicationTickHook( void )
   if (--tickCntr == 0)
   {
     tickCntr = configTICK_RATE_HZ;
-    arpTimer();    
+    arpTimer();
   }
 }

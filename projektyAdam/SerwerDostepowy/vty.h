@@ -11,7 +11,6 @@
 #include "memory_x.h"
 #include "configuration.h"
 #include "Rs485_prot.h"
-#include "sensors_task.h"
 #include "nic.h"
 #include "ip.h"
 #include "net.h"
