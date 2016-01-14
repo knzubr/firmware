@@ -3,178 +3,186 @@
    3               	__SP_L__ = 0x3d
    4               	__SREG__ = 0x3f
    5               	__RAMPZ__ = 0x3b
-   6               	__tmp_reg__ = 0
-   7               	__zero_reg__ = 1
-  10               		.text
-  11               	.Ltext0:
- 137               	streamQueueInputFun:
- 138               		.stabd	46,0,0
-   1:../../freeRtos/Lib/queueStream.c **** #include "queueStream.h"
-   2:../../freeRtos/Lib/queueStream.c **** 
-   3:../../freeRtos/Lib/queueStream.c **** static int streamQueueOutputFun(char c, FILE *ostream);
-   4:../../freeRtos/Lib/queueStream.c **** static int streamQueueInputFun(FILE *istream);
-   5:../../freeRtos/Lib/queueStream.c **** 
-   6:../../freeRtos/Lib/queueStream.c **** void initQueueStream(FILE *stream, streamBuffers_t *buffer, xQueueHandle Rx, xQueueHandle Tx)
-   7:../../freeRtos/Lib/queueStream.c **** {
-   8:../../freeRtos/Lib/queueStream.c ****   fdev_setup_stream(stream, streamQueueOutputFun, streamQueueInputFun, _FDEV_SETUP_RW);
-   9:../../freeRtos/Lib/queueStream.c ****   fdev_set_udata(stream, (void *)buffer);
-  10:../../freeRtos/Lib/queueStream.c ****   buffer->Rx = Rx;
-  11:../../freeRtos/Lib/queueStream.c ****   buffer->Tx = Tx;
-  12:../../freeRtos/Lib/queueStream.c ****   return;
-  13:../../freeRtos/Lib/queueStream.c **** }
-  14:../../freeRtos/Lib/queueStream.c **** 
-  15:../../freeRtos/Lib/queueStream.c **** static int streamQueueOutputFun(char c, FILE *ostream)
-  16:../../freeRtos/Lib/queueStream.c **** {
-  17:../../freeRtos/Lib/queueStream.c ****   streamBuffers_t *strBuf = (streamBuffers_t *) ostream->udata;
-  18:../../freeRtos/Lib/queueStream.c **** /*  if (xQueueSend( strBuf->Tx, &c, strBuf->tx_timeout))
-  19:../../freeRtos/Lib/queueStream.c ****   {
-  20:../../freeRtos/Lib/queueStream.c ****     return EOF;
-  21:../../freeRtos/Lib/queueStream.c ****   }
-  22:../../freeRtos/Lib/queueStream.c ****   else*/
-  23:../../freeRtos/Lib/queueStream.c ****   xQueueSend( strBuf->Tx, &c, portMAX_DELAY);
-  24:../../freeRtos/Lib/queueStream.c ****   return 0;
-  25:../../freeRtos/Lib/queueStream.c **** }
-  26:../../freeRtos/Lib/queueStream.c **** 
-  27:../../freeRtos/Lib/queueStream.c **** static int streamQueueInputFun(FILE *istream)
-  28:../../freeRtos/Lib/queueStream.c **** {
- 140               	.LM0:
- 141               	.LFBB1:
- 142 0000 CF93      		push r28
- 143 0002 DF93      		push r29
- 144 0004 1F92      		push __zero_reg__
- 145 0006 CDB7      		in r28,__SP_L__
- 146 0008 DEB7      		in r29,__SP_H__
- 147               	/* prologue: function */
- 148               	/* frame size = 1 */
- 149               	/* stack size = 3 */
- 150               	.L__stack_usage = 3
-  29:../../freeRtos/Lib/queueStream.c ****   char c;
-  30:../../freeRtos/Lib/queueStream.c ****   streamBuffers_t *strBuf = (streamBuffers_t *) istream->udata;
-  31:../../freeRtos/Lib/queueStream.c ****   xQueueReceive(strBuf->Rx, &c, portMAX_DELAY);
- 152               	.LM1:
- 153 000a DC01      		movw r26,r24
- 154 000c 1C96      		adiw r26,12
- 155 000e ED91      		ld r30,X+
- 156 0010 FC91      		ld r31,X
- 157 0012 1D97      		sbiw r26,12+1
- 158 0014 20E0      		ldi r18,0
- 159 0016 4FEF      		ldi r20,lo8(-1)
- 160 0018 5FEF      		ldi r21,lo8(-1)
- 161 001a BE01      		movw r22,r28
- 162 001c 6F5F      		subi r22,-1
- 163 001e 7F4F      		sbci r23,-1
- 164 0020 8081      		ld r24,Z
- 165 0022 9181      		ldd r25,Z+1
- 166 0024 0E94 0000 		call xQueueGenericReceive
-  32:../../freeRtos/Lib/queueStream.c ****   return c;
- 168               	.LM2:
- 169 0028 8981      		ldd r24,Y+1
-  33:../../freeRtos/Lib/queueStream.c **** }
- 171               	.LM3:
- 172 002a 9927      		clr r25
- 173 002c 87FD      		sbrc r24,7
- 174 002e 9095      		com r25
- 175               	/* epilogue start */
- 176 0030 0F90      		pop __tmp_reg__
- 177 0032 DF91      		pop r29
- 178 0034 CF91      		pop r28
- 179 0036 0895      		ret
- 184               	.Lscope1:
- 186               		.stabd	78,0,0
- 191               	streamQueueOutputFun:
- 192               		.stabd	46,0,0
-  16:../../freeRtos/Lib/queueStream.c **** {
- 194               	.LM4:
- 195               	.LFBB2:
- 196 0038 CF93      		push r28
- 197 003a DF93      		push r29
- 198 003c 1F92      		push __zero_reg__
- 199 003e CDB7      		in r28,__SP_L__
- 200 0040 DEB7      		in r29,__SP_H__
- 201               	/* prologue: function */
- 202               	/* frame size = 1 */
- 203               	/* stack size = 3 */
- 204               	.L__stack_usage = 3
- 205 0042 8983      		std Y+1,r24
-  23:../../freeRtos/Lib/queueStream.c ****   xQueueSend( strBuf->Tx, &c, portMAX_DELAY);
- 207               	.LM5:
- 208 0044 DB01      		movw r26,r22
- 209 0046 1C96      		adiw r26,12
- 210 0048 ED91      		ld r30,X+
- 211 004a FC91      		ld r31,X
- 212 004c 1D97      		sbiw r26,12+1
- 213 004e 20E0      		ldi r18,0
- 214 0050 4FEF      		ldi r20,lo8(-1)
- 215 0052 5FEF      		ldi r21,lo8(-1)
- 216 0054 BE01      		movw r22,r28
- 217 0056 6F5F      		subi r22,-1
- 218 0058 7F4F      		sbci r23,-1
- 219 005a 8281      		ldd r24,Z+2
- 220 005c 9381      		ldd r25,Z+3
- 221 005e 0E94 0000 		call xQueueGenericSend
-  25:../../freeRtos/Lib/queueStream.c **** }
- 223               	.LM6:
- 224 0062 80E0      		ldi r24,0
- 225 0064 90E0      		ldi r25,0
- 226               	/* epilogue start */
- 227 0066 0F90      		pop __tmp_reg__
- 228 0068 DF91      		pop r29
- 229 006a CF91      		pop r28
- 230 006c 0895      		ret
- 232               	.Lscope2:
- 234               		.stabd	78,0,0
- 240               	.global	initQueueStream
- 242               	initQueueStream:
- 243               		.stabd	46,0,0
-   7:../../freeRtos/Lib/queueStream.c **** {
- 245               	.LM7:
- 246               	.LFBB3:
- 247               	/* prologue: function */
- 248               	/* frame size = 0 */
- 249               	/* stack size = 0 */
- 250               	.L__stack_usage = 0
- 251 006e FC01      		movw r30,r24
-   8:../../freeRtos/Lib/queueStream.c ****   fdev_setup_stream(stream, streamQueueOutputFun, streamQueueInputFun, _FDEV_SETUP_RW);
- 253               	.LM8:
- 254 0070 80E0      		ldi r24,lo8(gs(streamQueueOutputFun))
- 255 0072 90E0      		ldi r25,hi8(gs(streamQueueOutputFun))
- 256 0074 9187      		std Z+9,r25
- 257 0076 8087      		std Z+8,r24
- 258 0078 80E0      		ldi r24,lo8(gs(streamQueueInputFun))
- 259 007a 90E0      		ldi r25,hi8(gs(streamQueueInputFun))
- 260 007c 9387      		std Z+11,r25
- 261 007e 8287      		std Z+10,r24
- 262 0080 83E0      		ldi r24,lo8(3)
- 263 0082 8383      		std Z+3,r24
-   9:../../freeRtos/Lib/queueStream.c ****   fdev_set_udata(stream, (void *)buffer);
- 265               	.LM9:
- 266 0084 7587      		std Z+13,r23
- 267 0086 6487      		std Z+12,r22
-  10:../../freeRtos/Lib/queueStream.c ****   buffer->Rx = Rx;
- 269               	.LM10:
- 270 0088 FB01      		movw r30,r22
- 271 008a 5183      		std Z+1,r21
- 272 008c 4083      		st Z,r20
-  11:../../freeRtos/Lib/queueStream.c ****   buffer->Tx = Tx;
- 274               	.LM11:
- 275 008e 3383      		std Z+3,r19
- 276 0090 2283      		std Z+2,r18
- 277 0092 0895      		ret
- 279               	.Lscope3:
- 281               		.stabd	78,0,0
- 283               	.Letext0:
- 284               		.ident	"GCC: (GNU) 4.8.2"
+   6               	__RAMPY__ = 0x3a
+   7               	__RAMPX__ = 0x39
+   8               	__RAMPD__ = 0x38
+   9               	__CCP__ = 0x34
+  10               	__tmp_reg__ = 0
+  11               	__zero_reg__ = 1
+  14               		.text
+  15               	.Ltext0:
+ 464               	streamQueueInputFun:
+ 465               		.stabd	46,0,0
+   1:../../Lib/queueStream.c **** #include "queueStream.h"
+   2:../../Lib/queueStream.c **** 
+   3:../../Lib/queueStream.c **** static int streamQueueOutputFun(char c, FILE *ostream);
+   4:../../Lib/queueStream.c **** static int streamQueueInputFun(FILE *istream);
+   5:../../Lib/queueStream.c **** 
+   6:../../Lib/queueStream.c **** void initQueueStream(FILE *stream, streamBuffers_t *buffer, xQueueHandle Rx, xQueueHandle Tx)
+   7:../../Lib/queueStream.c **** {
+   8:../../Lib/queueStream.c ****   fdev_setup_stream(stream, streamQueueOutputFun, streamQueueInputFun, _FDEV_SETUP_RW);
+   9:../../Lib/queueStream.c ****   fdev_set_udata(stream, (void *)buffer);
+  10:../../Lib/queueStream.c ****   buffer->Rx = Rx;
+  11:../../Lib/queueStream.c ****   buffer->Tx = Tx;
+  12:../../Lib/queueStream.c ****   return;
+  13:../../Lib/queueStream.c **** }
+  14:../../Lib/queueStream.c **** 
+  15:../../Lib/queueStream.c **** static int streamQueueOutputFun(char c, FILE *ostream)
+  16:../../Lib/queueStream.c **** {
+  17:../../Lib/queueStream.c ****   streamBuffers_t *strBuf = (streamBuffers_t *) ostream->udata;
+  18:../../Lib/queueStream.c **** /*  if (xQueueSend( strBuf->Tx, &c, strBuf->tx_timeout))
+  19:../../Lib/queueStream.c ****   {
+  20:../../Lib/queueStream.c ****     return EOF;
+  21:../../Lib/queueStream.c ****   }
+  22:../../Lib/queueStream.c ****   else*/
+  23:../../Lib/queueStream.c ****   xQueueSend( strBuf->Tx, &c, portMAX_DELAY);
+  24:../../Lib/queueStream.c ****   return 0;
+  25:../../Lib/queueStream.c **** }
+  26:../../Lib/queueStream.c **** 
+  27:../../Lib/queueStream.c **** static int streamQueueInputFun(FILE *istream)
+  28:../../Lib/queueStream.c **** {
+ 467               	.LM0:
+ 468               	.LFBB1:
+ 469 0000 CF93      		push r28
+ 470 0002 DF93      		push r29
+ 471 0004 1F92      		push __zero_reg__
+ 472 0006 CDB7      		in r28,__SP_L__
+ 473 0008 DEB7      		in r29,__SP_H__
+ 474               	/* prologue: function */
+ 475               	/* frame size = 1 */
+ 476               	/* stack size = 3 */
+ 477               	.L__stack_usage = 3
+  29:../../Lib/queueStream.c ****   char c;
+  30:../../Lib/queueStream.c ****   streamBuffers_t *strBuf = (streamBuffers_t *) istream->udata;
+  31:../../Lib/queueStream.c ****   xQueueReceive(strBuf->Rx, &c, portMAX_DELAY);
+ 479               	.LM1:
+ 480 000a DC01      		movw r26,r24
+ 481 000c 1C96      		adiw r26,12
+ 482 000e ED91      		ld r30,X+
+ 483 0010 FC91      		ld r31,X
+ 484 0012 1D97      		sbiw r26,12+1
+ 485 0014 20E0      		ldi r18,0
+ 486 0016 4FEF      		ldi r20,lo8(-1)
+ 487 0018 5FEF      		ldi r21,lo8(-1)
+ 488 001a BE01      		movw r22,r28
+ 489 001c 6F5F      		subi r22,-1
+ 490 001e 7F4F      		sbci r23,-1
+ 491 0020 8081      		ld r24,Z
+ 492 0022 9181      		ldd r25,Z+1
+ 493 0024 0E94 0000 		call xQueueGenericReceive
+  32:../../Lib/queueStream.c ****   return c;
+ 495               	.LM2:
+ 496 0028 8981      		ldd r24,Y+1
+  33:../../Lib/queueStream.c **** }
+ 498               	.LM3:
+ 499 002a 9927      		clr r25
+ 500 002c 87FD      		sbrc r24,7
+ 501 002e 9095      		com r25
+ 502               	/* epilogue start */
+ 503 0030 0F90      		pop __tmp_reg__
+ 504 0032 DF91      		pop r29
+ 505 0034 CF91      		pop r28
+ 506 0036 0895      		ret
+ 511               	.Lscope1:
+ 513               		.stabd	78,0,0
+ 518               	streamQueueOutputFun:
+ 519               		.stabd	46,0,0
+  16:../../Lib/queueStream.c **** {
+ 521               	.LM4:
+ 522               	.LFBB2:
+ 523 0038 CF93      		push r28
+ 524 003a DF93      		push r29
+ 525 003c 1F92      		push __zero_reg__
+ 526 003e CDB7      		in r28,__SP_L__
+ 527 0040 DEB7      		in r29,__SP_H__
+ 528               	/* prologue: function */
+ 529               	/* frame size = 1 */
+ 530               	/* stack size = 3 */
+ 531               	.L__stack_usage = 3
+ 532 0042 8983      		std Y+1,r24
+  23:../../Lib/queueStream.c ****   xQueueSend( strBuf->Tx, &c, portMAX_DELAY);
+ 534               	.LM5:
+ 535 0044 DB01      		movw r26,r22
+ 536 0046 1C96      		adiw r26,12
+ 537 0048 ED91      		ld r30,X+
+ 538 004a FC91      		ld r31,X
+ 539 004c 1D97      		sbiw r26,12+1
+ 540 004e 20E0      		ldi r18,0
+ 541 0050 4FEF      		ldi r20,lo8(-1)
+ 542 0052 5FEF      		ldi r21,lo8(-1)
+ 543 0054 BE01      		movw r22,r28
+ 544 0056 6F5F      		subi r22,-1
+ 545 0058 7F4F      		sbci r23,-1
+ 546 005a 8281      		ldd r24,Z+2
+ 547 005c 9381      		ldd r25,Z+3
+ 548 005e 0E94 0000 		call xQueueGenericSend
+  25:../../Lib/queueStream.c **** }
+ 550               	.LM6:
+ 551 0062 80E0      		ldi r24,0
+ 552 0064 90E0      		ldi r25,0
+ 553               	/* epilogue start */
+ 554 0066 0F90      		pop __tmp_reg__
+ 555 0068 DF91      		pop r29
+ 556 006a CF91      		pop r28
+ 557 006c 0895      		ret
+ 559               	.Lscope2:
+ 561               		.stabd	78,0,0
+ 567               	.global	initQueueStream
+ 569               	initQueueStream:
+ 570               		.stabd	46,0,0
+   7:../../Lib/queueStream.c **** {
+ 572               	.LM7:
+ 573               	.LFBB3:
+ 574               	/* prologue: function */
+ 575               	/* frame size = 0 */
+ 576               	/* stack size = 0 */
+ 577               	.L__stack_usage = 0
+ 578 006e FC01      		movw r30,r24
+   8:../../Lib/queueStream.c ****   fdev_setup_stream(stream, streamQueueOutputFun, streamQueueInputFun, _FDEV_SETUP_RW);
+ 580               	.LM8:
+ 581 0070 80E0      		ldi r24,lo8(gs(streamQueueOutputFun))
+ 582 0072 90E0      		ldi r25,hi8(gs(streamQueueOutputFun))
+ 583 0074 8087      		std Z+8,r24
+ 584 0076 9187      		std Z+9,r25
+ 585 0078 80E0      		ldi r24,lo8(gs(streamQueueInputFun))
+ 586 007a 90E0      		ldi r25,hi8(gs(streamQueueInputFun))
+ 587 007c 8287      		std Z+10,r24
+ 588 007e 9387      		std Z+11,r25
+ 589 0080 83E0      		ldi r24,lo8(3)
+ 590 0082 8383      		std Z+3,r24
+   9:../../Lib/queueStream.c ****   fdev_set_udata(stream, (void *)buffer);
+ 592               	.LM9:
+ 593 0084 6487      		std Z+12,r22
+ 594 0086 7587      		std Z+13,r23
+  10:../../Lib/queueStream.c ****   buffer->Rx = Rx;
+ 596               	.LM10:
+ 597 0088 FB01      		movw r30,r22
+ 598 008a 4083      		st Z,r20
+ 599 008c 5183      		std Z+1,r21
+  11:../../Lib/queueStream.c ****   buffer->Tx = Tx;
+ 601               	.LM11:
+ 602 008e 2283      		std Z+2,r18
+ 603 0090 3383      		std Z+3,r19
+ 604 0092 0895      		ret
+ 606               	.Lscope3:
+ 608               		.stabd	78,0,0
+ 610               	.Letext0:
+ 611               		.ident	"GCC: (GNU) 4.8.2"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 queueStream.c
-     /tmp/cc8tvF9b.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cc8tvF9b.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cc8tvF9b.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cc8tvF9b.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cc8tvF9b.s:6      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc8tvF9b.s:7      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc8tvF9b.s:137    .text:0000000000000000 streamQueueInputFun
-     /tmp/cc8tvF9b.s:191    .text:0000000000000038 streamQueueOutputFun
-     /tmp/cc8tvF9b.s:242    .text:000000000000006e initQueueStream
+     /tmp/ccFvovlC.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccFvovlC.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccFvovlC.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccFvovlC.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccFvovlC.s:6      *ABS*:000000000000003a __RAMPY__
+     /tmp/ccFvovlC.s:7      *ABS*:0000000000000039 __RAMPX__
+     /tmp/ccFvovlC.s:8      *ABS*:0000000000000038 __RAMPD__
+     /tmp/ccFvovlC.s:9      *ABS*:0000000000000034 __CCP__
+     /tmp/ccFvovlC.s:10     *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccFvovlC.s:11     *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccFvovlC.s:464    .text:0000000000000000 streamQueueInputFun
+     /tmp/ccFvovlC.s:518    .text:0000000000000038 streamQueueOutputFun
+     /tmp/ccFvovlC.s:569    .text:000000000000006e initQueueStream
 
 UNDEFINED SYMBOLS
 xQueueGenericReceive

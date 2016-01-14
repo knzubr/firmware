@@ -46,8 +46,8 @@ OPT = s
 
 # List C source files here. (C dependencies are automatically generated.)
 SOURCE_DIR  = ../../freeRtos/Source
-LIB_DIR     = ../../freeRtos/Lib
-LIB_NET_DIR = ../../freeRtos/Lib/net
+LIB_DIR     = ../../Lib
+LIB_NET_DIR = ../../Lib/net
 PORT_DIR    = ../../freeRtos/portable/GCC/ATMega64
 PORT_MEM    = ../../freeRtos/portable/MemMang
 
@@ -126,7 +126,7 @@ DEBUG_LEVEL=-g
 WARNINGS=-Wall -Wextra -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wsign-compare \
 		-Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wunused
 
-CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../freeRtos/Lib/include -I../../freeRtos/Lib/net/include \
+CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../Lib/include -I../../Lib/net/include \
 $(DEBUG_LEVEL) -O$(OPT) \
 -fsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \
 $(WARNINGS) \
