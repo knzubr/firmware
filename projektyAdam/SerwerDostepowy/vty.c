@@ -30,12 +30,7 @@
 static cliExRes_t helpFunction           (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
 static cliExRes_t statusEncFunction      (cmdState_t *state);
-static cliExRes_t curtainDownFunction    (cmdState_t *state);
-static cliExRes_t curtainUpFunction      (cmdState_t *state);
-static cliExRes_t rpingFunction          (cmdState_t *state);
 static cliExRes_t pingFunction           (cmdState_t *state);
-static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state);
-static cliExRes_t goXmodemWyslijFunction (cmdState_t *state);
 static cliExRes_t dodajRamPlikFunction   (cmdState_t *state);
 static cliExRes_t eraseRamFileFunction   (cmdState_t *state);
 static cliExRes_t flashExModuleFunction  (cmdState_t *state);
@@ -43,16 +38,8 @@ static cliExRes_t writeRamFileFunction   (cmdState_t *state);
 static cliExRes_t editRamFileFunction    (cmdState_t *state);
 static cliExRes_t readRamFIleFunction    (cmdState_t *state);
 
-static cliExRes_t ustawPortExtAFunction  (cmdState_t *state);
-static cliExRes_t ustawPortExtBFunction  (cmdState_t *state);
-static cliExRes_t ustawPortRezystor      (cmdState_t *state);
-
-static cliExRes_t ustawModWykFunction    (cmdState_t *state);
-static cliExRes_t zapiszModWykFunction   (cmdState_t *state);
-
 static cliExRes_t pokazCzasFunction      (cmdState_t *state);
 static cliExRes_t debugFunction          (cmdState_t *state);
-static cliExRes_t czytajAC_Function      (cmdState_t *state);
 
 static cliExRes_t enableFunction         (cmdState_t *state);
 static cliExRes_t disableFunction        (cmdState_t *state);
@@ -99,7 +86,6 @@ const command_t cmdListNormal[] PROGMEM =
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_time,      cmd_help_time,      pokazCzasFunction},
-  {cmd_rping,     cmd_help_rping,     rpingFunction},
   {cmd_ping,      cmd_help_ping,      pingFunction},
   {cmd_dir_rf,    cmd_help_dir_rf,    writeRamFileFunction},
   {cmd_read_rf,   cmd_help_read_rf,   readRamFIleFunction},
@@ -115,11 +101,7 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_time,      cmd_help_time,      pokazCzasFunction},
   {cmd_net_dbg,   cmd_help_net_dbg,   debugFunction},
 
-  {cmd_rping,     cmd_help_rping,     rpingFunction},
   {cmd_ping,      cmd_help_ping,      pingFunction},
-  {cmd_xRec,      cmd_help_xRec,      goXmodemOdbierzFunction},
-  {cmd_xSend,     cmd_help_xSend,     goXmodemWyslijFunction},
-  {cmd_xflash,    cmd_help_xflash,    flashExModuleFunction},
 #ifdef testZewPamiec
   {cmd_rtest,     cmd_help_rtest,     testPamZewFunction},
 #endif
@@ -129,18 +111,9 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_edit_rf,   cmd_help_edit_rf,   editRamFileFunction},
   {cmd_read_rf,   cmd_help_read_rf,   readRamFIleFunction},
 
-  {cmd_up,        cmd_help_up,        curtainUpFunction},
-  {cmd_down,      cmd_help_down,      curtainDownFunction},
-
-  {cmd_spa,       cmd_help_spa,       ustawPortExtAFunction},
-  {cmd_spb,       cmd_help_spb,       ustawPortExtBFunction},
-  {cmd_ustawR,    cmd_help_ustawR,    ustawPortRezystor},
   {cmd_settime,   cmd_help_settime,   setTimeFunction},
-  {cmd_ac,        cmd_help_ac,        czytajAC_Function},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {cmd_configure, cmd_help_configure, configureModeFunction},
-  {cmd_ustawMW,   cmd_help_ustawMW,   ustawModWykFunction},
-  {cmd_zapiszMW,  cmd_help_zapiszMW,  zapiszModWykFunction},
   {NULL, NULL, NULL}
 };
 
@@ -244,9 +217,7 @@ void printStatus(FILE *stream)
 
   //Print Rs485 Execitive modules
   fprintf_P(stream, statusRs485listStr);
-  tmp = printRs485devices(stream);
-  if (tmp == 0)
-    fprintf_P(stream, statusNoRs485Dev);
+
 
   //Print locker sensors
   fprintf_P(stream, statusLockerSensorsStr);
@@ -532,96 +503,6 @@ static cliExRes_t helpFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
-static cliExRes_t curtainDownFunction(cmdState_t *state)
-{
-  uint8_t nrRolety;
-  uint8_t nrSterownika;
-  uint8_t wartosc;
-
-  nrSterownika = cmdlineGetArgInt(1, state);
-  nrRolety = cmdlineGetArgInt(2, state);
-  nrRolety &= 0x01;
-  wartosc = cmdlineGetArgInt(3, state);
-
-  fprintf_P(state->myStdInOut,movingCurtainDownStr, nrSterownika, nrRolety+1);
-
-  if ((wartosc > 0) && (wartosc <=100))
-    fprintf_P(state->myStdInOut, movingCurtainPosStr, wartosc);
-
-  uint8_t result = rs485curtainDown(nrSterownika, nrRolety, wartosc);
-
-  if (result == 0)
-    return OK_INFORM;
-
-  return ERROR_SILENT;
-}
-
-static cliExRes_t curtainUpFunction(cmdState_t *state)
-{
-  if (state->argc < 2)
-    return SYNTAX_ERROR;
-
-  uint8_t nrSterownika = (cmdlineGetArgInt(1, state) & 0x3F);
-  uint8_t nrRolety     = (cmdlineGetArgInt(2, state) & 0x01);
-  uint8_t wartosc = 255;
-  if (state->argc > 2)
-    wartosc = cmdlineGetArgInt(3, state);
-
-  fprintf_P(state->myStdInOut,   movingCurtainUpStr, nrSterownika, nrRolety+1);
-  if ((wartosc > 0) && (wartosc <=100))
-    fprintf_P(state->myStdInOut, movingCurtainPosStr, wartosc);
-
-  uint8_t result = rs485curtainUp(nrSterownika, nrRolety, wartosc);
-
-  if (result == 0)
-    return OK_INFORM;
-
-  return ERROR_SILENT;
-}
-
-static cliExRes_t ustawPortExtAFunction(cmdState_t *state)
-{
-  uint8_t wyjscie = cmdlineGetArgInt(1, state);
-  MPC23s17SetDirA(0x00, 0);
-  MPC23s17SetPortA(wyjscie, 0);
-  return OK_SILENT;
-}
-
-static cliExRes_t ustawPortExtBFunction(cmdState_t *state)
-{
-  uint8_t wyjscie = cmdlineGetArgInt(1, state);
-  MPC23s17SetDirB(0x00, 0);
-  MPC23s17SetPortB(wyjscie, 0);
-  return OK_SILENT;
-}
-
-static cliExRes_t ustawPortRezystor(cmdState_t *state)
-{
-  if (state->argc < 1)
-    return SYNTAX_ERROR;
-
-  uint8_t wartosc = cmdlineGetArgInt(1, state);
-
-  MCP4150_setValue(wartosc);
-
-  return OK_SILENT;
-}
-
-static cliExRes_t rpingFunction(cmdState_t *state)
-{
-  if (state->argc < 1)
-    return SYNTAX_ERROR;
-
-  uint8_t nrSterownika = (uint8_t)(cmdlineGetArgInt(1, state));
-  if ((state->err2 = rs485ping(nrSterownika)) == 0)
-    return OK_INFORM;
-
-  state->errno = noRemoteDevice;
-  state->err1 = nrSterownika;
-  printErrorInfo(state);
-  return OK_SILENT;
-}
-
 static cliExRes_t pingFunction(cmdState_t *state)
 {
   if (state->argc < 4)
@@ -634,239 +515,6 @@ static cliExRes_t pingFunction(cmdState_t *state)
   //ip[3] = (uint8_t)(cmdlineGetArgInt(4, state));
   //Ipv4Ping(*((uint32_t *)(ip)));
 
-  return OK_SILENT;
-}
-
-
-static cliExRes_t flashExModuleFunction(cmdState_t *state)
-{
-  if (state->argc != 2)
-    return SYNTAX_ERROR;
-
-  uint8_t  nrUrzadzenia = cmdlineGetArgInt(1, state);
-  char *nazwaPliku      = cmdlineGetArgStr(2, state);
-  uint8_t  blad;
-
-  // Sprawdzanie, czy moduł wykonawczy odpowiada
-  if (rs485ping(nrUrzadzenia) != 0)
-  {
-    state->errno = noRemoteDevice;
-    printErrorInfo(state);
-    return ERROR_INFORM;
-  }
-
-  //Sprawdzanie, czy istnieje odpowiedni plik z firmware
-  if (ramDyskOtworzPlik(nazwaPliku, &fdVty) != 0)
-  {
-    fprintf_P(state->myStdInOut, errorOpenFile, nazwaPliku);
-    return ERROR_INFORM;
-  }
-
-  blad = rs485xModemFlash(&fdVty, nrUrzadzenia, state->myStdInOut);
-
-  ramDyskZamknijPlik(&fdVty);
-
-  if (blad != 0)
-    return ERROR_INFORM;
-
-  return OK_SILENT;
-}
-
-static cliExRes_t goXmodemWyslijFunction(cmdState_t *state) // TODO add code in xModem
-{
-  fprintf_P(state->myStdInOut, xwyslijStartStr);
-  if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
-  {
-    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
-    return ERROR_INFORM;
-  }
-  return OK_SILENT;
-}
-
-static cliExRes_t goXmodemOdbierzFunction(cmdState_t *state) //TODO move to xmodem
-{
-  fprintf_P(state->myStdInOut, PSTR("Xmodem: rozpoczynanie odbioru\r\n"));
-  if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
-  {
-    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
-    return ERROR_INFORM;
-  }
-
-  uint8_t  i = 25;
-
-  uint8_t  temp1;
-//  uint8_t  temp2;
-
-  uint8_t  c;
-  uint8_t  liczbaProb;
-  uint8_t  *zapPtr;
-  uint8_t  *zapPtrKopia;
-
-  uint16_t crcLokalne;
-  uint8_t nrBloku;
-
-  uint8_t nrBlokuZdalny;
-  uint8_t nrBlokuZdalnyNeg;
-
-  uint8_t crcHi;
-  uint8_t crcLo;
-
-  state->err1=0;
-  state->err2=0;
-  liczbaProb = 20;
-  for ( ; ; )
-  {
-    fputc('C'              , state->myStdInOut);
-    while(!(UCSR1A & (1 << TXC1)));                              //Czekanie na opróżnienie bufora
-
-    if(xQueueReceive(xVtyRec, &c, 100))
-      if (c == SOH)
-        break;                                                   //Rozpoczynamy transmisje
-
-    liczbaProb--;
-    if (liczbaProb == 0)
-    {
-      ramDyskZamknijPlik(&fdVty);
-      state->errno = (uint8_t)(AllOK);
-      return ERROR_INFORM;
-    }
-  }
-
-  nrBloku = 1;
-  liczbaProb = 10;
-
-  zapPtr          = ramDyskDodajBlokXmodem(&fdVty, nrBloku);
-  zapPtrKopia     = zapPtr;
-  for ( ; ; )
-  {
-    if (!xQueueReceive(xVtyRec, &nrBlokuZdalny, 100))
-    {
-      state->errno = (uint8_t)(xModemFrameStartTimeout);
-      break;
-    }
-
-    if (!xQueueReceive(xVtyRec, &nrBlokuZdalnyNeg, 1))
-    {
-      state->errno = (uint8_t)(xModemByteSendTimeout);
-      break;
-    }
-
-    //1 Sprawdzanie, czy pasuje numer bloku z numerem bloku w usupełnieniu bitowym do 1
-    c = 255-nrBlokuZdalnyNeg;
-    if (nrBlokuZdalny != c)
-    {
-      state->errno = (uint8_t)(xModemFrameFrameNoCorrectionNotMatch);
-      state->err1 = nrBlokuZdalny;
-      state->err2 = nrBlokuZdalnyNeg;
-      break;
-    }
-
-    //Sprawdzenie, czy nie jest wznowiona transmisja poprzedniego bloku lub nie zaczęła się od bloku 0
-    c = nrBloku-1;
-    if (nrBlokuZdalny == c)
-    {
-      nrBloku = c;    //Cofnięcie nr aktualnego bloku o 1
-      zapPtr = ramDyskDodajBlokXmodem(&fdVty, nrBloku);
-      zapPtrKopia = zapPtr;
-    }
-
-    //2 Sprawdzanie, czy pasuje numer bloku
-    if (nrBlokuZdalny != nrBloku)
-    {
-      state->errno = (uint8_t)(xModemWrongFrameNo);
-      state->err1 = nrBlokuZdalnyNeg;
-      state->err2 = nrBloku;
-      break;
-    }
-
-    for (i=0; i < XMODEM_BUFFER_SIZE; i++)
-    {
-      if(xQueueReceive(xVtyRec, &c, 10))
-        *(zapPtr++) = c;
-      else
-      {
-        state->errno = (uint8_t)(xModemByteSendTimeout);
-        break;
-      }
-    }
-    if (!xQueueReceive(xVtyRec, &crcHi, 10))
-    {
-        state->errno = (uint8_t)(xModemFrameCrc);
-        state->err1 = 2;
-        break;
-    }
-    if (!xQueueReceive(xVtyRec, &crcLo, 10))
-    {
-        state->errno = (uint8_t)(xModemFrameCrc);
-        state->err1 = 1;
-        break;
-    }
-
-    //3 Zerowanie CRC
-    crcLokalne=0;
-
-    //4 Obliczanie CRC
-    for (i=0; i < XMODEM_BUFFER_SIZE; i++)
-      crcLokalne = _crc_xmodem_update(crcLokalne, *(zapPtrKopia++));
-
-    //5 Srawdzanie CRC
-    if ((crcHi == crcLokalne / 256) && (crcLo == crcLokalne % 256))
-    {
-      liczbaProb = 10;
-      uartVtySendByte(ACK);
-    }
-    else
-    {
-      liczbaProb--;
-      nrBloku--;
-      uartVtySendByte(NAK);
-    }
-
-    if (liczbaProb == 0)
-    {
-      state->err1 = nrBlokuZdalny;
-      state->err2 = nrBloku;
-      state->errno = (uint8_t)(xModemWrongFrameNo);
-      break;
-    }
-
-    if (!xQueueReceive(xVtyRec, &temp1, 100))
-    {
-      state->errno = (uint8_t)(xModemFrameStartTimeout);
-      break;
-    }
-
-    if (temp1 == SOH)
-    {
-      nrBloku++;
-      zapPtr = ramDyskDodajBlokXmodem(&fdVty, nrBloku);
-      zapPtrKopia = zapPtr;
-      state->errno = (uint8_t)(AllOK);
-      continue;
-    }
-
-    if (temp1 == CAN)
-    {
-      state->err1 = nrBloku;
-      state->errno = (uint8_t)(xModemRemoteSideCan);
-      break;
-    }
-    if (temp1 == EOT)
-    {
-      uartVtySendByte(NAK);
-      if (xQueueReceive(xVtyRec, &temp1, 10))
-      {
-        if (temp1 == EOT)
-          uartVtySendByte(ACK);
-      }
-      state->errno = (uint8_t)(AllOK);
-      break;
-    }
-    state->errno = (uint8_t)(xModemUnknownResponse);
-    state->err1 = temp1;
-    break;
-  }
-  ramDyskZamknijPlik(&fdVty);
   return OK_SILENT;
 }
 
