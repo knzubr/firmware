@@ -29,7 +29,7 @@
 static cliExRes_t helpFunction           (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
 static cliExRes_t rpingFunction          (cmdState_t *state);
-static cliExRes_t debugFunction          (cmdState_t *state);
+//static cliExRes_t debugFunction          (cmdState_t *state);
 static cliExRes_t enableFunction         (cmdState_t *state);
 static cliExRes_t disableFunction        (cmdState_t *state);
 static cliExRes_t configureModeFunction  (cmdState_t *state);
@@ -148,24 +148,24 @@ static cliExRes_t statusFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
-static cliExRes_t debugFunction          (cmdState_t *state)
-{
-  if (state->argc < 2)
-    return SYNTAX_ERROR;
+//static cliExRes_t debugFunction          (cmdState_t *state)
+//{
+//  if (state->argc < 2)
+//    return SYNTAX_ERROR;
 
-  uint8_t level = cmdlineGetArgInt(2, state);
-  const char *str = (const char*)cmdlineGetArgStr(1, state);
-  if (level == 0)
-  {
+//  uint8_t level = cmdlineGetArgInt(2, state);
+//  const char *str = (const char*)cmdlineGetArgStr(1, state);
+//  if (level == 0)
+//  {
 
-  }
-  else                   //level > 0
-  {
+//  }
+//  else                   //level > 0
+//  {
 
-  }
+//  }
 
-  return SYNTAX_ERROR;
-}
+//  return SYNTAX_ERROR;
+//}
 
 static cliExRes_t helpFunction(cmdState_t *state)
 {
@@ -191,7 +191,7 @@ static cliExRes_t rpingFunction(cmdState_t *state)
 
 static cliExRes_t saveConfigFunction(cmdState_t *state)
 {
-  state = NULL;
+  (void) state;
   saveConfiguration();
   return OK_SILENT;
 }

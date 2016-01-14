@@ -35,12 +35,12 @@ void sensorsTaskInit(void)
 
 void sensorsTask(void* pvParameters)
 {
-  pvParameters = NULL;
+  (void) pvParameters;
   uint8_t addr = 255;
 //  uint8_t i;
 
   MPC23s17SetDirA(0x00, 0);
-  
+
   MPC23s17SetDirB(0x00, 0);
 
   for( ; ; )
@@ -50,13 +50,13 @@ void sensorsTask(void* pvParameters)
     tmp = MCP3008_getSampleSingle(0);
     voltage = (uint8_t)(tmp>>5);
     vTaskDelay(10);
-      
+
     //Read temperature inside chasis
     tmp = MCP3008_getSampleSingle(1);
     tmp *=10;
     temperature = (uint8_t)(tmp / 24);
     vTaskDelay(10);
-      
+
     //read lock
     checkLockerSensors();
 
@@ -71,7 +71,7 @@ void sensorsTask(void* pvParameters)
       ;
       //vTaskDelay(10);
     }
-    
+
     for (addr = FIRST_SENSOR_ADDR; addr <= LAST_SENSOR_ADDR; addr++)
     {
       ;

@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include <util/crc16.h>
 
-#include "../../freeRtos/Lib/include/memory_x.h"
+#include "memory_x.h"
 //#include "Rs485_prot.h"
 
 #include "../../freeRtos/Source/include/FreeRTOS.h"
