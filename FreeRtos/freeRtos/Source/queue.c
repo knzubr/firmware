@@ -33,9 +33,9 @@
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-    more details. You should have received a copy of the GNU General Public 
-    License and the FreeRTOS license exception along with FreeRTOS; if not it 
-    can be viewed here: http://www.freertos.org/a00114.html and also obtained 
+    more details. You should have received a copy of the GNU General Public
+    License and the FreeRTOS license exception along with FreeRTOS; if not it
+    can be viewed here: http://www.freertos.org/a00114.html and also obtained
     by writing to Richard Barry, contact details for whom are available on the
     FreeRTOS WEB site.
 
@@ -296,8 +296,8 @@ size_t xQueueSizeInBytes;
 
 xQueueHandle xQueueCreateExternal( unsigned portBASE_TYPE uxQueueLength, unsigned portBASE_TYPE uxItemSize, void *address )
 {
-xQUEUE *pxNewQueue;
-size_t xQueueSizeInBytes;
+    xQUEUE *pxNewQueue;
+    //size_t xQueueSizeInBytes;
 
 	/* Allocate the new queue structure. */
 	if( uxQueueLength > ( unsigned portBASE_TYPE ) 0 )
@@ -307,7 +307,7 @@ size_t xQueueSizeInBytes;
 		{
 			/* Create the list of pointers to queue items.  The queue is one byte
 			longer than asked for to make wrap checking easier/faster. */
-			xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1;
+			//xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1;
 
 			pxNewQueue->pcHead = ( signed char * ) (address);
 			if( pxNewQueue->pcHead != NULL )
