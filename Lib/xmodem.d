@@ -1,9 +1,5 @@
-xmodem.o xmodem.d : ../../freeRtos/Lib/xmodem.c ../../freeRtos/Lib/include/xmodem.h \
- main.h ../../freeRtos/Lib/include/memory_x.h \
- ../../freeRtos/Lib/include/Rs485_prot.h \
- ../../freeRtos/Lib/include/ramdysk.h \
- ../../freeRtos/Lib/include/protocol1.h softwareConfig.h \
- ../../freeRtos/Source/include/FreeRTOS.h \
+xmodem.o xmodem.d : ../../Lib/xmodem.c ../../Lib/include/xmodem.h main.h \
+ ../../Lib/include/memory_x.h ../../freeRtos/Source/include/FreeRTOS.h \
  ../../freeRtos/Source/include/projdefs.h FreeRTOSConfig.h \
  ../../freeRtos/Source/include/portable.h \
  ../../freeRtos/Source/include/../../portable/GCC/ATMega323/portmacro.h \
@@ -11,30 +7,25 @@ xmodem.o xmodem.d : ../../freeRtos/Lib/xmodem.c ../../freeRtos/Lib/include/xmode
  ../../freeRtos/Source/include/croutine.h \
  ../../freeRtos/Source/include/list.h \
  ../../freeRtos/Source/include/queue.h \
- ../../freeRtos/Source/include/task.h \
- ../../freeRtos/Lib/include/queueStream.h cli_task.h \
- ../../freeRtos/Lib/include/cmdline.h serial.h main.h \
+ ../../freeRtos/Source/include/task.h ../../Lib/include/queueStream.h \
+ ../../freeRtos/Source/include/FreeRTOS.h \
+ ../../freeRtos/Source/include/queue.h cli_task.h \
+ ../../Lib/include/cmdline.h softwareConfig.h \
+ ../../freeRtos/Source/include/task.h serial.h main.h \
  ../../freeRtos/Source/include/semphr.h \
  ../../freeRtos/Source/include/queue.h hardware.h hardwareConfig.h \
- softwareConfig.h ../../freeRtos/Lib/include/mpc23s17.h \
- ../../freeRtos/Lib/include/spiXmega.h \
- ../../freeRtos/Lib/include/mcp3008.h ../../freeRtos/Lib/include/spi.h \
- ../../freeRtos/Lib/include/ds1305.h hardwareConfig.h \
- ../../freeRtos/Lib/include/enc28j60.h \
- ../../freeRtos/Lib/net/include/nic.h \
- ../../freeRtos/Lib/net/include/net.h \
- ../../freeRtos/Lib/net/include/tcp.h ../../freeRtos/Lib/net/include/ip.h \
- ../../freeRtos/Lib/net/include/icmp.h \
- ../../freeRtos/Lib/net/include/nic.h \
- ../../freeRtos/Lib/net/include/arp.h \
- ../../freeRtos/Lib/net/include/udp.h \
- ../../freeRtos/Lib/net/include/tcp.h \
- ../../freeRtos/Lib/include/memory_x.h \
- ../../freeRtos/Lib/include/ramdysk.h ../../freeRtos/Lib/include/ff.h \
- ../../freeRtos/Lib/include/integer.h ffconf.h \
- ../../freeRtos/Lib/include/sd_diskio.h hardware.h rtc.h \
- ../../freeRtos/Lib/include/integer.h sensors_task.h netstack_task.h \
- ../../freeRtos/Lib/net/include/net.h ../../freeRtos/Lib/net/include/ip.h \
- ../../freeRtos/Lib/net/include/arp.h \
- ../../freeRtos/Lib/net/include/udp.h \
- ../../freeRtos/Lib/net/include/icmp.h vty.h configuration.h
+ softwareConfig.h ../../Lib/include/mpc23s17.h \
+ ../../Lib/include/spiXmega.h ../../Lib/include/mcp3008.h \
+ ../../Lib/include/spiXmega.h ../../Lib/include/ramdysk.h \
+ ../../Lib/include/ff.h ../../Lib/include/integer.h ffconf.h \
+ ../../Lib/include/sd_diskio.h hardware.h ../../Lib/include/lcd.h vty.h \
+ ../../Lib/include/ds1305.h hardwareConfig.h ../../Lib/include/enc28j60.h \
+ ../../Lib/net/include/nic.h ../../Lib/net/include/net.h \
+ ../../Lib/net/include/tcp.h ../../Lib/net/include/ip.h \
+ ../../Lib/net/include/icmp.h ../../Lib/net/include/nic.h \
+ ../../Lib/net/include/arp.h ../../Lib/net/include/udp.h \
+ ../../Lib/net/include/tcp.h ../../Lib/include/memory_x.h configuration.h \
+ sensors_task.h ../../Lib/include/Rs485_prot.h \
+ ../../Lib/include/ramdysk.h ../../Lib/include/protocol1.h \
+ ../../Lib/net/include/ip.h ../../Lib/net/include/net.h \
+ ../../Lib/net/include/arp.h ../../Lib/net/include/udp.h
