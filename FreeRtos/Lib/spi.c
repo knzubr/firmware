@@ -12,13 +12,13 @@ void spiInit(void (*disableAllSpiDevicesFun)(void))
 {
   disableAllSpiDevicesFun();
   portENTER_CRITICAL();
-  vSemaphoreCreateBinary(xSemaphoreSpiSS); 
+  vSemaphoreCreateBinary(xSemaphoreSpiSS);
 
   SPCR  = (1<<SPE)|(1<<MSTR)|(1<<SPIE);  //TODO Adam: użyć odpowiednich nazw rejestrów
   SPSR |= (1<<SPI2X);
- 
+
   portEXIT_CRITICAL();
-  
+
   //mode 0,0
 }
 
@@ -52,6 +52,6 @@ void spiGive(void)
   xSemaphoreGive(xSemaphoreSpiSS);
 }
 
-uint8_t spiSend(uint8_t data)          { data = 0;  return 0; }
-uint8_t spiSendSpinBlock(uint8_t data) { data = 0;  return 0; }
+uint8_t spiSend(uint8_t data)          { (void) data;  return 0; }
+uint8_t spiSendSpinBlock(uint8_t data) { (void) data;  return 0; }
 

@@ -33,7 +33,6 @@ static cliExRes_t statusEncFunction      (cmdState_t *state);
 static cliExRes_t pingFunction           (cmdState_t *state);
 static cliExRes_t dodajRamPlikFunction   (cmdState_t *state);
 static cliExRes_t eraseRamFileFunction   (cmdState_t *state);
-static cliExRes_t flashExModuleFunction  (cmdState_t *state);
 static cliExRes_t writeRamFileFunction   (cmdState_t *state);
 static cliExRes_t editRamFileFunction    (cmdState_t *state);
 static cliExRes_t readRamFIleFunction    (cmdState_t *state);
@@ -444,28 +443,6 @@ static cliExRes_t setIpGwFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
-static cliExRes_t ustawModWykFunction(cmdState_t *state)
-{
-  if (state->argc < 2)
-    return SYNTAX_ERROR;
-
-  uint8_t adres =   cmdlineGetArgInt(1, state);
-  uint8_t wartosc = cmdlineGetArgHex(2, state);
-
-  sendSettings(adres, wartosc);
-
-  return OK_SILENT;
-}
-static cliExRes_t zapiszModWykFunction(cmdState_t *state)
-{
-  if (state->argc < 1)
-    return SYNTAX_ERROR;
-
-  uint8_t adres =  cmdlineGetArgInt(1, state);
-  saveSettings(adres);
-  return OK_SILENT;
-}
-
 static cliExRes_t setMacAddrFunction(cmdState_t *state)
 {
   if (state->argc < 6)
@@ -478,14 +455,6 @@ static cliExRes_t setMacAddrFunction(cmdState_t *state)
   nicState.mac.addr[4] = cmdlineGetArgHex(5, state);
   nicState.mac.addr[5] = cmdlineGetArgHex(6, state);
   nicSetMacAddress(nicState.mac.addr);
-  return OK_SILENT;
-}
-
-static cliExRes_t czytajAC_Function(cmdState_t *state)
-{
-  uint8_t nrWejscia = cmdlineGetArgInt(1, state);
-  uint16_t wynik = MCP3008_getSampleSingle(nrWejscia);
-  fprintf_P(state->myStdInOut, PSTR("Wartosc probki na wejsciu %d: %d\r\n"), nrWejscia, wynik);
   return OK_SILENT;
 }
 

@@ -1,7 +1,7 @@
 /**
- * @file     nic.h 
+ * @file     nic.h
  * @version  0.2
- * @brief    Network Interface Card (NIC) software definition. 
+ * @brief    Network Interface Card (NIC) software definition.
  * @ingroup  network
  * @author   Pascal Stang, Adam Kaliszan
  * @defgroup nic Network Interface Card (NIC) software definition (nic.h)
@@ -11,7 +11,7 @@
  *      as used by AVRlib.  Drivers for network hardware must implement these
  *      functions to allow upper network layers to initialize the interface,
  *      and send and receive net traffic.
- * 
+ *
  * Editor Tabs  : 4
  * Target MCU   : Atmel AVR series
  * Created      : 22.08.2004
@@ -36,12 +36,12 @@
 #include "softwareConfig.h"
 
 typedef struct
-{ 
+{
   uint16_t                bufferSize;          /// rozmiar tablicy pamięci z buforem
   struct netEthAddr       mac;
 
   union
-  {    
+  {
     uint8_t               *buf;
     struct netEthHeader   *ethHeader;
   } layer2;
@@ -55,7 +55,7 @@ typedef struct
     uint8_t              *buf; //Pointer on layer3
     #endif
   } layer3;
-  
+
   union
   {
     struct netIcmpHeader *icmp;
@@ -68,7 +68,6 @@ typedef struct
 }  nicState_t;
 
 nicState_t       nicState;
-uint16_t         plen; //PacketLength (uip_len)
 
 /**
  * Create mac buffer and next call hardware specyfic function to initialize NIC
@@ -97,7 +96,7 @@ void nicSend(uint16_t len)                __attribute__ ((weak));
 
 /**
  * Check network interface.
- * Upper network layers may assume that an ethernet-like 802.3 header is at the beginning 
+ * Upper network layers may assume that an ethernet-like 802.3 header is at the beginning
  * of the packet, and contains the packet addressing information, without the preamble
  * See net.h documentation for ethernet header format
  * received data are stored in global buffer <b>nicBuffer</b>

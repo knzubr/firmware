@@ -56,6 +56,7 @@
 			<Add after="avr-objcopy --no-change-warnings -j .signature --change-section-lma .signature=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).sig" />
 			<Add after="avr-objcopy --no-change-warnings -j .fuse --change-section-lma .fuse=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).fuse" />
 		</ExtraCommands>
+		<Unit filename="../../Lib/include/enc28j60.h" />
 		<Unit filename="../../Lib/include/memory_x.h" />
 		<Unit filename="../../Lib/include/spi.h" />
 		<Unit filename="../../Lib/memory_x.c">
@@ -64,7 +65,41 @@
 		<Unit filename="../../Lib/net/arp.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../Lib/net/checksum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/dhcp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/icmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/icmp6.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../Lib/net/include/arp.h" />
+		<Unit filename="../../Lib/net/include/checksum.h" />
+		<Unit filename="../../Lib/net/include/icmp.h" />
+		<Unit filename="../../Lib/net/include/ip.h" />
+		<Unit filename="../../Lib/net/include/net.h" />
+		<Unit filename="../../Lib/net/include/nic.h" />
+		<Unit filename="../../Lib/net/include/tcp.h" />
+		<Unit filename="../../Lib/net/include/udp.h" />
+		<Unit filename="../../Lib/net/ip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/net.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/nic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/tcp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/udp.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../Lib/spi.c">
 			<Option compilerVar="CC" />
 		</Unit>

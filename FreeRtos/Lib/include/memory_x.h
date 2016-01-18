@@ -1,6 +1,7 @@
 #ifndef MEMORY_X_H
 #define MEMORY_X_H
 
+#include "hardwareConfig.h"
 #include <stdlib.h>
 
 #ifdef HEAP_BEGIN
