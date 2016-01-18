@@ -25,7 +25,7 @@ inline void socketInit(void)
 {
   sockets = xmalloc(NUMBER_OF_SOCKETS * sizeof(struct TcpIpSocket));
   memset(sockets, 0, NUMBER_OF_SOCKETS * sizeof(struct TcpIpSocket));
-  
+
   uint8_t            i;
   uint8_t            *ptr = (uint8_t *)RTOS_TCP_BUF_BASE_ADDR;
 
@@ -38,8 +38,8 @@ inline void socketInit(void)
     ptr+=256;
 
     sck->localPort     = (i<16) ? htons(MYTELNETPOERT + i) : (MYTELNETPOERT + 16);
-    sck->seqNoLastSent = HTONL(0xFF112233); 
-    sck->state         = LISTEN;   
+    sck->seqNoLastSent = HTONL(0xFF112233);
+    sck->state         = LISTEN;
     sck++;
   }
 }
@@ -50,19 +50,19 @@ struct TcpIpSocket* findConnectedSocket(void)
   uint8_t i;
   for (i=0; i<NUMBER_OF_SOCKETS; i++)
   {
-    if ( ((result->state != LISTEN) && (result->state != CLOSED)) 
+    if ( ((result->state != LISTEN) && (result->state != CLOSED))
       && (result->RemoteIpAddr == nicState.layer3.ip->srcipaddr) && (result->localPort == nicState.layer4.tcp->destport) && (result->remotePort == nicState.layer4.tcp->srcport))
     {
 #if TCP_DEBUG
       if (tcpDebugStream != NULL)
         if (tcpDebugLevel > 2)
           fprintf_P(tcpDebugStream, PSTR("Found TCP socket state %d\r\n"), result->state);
-#endif      
+#endif
       return result;
     }
     result++;
   }
-  
+
   result = sockets;
   for (i=0; i<NUMBER_OF_SOCKETS; i++)
   {
@@ -72,7 +72,7 @@ struct TcpIpSocket* findConnectedSocket(void)
       if (tcpDebugStream != NULL)
         if (tcpDebugLevel > 2)
           fprintf_P(tcpDebugStream, PSTR("Found TCP socket no %d state LISTEN\r\n"), i);
-#endif      
+#endif
       return &sockets[i];
     }
     result++;
@@ -95,13 +95,13 @@ static inline void tcpAcceptConn(struct TcpIpSocket *sck)
 inline uint8_t processTcpPacket(void)
 {
   struct TcpIpSocket *socket = findConnectedSocket();
-  
+
   if (socket == NULL)
     return 1;
-  
-  
+
+
   socket->seqNoLastReceived = htonl(nicState.layer4.tcp->seqno);
-  
+
   if (socket->state == LISTEN)
   {
     if (nicState.layer4.tcp->flags & TCP_FLAGS_SYN)
@@ -136,10 +136,10 @@ inline uint8_t processTcpPacket(void)
         if (tcpDebugLevel > 1)
           fprintf_P(tcpDebugStream, PSTR("Opening TCP connection ERROR: syn flag wasn't set\r\n"));
     }
-#endif    
+#endif
     return 0;
   }
-  
+
   if (socket->state == SYN_RECEIVED)
   {
     if (nicState.layer4.tcp->flags & TCP_FLAGS_ACK)
@@ -149,7 +149,7 @@ inline uint8_t processTcpPacket(void)
     if (tcpDebugStream != NULL)
       if (tcpDebugLevel > 2)
         fprintf_P(tcpDebugStream, PSTR("Opening TCP connection socket state change SYN_RECEIVED->ESTABILISHED\r\n"));
-#endif        
+#endif
 
     }
     else
@@ -159,30 +159,30 @@ inline uint8_t processTcpPacket(void)
       if (tcpDebugStream != NULL)
         if (tcpDebugLevel > 1)
           fprintf_P(tcpDebugStream, PSTR("Opening TCP connection ERROR: ack flag wasn't set\r\n"));
-#endif    
+#endif
     }
     return 0;
   }
-  
-  
+
+
   if (socket->state == ESTABILISHED)
   {
     if (nicState.layer4.tcp->flags & TCP_FLAGS_FIN)  //ESTABILISHED -> CLOSE_WAIT -> closed
     {
       socket->timer              = timer100Hz;
       nicState.layer4.tcp->flags = TCP_FLAGS_ACK;
-      
-      uint8_t dataFromBufLen;
+
+      uint8_t dataFromBufLen = 0;
       uint8_t *dataPtr = (uint8_t *)(nicState.layer4.tcp+1);
-//      while (xQueueReceive(socket->Tx, dataPtr, 0) == pdTRUE)
-//      {
-//        dataFromBufLen++;
-//        dataPtr++;
-//      }
+      while (xQueueReceive(socket->Tx, dataPtr, 0) == pdTRUE)
+      {
+        dataFromBufLen++;
+        dataPtr++;
+      }
       ipSend(socket->RemoteIpAddr, IP_PROTO_TCP, TCP_HEADER_LEN + dataFromBufLen);
       socket->state    = CLOSE_WAIT;
-      
-      
+
+
       nicState.layer4.tcp->flags = TCP_FLAGS_FIN;
       ipSend(socket->RemoteIpAddr, IP_PROTO_TCP, TCP_HEADER_LEN);
       socket->state    = LAST_ACK;
@@ -191,21 +191,22 @@ inline uint8_t processTcpPacket(void)
   }
 
   //Read data and put into the queue
-  
+
   return 0;
 }
 
 void calculateTcpChecksun(uint16_t tcpLen)
 {
   nicState.layer4.tcp->tcpchksum = 0;
-  nicState.layer4.tcp->tcpchksum = netChecksum(nicState.layer4.tcp, tcpLen); //TODO finish it
+  nicState.layer4.tcp->tcpchksum = netChecksum((uint8_t *)nicState.layer4.tcp, tcpLen); //TODO finish it
 }
 
 
 
-uint8_t sendTcBuffer(uint8_t socketNo)
+uint8_t sendTcpBuffer(uint8_t socketNo)
 {
-  struct TcpIpSocket *sck = &sockets[socketNo];
+  (void) socketNo;
+  //struct TcpIpSocket *sck = &sockets[socketNo];
   return 0;
 }
 
@@ -239,7 +240,7 @@ void flushTcpQueues()
   struct TcpIpSocket *sck = sockets;
   for (sckNo = 0; sckNo < NUMBER_OF_SOCKETS; sckNo++)
   {
-    
+
     sck++;
   }
 }
@@ -297,7 +298,7 @@ inline void httpProcess()
         if (cmd == URLramDysk)
         {
           plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-  
+
           //Open the filen
           struct ramPlikFd fd;
           if (ramDyskOtworzPlik(filename, &fd) != 0)
@@ -341,10 +342,10 @@ inline void httpProcess()
         if (cmd == URLstatus)
         {
           plen=fill_tcp_data_p(Enc28j60_global.buf, 0, PSTR ( "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n" ) );
-          plen=printHTMLstatus(Enc28j60_global.buf, plen, Enc28j60_global.bufferSize);  
+          plen=printHTMLstatus(Enc28j60_global.buf, plen, Enc28j60_global.bufferSize);
           make_tcp_ack_from_any(Enc28j60_global.buf);          // send ack for http get
           make_tcp_ack_with_data(Enc28j60_global.buf, plen);   // send data
-          continue;  
+          continue;
         }
       }
 

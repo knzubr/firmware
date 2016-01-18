@@ -29,8 +29,6 @@
  * Włączenie przerwania pusty bufor nadawczy dla VTY
  */
 
-#define vIsInterruptVtyOn()    (UCSR1B & serDATA_INT_ENABLE)
-#define vIsInterruptRsLanOn()  (UCSR0B & serDATA_INT_ENABLE)
 
 /**
  * Serial 1 (VTY) receiver que
@@ -56,6 +54,11 @@ void    uartLanSendByte(uint8_t data);
 uint8_t uartLanReceiveByte(uint8_t *c);
 
 void    InterruptVtyOn(void);
+void    InterruptVtyOff(void);
+#define vIsInterruptVtyOn()    (UCSR1B & serDATA_INT_ENABLE)
 
+void    InterruptRsLanOff(void);
+void    vInterruptRsLanOn(void);
+#define vIsInterruptRsLanOn()  (UCSR0B & serDATA_INT_ENABLE)
 
 #endif

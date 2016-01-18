@@ -1,7 +1,7 @@
 /**
- * @file     nic.h 
+ * @file     nic.h
  * @version  0.2
- * @brief    Network Interface Card (NIC) software definition. 
+ * @brief    Network Interface Card (NIC) software definition.
  * @ingroup  network
  * @author   Pascal Stang, Adam Kaliszan
  * @defgroup nic Network Interface Card (NIC) software definition (nic.h)
@@ -11,7 +11,7 @@
  *      as used by AVRlib.  Drivers for network hardware must implement these
  *      functions to allow upper network layers to initialize the interface,
  *      and send and receive net traffic.
- * 
+ *
  * Editor Tabs  : 4
  * Target MCU   : Atmel AVR series
  * Created      : 22.08.2004
@@ -29,7 +29,7 @@ static uint8_t   mymac_eep[6] __attribute__((section (".eeprom"))) = {0x00,0x11,
 
 /* Weak functions, that hast to be overriden in hardware specyfic driver implementation i.e. in enc28j60 */
 void         nicMacInit(void)                                    { }
-void         nicSend(uint16_t len)                               {len    = 0; }
+void         nicSend(uint16_t len)                               { (void) len; }
 unsigned int nicPoll(void)                                       { return 0; }
 
 
@@ -40,8 +40,8 @@ static void nicBufferInit(void)
   nicState.layer3.ip   = (struct netIpHeader *)   (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); //Te wartosci beda ustawiane w czasie analizy pakietu
   nicState.layer4.icmp = (struct  netIcmpHeader *)(NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN + IP_HEADER_LEN);
   #if IPV6_SUPPORT
-  nicState.layer3.ipv6 = (struct netIpHeader *)   (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); 
-  nicState.layer3.buf  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); 
+  nicState.layer3.ipv6 = (struct netIpHeader *)   (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN);
+  nicState.layer3.buf  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN);
   //nicState.layer4.icmpv6  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); //Te wartosci beda ustawiane w czasie analizy pakietu
   #endif /*IPV6_SUPPORT*/
   memset(nicState.layer2.buf, 0, nicState.bufferSize);

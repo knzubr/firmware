@@ -1,7 +1,7 @@
 /**
  * @file        tcp.h
  * @author      Adam Kaliszan
- * @brief       Enc28j60 TCP socket 
+ * @brief       Enc28j60 TCP socket
  * @ingroup     network
  * @version     0.1
  * Created:     13.10.2010
@@ -11,8 +11,8 @@
  * @defgroup    netstack Network Stack
  * @code #include "net/Enc28j60socket.h" @endcode
  * @par Description
- *  This library supports TCP Sockets. 
- *  
+ *  This library supports TCP Sockets.
+ *
  * @note This is NOT a full-blown TCP/IP stack. It merely handles lower
  *  level stack functions so that TCP packets can be sent and received easily.
  *  End-to-end TCP functionality may be added in a future version.
@@ -79,20 +79,20 @@ struct TcpIpSocket
 #if IPV6_SUPPORT
   uip_ip6addr_t   RemoteIpAddr6;
 #endif /*IPV6_SUPPORT*/
-  
+
   uint16_t       localPort;              /// Stored in network order
-  uint16_t       remotePort;             /// Stored in network order 
-  
+  uint16_t       remotePort;             /// Stored in network order
+
   uint32_t       seqNoLastReceived;      /// Sequence number of last received packet
   uint32_t       seqNoLastSent;          /// Sequence number of last sent packet
   uint16_t       noOfNotAckBytes;        /// Number of received bytes without ack
-  
-  uint16_t       windowSize;  
+
+  uint16_t       windowSize;
   uint8_t        timer;
-  
+
   xQueueHandle   Rx;
   xQueueHandle   Tx;
-    
+
   //struct packetBackup packetBackupBuffer[4];
   uint8_t        packetBackupBufferNotConfirmedPacketIdx;
   uint8_t        packetBackupBufferWriteIdx;

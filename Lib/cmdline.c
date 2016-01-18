@@ -1,5 +1,5 @@
 /**
- * @file        cmdline.h 
+ * @file        cmdline.h
  * @author      Pascal Stang, Adam Kaliszan
  * @brief       Command-Line Interface Library
  * @ingroup     protocols
@@ -10,7 +10,7 @@
  * Target MCU   Atmel AVR Series
  *
  * @par Description
- * This library provides cammand lineinterpreter, that works on many instances. 
+ * This library provides cammand lineinterpreter, that works on many instances.
  * Each instance requires: separate input/output stream, and separate instance of cmdState struct
  * The library was optimised under memory consumption.
  *
@@ -50,7 +50,7 @@ static void cmdlineDoHistory          (enum cliHistoryAction action, cmdState_t 
 static void cmdlineProcessInputString (cmdState_t *state);
 static void cmdlinePrintPrompt        (cmdState_t *state);
 static void cmdlinePrintError         (cmdState_t *state);
-static void cmdStateClear             (cmdState_t *state);
+//static void cmdStateClear             (cmdState_t *state);
 static void cmdHistoryCopy            (cmdState_t *state);
 static void cmdHistoryMove            (cmdState_t *state);
 
@@ -59,13 +59,13 @@ void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSi
 {
   memset(state, 0, sizeof(cmdState_t));
   memset(buffPtr, 0, bufferTotalSize);
-    
+
   state->CmdlineBuffer = buffPtr;
   state->bufferMaxSize    = (uint8_t)(bufferTotalSize / CMD_STATE_HISTORY);
 
   state->cliMode = mode;
   state->cmdList = commands;
-  
+
   uint8_t i;
   char *tmpPtr = buffPtr;
   for (i=0; i < CMD_STATE_HISTORY; i++)
@@ -76,7 +76,7 @@ void cmdStateConfigure(cmdState_t * state, char *buffPtr, uint16_t bufferTotalSi
   state->myStdInOut = stream;
 }
 
-void cmdStateClear(cmdState_t *state)
+/*void cmdStateClear(cmdState_t *state)
 {
   // reset vt100 processing state
   state->CmdlineInputVT100State = 0;
@@ -87,7 +87,7 @@ void cmdStateClear(cmdState_t *state)
 
   // initialize executing function
   state->CmdlineExecFunction = 0;
-}
+}*/
 
 void cmdlineInputFunc(char c, cmdState_t *state)
 {
@@ -131,7 +131,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
       // if the edit position is non-zero
       if (state->bufferHistoryState == NOT_COPIED)
         cmdHistoryCopy(state);
-      
+
       if(state->CmdlineBufferEditPos)
       {
         // decrement the edit position
@@ -179,7 +179,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
       state->CmdlineBuffer[i-1] = state->CmdlineBuffer[i];
     }
   }
-  
+
   if( (c >= 0x20) && (c < 0x7F) )
   {
     if (state->bufferHistoryState == NOT_COPIED)
@@ -217,7 +217,7 @@ void cmdlineInputFunc(char c, cmdState_t *state)
   {
     if (state->bufferHistoryState == NOT_COPIED)
       cmdHistoryMove(state);
-    
+
     // user pressed [ENTER]
     // echo CR and LF to terminal
     fputc(ASCII_CR         , state->myStdInOut);
@@ -291,7 +291,7 @@ void cmdlineRepaint(cmdState_t *state, char *buf)
   cmdlinePrintPrompt(state);
   // print the new command line buffer
   i = state->CmdlineBufferLength;
-  while(i--) 
+  while(i--)
     fputc(*buf++         , state->myStdInOut);
   i = state->bufferMaxSize - state->CmdlineBufferLength;
   while (i--)
@@ -309,7 +309,7 @@ void cmdHistoryCopy(cmdState_t *state)
     memset(state->CmdlineBuffer, 0, state->bufferMaxSize);
     strcpy(state->CmdlineBuffer, state->CmdlineHistory[historyReadIdx]);
   }
-  
+
   state->historyDepthIdx = 0;
   state->bufferHistoryState = COPIED;
 }
@@ -340,50 +340,50 @@ void cmdlineDoHistory(enum cliHistoryAction action, cmdState_t *state)
   case CMDLINE_HISTORY_SAVE:
     // copy CmdlineBuffer to history if not null string
     state->CmdlineBufferLength  = 0;
-    state->CmdlineBufferEditPos = 0;     
+    state->CmdlineBufferEditPos = 0;
     state->bufferHistoryState   = NOT_COPIED;
 
     if( strlen(state->CmdlineBuffer) )
     {
       state->historyWrIdx++;
       state->historyWrIdx &= CMD_STATE_HISTORY_MASK;
-      
+
       state->CmdlineBuffer = state->CmdlineHistory[state->historyWrIdx];
     }
     break;
   case CMDLINE_HISTORY_PREV:
     if (state->historyDepthIdx == CMD_STATE_HISTORY - 1)
       break;                                               //We are on the end of the history list
-    
+
     historyReadIdx = (state->historyWrIdx - state->historyDepthIdx - 1) & CMD_STATE_HISTORY_MASK;
-    
+
     if (state->CmdlineHistory[historyReadIdx][0] == 0)
       break;
-    
+
     state->historyDepthIdx++;
     state->historyDepthIdx &= CMD_STATE_HISTORY_MASK;
-    
+
     // set the buffer position to the end of the line
     state->CmdlineBufferLength = strlen(state->CmdlineHistory[historyReadIdx]);
     state->CmdlineBufferEditPos = state->CmdlineBufferLength;
-    
+
     state->bufferHistoryState = NOT_COPIED;
 
     // "re-paint" line
     cmdlineRepaint(state, state->CmdlineHistory[historyReadIdx]);
-    
+
     break;
-  case CMDLINE_HISTORY_NEXT:      
+  case CMDLINE_HISTORY_NEXT:
     if (state->historyDepthIdx == 0)
       break;                                               //We are on the begining of the history list
 
     state->historyDepthIdx --;
     historyReadIdx = (state->historyWrIdx - state->historyDepthIdx) & CMD_STATE_HISTORY_MASK;
-   
+
     // set the buffer position to the end of the line
     state->CmdlineBufferLength = strlen(state->CmdlineHistory[historyReadIdx]);
     state->CmdlineBufferEditPos = state->CmdlineBufferLength;
-    
+
     state->bufferHistoryState = NOT_COPIED;
 
     // "re-paint" line
@@ -414,7 +414,7 @@ void cmdlineProcessInputString(cmdState_t *state)
   do                                                                  // search command list for match with entered command
   {
     if( !strncmp_P(state->CmdlineExcBuffer, tmp.commandStr, i) )      // user-entered command matched a command in the list
-    {                                                                 // 
+    {                                                                 //
       state->CmdlineExecFunction = tmp.commandFun;                    // set function pointer
       state->command_str         = tmp.commandStr;
       state->command_help_str    = tmp.commandHelpStr;
@@ -425,7 +425,7 @@ void cmdlineProcessInputString(cmdState_t *state)
     memcpy_P(&tmp, tmpPtr, sizeof(command_t));                        // Copy this command from flash to ram
   }
   while (tmp.commandStr != NULL);                                     // Last command on the list is NULL. It is required !!!
-  
+
   // if we did not get a match
   cmdlinePrintError(state);                                           // output an error message
   cmdlinePrintPrompt(state);                                          // output a new prompt
@@ -438,7 +438,7 @@ void cmdlineMainLoop(cmdState_t *state)
   {
     state->argc = cmdLineGetLastArgIdx(state);  // get number of arguments
     result = state->CmdlineExecFunction(state); // run it
-    
+
     switch(result)
     {
       case OK_INFORM:
@@ -484,7 +484,7 @@ void cmdlinePrintPrompt(cmdState_t *state)
       break;
     default:
       ptr = CmdlinePromptNormal;
-      break;      
+      break;
   }
   while(pgm_read_byte(ptr))
     fputc(pgm_read_byte(ptr++)    , state->myStdInOut);
@@ -499,7 +499,7 @@ void cmdlinePrintError(cmdState_t *state)
   ptr = (char*)CmdlineNotice;
   while(pgm_read_byte(ptr))
     fputc(pgm_read_byte(ptr++)    , state->myStdInOut);
-  
+
   // print the offending command
   ptr = state->CmdlineBuffer;
   while((*ptr) && (*ptr != ' '))
@@ -544,10 +544,10 @@ char* cmdlineGetArgStr(uint8_t argnum, cmdState_t *state)
   // find the offset of argument number [argnum]
   uint8_t idx=0;
   uint8_t arg;
-  
+
   // find the first non-whitespace character
   while( (state->CmdlineExcBuffer[idx] != 0) && (state->CmdlineExcBuffer[idx] == ' ')) idx++;
-  
+
   // we are at the first argument
   for(arg=0; arg<argnum; arg++)
   {
@@ -578,7 +578,7 @@ void cmdPrintHelp(cmdState_t *state)
 {
   command_t  tmp;
   const command_t *tmpPtr = state->cmdList;
-  
+
   memcpy_P(&tmp, tmpPtr, sizeof(command_t));
   do
   {
