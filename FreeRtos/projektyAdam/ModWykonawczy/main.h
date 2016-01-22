@@ -13,7 +13,7 @@
 #include "serial.h"
 #include "hardware.h"
 #include "automat.h"
-#include "../../freeRtos/Lib/include/protocol1.h"
+#include "../../Lib/include/protocol1.h"
 
 #define mainCHECK_TASK_PRIORITY 1
 #define mainCHECK_PERIOD 100

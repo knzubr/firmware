@@ -1,18 +1,12 @@
 #include "main.h"
+#include "softwareConfig.h"
 #include "vty.h"
-#include "ramdysk.h"
-#include "protocol1.h"
-#include "mpc23s17.h"
-#include "mcp3008.h"
-#include "ds1305.h"
 #include "hardwareConfig.h"
 #include "configuration.h"
-#include "Rs485_prot.h"
 #include "net.h"
 #include "ip.h"
 #include "arp.h"
-#include "softwareConfig.h"
-#include "mcp4150.h"
+
 
 #if LANG_EN
 #include "vty_en.h"
@@ -31,13 +25,7 @@ static cliExRes_t helpFunction           (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
 static cliExRes_t statusEncFunction      (cmdState_t *state);
 static cliExRes_t pingFunction           (cmdState_t *state);
-static cliExRes_t dodajRamPlikFunction   (cmdState_t *state);
-static cliExRes_t eraseRamFileFunction   (cmdState_t *state);
-static cliExRes_t writeRamFileFunction   (cmdState_t *state);
-static cliExRes_t editRamFileFunction    (cmdState_t *state);
-static cliExRes_t readRamFIleFunction    (cmdState_t *state);
 
-static cliExRes_t pokazCzasFunction      (cmdState_t *state);
 static cliExRes_t debugFunction          (cmdState_t *state);
 
 static cliExRes_t enableFunction         (cmdState_t *state);
@@ -50,13 +38,8 @@ static cliExRes_t setIpGwFunction(cmdState_t *state);
 static cliExRes_t setUdpFunction(cmdState_t *state);
 
 static cliExRes_t setMacAddrFunction     (cmdState_t *state);
-static cliExRes_t setTimeFunction        (cmdState_t *state);
 
 static cliExRes_t saveConfigFunction     (cmdState_t *state);
-
-#ifdef testZewPamiec
-static cliExRes_t testPamZewFunction     (cmdState_t *state);
-#endif
 
 struct ramPlikFd    fdVty;  //TODO move it to CLI struct
 
@@ -84,10 +67,7 @@ const command_t cmdListNormal[] PROGMEM =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
-  {cmd_time,      cmd_help_time,      pokazCzasFunction},
   {cmd_ping,      cmd_help_ping,      pingFunction},
-  {cmd_dir_rf,    cmd_help_dir_rf,    writeRamFileFunction},
-  {cmd_read_rf,   cmd_help_read_rf,   readRamFIleFunction},
   {cmd_enable,    cmd_help_enable,    enableFunction},
   {NULL, NULL, NULL}
 };
@@ -97,20 +77,9 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_enc_stat,  cmd_help_enc_stat,  statusEncFunction},
-  {cmd_time,      cmd_help_time,      pokazCzasFunction},
   {cmd_net_dbg,   cmd_help_net_dbg,   debugFunction},
 
   {cmd_ping,      cmd_help_ping,      pingFunction},
-#ifdef testZewPamiec
-  {cmd_rtest,     cmd_help_rtest,     testPamZewFunction},
-#endif
-  {cmd_dir_rf,    cmd_help_dir_rf,    writeRamFileFunction},
-  {cmd_create_rf, cmd_help_create_rf, dodajRamPlikFunction},
-  {cmd_erase_rf,  cmd_help_erase_rf,  eraseRamFileFunction},
-  {cmd_edit_rf,   cmd_help_edit_rf,   editRamFileFunction},
-  {cmd_read_rf,   cmd_help_read_rf,   readRamFIleFunction},
-
-  {cmd_settime,   cmd_help_settime,   setTimeFunction},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {cmd_configure, cmd_help_configure, configureModeFunction},
   {NULL, NULL, NULL}
@@ -120,8 +89,6 @@ const command_t cmdListConfigure[] PROGMEM =
 {
   {cmd_help,         cmd_help_help,         helpFunction},
   {cmd_status,       cmd_help_status,       statusFunction},
-  {cmd_time,         cmd_help_time,         pokazCzasFunction},
-  {cmd_settime,      cmd_help_settime,      setTimeFunction},
   {cmd_conf_ip,      cmd_help_conf_ip,      setIpFunction},
   {cmd_conf_ip_mask, cmd_conf_ip_mask_help, setIpMaskFunction},
   {cmd_conf_ip_gw,   cmd_conf_ip_gw_help,   setIpGwFunction},
@@ -189,8 +156,6 @@ void printStatus(FILE *stream)
   fprintf_P(stream, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
   fprintf_P(stream, statusDynamicHeapStateStr, xmallocAvailable(),   HEAP_SIZE);
 
-  uint8_t tmp = ramDyskLiczbaWolnychKlastrow();
-  fprintf_P(stream, statusRamDiskStateStr,     tmp,  L_KLASTROW);
 //  printErrorInfo(state); //TODO fix and uncomment
 
   //Print system configuration
@@ -232,37 +197,13 @@ void printStatus(FILE *stream)
 
 static cliExRes_t statusFunction(cmdState_t *state)
 {
-  if (state->argc < 1)
-  {
-    printStatus(state->myStdInOut);
-    return OK_SILENT;
-  }
-
-  FILE stream;
-  if (ramDyskOtworzPlikStdIo(cmdlineGetArgStr(1, state), &fdVty, &stream, __SWR | __SRD) != 0)
-  {
-    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
-    return ERROR_INFORM;
-  }
-
-  printStatus(&stream);
-  ramDyskZamknijPlikStdIo(&stream);
+  printStatus(state->myStdInOut);
   return OK_SILENT;
 }
 
 static cliExRes_t statusEncFunction(cmdState_t *state)
 {
   nicRegDump(state->myStdInOut);
-  return OK_SILENT;
-}
-
-static cliExRes_t pokazCzasFunction(cmdState_t *state)
-{
-  readTimeDecoded((timeDecoded_t *)(&czasRtc));
-  uint8_t godzina = 10*czasRtc.hours.syst24.cDzies + czasRtc.hours.syst24.cJedn;
-  uint8_t minuta =  10*czasRtc.minutes.cDzies + czasRtc.minutes.cJedn;
-  uint8_t sekunda = 10*czasRtc.seconds.cDzies + czasRtc.seconds.cJedn;
-  fprintf_P(state->myStdInOut, PSTR("Aktualny czas %d:%d:%d\r\n"), godzina, minuta, sekunda);
   return OK_SILENT;
 }
 
@@ -351,34 +292,6 @@ static cliExRes_t debugFunction          (cmdState_t *state)
   }
 
   return SYNTAX_ERROR;
-}
-
-
-static cliExRes_t setTimeFunction(cmdState_t *state)
-{
-  uint8_t godzina =  cmdlineGetArgInt(1, state);
-  uint8_t minuta  =  cmdlineGetArgInt(2, state);
-  uint8_t sekunda =  cmdlineGetArgInt(3, state);
-
-  ds1305start();
-
-  uint8_t cDzies = godzina/10;
-  uint8_t cJedn = godzina - cDzies*10;
-  czasRtc.hours.syst24.cDzies = cDzies;
-  czasRtc.hours.syst24.cJedn  = cJedn;
-
-  cDzies = minuta/10;
-  cJedn = minuta - cDzies * 10;
-  czasRtc.minutes.cDzies = cDzies;
-  czasRtc.minutes.cJedn  = cJedn;
-
-  cDzies = sekunda/10;
-  cJedn  = sekunda - cDzies * 10;
-  czasRtc.seconds.cDzies = cDzies;
-  czasRtc.seconds.cJedn  = cJedn;
-
-  setTimeDecoded((timeDecoded_t *)(&czasRtc));
-  return OK_SILENT;
 }
 
 static cliExRes_t setIpFunction(cmdState_t *state)
@@ -479,83 +392,6 @@ static cliExRes_t pingFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
-static cliExRes_t eraseRamFileFunction(cmdState_t *state)
-{
-  if (ramDyskUsunPlik(cmdlineGetArgStr(1, state)) == 0)
-    return OK_INFORM;
-
-  printErrorInfo(state);
-  return ERROR_INFORM;
-}
-
-static cliExRes_t dodajRamPlikFunction(cmdState_t *state)
-{
-  if (state->argc != 1)
-    return SYNTAX_ERROR;
-
-  if (ramDyskUtworzPlik(cmdlineGetArgStr(1, state)) == 0)
-  {
-    return OK_INFORM;
-  }
-  printErrorInfo(state);
-  return ERROR_INFORM;
-}
-
-static cliExRes_t writeRamFileFunction(cmdState_t *state)
-{
-  ramDyskDir(state->myStdInOut);
-  return OK_SILENT;
-}
-
-static cliExRes_t editRamFileFunction(cmdState_t *state)
-{
-  if (ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty) != 0)
-  {
-    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
-    return ERROR_INFORM;
-  }
-  ramDyskUstawWskaznikNaKoniec(&fdVty);
-  uint8_t znak = 0;
-  fprintf_P(state->myStdInOut, editRamFileIntroStr);
-  while(1)
-  {
-    if(!xQueueReceive( xVtyRec, &znak, portMAX_DELAY))
-      continue;
-
-    if (znak == 0x03)                                       // ^C
-      break;
-
-    uartVtySendByte(znak);                                  //Echo
-    ramDyskZapiszBajtDoPliku(&fdVty, znak);
-  }
-  ramDyskZamknijPlik(&fdVty);
-  return OK_SILENT;
-}
-
-static cliExRes_t readRamFIleFunction(cmdState_t *state) //TODO move this code to fat8
-{
-  uint8_t rezultat;
-  uint8_t znak = ' ';
-  if ((rezultat = ramDyskOtworzPlik(cmdlineGetArgStr(1, state), &fdVty)) != 0)
-  {
-    fprintf_P(state->myStdInOut, errorOpenFile, cmdlineGetArgStr(1, state));
-    return ERROR_INFORM;
-  }
-  uint16_t rozmiar = fdVty.wpis->rozmiarHi * 256 + fdVty.wpis->rozmiarLo;
-  fprintf_P(state->myStdInOut, readRamFIleLenStr , rozmiar);
-  while (rezultat == 0)
-  {
-    rezultat = ramDyskCzytajBajtZPliku(&fdVty, &znak);
-
-    uartVtySendByte(znak);
-    if (znak == '\r')
-      uartVtySendByte('\n');
-  }
-  fprintf_P(state->myStdInOut, nlStr);
-  ramDyskZamknijPlik(&fdVty);
-  return OK_SILENT;
-}
-
 static cliExRes_t saveConfigFunction(cmdState_t *state)
 {
   (void) state;
@@ -563,32 +399,5 @@ static cliExRes_t saveConfigFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
-#ifdef testZewPamiec
-static cliExRes_t testPamZewFunction(cmdState_t *state)
-{
-  state = NULL;
-  uint8_t *ptr;
-  ptr= 0x4000;
-  uint8_t tmp;
-  for (tmp=0; tmp <255; tmp++)
-  {
-    *(ptr) = tmp;
-    ptr++;
-  }
-  ptr= 0x4000;
-  uint8_t tmp2;
-  for (tmp=0; tmp <4; tmp++)
-  {
-    uartVtySendByte('\r');
-    uartVtySendByte('\n');
-    for (tmp2=0; tmp2<64; tmp2++)
-    {
-      uartVtySendByte(*(ptr));
-      ptr++;
-    }
-  }
-  return OK_SILENT;
-}
-#endif
 
 

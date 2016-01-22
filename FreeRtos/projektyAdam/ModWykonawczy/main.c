@@ -50,7 +50,6 @@
 */
 
 #include "main.h"
-#include "../../freeRtos/Lib/include/protocol1.h"
 
 /**
  * Proces odpowiedzialny za obsługę klawiszy

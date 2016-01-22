@@ -56,9 +56,6 @@ prog_char cmd_ping[]        = "ping";             prog_char cmd_help_ping[]     
 prog_char cmd_xRec[]        = "xodb";             prog_char cmd_help_xRec[]        = "[nazwa pliku] odbiera plik za pomoca protokolu xModem";
 prog_char cmd_xSend[]       = "xwyslij";          prog_char cmd_help_xSend[]       = "[nazwa pliku] wysyla plik za pomoca protokolu xModem";
 prog_char cmd_xflash[]      = "xflash";           prog_char cmd_help_xflash[]      = "[numer urzadzenia] [nazwa pliku] wgrywa firmware do urzadzenia podpietego do Rs485";
-#ifdef testZewPamiec
-prog_char cmd_rtest[]       = "rtest";            prog_char cmd_help_rtest[]       = "Test pamieci zewnetrznej";
-#endif
 prog_char cmd_dir_rf[]      = "dirrp" ;           prog_char cmd_help_dir_rf[]      = "Wypisuje nazwy plikow zapisanych w pamieci RAM";
 prog_char cmd_create_rf[]   = "utwrp";            prog_char cmd_help_create_rf[]   = "[nazwa pliku] Tworzy plik w pamieci RAM";
 prog_char cmd_erase_rf[]    = "kasrp";            prog_char cmd_help_erase_rf[]    = "[nazwa pliku] Usuwa plik z pamieci RAM";
