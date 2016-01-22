@@ -33,8 +33,8 @@
 /**
  * Serial 1 (VTY) receiver que
  */
-extern xQueueHandle         xVtyRec;
-extern xQueueHandle         xVtyTx;
+extern xQueueHandle         xRs1Rec;
+extern xQueueHandle         xRs1Tx;
 
 /**
  * Serial 0 (EthReplacement) receiver que
@@ -44,17 +44,21 @@ extern xQueueHandle         xRsLanTx;
 
 
 void    xSerialPortInitMinimal(void);
-void    initQueueVtyStream(FILE *stream);
 
-int     VtyPutChar(char c, FILE *stream);
-int     VtyGetChar(FILE *stream);
+void    initQueueRs1Stream(FILE *stream);
+int     Rs1PutChar(char c, FILE *stream);
+int     Rs1GetChar(FILE *stream);
+void    uartRs1SendByte(uint8_t data);
 
-void    uartVtySendByte(uint8_t data);
-void    uartLanSendByte(uint8_t data);
-uint8_t uartLanReceiveByte(uint8_t *c);
+/*
+void    initQueueRsLanStream(FILE *stream);
+int     RsLanPutChar(char c, FILE *stream);
+int     RsLanGetChar(FILE *stream);
+*/
+void    uartRsLanSendByte(uint8_t data);
 
-void    InterruptVtyOn(void);
-void    InterruptVtyOff(void);
+void    InterruptRs1On(void);
+void    InterruptRs1Off(void);
 #define vIsInterruptVtyOn()    (UCSR1B & serDATA_INT_ENABLE)
 
 void    InterruptRsLanOff(void);
