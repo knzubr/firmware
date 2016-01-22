@@ -10,35 +10,60 @@
 
 /*-----------------------------------------------------------*/
 
-void initQueueVtyStream(FILE *stream)
+void initQueueRs1Stream(FILE *stream)
 {
-  fdev_setup_stream(stream, VtyPutChar, VtyGetChar, _FDEV_SETUP_RW);
+  fdev_setup_stream(stream, Rs1PutChar, Rs1GetChar, _FDEV_SETUP_RW);
   fdev_set_udata(stream, NULL);
   return;
 }
 
-int VtyGetChar(FILE *stream)
+int Rs1GetChar(FILE *stream)
 {
   (void) stream;
   uint8_t c;
-  if (xQueueReceive(xVtyRec, &c, portMAX_DELAY) == 0)
+  if (xQueueReceive(xRs1Rec, &c, portMAX_DELAY) == 0)
     return EOF;
   return c;
 }
 
-int VtyPutChar(char c, FILE *stream)
+int Rs1PutChar(char c, FILE *stream)
 {
   (void) stream;
-  uartVtySendByte(c);
+  uartRs1SendByte(c);
   return 0;
 }
+
+/*
+void initQueueRsLanStream(FILE *stream)
+{
+  fdev_setup_stream(stream, RsLanPutChar, RsLanGetChar, _FDEV_SETUP_RW);
+  fdev_set_udata(stream, NULL);
+  return;
+}
+
+int RsLanGetChar(FILE *stream)
+{
+  (void) stream;
+  uint8_t c;
+  if (xQueueReceive(xRsLanRec, &c, portMAX_DELAY) == 0)
+    return EOF;
+  return c;
+}
+
+int RsLanPutChar(char c, FILE *stream)
+{
+  (void) stream;
+  uartRsLanSendByte(c);
+  return 0;
+}
+*/
 
 void xSerialPortInitMinimal(void)
 {
   portENTER_CRITICAL();
   {
-    xVtyRec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
-    xVtyTx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xRs1Rec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xRs1Tx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
     xRsLanRec = xQueueCreate( 64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
     xRsLanTx = xQueueCreate( 32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
   }
@@ -69,25 +94,20 @@ void xSerialPortInitMinimal(void)
 /*-----------------------------------------------------------*/
 
 
-void uartLanSendByte(uint8_t data)
+void uartRsLanSendByte(uint8_t data)
 {
   xQueueSend(xRsLanTx, &data, portMAX_DELAY);
   vInterruptRsLanOn();
 }
 
 
-void uartVtySendByte(uint8_t data)
+void uartRs1SendByte(uint8_t data)
 {
-  xQueueSend(xVtyTx, &data, portMAX_DELAY);
-  InterruptVtyOn();
+  xQueueSend(xRs1Tx, &data, portMAX_DELAY);
+  InterruptRs1On();
 }
 
-uint8_t uartLanReceiveByte(uint8_t *c)
-{
-  return xQueueReceive(xRsLanRec, c, portMAX_DELAY);
-}
-
-void InterruptVtyOn(void)
+void InterruptRs1On(void)
 {
   unsigned portCHAR ucByte;
   ucByte = UCSR1B;
@@ -112,7 +132,7 @@ void InterruptRsLanOff()
   UCSR0B = ucInByte;
 }
 
-void InterruptVtyOff()
+void InterruptRs1Off()
 {
   unsigned portCHAR ucInByte;
   ucInByte = UCSR1B;
@@ -164,7 +184,7 @@ ISR(USART1_RX_vect)
   cChar = UDR1;
 
   xHigherPriorityTaskWoken = pdFALSE;
-  xQueueSendFromISR(xVtyRec, &cChar, &xHigherPriorityTaskWoken);
+  xQueueSendFromISR(xRs1Rec, &cChar, &xHigherPriorityTaskWoken);
 
   if( xHigherPriorityTaskWoken )
     taskYIELD();
@@ -174,14 +194,14 @@ ISR(USART1_UDRE_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken;
   static char data;
-  if(xQueueReceiveFromISR(xVtyTx, &data, &xHigherPriorityTaskWoken) == pdTRUE)
+  if(xQueueReceiveFromISR(xRs1Tx, &data, &xHigherPriorityTaskWoken) == pdTRUE)
   {
     UDR1 = data;
   }
   else
   {
     xHigherPriorityTaskWoken = pdFALSE;
-    InterruptVtyOff();
+    InterruptRs1Off();
   }
   if( xHigherPriorityTaskWoken )
   {

@@ -47,8 +47,8 @@
 
 uint8_t timer100Hz = 0;
 
-xQueueHandle xVtyTx;
-xQueueHandle xVtyRec;
+xQueueHandle xRs1Tx;
+xQueueHandle xRs1Rec;
 
 xQueueHandle xRsLanRec;
 xQueueHandle xRsLanTx;
@@ -60,7 +60,7 @@ void vApplicationIdleHook( void );
  */
 void vApplicationTickHook( void );
 
-xTaskHandle xHandleVTY_USB;
+xTaskHandle xHandleVTY_Rs1;
 xTaskHandle xHandleVTY_UDP;
 xTaskHandle xHandleEnc;
 
@@ -97,12 +97,12 @@ void initExternalMem(void)
     uint16_t stopAddr = startAddr + 0xFF;
 
     for (addr = startAddr; addr <= stopAddr; addr++)
-        *((uint8_t *)) = (uint8_t)((addr>>1) & 0xFF);
+       *((uint8_t *) addr) = (uint8_t)((addr>>1) & 0xFF);
 
     uint8_t isOK=1;
     for (addr = startAddr; addr <= stopAddr; addr++)
-        if (*((uint8_t *) addr) != (uint8_t)((addr>>1) & 0xFF))
-            isOK = 0;
+      if (*((uint8_t *) addr) != (uint8_t)((addr>>1) & 0xFF))
+        isOK = 0;
 
     if (isOK == 1) { SND ('O') SND ('K') SND('\n') }
     else           { SND ('F') SND ('A') SND ('I') SND('L') SND('\n') }
@@ -112,9 +112,9 @@ void initExternalMem(void)
 #endif
 }
 
-cmdState_t *CLIStateSerialUsb;
+cmdState_t *CLIStateSerialRs1;
 cmdState_t *CLIStateSerialUdp;
-FILE usbStream;
+FILE rs1Stream;
 FILE udpStream;
 
 streamBuffers_t udpBuffers;
@@ -127,7 +127,7 @@ portSHORT main( void )
 
 // VTY on serial
   xSerialPortInitMinimal();
-  CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
+  CLIStateSerialRs1  = xmalloc(sizeof(cmdState_t));
   CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
 
 
@@ -135,16 +135,16 @@ portSHORT main( void )
 
   loadConfiguration();
 
-  initQueueVtyStream(&usbStream);
-  VtyInit(CLIStateSerialUsb, &usbStream);
+  initQueueRs1Stream(&rs1Stream);
+  VtyInit(CLIStateSerialRs1, &rs1Stream);
 
   udpInit();
   socketInit();
-  initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
-  VtyInit(CLIStateSerialUdp, &udpStream);
+  //initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
+  //VtyInit(CLIStateSerialUdp, &udpStream);
 
-  //xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialUsb->myStdInOut,  0, &xHandleEnc);
-  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+  xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialRs1->myStdInOut,  0, &xHandleEnc);
+  xTaskCreate(vTaskVtyRs1,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialRs1),            1, &xHandleVTY_Rs1);
   //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
 
   vTaskStartScheduler();

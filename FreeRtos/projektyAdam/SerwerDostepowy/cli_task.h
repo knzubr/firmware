@@ -8,15 +8,15 @@
 #include "queue.h"
 #include "cmdline.h"
 
-extern xQueueHandle         xVtyRec;
-extern xQueueHandle         xVtyTx;
+extern xQueueHandle         xRs1Rec;
+extern xQueueHandle         xRs1Tx;
 
 /**
  * Proces odpowiedzialny za obsługę VTY
  * Kod zoptymalizowany do szczególnego przypadku
  * @param *cliStatePtr wskaźnik do struktury przechowującej stan interpretera poleceń
  */
-void vTaskVTYusb(void *cliStatePtr);
+void vTaskVtyRs1(void *cliStatePtr);
 
 
 /**
