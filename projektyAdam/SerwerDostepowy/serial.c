@@ -39,21 +39,30 @@ void xSerialPortInitMinimal(void)
   {
     xVtyRec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
     xVtyTx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
-    xRsLanRec = xQueueCreate( 16, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
-    xRsLanTx = xQueueCreate( 4, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
+    xRsLanRec = xQueueCreate( 64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
+    xRsLanTx = xQueueCreate( 32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
   }
   portEXIT_CRITICAL();
 
-  UBRR0L = 7;
+  UBRR0L = 8;
   UBRR0H = 0;
 
-  UBRR1L = 7;
+  UBRR1L = 8;
   UBRR1H = 0;
 
-  UCSR0B = ((1<<TXCIE0)|(1<<RXCIE0)|(1<<TXEN0)|(1<<RXEN0));
-  UCSR0C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */
+//UCSR0B = ((1<<RXCIE0)|(1<<TXEN0)|(1<<RXEN0));
+//UCSR0C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */
+
+  //Serial VTY
   UCSR1B = ((1<<RXCIE1)|(1<<TXEN1)|(1<<RXEN1));
   UCSR1C = ( serUCSRC_SELECT | serEIGHT_DATA_BITS );     /* Set the data bits to 8. */
+
+  //UDR0='a';
+  //UDR0='A';
+
+  UDR1='\n';
+  UDR1='1';
+
   return;
 }
 
@@ -64,6 +73,13 @@ void uartLanSendByte(uint8_t data)
 {
   xQueueSend(xRsLanTx, &data, portMAX_DELAY);
   vInterruptRsLanOn();
+}
+
+
+void uartVtySendByte(uint8_t data)
+{
+  xQueueSend(xVtyTx, &data, portMAX_DELAY);
+  InterruptVtyOn();
 }
 
 uint8_t uartLanReceiveByte(uint8_t *c)
@@ -104,20 +120,6 @@ void InterruptVtyOff()
   UCSR1B = ucInByte;
 }
 
-
-
-
-/*
- * Wyłączenie przerwania pusty bufor nadawczy dla magistrali Rs485
- */
-#define vInterruptRsLanOff()       \
-{                                  \
-  unsigned portCHAR ucInByte;      \
-                                   \
-  ucInByte = UCSR0B;               \
-  ucInByte &= ~serDATA_INT_ENABLE; \
-  UCSR0B = ucInByte;               \
-}
 /*-----------------------------------------------------------*/
 
 ISR(USART0_RX_vect)
@@ -129,8 +131,25 @@ ISR(USART0_RX_vect)
 
   xHigherPriorityTaskWoken = pdFALSE;
 
-//  xQueueSendFromISR( xRs485Rec, &cChar, NULL);
   xQueueSendFromISR( xRsLanRec, &cChar, &xHigherPriorityTaskWoken );
+
+  if( xHigherPriorityTaskWoken )
+    taskYIELD();
+}
+
+ISR(USART0_UDRE_vect)
+{
+  static signed portBASE_TYPE xHigherPriorityTaskWoken;
+  static char data;
+  if(xQueueReceiveFromISR(xRsLanTx, &data, &xHigherPriorityTaskWoken) == pdTRUE)
+  {
+    UDR0 = data;
+  }
+  else
+  {
+    xHigherPriorityTaskWoken = pdFALSE;
+    InterruptRsLanOff();
+  }
   if( xHigherPriorityTaskWoken )
   {
     taskYIELD();
@@ -143,20 +162,12 @@ ISR(USART1_RX_vect)
   signed portCHAR cChar;
 
   cChar = UDR1;
-//  xQueueSendFromISR(xVtyRec, &cChar, NULL);
 
   xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(xVtyRec, &cChar, &xHigherPriorityTaskWoken);
-  if( xHigherPriorityTaskWoken )
-  {
-    taskYIELD();
-  }
-}
 
-void uartVtySendByte(uint8_t data)
-{
-  xQueueSend(xVtyTx, &data, portMAX_DELAY);
-  InterruptVtyOn();
+  if( xHigherPriorityTaskWoken )
+    taskYIELD();
 }
 
 ISR(USART1_UDRE_vect)
@@ -171,25 +182,6 @@ ISR(USART1_UDRE_vect)
   {
     xHigherPriorityTaskWoken = pdFALSE;
     InterruptVtyOff();
-  }
-  if( xHigherPriorityTaskWoken )
-  {
-    taskYIELD();
-  }
-}
-
-ISR(USART0_UDRE_vect)
-{
-  static signed portBASE_TYPE xHigherPriorityTaskWoken;
-  static char data;
-  if(xQueueReceiveFromISR(xRsLanTx, &data, &xHigherPriorityTaskWoken) == pdTRUE)
-  {
-    UDR0 = data;
-  }
-  else
-  {
-    xHigherPriorityTaskWoken = pdFALSE;
-    vInterruptRsLanOff();
   }
   if( xHigherPriorityTaskWoken )
   {

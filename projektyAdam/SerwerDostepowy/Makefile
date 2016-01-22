@@ -61,7 +61,6 @@ netstack_task.c \
 cli_task.c \
 $(LIB_DIR)/spi.c \
 $(LIB_DIR)/memory_x.c \
-$(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/xmodem.c \
 $(LIB_DIR)/vt100.c \
@@ -84,6 +83,8 @@ $(SOURCE_DIR)/list.c \
 $(SOURCE_DIR)/croutine.c \
 $(PORT_MEM)/heap_avr.c \
 $(PORT_DIR)/port.c
+
+#$(LIB_DIR)/ramdysk.c \
 
 
 #regtest.c \
@@ -199,8 +200,8 @@ LDFLAGS += -lm
 # Programming support using avrdude.
 AVRDUDE             = avrdude
 AVRDUDE_PROGRAMMER  = jtag1
-#AVRDUDE_PORT        = /dev/jtag
-AVRDUDE_PORT        = /dev/avrMultiTool
+AVRDUDE_PORT        = /dev/jtag
+#AVRDUDE_PORT        = /dev/avrMultiTool
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -342,6 +343,10 @@ program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 #$(AVRDUDE_WRITE_EEPROM)
 
+restart:
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -n
+
+
 readfuses:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_READ_FUSES_L) $(AVRDUDE_READ_FUSES_H) $(AVRDUDE_READ_FUSES_E)
 
@@ -450,5 +455,5 @@ clean_list :
 
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion coff extcoff \
-	clean clean_list program
+	clean clean_list program restart
 

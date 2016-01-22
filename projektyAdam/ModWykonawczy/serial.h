@@ -3,7 +3,7 @@
 
 #include "main.h"
 #include "semphr.h"
-#include "../../freeRtos/Lib/include/protocol1.h"
+#include "../../Lib/include/protocol1.h"
 
 #define BOOT_START 0x1C00
 

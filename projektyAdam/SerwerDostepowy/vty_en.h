@@ -63,9 +63,6 @@ const char cmd_ping[]         PROGMEM = "ping";             const char cmd_help_
 const char cmd_xRec[]         PROGMEM = "xrec";             const char cmd_help_xRec[]         PROGMEM = "[file name] receive file using xModem";
 const char cmd_xSend[]        PROGMEM = "xsend";            const char cmd_help_xSend[]        PROGMEM = "[file name] send file using xModem";
 const char cmd_xflash[]       PROGMEM = "xflash";           const char cmd_help_xflash[]       PROGMEM = "[device no] [file name] flash device connected to Rs485";
-#ifdef testZewPamiec
-const char cmd_rtest[]        PROGMEM = "rtest";            const char cmd_help_rtest[]        PROGMEM = "External ram test";
-#endif
 const char cmd_dir_rf[]       PROGMEM = "dirrf";            const char cmd_help_dir_rf[]       PROGMEM = "Print ramdisk files";
 const char cmd_create_rf[]    PROGMEM = "crf";              const char cmd_help_create_rf[]    PROGMEM = "[file name] create ram file";
 const char cmd_erase_rf[]     PROGMEM = "eraserf";          const char cmd_help_erase_rf[]     PROGMEM = "[file name] erase file from ram disk";
@@ -91,6 +88,6 @@ const char cmd_conf_save[]    PROGMEM = "save";             const char cmd_help_
 const char cmd_ustawR[]       PROGMEM = "setr";             const char cmd_help_ustawR[]       PROGMEM = "[value] set resistance value";
 
 const char cmd_ustawMW[]      PROGMEM = "rset";             const char cmd_help_ustawMW[]      PROGMEM = "[A] [C] set execution module";
-const char cmd_zapiszMW[]     PROGMEM = "rsave";            const char cmd_help_zapiszMW[]     PROGMEM = "[A] save execution module settings"; 
+const char cmd_zapiszMW[]     PROGMEM = "rsave";            const char cmd_help_zapiszMW[]     PROGMEM = "[A] save execution module settings";
 
 #endif

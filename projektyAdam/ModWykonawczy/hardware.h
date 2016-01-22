@@ -3,7 +3,7 @@
 
 #include <avr/io.h>
 #include "main.h"
-#include "../../freeRtos/Lib/include/protocol1.h"
+#include "../../Lib/include/protocol1.h"
 
 #define TxStart() (PORTD |=  0x0C)
 #define TxStop()  (PORTD &=  0xF3)

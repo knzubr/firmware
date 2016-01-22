@@ -35,6 +35,8 @@ uint8_t wwwport; // 80 is just a default value. Gets overwritten during init
 //int16_t info_data_len=0;
 
 
+#define testZewPamiec 1
+
 #define SEQNUM 0xFA000000; // my initial tcp sequence number
 
 #define ARP_TABLE_SIZE          10
