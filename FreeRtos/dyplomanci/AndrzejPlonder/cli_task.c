@@ -5,7 +5,7 @@ void vTaskVTYusb(void *cliStatePtr)
   cmdState_t *state = (cmdState_t *)(cliStatePtr);
   fprintf_P(state->myStdInOut, PSTR("Restart\r\n"));
   cmdlineInputFunc('\r', state);
-  
+
   char znak;
   for( ;; )
   {
@@ -13,23 +13,14 @@ void vTaskVTYusb(void *cliStatePtr)
     {
       cmdlineInputFunc((char)znak, state);
       cmdlineMainLoop(state);
-    }  
-  }
-}
-void vTaskTestUSB(void *cliStatePtr)
-{
-  (void) cliStatePtr;; 
-  for(;;)
-  {
-    uartVtySendByte('Z');//    USARTD0.DATA='Z';
-    vTaskDelay(1000);
+    }
   }
 }
 
 void vTaskVTYsocket(void *cliStatePtr)
 {
   cmdState_t *state = (cmdState_t *)(cliStatePtr);
-  
+
   char znak;
   for( ;; )
   {

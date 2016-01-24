@@ -17,8 +17,9 @@ struct pelcoMsg
 };
 
 extern xQueueHandle         pelcoMessages;
-extern xQueueHandle         rs485_2tx;
+extern xQueueHandle         xRs485_2_Tx;
 
-void pelcoInit()
+void pelcoInit(void);
+void vTaskPelco(void* pvParameters);
 
 #endif // PELCO_D_H

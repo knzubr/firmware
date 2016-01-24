@@ -161,39 +161,14 @@ streamBuffers_t udpBuffers;
 #endif
 
 
-
-void translatorTask(void *cliStatePtr)  //Przenieść do osobnego pliku
-{
-  uint8_t znak;
-  for( ;; )
-  {
-    if( xQueueReceive(xRs485_1_Rec, &znak, portMAX_DELAY))
-    {
-        //Dopisać
-
-//        if (false)
-//            xQueueSend();
-
-    }
-  }
-}
-
 portSHORT main( void )
 {
-  //ramDyskInit();              //Inicjalizacja Ram dysku
   hardwareInit();
-  //
-  //my_init_memory();
-  //lcd_init();
-
-  //clear display
-  //lcd_clear_and_home();
-  //lcd_write_data('a');
+  pelcoInit();
 
   xSerialPortInitMinimal(); //Przerobić dodać drigi Rs485
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
 
-  //  cmdStateClear(newCmdState);
 
   loadConfiguration();
 
@@ -204,6 +179,7 @@ portSHORT main( void )
   sei();
 
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"            */, STACK_SIZE_VTY,         (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+  xTaskCreate(vTaskPelco,     NULL /*"VTY"            */, STACK_SIZE_VTY,         NULL,                                   1, &xHandleVTY_USB);
   //xTaskCreate(translatorTask, NULL /*"konwerter Rs485"*/, STACK_SIZE_TRANSLATOR,   NULL,                                  1, &xHandleTranslator);
 
   vTaskStartScheduler();
