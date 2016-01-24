@@ -28,13 +28,7 @@ const char statusRamDiskStateStr[]     PROGMEM = "  Ram disc space  : %d free of
 const char statusTemperatureStr[]      PROGMEM = "  Temperature     : %d C\r\n";
 const char statusVoltageStr[]          PROGMEM = "  Voltage         : %d V\r\n";
 const char systemRamConfigStr[]        PROGMEM = "System settings:\r\n";
-const char statusMacStr[]              PROGMEM = "  Mac address     : ";
-const char statusIpStr[]               PROGMEM = "  IP address      : ";
-const char statusIpMaskStr[]           PROGMEM = "  mask            : ";
-const char statusIpGwStr[]             PROGMEM = "  gateway         : ";
 
-const char statusRs485listStr[]        PROGMEM = "Detected RS 485 devices:\r\n";
-const char statusNoRs485Dev[]          PROGMEM = "  Can't find any device\r\n";
 
 const char statusLockerSensorsStr[]    PROGMEM = "Locker sensors states:\r\n";
 const char statusLockerSensorsDisStr[] PROGMEM = "  Locker sensors disabled\r\n";
@@ -58,7 +52,11 @@ const char cmd_status[]       PROGMEM = "status";   const char cmd_help_status[]
 const char cmd_enc_stat[]     PROGMEM = "encstat";  const char cmd_help_enc_stat[]     PROGMEM = "Print Enc 28j60 registers";
 const char cmd_time[]         PROGMEM = "time";     const char cmd_help_time[]         PROGMEM = "Print time";
 const char cmd_net_dbg[]      PROGMEM = "debug";    const char cmd_help_net_dbg[]      PROGMEM = "[arp|icmp|ip|tcp|udp] [level] write debug info. Level 0 disable debuging";
- 
+
+const char cmd_pelcoSnd[]     PROGMEM = "psend";    const char cmd_help_pelcoSnd[]     PROGMEM = "Pelco send message [adr][cmd1][cmd2][opt1][opt2]";
+const char cmd_translate[]    PROGMEM = "transl";   const char cmd_help_translate[]    PROGMEM = "Translate address [oldAddress][newAddress]";
+const char cmd_show_tt[]      PROGMEM = "showtt";   const char cmd_help_show_tt[]      PROGMEM = "Show translate table";
+
 const char cmd_rping[]        PROGMEM = "rping";    const char cmd_help_rping[]        PROGMEM = "[Device no] Send ping to Rs485 device";
 const char cmd_ping[]         PROGMEM = "ping";     const char cmd_help_ping[]         PROGMEM = "[A1] [A2] [A3] [A4] Sends ping throught ethernet";
 const char cmd_xRec[]         PROGMEM = "xrec";     const char cmd_help_xRec[]         PROGMEM = "[file name] receive file using xModem";
