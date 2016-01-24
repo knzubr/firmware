@@ -154,7 +154,6 @@ static cliExRes_t sendPelcoMessage(cmdState_t *state)
   tmpMsg.opt[0] = (uint8_t)(cmdlineGetArgInt(4, state));
   tmpMsg.opt[1] = (uint8_t)(cmdlineGetArgInt(5, state));
 
-
   xQueueSend(pelcoMessages, &tmpMsg, portMAX_DELAY);
 
   return OK_SILENT;

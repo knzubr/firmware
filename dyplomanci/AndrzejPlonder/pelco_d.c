@@ -32,8 +32,6 @@ void vTaskPelco(void* pvParameters)
   }
 }
 
-
-
 ISR(USARTF0_RXC_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken;
@@ -42,7 +40,7 @@ ISR(USARTF0_RXC_vect)
 
   uint8_t value;
 
-  value = USARTD0.DATA;
+  value = USARTF0.DATA;
 
   xHigherPriorityTaskWoken = pdFALSE;
 
