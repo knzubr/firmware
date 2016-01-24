@@ -24,6 +24,7 @@ static cliExRes_t configureModeFunction  (cmdState_t *state);
 static cliExRes_t saveConfigFunction     (cmdState_t *state);
 
 static cliExRes_t sendPelcoMessage       (cmdState_t *state);
+static cliExRes_t translateFunction      (cmdState_t *state);
 
 const char okStr[] PROGMEM = "OK\r\n";
 const char nlStr[] PROGMEM = "\r\n";
@@ -105,7 +106,7 @@ static cliExRes_t disableFunction(cmdState_t *state)
   }
   return OK_SILENT;
 }
-static cliExRes_t configureModeFunction(cmdState_t *state)
+static cliExRes_t conftranslateTableigureModeFunction(cmdState_t *state)
 {
   if (state->cliMode == NR_ENABLE)
   {
@@ -147,6 +148,30 @@ static cliExRes_t saveConfigFunction(cmdState_t *state)
 
 static cliExRes_t sendPelcoMessage(cmdState_t *state)
 {
+  if (state->argc < 5)
+    return SYNTAX_ERROR;
+
+  struct pelcoMsg tmpMsg;
+  tmpMsg.addr   = (uint8_t)(cmdlineGetArgInt(1, state));
+  tmpMsg.cmd[0] = (uint8_t)(cmdlineGetArgInt(2, state));
+  tmpMsg.cmd[1] = (uint8_t)(cmdlineGetArgInt(3, state));
+  tmpMsg.opt[0] = (uint8_t)(cmdlineGetArgInt(4, state));
+  tmpMsg.opt[1] = (uint8_t)(cmdlineGetArgInt(5, state));
+
+
+  xQueueSend(pelcoMessages, &tmpMsg, portMAX_DELAY);
+
+  return OK_SILENT;
+}
+
+static cliExRes_t translateFunction(cmdState_t *state)
+{
+  if (state->argc < 2)
+    return SYNTAX_ERROR;
+
+  uint8_t oldAddress = (uint8_t)(cmdlineGetArgInt(1, state));
+  uint8_t newAddress = (uint8_t)(cmdlineGetArgInt(2, state));
+  translateTable[oldAddress] = newAddress;
   return OK_SILENT;
 }
 
