@@ -19,7 +19,7 @@ void initQueueStreamUSB(FILE *stream)
 
 int VtyGetChar(FILE *stream)
 {
-  stream = NULL;
+  (void) stream;
   uint8_t c;
   if (xQueueReceive(xVtyRec, &c, portMAX_DELAY) == 0)
     return EOF;
@@ -28,7 +28,7 @@ int VtyGetChar(FILE *stream)
 
 int VtyPutChar(char c, FILE *stream)
 {
-  stream = NULL;
+  (void) stream;
   uartVtySendByte(c);
   return 0;
 }
@@ -48,16 +48,27 @@ void xSerialPortInitMinimal(void)
   USARTD0.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
   USARTD0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
 
-  /// Konfiguracja portu F dla USARTF0 RS486
+  /// F0 - port, do którego podłączono rejestrator
   PORTF.DIRSET = PIN3_bm; //ok
   PORTF.DIRCLR = PIN2_bm; //ok
   PORTF.OUTSET = PIN3_bm; //ok
-  //USARTF0.CTRLA = USART_RXCINTLVL_LO_gc;             // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTF0.CTRLA = USART_RXCINTLVL_LO_gc;             // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
   USARTF0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;     // Włączenie nadajnika i odbiornika
   USARTF0.CTRLC = USART_CHSIZE_8BIT_gc;              // Tryb 8 bitów
   // 115200 @ 32MHz
   USARTF0.BAUDCTRLA= 2094 & 0xFF;                    //12; BSEL = 131  BSCALE = -3
   USARTF0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8);
+
+  /// C1 - port, do którego podłączono kamery
+  PORTC.DIRSET = PIN7_bm; //ok
+  PORTC.DIRCLR = PIN6_bm; //ok
+  PORTC.OUTSET = PIN7_bm; //ok
+//USARTC1.CTRLA = USART_RXCINTLVL_LO_gc;             // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTC1.CTRLB = USART_RXEN_bm |  USART_TXEN_bm;    // Włączenie nadajnika i odbiornika
+  USARTC1.CTRLC = USART_CHSIZE_8BIT_gc;              // Tryb 8 bitów
+  // 115200 @ 32MHz
+  USARTC1.BAUDCTRLA= 2094 & 0xFF;                    //12; BSEL = 131  BSCALE = -3
+  USARTC1.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8);
 
 
   portENTER_CRITICAL();
@@ -77,82 +88,14 @@ void xSerialPortInitMinimal(void)
   return;
 }
 
-/*-----------------------------------------------------------*/
-ISR(USARTF0_RXC_vect)
+void uartRs485_2_SendByte(uint8_t data)
 {
-  static signed portBASE_TYPE xHigherPriorityTaskWoken = pdTRUE;
-  signed portCHAR cChar;
-
-  cChar = USARTF0.DATA;//UDR0;
-
-  xHigherPriorityTaskWoken = pdFALSE;
-
-//  xQueueSendFromISR( xRs485Rec, &cChar, NULL);
-  xQueueSendFromISR( xRs485Rec, &cChar, &xHigherPriorityTaskWoken );
-  if( xHigherPriorityTaskWoken )
-  {
-    taskYIELD();
-  }
+  xQueueSend(xRs485_2_Tx, &data, portMAX_DELAY);
+  vInterruptRs485_2_On();
 }
 
-void uartRs485SendByte(uint8_t data)
-{
-  xQueueSend(xRs485Tx, &data, portMAX_DELAY);
-  vInterruptRs485On();
-}
 
-uint8_t rs485Receive(uint8_t *c, uint8_t timeout)
-{
-  return xQueueReceive(xRs485Rec, c, timeout);
-}
-
-ISR(USARTF0_DRE_vect) //   USART0_UDRE_vect
-{
-  static signed portBASE_TYPE xHigherPriorityTaskWoken;
-  static char data;
-  if(xQueueReceiveFromISR(xRs485Tx, (void *)(&data), &xHigherPriorityTaskWoken) == pdTRUE)
-  {
-    Rs485TxStart();
-    USARTF0.DATA = data;
-  }
-  else
-  {
-    xHigherPriorityTaskWoken = pdFALSE;
-    vInterruptRs485Off();
-  }
-  if( xHigherPriorityTaskWoken )
-  {
-    taskYIELD();
-  }
-}
-
-ISR(USARTF0_TXC_vect) //  USART0_TX_vect
-{
-  if (!vIsInterruptRs485On())
-    Rs485TxStop();
-}
-
-uint8_t flushRs485RecBuffer(void)
-{
-  uint8_t temp;
-  uint8_t wynik = 0;
-  while(xQueueReceive(xRs485Rec, &temp, 10) == pdTRUE)
-    wynik++;
-
-  return wynik;
-}
-
-void    takeRs485(void)
-{
-  xSemaphoreTake(xSemaphoreRs485, portMAX_DELAY);
-}
-
-void    releaseRs485(void)
-{
-  xSemaphoreGive(xSemaphoreRs485);
-}
-
-/*-----------------------------------------------------------*/
+/** VTY ---------------------------------------------------*/
 ISR(USARTD0_RXC_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken;
@@ -192,4 +135,34 @@ ISR(USARTD0_DRE_vect) // USART1_UDRE_vect
     taskYIELD();
   }
 }
+
+
+/** Obsługa porty do którego podłączone są kamery */
+
+ISR(USARTC1_TXC_vect) //  USART0_TX_vect
+{
+  if (!vIsInterruptRs485On_2())
+    Rs485TxStop_2();
+}
+
+ISR(USARTC1_DRE_vect) //   USART0_UDRE_vect
+{
+  static signed portBASE_TYPE xHigherPriorityTaskWoken;
+  static char data;
+  if(xQueueReceiveFromISR(xRs485_2_Tx, (void *)(&data), &xHigherPriorityTaskWoken) == pdTRUE)
+  {
+    Rs485TxStart_2();
+    USARTC1.DATA = data;
+  }
+  else
+  {
+    xHigherPriorityTaskWoken = pdFALSE;
+    vInterruptRs485_2_Off();
+  }
+  if( xHigherPriorityTaskWoken )
+  {
+    taskYIELD();
+  }
+}
+
 

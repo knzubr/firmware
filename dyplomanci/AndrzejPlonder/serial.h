@@ -80,19 +80,40 @@
   USARTD0.CTRLA = ucByte;             \
 }
 
-/**
- * Serial 1 (VTY) receiver que
- */
+#define  vInterruptRs485_2_On()       \
+{                                     \
+  unsigned portCHAR ucByte;           \
+                                      \
+  ucByte = USARTC1.CTRLA;             \
+  ucByte |= USART_DREINTLVL_LO_gc;    \
+  USARTC1.STATUS = ucByte;            \
+}
+
+#define vInterruptRs485_2_Off()       \
+{                                     \
+  unsigned portCHAR ucInByte;         \
+                                      \
+  ucInByte = USARTC1.CTRLA;           \
+  ucInByte &= ~USART_DREINTLVL_LO_gc; \
+  USARTC1.CTRLA = ucInByte;           \
+}
+
 extern xQueueHandle         xVtyRec;
 extern xQueueHandle         xVtyTx;
 
 /**
- * Serial 0 (Rs485) receiver que
+ * F0 port, do którego podłączony jest rejestrator
  */
-extern xQueueHandle         xRs485Rec;
-extern xQueueHandle         xRs485Tx;
 
-xSemaphoreHandle            xSemaphoreRs485;    /// Flaga blokująca jednoczesny dostęp do magistrali wielu zadaniom
+extern xQueueHandle xRs485_1_Rec;
+
+
+/**
+ * C1 port, do którego podłaczone są kamery
+ */
+#define vIsInterruptRs485On_2()  (USARTC1.CTRLA & USART_DREINTLVL_LO_gc)
+extern xQueueHandle xRs485_2_Tx;
+
 
 
 void initQueueStreamUSB(FILE *stream);
@@ -103,10 +124,7 @@ int     VtyGetChar(FILE *stream);
 void    xSerialPortInitMinimal(void);
 void    uartVtySendByte(uint8_t data);
 
-void    uartRs485SendByte(uint8_t data);
-uint8_t rs485Receive(uint8_t *c, uint8_t timeout);
-uint8_t flushRs485RecBuffer(void);
-void    takeRs485(void);
-void    releaseRs485(void);
+void uartRs485_2_SendByte(uint8_t data);
+
 
 #endif

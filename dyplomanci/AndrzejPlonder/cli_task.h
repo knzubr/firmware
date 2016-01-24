@@ -21,8 +21,6 @@ extern xQueueHandle         xVtyTx;
 void vTaskVTYusb(void *cliStatePtr);
 
 
-void vTaskTestUSB(void *cliStatePtr);
-
 
 /**
  * Proces odpowiedzialny za obsługę VTY

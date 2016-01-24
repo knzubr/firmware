@@ -68,7 +68,6 @@ $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/xmodem.c \
 $(LIB_DIR)/vt100.c \
 $(LIB_DIR)/queueStream.c \
-$(LIB_DIR)/Rs485_prot.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \
