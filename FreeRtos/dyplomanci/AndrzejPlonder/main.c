@@ -51,14 +51,15 @@ uint8_t timer100Hz = 0;
 xQueueHandle xVtyTx;
 xQueueHandle xVtyRec;
 
-xQueueHandle xRs485Tx;
-xQueueHandle xRs485Rec;
-
 xQueueHandle xRs485_1_Rec;
-xQueueHandle xRs485_2_Rec;
+//xQueueHandle xRs485_2_Rec;   //To nie jest potrzebne
 
-xQueueHandle xRs485_1_Tx;
+//xQueueHandle xRs485_1_Tx;    //To nie jest potrzebne
 xQueueHandle xRs485_2_Tx;
+
+
+xQueueHandle pelcoMessages;
+
 
 
 xQueueHandle xLCDrec;

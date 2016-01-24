@@ -64,6 +64,10 @@ void xSerialPortInitMinimal(void)
   {
     xVtyRec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
     xVtyTx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+
+    xRs485_2_Tx  =  xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xRs485_1_Rec =  xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+
     //xRs485Rec = xQueueCreate( 16, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
     //xRs485Tx = xQueueCreate( 4, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ) );
 

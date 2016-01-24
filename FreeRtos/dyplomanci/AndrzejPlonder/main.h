@@ -18,6 +18,7 @@
 #include "queueStream.h"
 #include "cli_task.h"
 #include "serial.h"
+#include "pelco_d.h"
 
 #include "hardwareConfig.h"
 #include "softwareConfig.h"

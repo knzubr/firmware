@@ -59,6 +59,7 @@ hardware.c \
 vty.c \
 cli_task.c \
 lcd_task.c\
+pelco_d.c\
 $(LIB_DIR)/lcd.c \
 $(LIB_DIR)/spiXmega.c \
 $(LIB_DIR)/memory_x.c \
