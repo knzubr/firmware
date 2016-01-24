@@ -19,13 +19,8 @@ void vTaskPelco(void* pvParameters)
   {
     if( xQueueReceive(pelcoMessages, &inMsg, portMAX_DELAY))
     {
-      //uint16_t crc = 0;
-      //crc = _crc_xmodem_update(0, SYNC);            uartRs485SendByte(SYNC);
-
         uint8_t crc = 0;
-
         outMsg.sync=0xFF;
-
         outMsg.addr   = translateTable[inMsg.addr]; crc =outMsg.addr;
         outMsg.cmd[0] = inMsg.cmd[0];               crc+=outMsg.cmd[0];
         outMsg.cmd[1] = inMsg.cmd[1];               crc+=outMsg.cmd[1];
