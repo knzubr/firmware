@@ -139,13 +139,13 @@ ISR(USARTD0_DRE_vect) // USART1_UDRE_vect
 
 /** Obsługa porty do którego podłączone są kamery */
 
-ISR(USARTC1_TXC_vect) //  USART0_TX_vect
+ISR(USARTC1_TXC_vect)
 {
   if (!vIsInterruptRs485On_2())
     Rs485TxStop_2();
 }
 
-ISR(USARTC1_DRE_vect) //   USART0_UDRE_vect
+ISR(USARTC1_DRE_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken;
   static char data;

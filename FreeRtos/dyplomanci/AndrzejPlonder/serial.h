@@ -57,7 +57,7 @@
  * Włączenie przerwania pusty bufor nadawczy dla VTY
  */
 
-#define vIsInterruptVtyOn()  (USARTD0.CTRLA & USART_DREINTLVL_HI_gc)
+#define vIsInterruptVtyOn()  (USARTD0.CTRLA & USART_DREINTLVL_LO_gc)
 
 /*
  * Wyłączenie przerwania pusty bufor nadawczy dla VTY
@@ -67,7 +67,7 @@
   unsigned portCHAR ucInByte;         \
                                       \
   ucInByte = USARTD0.CTRLA;           \
-  ucInByte &= ~USART_DREINTLVL_HI_gc; \
+  ucInByte &= ~USART_DREINTLVL_LO_gc; \
   USARTD0.CTRLA = ucInByte;           \
 }
 
@@ -86,7 +86,7 @@
                                       \
   ucByte = USARTC1.CTRLA;             \
   ucByte |= USART_DREINTLVL_LO_gc;    \
-  USARTC1.STATUS = ucByte;            \
+  USARTC1.CTRLA = ucByte;            \
 }
 
 #define vInterruptRs485_2_Off()       \
