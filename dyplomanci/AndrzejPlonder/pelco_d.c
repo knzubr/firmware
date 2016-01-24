@@ -14,21 +14,20 @@ void vTaskPelco(void* pvParameters)
 {
   (void) pvParameters;
 
-  static struct pelcoMsg inMsg, outMsg;
+  static struct pelcoMsg inMsg;//, outMsg;
   for( ; ; )
   {
     if( xQueueReceive(pelcoMessages, &inMsg, portMAX_DELAY))
     {
         uint8_t crc = 0;
-        outMsg.sync=0xFF;
-        outMsg.addr   = translateTable[inMsg.addr]; crc =outMsg.addr;
-        outMsg.cmd[0] = inMsg.cmd[0];               crc+=outMsg.cmd[0];
-        outMsg.cmd[1] = inMsg.cmd[1];               crc+=outMsg.cmd[1];
-        outMsg.opt[0] = inMsg.opt[0];               crc+=outMsg.opt[0];
-        outMsg.opt[1] = inMsg.opt[1];               crc+=outMsg.opt[1];
-        outMsg.crc = crc;
-
-        xQueueSend(xRs485_2_Tx, &outMsg, portMAX_DELAY);
+        uartRs485_2_SendByte(0xFF);          //outMsg.sync=0xFF;
+        uartRs485_2_SendByte(translateTable[inMsg.addr]); crc =translateTable[inMsg.addr];   // outMsg.addr   = translateTable[inMsg.addr]; crc =outMsg.addr;
+        uartRs485_2_SendByte(inMsg.cmd[0]);               crc+=inMsg.cmd[0]; //outMsg.cmd[0] = inMsg.cmd[0];               crc+=outMsg.cmd[0];
+        uartRs485_2_SendByte(inMsg.cmd[1]);               crc+=inMsg.cmd[1]; //outMsg.cmd[1] = inMsg.cmd[1];               crc+=outMsg.cmd[1];
+        uartRs485_2_SendByte(inMsg.opt[0]);               crc+=inMsg.opt[0]; //outMsg.opt[0] = inMsg.opt[0];               crc+=outMsg.opt[0];
+        uartRs485_2_SendByte(inMsg.opt[1]);               crc+=inMsg.opt[1]; //outMsg.opt[1] = inMsg.opt[1];               crc+=outMsg.opt[1];
+        uartRs485_2_SendByte(crc);           //outMsg.crc = crc;
+        //xQueueSend(xRs485_2_Tx, &outMsg, portMAX_DELAY);
     }
   }
 }
