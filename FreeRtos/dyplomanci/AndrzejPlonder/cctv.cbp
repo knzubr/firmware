@@ -92,13 +92,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="netstack_task.h" />
+		<Unit filename="pelco_d.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pelco_d.h" />
 		<Unit filename="rtc.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="rtc.h" />
-		<Unit filename="sensors_task.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="sensors_task.h" />
 		<Unit filename="serial.c">
 			<Option compilerVar="CC" />
