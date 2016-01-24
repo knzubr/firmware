@@ -23,18 +23,17 @@ void vTaskPelco(void* pvParameters)
       //crc = _crc_xmodem_update(0, SYNC);            uartRs485SendByte(SYNC);
 
         uint8_t crc = 0;
+
         outMsg.sync=0xFF;
 
-        outMsg.addr   = inMsg.addr;
-        outMsg.cmd[0] = inMsg.cmd[0];
-        outMsg.cmd[1] = inMsg.cmd[1];
-        outMsg.opt[0] = inMsg.opt[0];
-        outMsg.opt[1] = inMsg.opt[1];
-        outMsg.crc = crc;//
-        //outMsg.addr=
-        //modyfikowanie outMsg
+        outMsg.addr   = translateTable[inMsg.addr]; crc =outMsg.addr;
+        outMsg.cmd[0] = inMsg.cmd[0];               crc+=outMsg.cmd[0];
+        outMsg.cmd[1] = inMsg.cmd[1];               crc+=outMsg.cmd[1];
+        outMsg.opt[0] = inMsg.opt[0];               crc+=outMsg.opt[0];
+        outMsg.opt[1] = inMsg.opt[1];               crc+=outMsg.opt[1];
+        outMsg.crc = crc;
 
-//
+        xQueueSend(xRs485_2_Tx, &outMsg, portMAX_DELAY);
     }
   }
 }

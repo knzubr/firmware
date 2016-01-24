@@ -19,6 +19,8 @@ struct pelcoMsg
 extern xQueueHandle         pelcoMessages;
 extern xQueueHandle         xRs485_2_Tx;
 
+extern uint8_t translateTable[256];
+
 void pelcoInit(void);
 void vTaskPelco(void* pvParameters);
 

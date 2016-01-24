@@ -9,8 +9,15 @@
 #include "memory_x.h"
 #include "configuration.h"
 #include "cmdline.h"
+//#include "pelco_d.h"
 
+//#include "../../freeRtos/Source/include/FreeRTOS.h"
+//#include "../../freeRtos/Source/include/croutine.h"
+//#include "../../freeRtos/Source/include/queue.h"
+//#include "../../freeRtos/Source/include/task.h"
 
+extern uint8_t translateTable[256];
+extern xQueueHandle pelcoMessages;
 
 void VtyInit(cmdState_t *state, FILE *stream);
 
