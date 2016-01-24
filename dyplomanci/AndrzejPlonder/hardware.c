@@ -87,10 +87,10 @@ void hardwareInit(void)
 
 void Rs485TxStop_2(void)
 {
-  PORTF.OUT &= 0xDF;
+  PORTC.OUT &= 0xDF;
 }
 
 void Rs485TxStart_2(void)
 {
-  PORTF.OUT |= 0x20;
+  PORTC.OUT |= 0x20;
 }
