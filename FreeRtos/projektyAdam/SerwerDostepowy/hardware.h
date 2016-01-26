@@ -11,8 +11,6 @@
 #include "hardwareConfig.h"
 #include "softwareConfig.h"
 
-#include "mpc23s17.h"
-#include "mcp3008.h"
 #include "spi.h"
 
 #define ENC_RST_ON  PORTE &= ~0x04;
@@ -40,20 +38,8 @@ void disableAllSpiDevices(void);
 void spiEnableEnc28j60(void);
 void spiDisableEnc28j60(void);
 
-void enableSpiSd(void);
-void disableSpiSd(void);
-
-void enableSpiMPC23S17(void);
-void disableSpiMPC23S17(void);
-
-void enableSpiMCP3008(void);
-void disableSpiMCP3008(void);
-
-void spiEnableDS1305(void);
-void spiDisableDS1305(void);
-
-void enableSpiMCP4150(void);
-void disableSpiMCP4150(void);
+void spiEnableDev(uint8_t devNo);
+void spiDisableDev(uint8_t devNo);
 
 #endif
 

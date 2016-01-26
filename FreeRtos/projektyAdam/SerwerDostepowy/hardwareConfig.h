@@ -43,12 +43,19 @@
 
 #define RTOS_TCP_BUF_BASE_ADDR       0x2C00
 
-#define FAT32_BUF_ADDR               0x7000
-#define FAT32_BUF_LENGTH             0x0800
-
 
 #define RTOS_UDP_TX_BUF_ADDR         0x7800
 #define RTOS_UDP_RX_BUF_ADDR         0x7900
+
+#define SPI_TX_BUFFER                0x7000
+#define SPI_RX_BUFFER                0x7400
+
+#define SPI2SERIAl_TX_BUFFERS        0x8000
+#define NO_OF_SPI2SERIAL_TX_BUF      16
+#define OF_SPI2SERIAL_TX_BUF_SIZE    256
+#define SPI2SERIAl_RX_BUFFERS        0x9000
+#define NO_OF_SPI2SERIAL_RX_BUF      16
+#define OF_SPI2SERIAL_RX_BUF_SIZE    256
 
 #define NETWORK_STACK_BUF_SIZE       0x0600 // 1532 bytes
 #define NETWORK_STACK_BUF_ADDR       0x7A00 // 30 1/4 - 32 kB
@@ -59,32 +66,31 @@
   256   | Controll registers          |
  0x0100 +-----------------------------+
   4k    | Internal memory             |
- 0x1FFF +-----------------------------+  4k
- 
- 
- 
- 
- 0x1100 +-----------------------------+
+ 0x1100 +-----------------------------+  4 K
   5k768 | Heap                        |
  0x2800 +-----------------------------+  11 k 768
     256 * CLI 1 buffer                +
  0x2900 +-----------------------------+
     256 * CLI 2 buffer                +
  0x2A00 +-----------------------------+
-           TCP buffers
 
- 
+
  0x7000 +-----------------------------+  28 k
-        | Fat32 Buffer                | 
+   1k   | SPI Tx Buffer               |
+ 0x7400 +-----------------------------+  29 k
+   1k   | SPI Rx Buffer               |
  0x7800 +-----------------------------+  30 k
   256   | RTOS UDP Tx buffer          |
  0x7900 +-----------------------------+
   256   | RTOS UDP Rx buffer          |
  0x7A00 +-----------------------------+
   1k512 | Enc28j60Buffer              |
- 0x8000 +-----------------------------+  32 K
-  32k   | Filesystem Fat8             |
- 0xFFFF +-----------------------------+
+ 0x8000 +-----------------------------+  32 k
+   4k   | Spi2SerialTx                |
+ 0x9000 +-----------------------------+  36 k
+   4k   | Spi2SerialRx                |
+ 0xA000 +-----------------------------+  40 k
+
 */
 
 

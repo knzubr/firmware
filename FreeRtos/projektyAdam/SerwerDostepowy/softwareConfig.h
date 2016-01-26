@@ -15,8 +15,6 @@
 #define LANG_PL 0
 
 
-#define MAX_NUMBER_OF_ROLLERS 10
-
 
 /* maximum number of TCP connections */
 #define NUMBER_OF_SOCKETS 20
@@ -30,7 +28,7 @@
 #define MYTELNETPOERT 25000
 
 
-uint8_t wwwport; // 80 is just a default value. Gets overwritten during init
+//uint8_t wwwport; // 80 is just a default value. Gets overwritten during init
 //int16_t info_hdr_len=0;
 //int16_t info_data_len=0;
 
@@ -43,8 +41,6 @@ uint8_t wwwport; // 80 is just a default value. Gets overwritten during init
 #define ARP_CACHE_TIME_TO_LIVE  128
 
 
-#define MYWWWPORT    80
-#define MYTELNETPORT 23
 #define MYUDPPORT    1200
 
 #define MY_IP1 192
