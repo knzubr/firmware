@@ -7,31 +7,25 @@
 #include <avr/interrupt.h>
 #include <util/crc16.h>
 
+#include "hardwareConfig.h"
+#include "softwareConfig.h"
+
+
 #include "memory_x.h"
-#include "Rs485_prot.h"
 
 #include "FreeRTOS.h"
 #include "croutine.h"
 #include "queue.h"
 #include "task.h"
+
+
 #include "queueStream.h"
 #include "cli_task.h"
 #include "serial.h"
 
-#include "hardwareConfig.h"
-#include "softwareConfig.h"
 
 #include "hardware.h"
 #include "spi.h"
-#include "mpc23s17.h"
-#include "mcp3008.h"
-#include "ds1305.h"
-#include "enc28j60.h"
-
-#include "ramdysk.h"
-#include "ff.h"
-#include "sd_diskio.h"
-#include "rtc.h"
 
 #include "netstack_task.h"
 
