@@ -53,6 +53,11 @@ xQueueHandle xRs1Rec;
 xQueueHandle xRsLanRec;
 xQueueHandle xRsLanTx;
 
+xQueueHandle xSpi2SerialTx[16];
+xQueueHandle xSpi2SerialRx[16];
+xQueueHandle xRsLanTx;
+
+
 void vApplicationIdleHook( void );
 
 /**
@@ -61,8 +66,9 @@ void vApplicationIdleHook( void );
 void vApplicationTickHook( void );
 
 xTaskHandle xHandleVTY_Rs1;
-xTaskHandle xHandleVTY_UDP;
 xTaskHandle xHandleEnc;
+
+xTaskHandle xHandleXpReceiver;
 
 
 void initExternalMem(void)
@@ -138,13 +144,17 @@ portSHORT main( void )
   initQueueRs1Stream(&rs1Stream);
   VtyInit(CLIStateSerialRs1, &rs1Stream);
 
+
+  initQeuesSpi2Serial();
   udpInit();
   socketInit();
   //initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
   //VtyInit(CLIStateSerialUdp, &udpStream);
 
-  xTaskCreate(encTask,        NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialRs1->myStdInOut,  0, &xHandleEnc);
-  xTaskCreate(vTaskVtyRs1,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialRs1),            1, &xHandleVTY_Rs1);
+  xTaskCreate(spiTask,           NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialRs1->myStdInOut,  0, &xHandleEnc);
+  xTaskCreate(vTaskVtyRs1,       NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialRs1),            1, &xHandleVTY_Rs1);
+  xTaskCreate(XpNetReceiverTask, NULL /*"ENC"    */, 128,                  (void *)CLIStateSerialRs1->myStdInOut,  0, &xHandleXpReceiver);
+
   //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
 
   vTaskStartScheduler();

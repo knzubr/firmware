@@ -21,7 +21,7 @@
 
 
 //TODO add new task: http server
-typedef enum 
+typedef enum
 {
   URLramDysk,
   URLsdDysk,
@@ -30,7 +30,6 @@ typedef enum
 } urlSource_t;
 
 
-extern struct lockerSensor *lockSensors;
 
 uint8_t verify_password(char *str);
 

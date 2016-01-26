@@ -57,13 +57,14 @@ configuration.c \
 serial.c \
 hardware.c \
 vty.c \
-netstack_task.c \
 cli_task.c \
+spi_task.c \
 $(LIB_DIR)/spi.c \
 $(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/vt100.c \
 $(LIB_DIR)/queueStream.c \
+$(LIB_DIR)/enc28j60.c \
 $(LIB_NET_DIR)/nic.c \
 $(LIB_NET_DIR)/net.c \
 $(LIB_NET_DIR)/ip.c \

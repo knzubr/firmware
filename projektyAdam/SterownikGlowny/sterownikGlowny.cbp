@@ -61,6 +61,12 @@
 		<Unit filename="../../Lib/memory_x.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../Lib/net/ip.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/udp.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../Lib/spi.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -88,9 +94,6 @@
 		<Unit filename="hardwareConfig.h" />
 		<Unit filename="hardware_en.h" />
 		<Unit filename="hardware_pl.h" />
-		<Unit filename="lcd_task.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="lcd_task.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />

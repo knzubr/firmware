@@ -165,6 +165,7 @@ void disableAllSpiDevices(void)
 
 void spiEnableEnc28j60(void)
 {
+  spiTake();
 #if ENC_SPI_CS_EN_MASK_OR != 0
   ENC_SPI_CS_PORT |= ENC_SPI_CS_EN_MASK_OR;
 #endif
@@ -181,118 +182,43 @@ void spiDisableEnc28j60(void)
 #if ENC_SPI_CS_EN_MASK_AND != 0xFF
   ENC_SPI_CS_PORT |= (~ENC_SPI_CS_EN_MASK_AND);
 #endif
+  spiGive();
 }
 
-void enableSpiSd(void)
+void spiEnableDev(uint8_t devNo)
 {
-#if SD_SPI_CS_EN_MASK_OR != 0
-  SD_SPI_CS_PORT |= SD_SPI_CS_EN_MASK_OR;
-#endif
-#if SD_SPI_CS_EN_MASK_AND != 0xFF
-  SD_SPI_CS_PORT &= SD_SPI_CS_EN_MASK_AND;
-#endif
+  spiTake();
+  switch(devNo)
+  {
+  case 0: PORTD &= 0xEF; break;
+  case 1: PORTD &= 0xDF; break;
+  case 2: PORTD &= 0xBF; break;
+  case 3: PORTD &= 0x7F; break;
+  case 4: PORTB &= 0xEF; break;
+  case 5: PORTB &= 0xDF; break;
+  case 6: PORTB &= 0xBF; break;
+  case 7: PORTB &= 0x7F; break;
+  default: break;
+  }
 }
 
-void disableSpiSd(void)
+void spiDisableDev(uint8_t devNo)
 {
-#if SD_SPI_CS_EN_MASK_OR != 0
-  SD_SPI_CS_PORT &= (~SD_SPI_CS_EN_MASK_OR);
-#endif
-#if SD_SPI_CS_EN_MASK_AND != 0xFF
-  SD_SPI_CS_PORT |= (~SD_SPI_CS_EN_MASK_AND);
-#endif
+  switch(devNo)
+  {
+  case 0:
+  case 1:
+  case 2:
+  case 3: PORTD |= 0xF0; break;
+  case 4:
+  case 5:
+  case 6:
+  case 7: PORTB |= 0xF0; break;
+  default: break;
+  }
+  spiGive();
 }
 
-void enableSpiMPC23S17(void)
-{
-#if MCP23S17_SPI_CS_EN_MASK_OR != 0
-  MCP23S17_SPI_CS_PORT |= MCP23S17_SPI_CS_EN_MASK_OR;
-#endif
-#if MCP23S17_SPI_CS_EN_MASK_AND != 0xFF
-  MPC23S17_SPI_CS_PORT &= MPC23S17_SPI_CS_EN_MASK_AND;
-#endif
-}
-
-void disableSpiMPC23S17(void)
-{
-#if MCP23S17_SPI_CS_EN_MASK_OR != 0
-  MCP23S17_SPI_CS_PORT &= (~MCP23S17_SPI_CS_EN_MASK_OR);
-#endif
-#if MCP23S17_SPI_CS_EN_MASK_AND != 0xFF
-  MPC23S17_SPI_CS_PORT |= (~MPC23S17_SPI_CS_EN_MASK_AND);
-#endif
-}
-
-#define MCP3008_SPCR_OR_MASK ((1<<SPR1)|(1<<SPR0))
-void enableSpiMCP3008(void)
-{
-  SPCR |= MCP3008_SPCR_OR_MASK;
-#if MCP3008_SPI_CS_EN_MASK_OR != 0
-  MCP3008_SPI_CS_PORT |= MCP3008_SPI_CS_EN_MASK_OR;
-#endif
-#if MCP3008_SPI_CS_EN_MASK_AND != 0xFF
-  MCP3008_SPI_CS_PORT &= MCP3008_SPI_CS_EN_MASK_AND;
-#endif
-
-}
-
-void disableSpiMCP3008(void)
-{
-  SPCR &= ~MCP3008_SPCR_OR_MASK;
-  #if MCP3008_SPI_CS_EN_MASK_OR != 0
-  MCP3008_SPI_CS_PORT &= (~MCP3008_SPI_CS_EN_MASK_OR);
-#endif
-#if MCP3008_SPI_CS_EN_MASK_AND != 0xFF
-  MCP3008_SPI_CS_PORT |= (~MCP3008_SPI_CS_EN_MASK_AND);
-#endif
-}
-
-
-#define MCP4150_SPCR_OR_MASK ((1<<SPR1)|(1<<SPR0))
-void enableSpiMCP4150(void)
-{
-  SPCR |= MCP4150_SPCR_OR_MASK;
-#if MCP4150_SPI_CS_EN_MASK_OR != 0
-  MCP4150_SPI_CS_PORT |= MCP4150_SPI_CS_EN_MASK_OR;
-#endif
-#if MCP4150_SPI_CS_EN_MASK_AND != 0xFF
-  MCP4150_SPI_CS_PORT &= MCP4150_SPI_CS_EN_MASK_AND;
-#endif
-}
-void disableSpiMCP4150(void)
-{
-  SPCR &= ~MCP4150_SPCR_OR_MASK;
-  #if MCP4150_SPI_CS_EN_MASK_OR != 0
-  MCP4150_SPI_CS_PORT &= (~MCP4150_SPI_CS_EN_MASK_OR);
-#endif
-#if MCP4150_SPI_CS_EN_MASK_AND != 0xFF
-  MCP4150_SPI_CS_PORT |= (~MCP4150_SPI_CS_EN_MASK_AND);
-#endif
-}
-
-#define DS_SPCR_OR_MASK ((1<<CPHA)|(1<<SPR0))
-
-void spiEnableDS1305(void)
-{
-  SPCR |= DS_SPCR_OR_MASK;
-#if DS1305_SPI_CS_EN_MASK_OR != 0
-  DS1305_SPI_CS_PORT |= DS1305_SPI_CS_EN_MASK_OR;
-#endif
-#if DS1305_SPI_CS_EN_MASK_AND != 0xFF
-  DS1305_SPI_CS_PORT &= DS1305_SPI_CS_EN_MASK_AND;
-#endif
-}
-
-void spiDisableDS1305(void)
-{
-  SPCR &= (~(DS_SPCR_OR_MASK));
-#if DS1305_SPI_CS_EN_MASK_OR != 0
-  DS1305_SPI_CS_PORT &= (~(DS1305_SPI_CS_EN_MASK_OR));
-#endif
-#if DS1305_SPI_CS_EN_MASK_AND != 0xFF
-  DS1305_SPI_CS_PORT |= (~(DS1305_SPI_CS_EN_MASK_AND));
-#endif
-}
 
 ISR(SPI_STC_vect)
 {
