@@ -1,0 +1,1816 @@
+   1               		.file	"spi_task.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 241               	_crc16_update:
+ 242               		.stabd	46,0,0
+ 244               	.Ltext1:
+   1:/usr/lib/avr/include/util/crc16.h **** /* Copyright (c) 2002, 2003, 2004  Marek Michalkiewicz
+   2:/usr/lib/avr/include/util/crc16.h ****    Copyright (c) 2005, 2007 Joerg Wunsch
+   3:/usr/lib/avr/include/util/crc16.h ****    All rights reserved.
+   4:/usr/lib/avr/include/util/crc16.h **** 
+   5:/usr/lib/avr/include/util/crc16.h ****    Redistribution and use in source and binary forms, with or without
+   6:/usr/lib/avr/include/util/crc16.h ****    modification, are permitted provided that the following conditions are met:
+   7:/usr/lib/avr/include/util/crc16.h **** 
+   8:/usr/lib/avr/include/util/crc16.h ****    * Redistributions of source code must retain the above copyright
+   9:/usr/lib/avr/include/util/crc16.h ****      notice, this list of conditions and the following disclaimer.
+  10:/usr/lib/avr/include/util/crc16.h **** 
+  11:/usr/lib/avr/include/util/crc16.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:/usr/lib/avr/include/util/crc16.h ****      notice, this list of conditions and the following disclaimer in
+  13:/usr/lib/avr/include/util/crc16.h ****      the documentation and/or other materials provided with the
+  14:/usr/lib/avr/include/util/crc16.h ****      distribution.
+  15:/usr/lib/avr/include/util/crc16.h **** 
+  16:/usr/lib/avr/include/util/crc16.h ****    * Neither the name of the copyright holders nor the names of
+  17:/usr/lib/avr/include/util/crc16.h ****      contributors may be used to endorse or promote products derived
+  18:/usr/lib/avr/include/util/crc16.h ****      from this software without specific prior written permission.
+  19:/usr/lib/avr/include/util/crc16.h **** 
+  20:/usr/lib/avr/include/util/crc16.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:/usr/lib/avr/include/util/crc16.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:/usr/lib/avr/include/util/crc16.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:/usr/lib/avr/include/util/crc16.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:/usr/lib/avr/include/util/crc16.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:/usr/lib/avr/include/util/crc16.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:/usr/lib/avr/include/util/crc16.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:/usr/lib/avr/include/util/crc16.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:/usr/lib/avr/include/util/crc16.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:/usr/lib/avr/include/util/crc16.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:/usr/lib/avr/include/util/crc16.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:/usr/lib/avr/include/util/crc16.h **** 
+  32:/usr/lib/avr/include/util/crc16.h **** /* $Id: crc16.h 2136 2010-06-08 12:03:38Z joerg_wunsch $ */
+  33:/usr/lib/avr/include/util/crc16.h **** 
+  34:/usr/lib/avr/include/util/crc16.h **** #ifndef _UTIL_CRC16_H_
+  35:/usr/lib/avr/include/util/crc16.h **** #define _UTIL_CRC16_H_
+  36:/usr/lib/avr/include/util/crc16.h **** 
+  37:/usr/lib/avr/include/util/crc16.h **** #include <stdint.h>
+  38:/usr/lib/avr/include/util/crc16.h **** 
+  39:/usr/lib/avr/include/util/crc16.h **** /** \file */
+  40:/usr/lib/avr/include/util/crc16.h **** /** \defgroup util_crc <util/crc16.h>: CRC Computations
+  41:/usr/lib/avr/include/util/crc16.h ****     \code#include <util/crc16.h>\endcode
+  42:/usr/lib/avr/include/util/crc16.h **** 
+  43:/usr/lib/avr/include/util/crc16.h ****     This header file provides a optimized inline functions for calculating
+  44:/usr/lib/avr/include/util/crc16.h ****     cyclic redundancy checks (CRC) using common polynomials.
+  45:/usr/lib/avr/include/util/crc16.h **** 
+  46:/usr/lib/avr/include/util/crc16.h ****     \par References:
+  47:/usr/lib/avr/include/util/crc16.h **** 
+  48:/usr/lib/avr/include/util/crc16.h ****     \par
+  49:/usr/lib/avr/include/util/crc16.h **** 
+  50:/usr/lib/avr/include/util/crc16.h ****     See the Dallas Semiconductor app note 27 for 8051 assembler example and
+  51:/usr/lib/avr/include/util/crc16.h ****     general CRC optimization suggestions. The table on the last page of the
+  52:/usr/lib/avr/include/util/crc16.h ****     app note is the key to understanding these implementations.
+  53:/usr/lib/avr/include/util/crc16.h **** 
+  54:/usr/lib/avr/include/util/crc16.h ****     \par
+  55:/usr/lib/avr/include/util/crc16.h **** 
+  56:/usr/lib/avr/include/util/crc16.h ****     Jack Crenshaw's "Implementing CRCs" article in the January 1992 isue of \e
+  57:/usr/lib/avr/include/util/crc16.h ****     Embedded \e Systems \e Programming. This may be difficult to find, but it
+  58:/usr/lib/avr/include/util/crc16.h ****     explains CRC's in very clear and concise terms. Well worth the effort to
+  59:/usr/lib/avr/include/util/crc16.h ****     obtain a copy.
+  60:/usr/lib/avr/include/util/crc16.h **** 
+  61:/usr/lib/avr/include/util/crc16.h ****     A typical application would look like:
+  62:/usr/lib/avr/include/util/crc16.h **** 
+  63:/usr/lib/avr/include/util/crc16.h ****     \code
+  64:/usr/lib/avr/include/util/crc16.h ****     // Dallas iButton test vector.
+  65:/usr/lib/avr/include/util/crc16.h ****     uint8_t serno[] = { 0x02, 0x1c, 0xb8, 0x01, 0, 0, 0, 0xa2 };
+  66:/usr/lib/avr/include/util/crc16.h **** 
+  67:/usr/lib/avr/include/util/crc16.h ****     int
+  68:/usr/lib/avr/include/util/crc16.h ****     checkcrc(void)
+  69:/usr/lib/avr/include/util/crc16.h ****     {
+  70:/usr/lib/avr/include/util/crc16.h **** 	uint8_t crc = 0, i;
+  71:/usr/lib/avr/include/util/crc16.h **** 
+  72:/usr/lib/avr/include/util/crc16.h **** 	for (i = 0; i < sizeof serno / sizeof serno[0]; i++)
+  73:/usr/lib/avr/include/util/crc16.h **** 	    crc = _crc_ibutton_update(crc, serno[i]);
+  74:/usr/lib/avr/include/util/crc16.h **** 
+  75:/usr/lib/avr/include/util/crc16.h **** 	return crc; // must be 0
+  76:/usr/lib/avr/include/util/crc16.h ****     }
+  77:/usr/lib/avr/include/util/crc16.h ****     \endcode
+  78:/usr/lib/avr/include/util/crc16.h **** */
+  79:/usr/lib/avr/include/util/crc16.h **** 
+  80:/usr/lib/avr/include/util/crc16.h **** /** \ingroup util_crc
+  81:/usr/lib/avr/include/util/crc16.h ****     Optimized CRC-16 calculation.
+  82:/usr/lib/avr/include/util/crc16.h **** 
+  83:/usr/lib/avr/include/util/crc16.h ****     Polynomial: x^16 + x^15 + x^2 + 1 (0xa001)<br>
+  84:/usr/lib/avr/include/util/crc16.h ****     Initial value: 0xffff
+  85:/usr/lib/avr/include/util/crc16.h **** 
+  86:/usr/lib/avr/include/util/crc16.h ****     This CRC is normally used in disk-drive controllers.
+  87:/usr/lib/avr/include/util/crc16.h **** 
+  88:/usr/lib/avr/include/util/crc16.h ****     The following is the equivalent functionality written in C.
+  89:/usr/lib/avr/include/util/crc16.h **** 
+  90:/usr/lib/avr/include/util/crc16.h ****     \code
+  91:/usr/lib/avr/include/util/crc16.h ****     uint16_t
+  92:/usr/lib/avr/include/util/crc16.h ****     crc16_update(uint16_t crc, uint8_t a)
+  93:/usr/lib/avr/include/util/crc16.h ****     {
+  94:/usr/lib/avr/include/util/crc16.h **** 	int i;
+  95:/usr/lib/avr/include/util/crc16.h **** 
+  96:/usr/lib/avr/include/util/crc16.h **** 	crc ^= a;
+  97:/usr/lib/avr/include/util/crc16.h **** 	for (i = 0; i < 8; ++i)
+  98:/usr/lib/avr/include/util/crc16.h **** 	{
+  99:/usr/lib/avr/include/util/crc16.h **** 	    if (crc & 1)
+ 100:/usr/lib/avr/include/util/crc16.h **** 		crc = (crc >> 1) ^ 0xA001;
+ 101:/usr/lib/avr/include/util/crc16.h **** 	    else
+ 102:/usr/lib/avr/include/util/crc16.h **** 		crc = (crc >> 1);
+ 103:/usr/lib/avr/include/util/crc16.h **** 	}
+ 104:/usr/lib/avr/include/util/crc16.h **** 
+ 105:/usr/lib/avr/include/util/crc16.h **** 	return crc;
+ 106:/usr/lib/avr/include/util/crc16.h ****     }
+ 107:/usr/lib/avr/include/util/crc16.h **** 
+ 108:/usr/lib/avr/include/util/crc16.h ****     \endcode */
+ 109:/usr/lib/avr/include/util/crc16.h **** 
+ 110:/usr/lib/avr/include/util/crc16.h **** static __inline__ uint16_t
+ 111:/usr/lib/avr/include/util/crc16.h **** _crc16_update(uint16_t __crc, uint8_t __data)
+ 112:/usr/lib/avr/include/util/crc16.h **** {
+ 246               	.LM0:
+ 247               	.LFBB1:
+ 248               	/* prologue: function */
+ 249               	/* frame size = 0 */
+ 250               	/* stack size = 0 */
+ 251               	.L__stack_usage = 0
+ 113:/usr/lib/avr/include/util/crc16.h **** 	uint8_t __tmp;
+ 114:/usr/lib/avr/include/util/crc16.h **** 	uint16_t __ret;
+ 115:/usr/lib/avr/include/util/crc16.h **** 
+ 116:/usr/lib/avr/include/util/crc16.h **** 	__asm__ __volatile__ (
+ 117:/usr/lib/avr/include/util/crc16.h **** 		"eor %A0,%2" "\n\t"
+ 118:/usr/lib/avr/include/util/crc16.h **** 		"mov %1,%A0" "\n\t"
+ 119:/usr/lib/avr/include/util/crc16.h **** 		"swap %1" "\n\t"
+ 120:/usr/lib/avr/include/util/crc16.h **** 		"eor %1,%A0" "\n\t"
+ 121:/usr/lib/avr/include/util/crc16.h **** 		"mov __tmp_reg__,%1" "\n\t"
+ 122:/usr/lib/avr/include/util/crc16.h **** 		"lsr %1" "\n\t"
+ 123:/usr/lib/avr/include/util/crc16.h **** 		"lsr %1" "\n\t"
+ 124:/usr/lib/avr/include/util/crc16.h **** 		"eor %1,__tmp_reg__" "\n\t"
+ 125:/usr/lib/avr/include/util/crc16.h **** 		"mov __tmp_reg__,%1" "\n\t"
+ 126:/usr/lib/avr/include/util/crc16.h **** 		"lsr %1" "\n\t"
+ 127:/usr/lib/avr/include/util/crc16.h **** 		"eor %1,__tmp_reg__" "\n\t"
+ 128:/usr/lib/avr/include/util/crc16.h **** 		"andi %1,0x07" "\n\t"
+ 129:/usr/lib/avr/include/util/crc16.h **** 		"mov __tmp_reg__,%A0" "\n\t"
+ 130:/usr/lib/avr/include/util/crc16.h **** 		"mov %A0,%B0" "\n\t"
+ 131:/usr/lib/avr/include/util/crc16.h **** 		"lsr %1" "\n\t"
+ 132:/usr/lib/avr/include/util/crc16.h **** 		"ror __tmp_reg__" "\n\t"
+ 133:/usr/lib/avr/include/util/crc16.h **** 		"ror %1" "\n\t"
+ 134:/usr/lib/avr/include/util/crc16.h **** 		"mov %B0,__tmp_reg__" "\n\t"
+ 135:/usr/lib/avr/include/util/crc16.h **** 		"eor %A0,%1" "\n\t"
+ 136:/usr/lib/avr/include/util/crc16.h **** 		"lsr __tmp_reg__" "\n\t"
+ 137:/usr/lib/avr/include/util/crc16.h **** 		"ror %1" "\n\t"
+ 138:/usr/lib/avr/include/util/crc16.h **** 		"eor %B0,__tmp_reg__" "\n\t"
+ 139:/usr/lib/avr/include/util/crc16.h **** 		"eor %A0,%1"
+ 140:/usr/lib/avr/include/util/crc16.h **** 		: "=r" (__ret), "=d" (__tmp)
+ 141:/usr/lib/avr/include/util/crc16.h **** 		: "r" (__data), "0" (__crc)
+ 142:/usr/lib/avr/include/util/crc16.h **** 		: "r0"
+ 143:/usr/lib/avr/include/util/crc16.h **** 	);
+ 144:/usr/lib/avr/include/util/crc16.h **** 	return __ret;
+ 145:/usr/lib/avr/include/util/crc16.h **** }
+ 253               	.LM1:
+ 254               	/* #APP */
+ 255               	 ;  116 "/usr/lib/avr/include/util/crc16.h" 1
+ 256 0000 8627      		eor r24,r22
+ 257 0002 682F      		mov r22,r24
+ 258 0004 6295      		swap r22
+ 259 0006 6827      		eor r22,r24
+ 260 0008 062E      		mov __tmp_reg__,r22
+ 261 000a 6695      		lsr r22
+ 262 000c 6695      		lsr r22
+ 263 000e 6025      		eor r22,__tmp_reg__
+ 264 0010 062E      		mov __tmp_reg__,r22
+ 265 0012 6695      		lsr r22
+ 266 0014 6025      		eor r22,__tmp_reg__
+ 267 0016 6770      		andi r22,0x07
+ 268 0018 082E      		mov __tmp_reg__,r24
+ 269 001a 892F      		mov r24,r25
+ 270 001c 6695      		lsr r22
+ 271 001e 0794      		ror __tmp_reg__
+ 272 0020 6795      		ror r22
+ 273 0022 902D      		mov r25,__tmp_reg__
+ 274 0024 8627      		eor r24,r22
+ 275 0026 0694      		lsr __tmp_reg__
+ 276 0028 6795      		ror r22
+ 277 002a 9025      		eor r25,__tmp_reg__
+ 278 002c 8627      		eor r24,r22
+ 279               	 ;  0 "" 2
+ 280               	/* #NOAPP */
+ 281 002e 0895      		ret
+ 283               	.Lscope1:
+ 285               		.stabd	78,0,0
+ 288               	.global	XpNetReceiverTask
+ 290               	XpNetReceiverTask:
+ 291               		.stabd	46,0,0
+ 293               	.Ltext2:
+   1:spi_task.c    **** #include "spi_task.h"
+   2:spi_task.c    **** 
+   3:spi_task.c    **** uint8_t * const spiTxbuffer0 = (uint8_t *) SPI_TX_BUFFER;
+   4:spi_task.c    **** uint8_t * const spiTxbuffer1 = (uint8_t *) (SPI_TX_BUFFER + 512);
+   5:spi_task.c    **** uint8_t * const spiRxbuffer0 = (uint8_t *) SPI_RX_BUFFER;
+   6:spi_task.c    **** uint8_t * const spiRxbuffer1 = (uint8_t *) (SPI_RX_BUFFER + 512);
+   7:spi_task.c    **** 
+   8:spi_task.c    **** 
+   9:spi_task.c    **** void XpNetReceiverTask ( void *pvParameters )
+  10:spi_task.c    **** {
+ 295               	.LM2:
+ 296               	.LFBB2:
+ 297 0030 CF93      		push r28
+ 298 0032 DF93      		push r29
+ 299 0034 00D0      		rcall .
+ 300 0036 CDB7      		in r28,__SP_L__
+ 301 0038 DEB7      		in r29,__SP_H__
+ 302               	/* prologue: function */
+ 303               	/* frame size = 2 */
+ 304               	/* stack size = 4 */
+ 305               	.L__stack_usage = 4
+ 306 003a 7C01      		movw r14,r24
+  11:spi_task.c    ****   FILE *debugStr = (FILE *) pvParameters;
+  12:spi_task.c    **** 
+  13:spi_task.c    ****   enum REC_STATE recState = ST_SYNC;
+  14:spi_task.c    ****   uint8_t bufNo = 0;
+  15:spi_task.c    ****   uint8_t dtaLen = 0;
+ 308               	.LM3:
+ 309 003c 912C      		mov r9,__zero_reg__
+  14:spi_task.c    ****   uint8_t bufNo = 0;
+ 311               	.LM4:
+ 312 003e 812C      		mov r8,__zero_reg__
+  13:spi_task.c    ****   enum REC_STATE recState = ST_SYNC;
+ 314               	.LM5:
+ 315 0040 30E0      		ldi r19,0
+ 316               	.LBB2:
+  16:spi_task.c    ****   uint8_t crcLo;
+  17:spi_task.c    ****   uint8_t crcHi;
+  18:spi_task.c    **** 
+  19:spi_task.c    **** 
+  20:spi_task.c    ****   for( ; ; )
+  21:spi_task.c    ****   {
+  22:spi_task.c    ****     uint8_t dta;
+  23:spi_task.c    ****     uint16_t crc;
+  24:spi_task.c    ****     if (!xQueueReceive(udpSocket->Rx, &dta, 100))
+  25:spi_task.c    ****       continue;
+  26:spi_task.c    **** 
+  27:spi_task.c    ****     switch (recState)
+  28:spi_task.c    ****     {
+  29:spi_task.c    ****     case ST_SYNC:
+  30:spi_task.c    ****       if (dta == 0xA5)
+  31:spi_task.c    ****         recState = ST_CMD;
+  32:spi_task.c    ****       crc = 0;
+  33:spi_task.c    ****       break;
+  34:spi_task.c    **** 
+  35:spi_task.c    ****     case ST_CMD:
+  36:spi_task.c    ****       crc = _crc16_update(crc, dta);
+  37:spi_task.c    ****       recState = ST_LEN;
+  38:spi_task.c    ****       bufNo = dta;
+  39:spi_task.c    ****       break;
+  40:spi_task.c    **** 
+  41:spi_task.c    ****     case ST_LEN:
+  42:spi_task.c    ****       crc = _crc16_update(crc, dta);
+  43:spi_task.c    ****       recState = ST_DATA;
+  44:spi_task.c    ****       dtaLen=dta;
+  45:spi_task.c    ****       break;
+  46:spi_task.c    **** 
+  47:spi_task.c    ****     case ST_DATA:
+  48:spi_task.c    ****       crc = _crc16_update(crc, dta);
+  49:spi_task.c    ****       if (bufNo < NO_OF_SPI2SERIAL_RX_BUF)
+  50:spi_task.c    ****       {
+  51:spi_task.c    ****         xQueueSend(xSpi2SerialTx[bufNo], &dta, 0);
+  52:spi_task.c    ****       } //dopisać obsługę resetowania
+  53:spi_task.c    ****       else
+  54:spi_task.c    ****       {
+  55:spi_task.c    ****         if (debugStr != NULL)
+  56:spi_task.c    ****           fprintf_P(debugStr, PSTR("Reset is not implemented yet"));
+  57:spi_task.c    ****       }
+  58:spi_task.c    ****       dtaLen--;
+  59:spi_task.c    ****       if (dtaLen == 0)
+  60:spi_task.c    ****       {
+  61:spi_task.c    ****         recState = ST_CRC_HI;
+  62:spi_task.c    ****       }
+  63:spi_task.c    ****       break;
+  64:spi_task.c    ****     case ST_CRC_HI:
+  65:spi_task.c    ****       crcHi = dta;
+  66:spi_task.c    ****       recState = ST_CRC_LO;
+  67:spi_task.c    ****       break;
+  68:spi_task.c    **** 
+  69:spi_task.c    ****     case ST_CRC_LO:
+  70:spi_task.c    ****       crcLo = dta;
+  71:spi_task.c    ****       recState = ST_SYNC;
+  72:spi_task.c    **** 
+  73:spi_task.c    ****       if ((crcLo + crcHi<<8) != crc)
+  74:spi_task.c    ****         if (debugStr != NULL)
+  75:spi_task.c    ****           fprintf_P(debugStr, PSTR("CRC error"));
+ 318               	.LM6:
+ 319 0042 40E0      		ldi r20,lo8(__c.3103)
+ 320 0044 C42E      		mov r12,r20
+ 321 0046 40E0      		ldi r20,hi8(__c.3103)
+ 322 0048 D42E      		mov r13,r20
+  56:spi_task.c    ****           fprintf_P(debugStr, PSTR("Reset is not implemented yet"));
+ 324               	.LM7:
+ 325 004a 50E0      		ldi r21,lo8(__c.3099)
+ 326 004c A52E      		mov r10,r21
+ 327 004e 50E0      		ldi r21,hi8(__c.3099)
+ 328 0050 B52E      		mov r11,r21
+ 329               	.L3:
+  24:spi_task.c    ****     if (!xQueueReceive(udpSocket->Rx, &dta, 100))
+ 331               	.LM8:
+ 332 0052 E091 0000 		lds r30,udpSocket
+ 333 0056 F091 0000 		lds r31,udpSocket+1
+ 334 005a 20E0      		ldi r18,0
+ 335 005c 44E6      		ldi r20,lo8(100)
+ 336 005e 50E0      		ldi r21,0
+ 337 0060 BE01      		movw r22,r28
+ 338 0062 6F5F      		subi r22,-1
+ 339 0064 7F4F      		sbci r23,-1
+ 340 0066 8285      		ldd r24,Z+10
+ 341 0068 9385      		ldd r25,Z+11
+ 342 006a 3A83      		std Y+2,r19
+ 343 006c 0E94 0000 		call xQueueGenericReceive
+ 344 0070 3A81      		ldd r19,Y+2
+ 345 0072 8823      		tst r24
+ 346 0074 01F0      		breq .L3
+  27:spi_task.c    ****     switch (recState)
+ 348               	.LM9:
+ 349 0076 3230      		cpi r19,lo8(2)
+ 350 0078 01F0      		breq .L7
+ 351 007a 00F4      		brsh .L8
+ 352 007c 3323      		tst r19
+ 353 007e 01F0      		breq .L9
+ 354 0080 3130      		cpi r19,lo8(1)
+ 355 0082 01F4      		brne .L3
+  36:spi_task.c    ****       crc = _crc16_update(crc, dta);
+ 357               	.LM10:
+ 358 0084 6981      		ldd r22,Y+1
+ 359 0086 C801      		movw r24,r16
+ 360 0088 0E94 0000 		call _crc16_update
+ 361 008c 8C01      		movw r16,r24
+  38:spi_task.c    ****       bufNo = dta;
+ 363               	.LM11:
+ 364 008e 8980      		ldd r8,Y+1
+  37:spi_task.c    ****       recState = ST_LEN;
+ 366               	.LM12:
+ 367 0090 32E0      		ldi r19,lo8(2)
+  39:spi_task.c    ****       break;
+ 369               	.LM13:
+ 370 0092 00C0      		rjmp .L3
+ 371               	.L8:
+  27:spi_task.c    ****     switch (recState)
+ 373               	.LM14:
+ 374 0094 3430      		cpi r19,lo8(4)
+ 375 0096 01F4      		brne .+2
+ 376 0098 00C0      		rjmp .L11
+ 377 009a 00F0      		brlo .L12
+ 378 009c 3530      		cpi r19,lo8(5)
+ 379 009e 01F4      		brne .L3
+  65:spi_task.c    ****       crcHi = dta;
+ 381               	.LM15:
+ 382 00a0 7980      		ldd r7,Y+1
+  66:spi_task.c    ****       recState = ST_CRC_LO;
+ 384               	.LM16:
+ 385 00a2 34E0      		ldi r19,lo8(4)
+  67:spi_task.c    ****       break;
+ 387               	.LM17:
+ 388 00a4 00C0      		rjmp .L3
+ 389               	.L9:
+  30:spi_task.c    ****       if (dta == 0xA5)
+ 391               	.LM18:
+ 392 00a6 31E0      		ldi r19,lo8(1)
+ 393 00a8 8981      		ldd r24,Y+1
+ 394 00aa 853A      		cpi r24,lo8(-91)
+ 395 00ac 01F0      		breq .L14
+ 396 00ae 30E0      		ldi r19,0
+ 397               	.L14:
+  32:spi_task.c    ****       crc = 0;
+ 399               	.LM19:
+ 400 00b0 00E0      		ldi r16,0
+ 401 00b2 10E0      		ldi r17,0
+ 402 00b4 00C0      		rjmp .L3
+ 403               	.L7:
+  42:spi_task.c    ****       crc = _crc16_update(crc, dta);
+ 405               	.LM20:
+ 406 00b6 6981      		ldd r22,Y+1
+ 407 00b8 C801      		movw r24,r16
+ 408 00ba 0E94 0000 		call _crc16_update
+ 409 00be 8C01      		movw r16,r24
+  44:spi_task.c    ****       dtaLen=dta;
+ 411               	.LM21:
+ 412 00c0 9980      		ldd r9,Y+1
+  43:spi_task.c    ****       recState = ST_DATA;
+ 414               	.LM22:
+ 415 00c2 33E0      		ldi r19,lo8(3)
+  45:spi_task.c    ****       break;
+ 417               	.LM23:
+ 418 00c4 00C0      		rjmp .L3
+ 419               	.L12:
+  48:spi_task.c    ****       crc = _crc16_update(crc, dta);
+ 421               	.LM24:
+ 422 00c6 6981      		ldd r22,Y+1
+ 423 00c8 C801      		movw r24,r16
+ 424 00ca 3A83      		std Y+2,r19
+ 425 00cc 0E94 0000 		call _crc16_update
+ 426 00d0 8C01      		movw r16,r24
+  49:spi_task.c    ****       if (bufNo < NO_OF_SPI2SERIAL_RX_BUF)
+ 428               	.LM25:
+ 429 00d2 3A81      		ldd r19,Y+2
+ 430 00d4 8FE0      		ldi r24,lo8(15)
+ 431 00d6 8815      		cp r24,r8
+ 432 00d8 00F0      		brlo .L15
+  51:spi_task.c    ****         xQueueSend(xSpi2SerialTx[bufNo], &dta, 0);
+ 434               	.LM26:
+ 435 00da E82D      		mov r30,r8
+ 436 00dc F0E0      		ldi r31,0
+ 437 00de EE0F      		lsl r30
+ 438 00e0 FF1F      		rol r31
+ 439 00e2 E050      		subi r30,lo8(-(xSpi2SerialTx))
+ 440 00e4 F040      		sbci r31,hi8(-(xSpi2SerialTx))
+ 441 00e6 20E0      		ldi r18,0
+ 442 00e8 40E0      		ldi r20,0
+ 443 00ea 50E0      		ldi r21,0
+ 444 00ec BE01      		movw r22,r28
+ 445 00ee 6F5F      		subi r22,-1
+ 446 00f0 7F4F      		sbci r23,-1
+ 447 00f2 8081      		ld r24,Z
+ 448 00f4 9181      		ldd r25,Z+1
+ 449 00f6 0E94 0000 		call xQueueGenericSend
+ 450 00fa 00C0      		rjmp .L26
+ 451               	.L15:
+  55:spi_task.c    ****         if (debugStr != NULL)
+ 453               	.LM27:
+ 454 00fc E114      		cp r14,__zero_reg__
+ 455 00fe F104      		cpc r15,__zero_reg__
+ 456 0100 01F0      		breq .L16
+  56:spi_task.c    ****           fprintf_P(debugStr, PSTR("Reset is not implemented yet"));
+ 458               	.LM28:
+ 459 0102 BF92      		push r11
+ 460 0104 AF92      		push r10
+ 461 0106 FF92      		push r15
+ 462 0108 EF92      		push r14
+ 463 010a 3A83      		std Y+2,r19
+ 464 010c 0E94 0000 		call fprintf_P
+ 465 0110 0F90      		pop __tmp_reg__
+ 466 0112 0F90      		pop __tmp_reg__
+ 467 0114 0F90      		pop __tmp_reg__
+ 468 0116 0F90      		pop __tmp_reg__
+ 469               	.L26:
+ 470 0118 3A81      		ldd r19,Y+2
+ 471               	.L16:
+  58:spi_task.c    ****       dtaLen--;
+ 473               	.LM29:
+ 474 011a 9A94      		dec r9
+  59:spi_task.c    ****       if (dtaLen == 0)
+ 476               	.LM30:
+ 477 011c 01F0      		breq .+2
+ 478 011e 00C0      		rjmp .L3
+  61:spi_task.c    ****         recState = ST_CRC_HI;
+ 480               	.LM31:
+ 481 0120 35E0      		ldi r19,lo8(5)
+ 482 0122 00C0      		rjmp .L3
+ 483               	.L11:
+  73:spi_task.c    ****       if ((crcLo + crcHi<<8) != crc)
+ 485               	.LM32:
+ 486 0124 2981      		ldd r18,Y+1
+ 487 0126 872D      		mov r24,r7
+ 488 0128 90E0      		ldi r25,0
+ 489 012a 820F      		add r24,r18
+ 490 012c 911D      		adc r25,__zero_reg__
+ 491 012e 982F      		mov r25,r24
+ 492 0130 8827      		clr r24
+ 493 0132 8017      		cp r24,r16
+ 494 0134 9107      		cpc r25,r17
+ 495 0136 01F0      		breq .L19
+  74:spi_task.c    ****         if (debugStr != NULL)
+ 497               	.LM33:
+ 498 0138 E114      		cp r14,__zero_reg__
+ 499 013a F104      		cpc r15,__zero_reg__
+ 500 013c 01F0      		breq .L19
+ 502               	.LM34:
+ 503 013e DF92      		push r13
+ 504 0140 CF92      		push r12
+ 505 0142 FF92      		push r15
+ 506 0144 EF92      		push r14
+ 507 0146 0E94 0000 		call fprintf_P
+ 508 014a 0F90      		pop __tmp_reg__
+ 509 014c 0F90      		pop __tmp_reg__
+ 510 014e 0F90      		pop __tmp_reg__
+ 511 0150 0F90      		pop __tmp_reg__
+ 512               	.L19:
+  71:spi_task.c    ****       recState = ST_SYNC;
+ 514               	.LM35:
+ 515 0152 30E0      		ldi r19,0
+ 516 0154 00C0      		rjmp .L3
+ 517               	.LBE2:
+ 529               	.Lscope2:
+ 531               		.stabd	78,0,0
+ 534               	.global	XpNetTransmitterTask
+ 536               	XpNetTransmitterTask:
+ 537               		.stabd	46,0,0
+  76:spi_task.c    ****       break;
+  77:spi_task.c    ****     }
+  78:spi_task.c    ****   }
+  79:spi_task.c    **** }
+  80:spi_task.c    **** 
+  81:spi_task.c    **** void XpNetTransmitterTask ( void *pvParameters )
+  82:spi_task.c    **** {
+ 539               	.LM36:
+ 540               	.LFBB3:
+ 541 0156 FF92      		push r15
+ 542 0158 0F93      		push r16
+ 543 015a 1F93      		push r17
+ 544 015c CF93      		push r28
+ 545 015e DF93      		push r29
+ 546 0160 00D0      		rcall .
+ 547 0162 1F92      		push __zero_reg__
+ 548 0164 CDB7      		in r28,__SP_L__
+ 549 0166 DEB7      		in r29,__SP_H__
+ 550               	/* prologue: function */
+ 551               	/* frame size = 3 */
+ 552               	/* stack size = 8 */
+ 553               	.L__stack_usage = 8
+  83:spi_task.c    ****   FILE *debugStr = (FILE *) pvParameters;
+  84:spi_task.c    ****   uint8_t bufIdx;
+  85:spi_task.c    **** 
+  86:spi_task.c    ****   for(bufIdx=0; bufIdx<NO_OF_SPI2SERIAL_RX_BUF; bufIdx++)
+ 555               	.LM37:
+ 556 0168 1B82      		std Y+3,__zero_reg__
+ 557               	.LBB3:
+  87:spi_task.c    ****   {
+  88:spi_task.c    ****     if (bufIdx == NO_OF_SPI2SERIAL_RX_BUF)
+  89:spi_task.c    ****         bufIdx = 0;
+  90:spi_task.c    **** 
+  91:spi_task.c    ****     uint16_t crc = 0;
+  92:spi_task.c    ****     uint8_t dta = 0xA5;;
+ 559               	.LM38:
+ 560 016a E5EA      		ldi r30,lo8(-91)
+ 561 016c FE2E      		mov r15,r30
+ 562               	.L29:
+ 563               	.LBE3:
+  86:spi_task.c    ****   for(bufIdx=0; bufIdx<NO_OF_SPI2SERIAL_RX_BUF; bufIdx++)
+ 565               	.LM39:
+ 566 016e EB81      		ldd r30,Y+3
+ 567 0170 E031      		cpi r30,lo8(16)
+ 568 0172 00F0      		brlo .+2
+ 569 0174 00C0      		rjmp .L35
+ 570               	.LBB4:
+ 572               	.LM40:
+ 573 0176 FA82      		std Y+2,r15
+  93:spi_task.c    ****     uint8_t dtaLen = uxQueueMessagesWaiting(xSpi2SerialRx[bufIdx]);
+ 575               	.LM41:
+ 576 0178 F0E0      		ldi r31,0
+ 577 017a EE0F      		lsl r30
+ 578 017c FF1F      		rol r31
+ 579 017e E050      		subi r30,lo8(-(xSpi2SerialRx))
+ 580 0180 F040      		sbci r31,hi8(-(xSpi2SerialRx))
+ 581 0182 8081      		ld r24,Z
+ 582 0184 9181      		ldd r25,Z+1
+ 583 0186 0E94 0000 		call uxQueueMessagesWaiting
+ 584 018a 8983      		std Y+1,r24
+  94:spi_task.c    ****     if (dtaLen == 0)
+ 586               	.LM42:
+ 587 018c 8823      		tst r24
+ 588 018e 01F4      		brne .+2
+ 589 0190 00C0      		rjmp .L31
+  95:spi_task.c    ****       continue;
+  96:spi_task.c    **** 
+  97:spi_task.c    ****     crc = _crc16_update(crc, dtaLen);
+ 591               	.LM43:
+ 592 0192 682F      		mov r22,r24
+ 593 0194 80E0      		ldi r24,0
+ 594 0196 90E0      		ldi r25,0
+ 595 0198 0E94 0000 		call _crc16_update
+ 596 019c 8C01      		movw r16,r24
+  98:spi_task.c    ****     xQueueSend(udpSocket->Tx, &dta, 0);    //SYNC - 1bajt ma zawsze wartość 0xA5
+ 598               	.LM44:
+ 599 019e E091 0000 		lds r30,udpSocket
+ 600 01a2 F091 0000 		lds r31,udpSocket+1
+ 601 01a6 20E0      		ldi r18,0
+ 602 01a8 40E0      		ldi r20,0
+ 603 01aa 50E0      		ldi r21,0
+ 604 01ac BE01      		movw r22,r28
+ 605 01ae 6E5F      		subi r22,-2
+ 606 01b0 7F4F      		sbci r23,-1
+ 607 01b2 8485      		ldd r24,Z+12
+ 608 01b4 9585      		ldd r25,Z+13
+ 609 01b6 0E94 0000 		call xQueueGenericSend
+  99:spi_task.c    ****     crc = _crc16_update(crc, dta);
+ 611               	.LM45:
+ 612 01ba 6A81      		ldd r22,Y+2
+ 613 01bc C801      		movw r24,r16
+ 614 01be 0E94 0000 		call _crc16_update
+ 615 01c2 8C01      		movw r16,r24
+ 100:spi_task.c    ****     xQueueSend(udpSocket->Tx, &bufIdx, 0);  //TYPE - 1 bajt, który  określa numer portu lub polec
+ 617               	.LM46:
+ 618 01c4 E091 0000 		lds r30,udpSocket
+ 619 01c8 F091 0000 		lds r31,udpSocket+1
+ 620 01cc 20E0      		ldi r18,0
+ 621 01ce 40E0      		ldi r20,0
+ 622 01d0 50E0      		ldi r21,0
+ 623 01d2 BE01      		movw r22,r28
+ 624 01d4 6D5F      		subi r22,-3
+ 625 01d6 7F4F      		sbci r23,-1
+ 626 01d8 8485      		ldd r24,Z+12
+ 627 01da 9585      		ldd r25,Z+13
+ 628 01dc 0E94 0000 		call xQueueGenericSend
+ 101:spi_task.c    ****     crc = _crc16_update(crc, dta);
+ 630               	.LM47:
+ 631 01e0 6A81      		ldd r22,Y+2
+ 632 01e2 C801      		movw r24,r16
+ 633 01e4 0E94 0000 		call _crc16_update
+ 634 01e8 8C01      		movw r16,r24
+ 102:spi_task.c    ****     xQueueSend(udpSocket->Tx, &dtaLen, 0);  //LENGTH - 1 bajt  który określa długość wiadomoś
+ 636               	.LM48:
+ 637 01ea E091 0000 		lds r30,udpSocket
+ 638 01ee F091 0000 		lds r31,udpSocket+1
+ 639 01f2 20E0      		ldi r18,0
+ 640 01f4 40E0      		ldi r20,0
+ 641 01f6 50E0      		ldi r21,0
+ 642 01f8 BE01      		movw r22,r28
+ 643 01fa 6F5F      		subi r22,-1
+ 644 01fc 7F4F      		sbci r23,-1
+ 645 01fe 8485      		ldd r24,Z+12
+ 646 0200 9585      		ldd r25,Z+13
+ 647 0202 0E94 0000 		call xQueueGenericSend
+ 103:spi_task.c    ****     crc = _crc16_update(crc, dta);
+ 649               	.LM49:
+ 650 0206 6A81      		ldd r22,Y+2
+ 651 0208 C801      		movw r24,r16
+ 652 020a 0E94 0000 		call _crc16_update
+ 653 020e 182F      		mov r17,r24
+ 654 0210 092F      		mov r16,r25
+ 655               	.L32:
+ 104:spi_task.c    ****     while (dtaLen >0)       //WIADOMOSC - no dane, które odebrano lub mają być wyzłane pod okre
+ 657               	.LM50:
+ 658 0212 8981      		ldd r24,Y+1
+ 659 0214 8823      		tst r24
+ 660 0216 01F0      		breq .L36
+ 105:spi_task.c    ****     {
+ 106:spi_task.c    ****         xQueueReceive(xSpi2SerialRx[bufIdx], &dta, 0);
+ 662               	.LM51:
+ 663 0218 EB81      		ldd r30,Y+3
+ 664 021a F0E0      		ldi r31,0
+ 665 021c EE0F      		lsl r30
+ 666 021e FF1F      		rol r31
+ 667 0220 E050      		subi r30,lo8(-(xSpi2SerialRx))
+ 668 0222 F040      		sbci r31,hi8(-(xSpi2SerialRx))
+ 669 0224 20E0      		ldi r18,0
+ 670 0226 40E0      		ldi r20,0
+ 671 0228 50E0      		ldi r21,0
+ 672 022a BE01      		movw r22,r28
+ 673 022c 6E5F      		subi r22,-2
+ 674 022e 7F4F      		sbci r23,-1
+ 675 0230 8081      		ld r24,Z
+ 676 0232 9181      		ldd r25,Z+1
+ 677 0234 0E94 0000 		call xQueueGenericReceive
+ 107:spi_task.c    ****         xQueueSend(udpSocket->Tx, &dta, 0);
+ 679               	.LM52:
+ 680 0238 E091 0000 		lds r30,udpSocket
+ 681 023c F091 0000 		lds r31,udpSocket+1
+ 682 0240 20E0      		ldi r18,0
+ 683 0242 40E0      		ldi r20,0
+ 684 0244 50E0      		ldi r21,0
+ 685 0246 BE01      		movw r22,r28
+ 686 0248 6E5F      		subi r22,-2
+ 687 024a 7F4F      		sbci r23,-1
+ 688 024c 8485      		ldd r24,Z+12
+ 689 024e 9585      		ldd r25,Z+13
+ 690 0250 0E94 0000 		call xQueueGenericSend
+ 108:spi_task.c    ****         crc = _crc16_update(crc, dta);
+ 692               	.LM53:
+ 693 0254 6A81      		ldd r22,Y+2
+ 694 0256 812F      		mov r24,r17
+ 695 0258 902F      		mov r25,r16
+ 696 025a 0E94 0000 		call _crc16_update
+ 697 025e 182F      		mov r17,r24
+ 698 0260 092F      		mov r16,r25
+ 109:spi_task.c    ****         dtaLen--;
+ 700               	.LM54:
+ 701 0262 8981      		ldd r24,Y+1
+ 702 0264 8150      		subi r24,lo8(-(-1))
+ 703 0266 8983      		std Y+1,r24
+ 704 0268 00C0      		rjmp .L32
+ 705               	.L36:
+ 110:spi_task.c    ****     }
+ 111:spi_task.c    ****     dta = crc>>8;
+ 707               	.LM55:
+ 708 026a 0A83      		std Y+2,r16
+ 112:spi_task.c    ****     xQueueSend(udpSocket->Tx, &dta, 0);
+ 710               	.LM56:
+ 711 026c E091 0000 		lds r30,udpSocket
+ 712 0270 F091 0000 		lds r31,udpSocket+1
+ 713 0274 20E0      		ldi r18,0
+ 714 0276 40E0      		ldi r20,0
+ 715 0278 50E0      		ldi r21,0
+ 716 027a BE01      		movw r22,r28
+ 717 027c 6E5F      		subi r22,-2
+ 718 027e 7F4F      		sbci r23,-1
+ 719 0280 8485      		ldd r24,Z+12
+ 720 0282 9585      		ldd r25,Z+13
+ 721 0284 0E94 0000 		call xQueueGenericSend
+ 113:spi_task.c    **** 
+ 114:spi_task.c    ****     dta = crc;
+ 723               	.LM57:
+ 724 0288 1A83      		std Y+2,r17
+ 115:spi_task.c    ****     xQueueSend(udpSocket->Tx, &dta, 0);
+ 726               	.LM58:
+ 727 028a E091 0000 		lds r30,udpSocket
+ 728 028e F091 0000 		lds r31,udpSocket+1
+ 729 0292 20E0      		ldi r18,0
+ 730 0294 40E0      		ldi r20,0
+ 731 0296 50E0      		ldi r21,0
+ 732 0298 BE01      		movw r22,r28
+ 733 029a 6E5F      		subi r22,-2
+ 734 029c 7F4F      		sbci r23,-1
+ 735 029e 8485      		ldd r24,Z+12
+ 736 02a0 9585      		ldd r25,Z+13
+ 737 02a2 0E94 0000 		call xQueueGenericSend
+ 738               	.L31:
+ 739               	.LBE4:
+  86:spi_task.c    ****   for(bufIdx=0; bufIdx<NO_OF_SPI2SERIAL_RX_BUF; bufIdx++)
+ 741               	.LM59:
+ 742 02a6 8B81      		ldd r24,Y+3
+ 743 02a8 8F5F      		subi r24,lo8(-(1))
+ 744 02aa 8B83      		std Y+3,r24
+ 745 02ac 00C0      		rjmp .L29
+ 746               	.L35:
+ 747               	/* epilogue start */
+ 116:spi_task.c    ****   }
+ 117:spi_task.c    **** }
+ 749               	.LM60:
+ 750 02ae 0F90      		pop __tmp_reg__
+ 751 02b0 0F90      		pop __tmp_reg__
+ 752 02b2 0F90      		pop __tmp_reg__
+ 753 02b4 DF91      		pop r29
+ 754 02b6 CF91      		pop r28
+ 755 02b8 1F91      		pop r17
+ 756 02ba 0F91      		pop r16
+ 757 02bc FF90      		pop r15
+ 758 02be 0895      		ret
+ 771               	.Lscope3:
+ 773               		.stabd	78,0,0
+ 776               	.global	handleSpiDev
+ 778               	handleSpiDev:
+ 779               		.stabd	46,0,0
+ 118:spi_task.c    **** 
+ 119:spi_task.c    **** void spiTask ( void *pvParameters )
+ 120:spi_task.c    **** {
+ 121:spi_task.c    ****   FILE *netstackDebug = (FILE *) pvParameters;
+ 122:spi_task.c    ****   uint16_t plen;
+ 123:spi_task.c    **** 
+ 124:spi_task.c    ****   nicInit();
+ 125:spi_task.c    ****   ipInit();
+ 126:spi_task.c    ****   arpInit();
+ 127:spi_task.c    ****   icmpInit();
+ 128:spi_task.c    **** 
+ 129:spi_task.c    **** 
+ 130:spi_task.c    ****   //TODO    init_ip_arp_udp_tcp (mymac, ipGetConfig()->ip, MYWWWPORT);
+ 131:spi_task.c    **** 
+ 132:spi_task.c    ****   uint8_t spiDevIdx = 0;
+ 133:spi_task.c    ****   for ( ; ; )
+ 134:spi_task.c    ****   {
+ 135:spi_task.c    ****     vTaskDelay ( 0 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwo
+ 136:spi_task.c    **** 
+ 137:spi_task.c    ****     // get the next new packet:
+ 138:spi_task.c    ****     plen = nicPoll();
+ 139:spi_task.c    ****     /*plen will ne unequal to zero if there is a valid
+ 140:spi_task.c    ****     * packet (without crc error) */
+ 141:spi_task.c    ****     if ( plen==0 )
+ 142:spi_task.c    ****     {
+ 143:spi_task.c    **** 
+ 144:spi_task.c    **** 
+ 145:spi_task.c    ****       handleSpiDev(spiDevIdx);
+ 146:spi_task.c    **** 
+ 147:spi_task.c    ****       flushSpi2SerialRxBuffers();
+ 148:spi_task.c    **** 
+ 149:spi_task.c    ****       flushUdpQueues();
+ 150:spi_task.c    ****       flushTcpQueues();
+ 151:spi_task.c    ****       //flush HTTP long file queue
+ 152:spi_task.c    **** 
+ 153:spi_task.c    **** 
+ 154:spi_task.c    ****       spiDevIdx++;
+ 155:spi_task.c    ****       spiDevIdx &= 0x07;
+ 156:spi_task.c    ****       continue;
+ 157:spi_task.c    ****     }
+ 158:spi_task.c    **** 
+ 159:spi_task.c    ****     if(nicState.layer2.ethHeader->type == htons(ETHTYPE_IP))             // process an IP packet
+ 160:spi_task.c    ****     {
+ 161:spi_task.c    ****       arpIpIn();
+ 162:spi_task.c    ****       netstackIPv4Process();
+ 163:spi_task.c    ****     }
+ 164:spi_task.c    ****     else if(nicState.layer2.ethHeader->type == htons(ETHTYPE_ARP))       // process an ARP packet
+ 165:spi_task.c    ****     {
+ 166:spi_task.c    ****       arpArpIn();
+ 167:spi_task.c    ****     }
+ 168:spi_task.c    ****     else
+ 169:spi_task.c    ****     {
+ 170:spi_task.c    ****       if (netstackDebug != NULL)
+ 171:spi_task.c    ****       {
+ 172:spi_task.c    ****         fprintf_P(netstackDebug, PSTR("Unknown packet\r\n"));
+ 173:spi_task.c    ****       }
+ 174:spi_task.c    ****     }
+ 175:spi_task.c    ****   }
+ 176:spi_task.c    **** }
+ 177:spi_task.c    **** 
+ 178:spi_task.c    **** void handleSpiDev(uint8_t spiDevNo)
+ 179:spi_task.c    **** {
+ 781               	.LM61:
+ 782               	.LFBB4:
+ 783 02c0 4F92      		push r4
+ 784 02c2 5F92      		push r5
+ 785 02c4 7F92      		push r7
+ 786 02c6 8F92      		push r8
+ 787 02c8 9F92      		push r9
+ 788 02ca AF92      		push r10
+ 789 02cc BF92      		push r11
+ 790 02ce CF92      		push r12
+ 791 02d0 DF92      		push r13
+ 792 02d2 EF92      		push r14
+ 793 02d4 FF92      		push r15
+ 794 02d6 0F93      		push r16
+ 795 02d8 1F93      		push r17
+ 796 02da CF93      		push r28
+ 797 02dc DF93      		push r29
+ 798 02de 00D0      		rcall .
+ 799 02e0 CDB7      		in r28,__SP_L__
+ 800 02e2 DEB7      		in r29,__SP_H__
+ 801               	/* prologue: function */
+ 802               	/* frame size = 2 */
+ 803               	/* stack size = 17 */
+ 804               	.L__stack_usage = 17
+ 805 02e4 A82E      		mov r10,r24
+ 180:spi_task.c    ****   uint8_t *bufTxPtr;
+ 181:spi_task.c    **** 
+ 182:spi_task.c    ****   uint8_t bufTx0_len=0;
+ 183:spi_task.c    ****   uint8_t bufTx1_len=0;
+ 184:spi_task.c    **** 
+ 185:spi_task.c    ****   uint8_t bufRx0_len=0;
+ 186:spi_task.c    ****   uint8_t bufRx1_len=0;
+ 187:spi_task.c    **** 
+ 188:spi_task.c    ****   uint8_t tmpDta;
+ 189:spi_task.c    ****   uint8_t tmpDtaLo;
+ 190:spi_task.c    ****   uint8_t tmpDtaHi;
+ 191:spi_task.c    **** 
+ 192:spi_task.c    ****   uint8_t qeueNo;
+ 193:spi_task.c    **** 
+ 194:spi_task.c    ****   uint8_t i;
+ 195:spi_task.c    ****   uint8_t isDataOnSlave = 1;
+ 196:spi_task.c    **** 
+ 197:spi_task.c    ****   //Przygotownanie bufora nadawczego do SPI.
+ 198:spi_task.c    ****   qeueNo = 2*spiDevNo;
+ 807               	.LM62:
+ 808 02e6 B82E      		mov r11,r24
+ 809 02e8 BB0C      		lsl r11
+ 182:spi_task.c    ****   uint8_t bufTx0_len=0;
+ 811               	.LM63:
+ 812 02ea 712C      		mov r7,__zero_reg__
+ 199:spi_task.c    ****   bufTxPtr = spiTxbuffer0;
+ 814               	.LM64:
+ 815 02ec 00E0      		ldi r16,0
+ 816 02ee 10E7      		ldi r17,lo8(112)
+ 200:spi_task.c    ****   while (xQueueReceive(xSpi2SerialTx[qeueNo], &tmpDta, 0))
+ 818               	.LM65:
+ 819 02f0 EB2C      		mov r14,r11
+ 820 02f2 F12C      		mov r15,__zero_reg__
+ 821 02f4 EE0C      		lsl r14
+ 822 02f6 FF1C      		rol r15
+ 823 02f8 C701      		movw r24,r14
+ 824 02fa 8050      		subi r24,lo8(-(xSpi2SerialTx))
+ 825 02fc 9040      		sbci r25,hi8(-(xSpi2SerialTx))
+ 826 02fe 6C01      		movw r12,r24
+ 827               	.L38:
+ 829               	.LM66:
+ 830 0300 20E0      		ldi r18,0
+ 831 0302 40E0      		ldi r20,0
+ 832 0304 50E0      		ldi r21,0
+ 833 0306 BE01      		movw r22,r28
+ 834 0308 6E5F      		subi r22,-2
+ 835 030a 7F4F      		sbci r23,-1
+ 836 030c F601      		movw r30,r12
+ 837 030e 8081      		ld r24,Z
+ 838 0310 9181      		ldd r25,Z+1
+ 839 0312 0E94 0000 		call xQueueGenericReceive
+ 840 0316 8823      		tst r24
+ 841 0318 01F0      		breq .L89
+ 201:spi_task.c    ****   {
+ 202:spi_task.c    ****     tmpDtaLo = (tmpDta & 0x0F);
+ 843               	.LM67:
+ 844 031a 8A81      		ldd r24,Y+2
+ 845 031c 982F      		mov r25,r24
+ 846 031e 9F70      		andi r25,lo8(15)
+ 203:spi_task.c    ****     tmpDtaHi = ((tmpDta>>4) & 0x0F) | 0x10;
+ 204:spi_task.c    **** 
+ 205:spi_task.c    ****     *(bufTxPtr++) = tmpDtaLo;
+ 848               	.LM68:
+ 849 0320 F801      		movw r30,r16
+ 850 0322 9083      		st Z,r25
+ 851 0324 0E5F      		subi r16,-2
+ 852 0326 1F4F      		sbci r17,-1
+ 853 0328 F801      		movw r30,r16
+ 854 032a 3197      		sbiw r30,1
+ 203:spi_task.c    ****     tmpDtaHi = ((tmpDta>>4) & 0x0F) | 0x10;
+ 856               	.LM69:
+ 857 032c 8295      		swap r24
+ 858 032e 8F70      		andi r24,lo8(15)
+ 859 0330 8061      		ori r24,lo8(16)
+ 206:spi_task.c    ****     *(bufTxPtr++) = tmpDtaHi;
+ 861               	.LM70:
+ 862 0332 8083      		st Z,r24
+ 207:spi_task.c    ****     bufTx0_len++;
+ 864               	.LM71:
+ 865 0334 7394      		inc r7
+ 866 0336 00C0      		rjmp .L38
+ 867               	.L89:
+ 208:spi_task.c    ****   }
+ 209:spi_task.c    ****   qeueNo++;
+ 869               	.LM72:
+ 870 0338 B394      		inc r11
+ 183:spi_task.c    ****   uint8_t bufTx1_len=0;
+ 872               	.LM73:
+ 873 033a 812C      		mov r8,__zero_reg__
+ 210:spi_task.c    ****   bufTxPtr = spiTxbuffer1;
+ 875               	.LM74:
+ 876 033c C12C      		mov r12,__zero_reg__
+ 877 033e B2E7      		ldi r27,lo8(114)
+ 878 0340 DB2E      		mov r13,r27
+ 211:spi_task.c    ****   while (xQueueReceive(xSpi2SerialTx[qeueNo], &tmpDta, 0))
+ 880               	.LM75:
+ 881 0342 0B2D      		mov r16,r11
+ 882 0344 10E0      		ldi r17,0
+ 883 0346 000F      		lsl r16
+ 884 0348 111F      		rol r17
+ 885 034a C801      		movw r24,r16
+ 886 034c 8050      		subi r24,lo8(-(xSpi2SerialTx))
+ 887 034e 9040      		sbci r25,hi8(-(xSpi2SerialTx))
+ 888 0350 2C01      		movw r4,r24
+ 889               	.L40:
+ 891               	.LM76:
+ 892 0352 20E0      		ldi r18,0
+ 893 0354 40E0      		ldi r20,0
+ 894 0356 50E0      		ldi r21,0
+ 895 0358 BE01      		movw r22,r28
+ 896 035a 6E5F      		subi r22,-2
+ 897 035c 7F4F      		sbci r23,-1
+ 898 035e F201      		movw r30,r4
+ 899 0360 8081      		ld r24,Z
+ 900 0362 9181      		ldd r25,Z+1
+ 901 0364 0E94 0000 		call xQueueGenericReceive
+ 902 0368 8823      		tst r24
+ 903 036a 01F0      		breq .L90
+ 212:spi_task.c    ****   {
+ 213:spi_task.c    **** 
+ 214:spi_task.c    ****     tmpDtaLo = (tmpDta & 0x0F) | 0x20;
+ 905               	.LM77:
+ 906 036c 8A81      		ldd r24,Y+2
+ 907 036e 982F      		mov r25,r24
+ 908 0370 9F70      		andi r25,lo8(15)
+ 909 0372 9062      		ori r25,lo8(32)
+ 215:spi_task.c    ****     tmpDtaHi = ((tmpDta>>4) & 0x0F) | 0x30;
+ 216:spi_task.c    **** 
+ 217:spi_task.c    ****     *(bufTxPtr++) = tmpDtaLo;
+ 911               	.LM78:
+ 912 0374 F601      		movw r30,r12
+ 913 0376 9083      		st Z,r25
+ 914 0378 F2E0      		ldi r31,2
+ 915 037a CF0E      		add r12,r31
+ 916 037c D11C      		adc r13,__zero_reg__
+ 917 037e F601      		movw r30,r12
+ 918 0380 3197      		sbiw r30,1
+ 215:spi_task.c    ****     tmpDtaHi = ((tmpDta>>4) & 0x0F) | 0x30;
+ 920               	.LM79:
+ 921 0382 8295      		swap r24
+ 922 0384 8F70      		andi r24,lo8(15)
+ 923 0386 8063      		ori r24,lo8(48)
+ 218:spi_task.c    ****     *(bufTxPtr++) = tmpDtaHi;
+ 925               	.LM80:
+ 926 0388 8083      		st Z,r24
+ 219:spi_task.c    ****     bufTx1_len++;
+ 928               	.LM81:
+ 929 038a 8394      		inc r8
+ 930 038c 00C0      		rjmp .L40
+ 931               	.L90:
+ 220:spi_task.c    ****   }
+ 221:spi_task.c    ****   spiEnableDev(spiDevNo);
+ 933               	.LM82:
+ 934 038e 8A2D      		mov r24,r10
+ 935 0390 0E94 0000 		call spiEnableDev
+ 222:spi_task.c    **** 
+ 223:spi_task.c    **** 
+ 224:spi_task.c    **** 
+ 225:spi_task.c    ****   //Wysłanie zawartości bufora TxSpi oraz odczyt od modułów slave
+ 226:spi_task.c    **** #define SPI_TRANSMISSION                     \
+ 227:spi_task.c    ****   {                                          \
+ 228:spi_task.c    ****     tmpDta = spiSend(spiTxbuffer0[i]);       \
+ 229:spi_task.c    ****     if (tmpDta == 0xCF)                      \
+ 230:spi_task.c    ****     {                                        \
+ 231:spi_task.c    ****         isDataOnSlave = 0;                   \
+ 232:spi_task.c    ****         continue;                            \
+ 233:spi_task.c    ****     }                                        \
+ 234:spi_task.c    ****     if ((tmpDta & 0x20) == 0)                \
+ 235:spi_task.c    ****       spiRxbuffer0[bufRx0_len++] = tmpDta;   \
+ 236:spi_task.c    ****     else                                     \
+ 237:spi_task.c    ****       spiRxbuffer1[bufRx1_len++] = tmpDta;   \
+ 238:spi_task.c    ****                                              \
+ 239:spi_task.c    ****     if (bufRx0_len==254) break;              \
+ 240:spi_task.c    ****     if (bufRx1_len==254) break;              \
+ 241:spi_task.c    ****   }
+ 242:spi_task.c    **** 
+ 243:spi_task.c    ****   for (i=0; i<bufTx0_len; i++)
+ 937               	.LM83:
+ 938 0394 C12C      		mov r12,__zero_reg__
+ 939 0396 A0E7      		ldi r26,lo8(112)
+ 940 0398 DA2E      		mov r13,r26
+ 195:spi_task.c    ****   uint8_t isDataOnSlave = 1;
+ 942               	.LM84:
+ 943 039a 5524      		clr r5
+ 944 039c 5394      		inc r5
+ 186:spi_task.c    ****   uint8_t bufRx1_len=0;
+ 946               	.LM85:
+ 947 039e B12C      		mov r11,__zero_reg__
+ 185:spi_task.c    ****   uint8_t bufRx0_len=0;
+ 949               	.LM86:
+ 950 03a0 912C      		mov r9,__zero_reg__
+ 951               	.L42:
+ 953               	.LM87:
+ 954 03a2 C714      		cp r12,r7
+ 955 03a4 00F4      		brsh .L46
+ 244:spi_task.c    ****     SPI_TRANSMISSION
+ 957               	.LM88:
+ 958 03a6 F601      		movw r30,r12
+ 959 03a8 8191      		ld r24,Z+
+ 960 03aa 6F01      		movw r12,r30
+ 961 03ac 0E94 0000 		call spiSend
+ 962 03b0 8A83      		std Y+2,r24
+ 963 03b2 8F3C      		cpi r24,lo8(-49)
+ 964 03b4 01F0      		breq .L63
+ 966               	.LM89:
+ 967 03b6 85FD      		sbrc r24,5
+ 968 03b8 00C0      		rjmp .L44
+ 970               	.LM90:
+ 971 03ba E92D      		mov r30,r9
+ 972 03bc F0E0      		ldi r31,0
+ 973 03be FC58      		subi r31,-116
+ 974 03c0 8083      		st Z,r24
+ 975 03c2 9394      		inc r9
+ 976 03c4 00C0      		rjmp .L45
+ 977               	.L44:
+ 979               	.LM91:
+ 980 03c6 EB2D      		mov r30,r11
+ 981 03c8 F0E0      		ldi r31,0
+ 982 03ca FA58      		subi r31,-118
+ 983 03cc 8083      		st Z,r24
+ 984 03ce B394      		inc r11
+ 985               	.L45:
+ 987               	.LM92:
+ 988 03d0 FEEF      		ldi r31,lo8(-2)
+ 989 03d2 9F16      		cp r9,r31
+ 990 03d4 01F0      		breq .L46
+ 991 03d6 BF12      		cpse r11,r31
+ 992 03d8 00C0      		rjmp .L42
+ 993 03da 00C0      		rjmp .L46
+ 994               	.L63:
+ 996               	.LM93:
+ 997 03dc 512C      		mov r5,__zero_reg__
+ 998 03de 00C0      		rjmp .L42
+ 999               	.L46:
+ 245:spi_task.c    **** 
+ 246:spi_task.c    ****   for (i=0; i<bufTx1_len; i++)
+ 247:spi_task.c    ****     SPI_TRANSMISSION
+ 1001               	.LM94:
+ 1002 03e0 C12C      		mov r12,__zero_reg__
+ 1003 03e2 F0E7      		ldi r31,lo8(112)
+ 1004 03e4 DF2E      		mov r13,r31
+ 1005               	.L48:
+ 1006 03e6 7C2C      		mov r7,r12
+ 246:spi_task.c    ****   for (i=0; i<bufTx1_len; i++)
+ 1008               	.LM95:
+ 1009 03e8 C814      		cp r12,r8
+ 1010 03ea 00F4      		brsh .L52
+ 1012               	.LM96:
+ 1013 03ec F601      		movw r30,r12
+ 1014 03ee 8191      		ld r24,Z+
+ 1015 03f0 6F01      		movw r12,r30
+ 1016 03f2 0E94 0000 		call spiSend
+ 1017 03f6 8A83      		std Y+2,r24
+ 1018 03f8 8F3C      		cpi r24,lo8(-49)
+ 1019 03fa 01F0      		breq .L64
+ 1021               	.LM97:
+ 1022 03fc 85FD      		sbrc r24,5
+ 1023 03fe 00C0      		rjmp .L50
+ 1025               	.LM98:
+ 1026 0400 E92D      		mov r30,r9
+ 1027 0402 F0E0      		ldi r31,0
+ 1028 0404 FC58      		subi r31,-116
+ 1029 0406 8083      		st Z,r24
+ 1030 0408 9394      		inc r9
+ 1031 040a 00C0      		rjmp .L51
+ 1032               	.L50:
+ 1034               	.LM99:
+ 1035 040c EB2D      		mov r30,r11
+ 1036 040e F0E0      		ldi r31,0
+ 1037 0410 FA58      		subi r31,-118
+ 1038 0412 8083      		st Z,r24
+ 1039 0414 B394      		inc r11
+ 1040               	.L51:
+ 1042               	.LM100:
+ 1043 0416 FEEF      		ldi r31,lo8(-2)
+ 1044 0418 9F16      		cp r9,r31
+ 1045 041a 01F0      		breq .L52
+ 1046 041c BF12      		cpse r11,r31
+ 1047 041e 00C0      		rjmp .L48
+ 1048 0420 00C0      		rjmp .L52
+ 1049               	.L64:
+ 1051               	.LM101:
+ 1052 0422 512C      		mov r5,__zero_reg__
+ 1053 0424 00C0      		rjmp .L48
+ 1054               	.L52:
+ 248:spi_task.c    **** 
+ 249:spi_task.c    ****   while(isDataOnSlave)
+ 1056               	.LM102:
+ 1057 0426 5520      		tst r5
+ 1058 0428 01F0      		breq .L54
+ 250:spi_task.c    ****     SPI_TRANSMISSION
+ 1060               	.LM103:
+ 1061 042a C72C      		mov r12,r7
+ 1062 042c D12C      		mov r13,__zero_reg__
+ 1063 042e 40E9      		ldi r20,-112
+ 1064 0430 D41A      		sub r13,r20
+ 1065               	.L58:
+ 1066 0432 F601      		movw r30,r12
+ 1067 0434 8081      		ld r24,Z
+ 1068 0436 0E94 0000 		call spiSend
+ 1069 043a 8A83      		std Y+2,r24
+ 1070 043c 8F3C      		cpi r24,lo8(-49)
+ 1071 043e 01F0      		breq .L54
+ 1073               	.LM104:
+ 1074 0440 85FD      		sbrc r24,5
+ 1075 0442 00C0      		rjmp .L55
+ 1077               	.LM105:
+ 1078 0444 E92D      		mov r30,r9
+ 1079 0446 F0E0      		ldi r31,0
+ 1080 0448 FC58      		subi r31,-116
+ 1081 044a 8083      		st Z,r24
+ 1082 044c 9394      		inc r9
+ 1083 044e 00C0      		rjmp .L56
+ 1084               	.L55:
+ 1086               	.LM106:
+ 1087 0450 EB2D      		mov r30,r11
+ 1088 0452 F0E0      		ldi r31,0
+ 1089 0454 FA58      		subi r31,-118
+ 1090 0456 8083      		st Z,r24
+ 1091 0458 B394      		inc r11
+ 1092               	.L56:
+ 1094               	.LM107:
+ 1095 045a FEEF      		ldi r31,lo8(-2)
+ 1096 045c 9F16      		cp r9,r31
+ 1097 045e 01F0      		breq .L54
+ 1098 0460 BF12      		cpse r11,r31
+ 1099 0462 00C0      		rjmp .L58
+ 1100               	.L54:
+ 251:spi_task.c    **** #undef SPI_TRANSMISSION
+ 252:spi_task.c    ****   spiDisableDev(spiDevNo);
+ 1102               	.LM108:
+ 1103 0464 8A2D      		mov r24,r10
+ 1104 0466 0E94 0000 		call spiDisableDev
+ 253:spi_task.c    **** ///Przetwarzanie danych odebranych z SPI i umieszczanie ich w odpowiednim buforze
+ 254:spi_task.c    **** 
+ 255:spi_task.c    ****   qeueNo = 2*spiDevNo;
+ 256:spi_task.c    ****   for (i=0; i<bufRx0_len; i+=2)
+ 1106               	.LM109:
+ 1107 046a D12C      		mov r13,__zero_reg__
+ 1108               	.LBB5:
+ 257:spi_task.c    ****   {
+ 258:spi_task.c    ****       uint8_t tmpValue = ((spiRxbuffer0[i] & 0x0F) | ((spiRxbuffer0[i+1]<<4) & 0xF0));
+ 259:spi_task.c    ****       xQueueSend(xSpi2SerialRx[qeueNo], &tmpValue, 0);
+ 1110               	.LM110:
+ 1111 046c C701      		movw r24,r14
+ 1112 046e 8050      		subi r24,lo8(-(xSpi2SerialRx))
+ 1113 0470 9040      		sbci r25,hi8(-(xSpi2SerialRx))
+ 1114 0472 7C01      		movw r14,r24
+ 1115               	.L59:
+ 1116               	.LBE5:
+ 256:spi_task.c    ****   for (i=0; i<bufRx0_len; i+=2)
+ 1118               	.LM111:
+ 1119 0474 D914      		cp r13,r9
+ 1120 0476 00F4      		brsh .L91
+ 1121               	.LBB6:
+ 258:spi_task.c    ****       uint8_t tmpValue = ((spiRxbuffer0[i] & 0x0F) | ((spiRxbuffer0[i+1]<<4) & 0xF0));
+ 1123               	.LM112:
+ 1124 0478 8D2D      		mov r24,r13
+ 1125 047a 90E0      		ldi r25,0
+ 1126 047c FC01      		movw r30,r24
+ 1127 047e EF5F      		subi r30,-1
+ 1128 0480 FB48      		sbci r31,-117
+ 1129 0482 2081      		ld r18,Z
+ 1130 0484 E0E1      		ldi r30,lo8(16)
+ 1131 0486 2E9F      		mul r18,r30
+ 1132 0488 9001      		movw r18,r0
+ 1133 048a 1124      		clr __zero_reg__
+ 1134 048c FC01      		movw r30,r24
+ 1135 048e FC58      		subi r31,-116
+ 1136 0490 8081      		ld r24,Z
+ 1137 0492 8F70      		andi r24,lo8(15)
+ 1138 0494 822B      		or r24,r18
+ 1139 0496 8983      		std Y+1,r24
+ 1141               	.LM113:
+ 1142 0498 20E0      		ldi r18,0
+ 1143 049a 40E0      		ldi r20,0
+ 1144 049c 50E0      		ldi r21,0
+ 1145 049e BE01      		movw r22,r28
+ 1146 04a0 6F5F      		subi r22,-1
+ 1147 04a2 7F4F      		sbci r23,-1
+ 1148 04a4 F701      		movw r30,r14
+ 1149 04a6 8081      		ld r24,Z
+ 1150 04a8 9181      		ldd r25,Z+1
+ 1151 04aa 0E94 0000 		call xQueueGenericSend
+ 1152               	.LBE6:
+ 256:spi_task.c    ****   for (i=0; i<bufRx0_len; i+=2)
+ 1154               	.LM114:
+ 1155 04ae D394      		inc r13
+ 1156 04b0 D394      		inc r13
+ 1157 04b2 00C0      		rjmp .L59
+ 1158               	.L91:
+ 256:spi_task.c    ****   for (i=0; i<bufRx0_len; i+=2)
+ 1160               	.LM115:
+ 1161 04b4 F12C      		mov r15,__zero_reg__
+ 1162               	.LBB7:
+ 260:spi_task.c    ****   }
+ 261:spi_task.c    ****   qeueNo++;
+ 262:spi_task.c    ****   for (i=0; i<bufRx1_len; i+=2)
+ 263:spi_task.c    ****   {
+ 264:spi_task.c    ****       uint8_t tmpValue = ((spiRxbuffer1[i] & 0x0F) | ((spiRxbuffer1[i+1]<<4) & 0xF0));
+ 265:spi_task.c    ****       xQueueSend(xSpi2SerialRx[qeueNo], &tmpValue, 0);
+ 1164               	.LM116:
+ 1165 04b6 0050      		subi r16,lo8(-(xSpi2SerialRx))
+ 1166 04b8 1040      		sbci r17,hi8(-(xSpi2SerialRx))
+ 1167               	.L61:
+ 1168               	.LBE7:
+ 262:spi_task.c    ****   for (i=0; i<bufRx1_len; i+=2)
+ 1170               	.LM117:
+ 1171 04ba FB14      		cp r15,r11
+ 1172 04bc 00F4      		brsh .L92
+ 1173               	.LBB8:
+ 264:spi_task.c    ****       uint8_t tmpValue = ((spiRxbuffer1[i] & 0x0F) | ((spiRxbuffer1[i+1]<<4) & 0xF0));
+ 1175               	.LM118:
+ 1176 04be 8F2D      		mov r24,r15
+ 1177 04c0 90E0      		ldi r25,0
+ 1178 04c2 FC01      		movw r30,r24
+ 1179 04c4 EF5F      		subi r30,-1
+ 1180 04c6 F948      		sbci r31,-119
+ 1181 04c8 2081      		ld r18,Z
+ 1182 04ca F0E1      		ldi r31,lo8(16)
+ 1183 04cc 2F9F      		mul r18,r31
+ 1184 04ce 9001      		movw r18,r0
+ 1185 04d0 1124      		clr __zero_reg__
+ 1186 04d2 FC01      		movw r30,r24
+ 1187 04d4 FA58      		subi r31,-118
+ 1188 04d6 8081      		ld r24,Z
+ 1189 04d8 8F70      		andi r24,lo8(15)
+ 1190 04da 822B      		or r24,r18
+ 1191 04dc 8983      		std Y+1,r24
+ 1193               	.LM119:
+ 1194 04de 20E0      		ldi r18,0
+ 1195 04e0 40E0      		ldi r20,0
+ 1196 04e2 50E0      		ldi r21,0
+ 1197 04e4 BE01      		movw r22,r28
+ 1198 04e6 6F5F      		subi r22,-1
+ 1199 04e8 7F4F      		sbci r23,-1
+ 1200 04ea F801      		movw r30,r16
+ 1201 04ec 8081      		ld r24,Z
+ 1202 04ee 9181      		ldd r25,Z+1
+ 1203 04f0 0E94 0000 		call xQueueGenericSend
+ 1204               	.LBE8:
+ 262:spi_task.c    ****   for (i=0; i<bufRx1_len; i+=2)
+ 1206               	.LM120:
+ 1207 04f4 F394      		inc r15
+ 1208 04f6 F394      		inc r15
+ 1209 04f8 00C0      		rjmp .L61
+ 1210               	.L92:
+ 1211               	/* epilogue start */
+ 266:spi_task.c    ****   }
+ 267:spi_task.c    **** }
+ 1213               	.LM121:
+ 1214 04fa 0F90      		pop __tmp_reg__
+ 1215 04fc 0F90      		pop __tmp_reg__
+ 1216 04fe DF91      		pop r29
+ 1217 0500 CF91      		pop r28
+ 1218 0502 1F91      		pop r17
+ 1219 0504 0F91      		pop r16
+ 1220 0506 FF90      		pop r15
+ 1221 0508 EF90      		pop r14
+ 1222 050a DF90      		pop r13
+ 1223 050c CF90      		pop r12
+ 1224 050e BF90      		pop r11
+ 1225 0510 AF90      		pop r10
+ 1226 0512 9F90      		pop r9
+ 1227 0514 8F90      		pop r8
+ 1228 0516 7F90      		pop r7
+ 1229 0518 5F90      		pop r5
+ 1230 051a 4F90      		pop r4
+ 1231 051c 0895      		ret
+ 1251               	.Lscope4:
+ 1253               		.stabd	78,0,0
+ 1255               	.global	flushSpi2SerialRxBuffers
+ 1257               	flushSpi2SerialRxBuffers:
+ 1258               		.stabd	46,0,0
+ 268:spi_task.c    **** 
+ 269:spi_task.c    **** 
+ 270:spi_task.c    **** void flushSpi2SerialRxBuffers()
+ 271:spi_task.c    **** {
+ 1260               	.LM122:
+ 1261               	.LFBB5:
+ 1262 051e 1F93      		push r17
+ 1263 0520 CF93      		push r28
+ 1264 0522 DF93      		push r29
+ 1265 0524 00D0      		rcall .
+ 1266 0526 1F92      		push __zero_reg__
+ 1267 0528 CDB7      		in r28,__SP_L__
+ 1268 052a DEB7      		in r29,__SP_H__
+ 1269               	/* prologue: function */
+ 1270               	/* frame size = 3 */
+ 1271               	/* stack size = 6 */
+ 1272               	.L__stack_usage = 6
+ 272:spi_task.c    ****     uint8_t bufIdx;
+ 273:spi_task.c    ****     for(bufIdx=0; bufIdx<NO_OF_SPI2SERIAL_RX_BUF; bufIdx++)
+ 1274               	.LM123:
+ 1275 052c 1B82      		std Y+3,__zero_reg__
+ 1276               	.LBB9:
+ 274:spi_task.c    ****     {
+ 275:spi_task.c    ****         uint8_t dta = 0xA5;;
+ 1278               	.LM124:
+ 1279 052e 15EA      		ldi r17,lo8(-91)
+ 1280               	.L94:
+ 1281               	.LBE9:
+ 273:spi_task.c    ****     for(bufIdx=0; bufIdx<NO_OF_SPI2SERIAL_RX_BUF; bufIdx++)
+ 1283               	.LM125:
+ 1284 0530 EB81      		ldd r30,Y+3
+ 1285 0532 E031      		cpi r30,lo8(16)
+ 1286 0534 00F0      		brlo .+2
+ 1287 0536 00C0      		rjmp .L100
+ 1288               	.LBB10:
+ 1290               	.LM126:
+ 1291 0538 1A83      		std Y+2,r17
+ 276:spi_task.c    ****         uint8_t dtaLen = uxQueueMessagesWaiting(xSpi2SerialRx[bufIdx]);
+ 1293               	.LM127:
+ 1294 053a F0E0      		ldi r31,0
+ 1295 053c EE0F      		lsl r30
+ 1296 053e FF1F      		rol r31
+ 1297 0540 E050      		subi r30,lo8(-(xSpi2SerialRx))
+ 1298 0542 F040      		sbci r31,hi8(-(xSpi2SerialRx))
+ 1299 0544 8081      		ld r24,Z
+ 1300 0546 9181      		ldd r25,Z+1
+ 1301 0548 0E94 0000 		call uxQueueMessagesWaiting
+ 1302 054c 8983      		std Y+1,r24
+ 277:spi_task.c    ****         if (dtaLen == 0)
+ 1304               	.LM128:
+ 1305 054e 8823      		tst r24
+ 1306 0550 01F4      		brne .+2
+ 1307 0552 00C0      		rjmp .L96
+ 278:spi_task.c    ****             continue;
+ 279:spi_task.c    **** 
+ 280:spi_task.c    **** 
+ 281:spi_task.c    ****         xQueueSend(udpSocket->Tx, &dta, 0);    //SYNC - 1bajt ma zawsze wartość 0xA5
+ 1309               	.LM129:
+ 1310 0554 E091 0000 		lds r30,udpSocket
+ 1311 0558 F091 0000 		lds r31,udpSocket+1
+ 1312 055c 20E0      		ldi r18,0
+ 1313 055e 40E0      		ldi r20,0
+ 1314 0560 50E0      		ldi r21,0
+ 1315 0562 BE01      		movw r22,r28
+ 1316 0564 6E5F      		subi r22,-2
+ 1317 0566 7F4F      		sbci r23,-1
+ 1318 0568 8485      		ldd r24,Z+12
+ 1319 056a 9585      		ldd r25,Z+13
+ 1320 056c 0E94 0000 		call xQueueGenericSend
+ 282:spi_task.c    ****         xQueueSend(udpSocket->Tx, &bufIdx, 0);  //TYPE - 1 bajt, który  określa numer portu lub p
+ 1322               	.LM130:
+ 1323 0570 E091 0000 		lds r30,udpSocket
+ 1324 0574 F091 0000 		lds r31,udpSocket+1
+ 1325 0578 20E0      		ldi r18,0
+ 1326 057a 40E0      		ldi r20,0
+ 1327 057c 50E0      		ldi r21,0
+ 1328 057e BE01      		movw r22,r28
+ 1329 0580 6D5F      		subi r22,-3
+ 1330 0582 7F4F      		sbci r23,-1
+ 1331 0584 8485      		ldd r24,Z+12
+ 1332 0586 9585      		ldd r25,Z+13
+ 1333 0588 0E94 0000 		call xQueueGenericSend
+ 283:spi_task.c    ****         xQueueSend(udpSocket->Tx, &dtaLen, 0);  //LENGTH - 1 bajt  który określa długość wiado
+ 1335               	.LM131:
+ 1336 058c E091 0000 		lds r30,udpSocket
+ 1337 0590 F091 0000 		lds r31,udpSocket+1
+ 1338 0594 20E0      		ldi r18,0
+ 1339 0596 40E0      		ldi r20,0
+ 1340 0598 50E0      		ldi r21,0
+ 1341 059a BE01      		movw r22,r28
+ 1342 059c 6F5F      		subi r22,-1
+ 1343 059e 7F4F      		sbci r23,-1
+ 1344 05a0 8485      		ldd r24,Z+12
+ 1345 05a2 9585      		ldd r25,Z+13
+ 1346 05a4 0E94 0000 		call xQueueGenericSend
+ 1347               	.L97:
+ 284:spi_task.c    ****         while (dtaLen >0)       //WIADOMOSC - no dane, które odebrano lub mają być wyzłane pod 
+ 1349               	.LM132:
+ 1350 05a8 8981      		ldd r24,Y+1
+ 1351 05aa 8823      		tst r24
+ 1352 05ac 01F0      		breq .L101
+ 285:spi_task.c    ****         {
+ 286:spi_task.c    ****             xQueueReceive(xSpi2SerialRx[bufIdx], &dta, 0);
+ 1354               	.LM133:
+ 1355 05ae EB81      		ldd r30,Y+3
+ 1356 05b0 F0E0      		ldi r31,0
+ 1357 05b2 EE0F      		lsl r30
+ 1358 05b4 FF1F      		rol r31
+ 1359 05b6 E050      		subi r30,lo8(-(xSpi2SerialRx))
+ 1360 05b8 F040      		sbci r31,hi8(-(xSpi2SerialRx))
+ 1361 05ba 20E0      		ldi r18,0
+ 1362 05bc 40E0      		ldi r20,0
+ 1363 05be 50E0      		ldi r21,0
+ 1364 05c0 BE01      		movw r22,r28
+ 1365 05c2 6E5F      		subi r22,-2
+ 1366 05c4 7F4F      		sbci r23,-1
+ 1367 05c6 8081      		ld r24,Z
+ 1368 05c8 9181      		ldd r25,Z+1
+ 1369 05ca 0E94 0000 		call xQueueGenericReceive
+ 287:spi_task.c    ****             xQueueSend(udpSocket->Tx, &dta, 0);
+ 1371               	.LM134:
+ 1372 05ce E091 0000 		lds r30,udpSocket
+ 1373 05d2 F091 0000 		lds r31,udpSocket+1
+ 1374 05d6 20E0      		ldi r18,0
+ 1375 05d8 40E0      		ldi r20,0
+ 1376 05da 50E0      		ldi r21,0
+ 1377 05dc BE01      		movw r22,r28
+ 1378 05de 6E5F      		subi r22,-2
+ 1379 05e0 7F4F      		sbci r23,-1
+ 1380 05e2 8485      		ldd r24,Z+12
+ 1381 05e4 9585      		ldd r25,Z+13
+ 1382 05e6 0E94 0000 		call xQueueGenericSend
+ 288:spi_task.c    ****             dtaLen--;
+ 1384               	.LM135:
+ 1385 05ea 8981      		ldd r24,Y+1
+ 1386 05ec 8150      		subi r24,lo8(-(-1))
+ 1387 05ee 8983      		std Y+1,r24
+ 1388 05f0 00C0      		rjmp .L97
+ 1389               	.L101:
+ 289:spi_task.c    ****         }
+ 290:spi_task.c    ****         flushUdpQueues();
+ 1391               	.LM136:
+ 1392 05f2 0E94 0000 		call flushUdpQueues
+ 1393               	.L96:
+ 1394               	.LBE10:
+ 273:spi_task.c    ****     for(bufIdx=0; bufIdx<NO_OF_SPI2SERIAL_RX_BUF; bufIdx++)
+ 1396               	.LM137:
+ 1397 05f6 8B81      		ldd r24,Y+3
+ 1398 05f8 8F5F      		subi r24,lo8(-(1))
+ 1399 05fa 8B83      		std Y+3,r24
+ 1400 05fc 00C0      		rjmp .L94
+ 1401               	.L100:
+ 1402               	/* epilogue start */
+ 291:spi_task.c    ****         //Zastanawiam się nad dodaniem na końcu jeszcze sumy kontrolnej. CRC - 2 bajty z sumą ko
+ 292:spi_task.c    ****     }
+ 293:spi_task.c    **** }
+ 1404               	.LM138:
+ 1405 05fe 0F90      		pop __tmp_reg__
+ 1406 0600 0F90      		pop __tmp_reg__
+ 1407 0602 0F90      		pop __tmp_reg__
+ 1408 0604 DF91      		pop r29
+ 1409 0606 CF91      		pop r28
+ 1410 0608 1F91      		pop r17
+ 1411 060a 0895      		ret
+ 1424               	.Lscope5:
+ 1426               		.stabd	78,0,0
+ 1429               	.global	spiTask
+ 1431               	spiTask:
+ 1432               		.stabd	46,0,0
+ 120:spi_task.c    **** {
+ 1434               	.LM139:
+ 1435               	.LFBB6:
+ 1436               	/* prologue: function */
+ 1437               	/* frame size = 0 */
+ 1438               	/* stack size = 0 */
+ 1439               	.L__stack_usage = 0
+ 1440 060c EC01      		movw r28,r24
+ 124:spi_task.c    ****   nicInit();
+ 1442               	.LM140:
+ 1443 060e 0E94 0000 		call nicInit
+ 125:spi_task.c    ****   ipInit();
+ 1445               	.LM141:
+ 1446 0612 0E94 0000 		call ipInit
+ 126:spi_task.c    ****   arpInit();
+ 1448               	.LM142:
+ 1449 0616 0E94 0000 		call arpInit
+ 127:spi_task.c    ****   icmpInit();
+ 1451               	.LM143:
+ 1452 061a 0E94 0000 		call icmpInit
+ 132:spi_task.c    ****   uint8_t spiDevIdx = 0;
+ 1454               	.LM144:
+ 1455 061e D12C      		mov r13,__zero_reg__
+ 172:spi_task.c    ****         fprintf_P(netstackDebug, PSTR("Unknown packet\r\n"));
+ 1457               	.LM145:
+ 1458 0620 00E0      		ldi r16,lo8(__c.3128)
+ 1459 0622 10E0      		ldi r17,hi8(__c.3128)
+ 1460               	.L103:
+ 135:spi_task.c    ****     vTaskDelay ( 0 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwo
+ 1462               	.LM146:
+ 1463 0624 80E0      		ldi r24,0
+ 1464 0626 90E0      		ldi r25,0
+ 1465 0628 0E94 0000 		call vTaskDelay
+ 138:spi_task.c    ****     plen = nicPoll();
+ 1467               	.LM147:
+ 1468 062c 0E94 0000 		call nicPoll
+ 141:spi_task.c    ****     if ( plen==0 )
+ 1470               	.LM148:
+ 1471 0630 892B      		or r24,r25
+ 1472 0632 01F4      		brne .L104
+ 145:spi_task.c    ****       handleSpiDev(spiDevIdx);
+ 1474               	.LM149:
+ 1475 0634 8D2D      		mov r24,r13
+ 1476 0636 0E94 0000 		call handleSpiDev
+ 147:spi_task.c    ****       flushSpi2SerialRxBuffers();
+ 1478               	.LM150:
+ 1479 063a 0E94 0000 		call flushSpi2SerialRxBuffers
+ 149:spi_task.c    ****       flushUdpQueues();
+ 1481               	.LM151:
+ 1482 063e 0E94 0000 		call flushUdpQueues
+ 150:spi_task.c    ****       flushTcpQueues();
+ 1484               	.LM152:
+ 1485 0642 0E94 0000 		call flushTcpQueues
+ 154:spi_task.c    ****       spiDevIdx++;
+ 1487               	.LM153:
+ 1488 0646 D394      		inc r13
+ 155:spi_task.c    ****       spiDevIdx &= 0x07;
+ 1490               	.LM154:
+ 1491 0648 8D2D      		mov r24,r13
+ 1492 064a 8770      		andi r24,lo8(7)
+ 1493 064c D82E      		mov r13,r24
+ 156:spi_task.c    ****       continue;
+ 1495               	.LM155:
+ 1496 064e 00C0      		rjmp .L103
+ 1497               	.L104:
+ 159:spi_task.c    ****     if(nicState.layer2.ethHeader->type == htons(ETHTYPE_IP))             // process an IP packet
+ 1499               	.LM156:
+ 1500 0650 E091 0000 		lds r30,nicState+8
+ 1501 0654 F091 0000 		lds r31,nicState+8+1
+ 1502 0658 E484      		ldd r14,Z+12
+ 1503 065a F584      		ldd r15,Z+13
+ 1504 065c 80E0      		ldi r24,0
+ 1505 065e 98E0      		ldi r25,lo8(8)
+ 1506 0660 0E94 0000 		call htons
+ 1507 0664 E816      		cp r14,r24
+ 1508 0666 F906      		cpc r15,r25
+ 1509 0668 01F4      		brne .L106
+ 161:spi_task.c    ****       arpIpIn();
+ 1511               	.LM157:
+ 1512 066a 0E94 0000 		call arpIpIn
+ 162:spi_task.c    ****       netstackIPv4Process();
+ 1514               	.LM158:
+ 1515 066e 0E94 0000 		call netstackIPv4Process
+ 1516 0672 00C0      		rjmp .L103
+ 1517               	.L106:
+ 164:spi_task.c    ****     else if(nicState.layer2.ethHeader->type == htons(ETHTYPE_ARP))       // process an ARP packet
+ 1519               	.LM159:
+ 1520 0674 E091 0000 		lds r30,nicState+8
+ 1521 0678 F091 0000 		lds r31,nicState+8+1
+ 1522 067c E484      		ldd r14,Z+12
+ 1523 067e F584      		ldd r15,Z+13
+ 1524 0680 86E0      		ldi r24,lo8(6)
+ 1525 0682 98E0      		ldi r25,lo8(8)
+ 1526 0684 0E94 0000 		call htons
+ 1527 0688 E816      		cp r14,r24
+ 1528 068a F906      		cpc r15,r25
+ 1529 068c 01F4      		brne .L107
+ 166:spi_task.c    ****       arpArpIn();
+ 1531               	.LM160:
+ 1532 068e 0E94 0000 		call arpArpIn
+ 1533 0692 00C0      		rjmp .L103
+ 1534               	.L107:
+ 170:spi_task.c    ****       if (netstackDebug != NULL)
+ 1536               	.LM161:
+ 1537 0694 2097      		sbiw r28,0
+ 1538 0696 01F0      		breq .L103
+ 172:spi_task.c    ****         fprintf_P(netstackDebug, PSTR("Unknown packet\r\n"));
+ 1540               	.LM162:
+ 1541 0698 1F93      		push r17
+ 1542 069a 0F93      		push r16
+ 1543 069c DF93      		push r29
+ 1544 069e CF93      		push r28
+ 1545 06a0 0E94 0000 		call fprintf_P
+ 1546 06a4 0F90      		pop __tmp_reg__
+ 1547 06a6 0F90      		pop __tmp_reg__
+ 1548 06a8 0F90      		pop __tmp_reg__
+ 1549 06aa 0F90      		pop __tmp_reg__
+ 1550 06ac 00C0      		rjmp .L103
+ 1552               	.Lscope6:
+ 1554               		.stabd	78,0,0
+ 1556               	.global	initQeuesSpi2Serial
+ 1558               	initQeuesSpi2Serial:
+ 1559               		.stabd	46,0,0
+ 294:spi_task.c    **** 
+ 295:spi_task.c    **** void initQeuesSpi2Serial()
+ 296:spi_task.c    **** {
+ 1561               	.LM163:
+ 1562               	.LFBB7:
+ 1563 06ae 0F93      		push r16
+ 1564 06b0 1F93      		push r17
+ 1565 06b2 CF93      		push r28
+ 1566 06b4 DF93      		push r29
+ 1567               	/* prologue: function */
+ 1568               	/* frame size = 0 */
+ 1569               	/* stack size = 4 */
+ 1570               	.L__stack_usage = 4
+ 297:spi_task.c    ****   portENTER_CRITICAL();
+ 1572               	.LM164:
+ 1573               	/* #APP */
+ 1574               	 ;  297 "spi_task.c" 1
+ 1575 06b6 0FB6      		in		__tmp_reg__, __SREG__
+ 1576               	 ;  0 "" 2
+ 1577               	 ;  297 "spi_task.c" 1
+ 1578 06b8 F894      		cli
+ 1579               	 ;  0 "" 2
+ 1580               	 ;  297 "spi_task.c" 1
+ 1581 06ba 0F92      		push	__tmp_reg__
+ 1582               	 ;  0 "" 2
+ 1583               	/* #NOAPP */
+ 1584 06bc 00E0      		ldi r16,lo8(xSpi2SerialTx)
+ 1585 06be 10E0      		ldi r17,hi8(xSpi2SerialTx)
+ 1586 06c0 C0E0      		ldi r28,0
+ 1587 06c2 D0E8      		ldi r29,lo8(-128)
+ 1588               	.L113:
+ 1589               	.LBB11:
+ 298:spi_task.c    ****   {
+ 299:spi_task.c    ****       uint8_t i;
+ 300:spi_task.c    ****       for (i=0; i<NO_OF_SPI2SERIAL_TX_BUF; i++)
+ 301:spi_task.c    ****       {
+ 302:spi_task.c    ****         xSpi2SerialTx[i]  =   xQueueCreateExternal(255, 1, (void *)(SPI2SERIAl_TX_BUFFERS + i*OF_SP
+ 1591               	.LM165:
+ 1592 06c4 AE01      		movw r20,r28
+ 1593 06c6 61E0      		ldi r22,lo8(1)
+ 1594 06c8 8FEF      		ldi r24,lo8(-1)
+ 1595 06ca 0E94 0000 		call xQueueCreateExternal
+ 1596 06ce F801      		movw r30,r16
+ 1597 06d0 8193      		st Z+,r24
+ 1598 06d2 9193      		st Z+,r25
+ 1599 06d4 8F01      		movw r16,r30
+ 1600 06d6 D395      		inc r29
+ 300:spi_task.c    ****       for (i=0; i<NO_OF_SPI2SERIAL_TX_BUF; i++)
+ 1602               	.LM166:
+ 1603 06d8 C115      		cp r28,__zero_reg__
+ 1604 06da F0E9      		ldi r31,-112
+ 1605 06dc DF07      		cpc r29,r31
+ 1606 06de 01F4      		brne .L113
+ 1607 06e0 00E0      		ldi r16,lo8(xSpi2SerialRx)
+ 1608 06e2 10E0      		ldi r17,hi8(xSpi2SerialRx)
+ 300:spi_task.c    ****       for (i=0; i<NO_OF_SPI2SERIAL_TX_BUF; i++)
+ 1610               	.LM167:
+ 1611 06e4 C0E0      		ldi r28,0
+ 1612 06e6 D0E9      		ldi r29,lo8(-112)
+ 1613               	.L115:
+ 303:spi_task.c    ****       }
+ 304:spi_task.c    ****       for (i=0; i<NO_OF_SPI2SERIAL_RX_BUF; i++)
+ 305:spi_task.c    ****       {
+ 306:spi_task.c    ****         xSpi2SerialRx[i]  =   xQueueCreateExternal(255, 1, (void *)(SPI2SERIAl_RX_BUFFERS + i*OF_SP
+ 1615               	.LM168:
+ 1616 06e8 AE01      		movw r20,r28
+ 1617 06ea 61E0      		ldi r22,lo8(1)
+ 1618 06ec 8FEF      		ldi r24,lo8(-1)
+ 1619 06ee 0E94 0000 		call xQueueCreateExternal
+ 1620 06f2 F801      		movw r30,r16
+ 1621 06f4 8193      		st Z+,r24
+ 1622 06f6 9193      		st Z+,r25
+ 1623 06f8 8F01      		movw r16,r30
+ 1624 06fa D395      		inc r29
+ 304:spi_task.c    ****       for (i=0; i<NO_OF_SPI2SERIAL_RX_BUF; i++)
+ 1626               	.LM169:
+ 1627 06fc C115      		cp r28,__zero_reg__
+ 1628 06fe F0EA      		ldi r31,-96
+ 1629 0700 DF07      		cpc r29,r31
+ 1630 0702 01F4      		brne .L115
+ 1631               	.LBE11:
+ 307:spi_task.c    ****       }
+ 308:spi_task.c    ****   }
+ 309:spi_task.c    ****   portEXIT_CRITICAL();
+ 1633               	.LM170:
+ 1634               	/* #APP */
+ 1635               	 ;  309 "spi_task.c" 1
+ 1636 0704 0F90      		pop		__tmp_reg__
+ 1637               	 ;  0 "" 2
+ 1638               	 ;  309 "spi_task.c" 1
+ 1639 0706 0FBE      		out		__SREG__, __tmp_reg__
+ 1640               	 ;  0 "" 2
+ 1641               	/* epilogue start */
+ 310:spi_task.c    **** }
+ 1643               	.LM171:
+ 1644               	/* #NOAPP */
+ 1645 0708 DF91      		pop r29
+ 1646 070a CF91      		pop r28
+ 1647 070c 1F91      		pop r17
+ 1648 070e 0F91      		pop r16
+ 1649 0710 0895      		ret
+ 1651               	.Lscope7:
+ 1653               		.stabd	78,0,0
+ 1654               		.section	.progmem.data,"a",@progbits
+ 1657               	__c.3128:
+ 1658 0000 556E 6B6E 		.string	"Unknown packet\r\n"
+ 1658      6F77 6E20 
+ 1658      7061 636B 
+ 1658      6574 0D0A 
+ 1658      00
+ 1661               	__c.3103:
+ 1662 0011 4352 4320 		.string	"CRC error"
+ 1662      6572 726F 
+ 1662      7200 
+ 1665               	__c.3099:
+ 1666 001b 5265 7365 		.string	"Reset is not implemented yet"
+ 1666      7420 6973 
+ 1666      206E 6F74 
+ 1666      2069 6D70 
+ 1666      6C65 6D65 
+ 1667               	.global	spiRxbuffer1
+ 1668               		.section	.rodata
+ 1671               	spiRxbuffer1:
+ 1672 0000 0076      		.word	30208
+ 1673               	.global	spiRxbuffer0
+ 1676               	spiRxbuffer0:
+ 1677 0002 0074      		.word	29696
+ 1678               	.global	spiTxbuffer1
+ 1681               	spiTxbuffer1:
+ 1682 0004 0072      		.word	29184
+ 1683               	.global	spiTxbuffer0
+ 1686               	spiTxbuffer0:
+ 1687 0006 0070      		.word	28672
+ 1688               		.comm	czasRtc,7,1
+ 1689               		.comm	rollers,2,1
+ 1690               		.comm	klastry,128,1
+ 1691               		.comm	IpMyConfig,15,1
+ 1692               		.comm	sockets,2,1
+ 1693               		.comm	tcpDebugLevel,1,1
+ 1694               		.comm	tcpDebugStream,2,1
+ 1695               		.comm	udpDbgLevel,1,1
+ 1696               		.comm	udpDbgStream,2,1
+ 1697               		.comm	udpSocket,2,1
+ 1698               		.comm	icmpDebugLevel,1,1
+ 1699               		.comm	icmpDebug,2,1
+ 1700               		.comm	arpDebugLevel,1,1
+ 1701               		.comm	arpDebug,2,1
+ 1702               		.comm	nicState,14,1
+ 1703               		.comm	xSemaphoreSpiSS,2,1
+ 1724               		.weak	nicPoll
+ 1725               		.weak	spiSend
+ 1726               		.text
+ 1728               	.Letext0:
+ 1729               		.ident	"GCC: (GNU) 4.8.2"
+ 1730               	.global __do_copy_data
+ 1731               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 spi_task.c
+     /tmp/ccYPkH9v.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccYPkH9v.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccYPkH9v.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccYPkH9v.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccYPkH9v.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccYPkH9v.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccYPkH9v.s:241    .text:0000000000000000 _crc16_update
+     /tmp/ccYPkH9v.s:290    .text:0000000000000030 XpNetReceiverTask
+     /tmp/ccYPkH9v.s:1661   .progmem.data:0000000000000011 __c.3103
+     /tmp/ccYPkH9v.s:1665   .progmem.data:000000000000001b __c.3099
+                            *COM*:0000000000000002 udpSocket
+     /tmp/ccYPkH9v.s:536    .text:0000000000000156 XpNetTransmitterTask
+     /tmp/ccYPkH9v.s:778    .text:00000000000002c0 handleSpiDev
+     /tmp/ccYPkH9v.s:1257   .text:000000000000051e flushSpi2SerialRxBuffers
+     /tmp/ccYPkH9v.s:1431   .text:000000000000060c spiTask
+     /tmp/ccYPkH9v.s:1657   .progmem.data:0000000000000000 __c.3128
+                            *COM*:000000000000000e nicState
+     /tmp/ccYPkH9v.s:1558   .text:00000000000006ae initQeuesSpi2Serial
+     /tmp/ccYPkH9v.s:1671   .rodata:0000000000000000 spiRxbuffer1
+     /tmp/ccYPkH9v.s:1676   .rodata:0000000000000002 spiRxbuffer0
+     /tmp/ccYPkH9v.s:1681   .rodata:0000000000000004 spiTxbuffer1
+     /tmp/ccYPkH9v.s:1686   .rodata:0000000000000006 spiTxbuffer0
+                            *COM*:0000000000000007 czasRtc
+                            *COM*:0000000000000002 rollers
+                            *COM*:0000000000000080 klastry
+                            *COM*:000000000000000f IpMyConfig
+                            *COM*:0000000000000002 sockets
+                            *COM*:0000000000000001 tcpDebugLevel
+                            *COM*:0000000000000002 tcpDebugStream
+                            *COM*:0000000000000001 udpDbgLevel
+                            *COM*:0000000000000002 udpDbgStream
+                            *COM*:0000000000000001 icmpDebugLevel
+                            *COM*:0000000000000002 icmpDebug
+                            *COM*:0000000000000001 arpDebugLevel
+                            *COM*:0000000000000002 arpDebug
+                            *COM*:0000000000000002 xSemaphoreSpiSS
+
+UNDEFINED SYMBOLS
+xQueueGenericReceive
+xSpi2SerialTx
+xQueueGenericSend
+fprintf_P
+xSpi2SerialRx
+uxQueueMessagesWaiting
+spiEnableDev
+spiSend
+spiDisableDev
+flushUdpQueues
+nicInit
+ipInit
+arpInit
+icmpInit
+vTaskDelay
+nicPoll
+flushTcpQueues
+htons
+arpIpIn
+netstackIPv4Process
+arpArpIn
+xQueueCreateExternal
+__do_copy_data
+__do_clear_bss
