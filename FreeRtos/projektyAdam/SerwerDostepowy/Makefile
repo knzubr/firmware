@@ -62,13 +62,7 @@ cli_task.c \
 $(LIB_DIR)/spi.c \
 $(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/cmdline.c \
-$(LIB_DIR)/xmodem.c \
 $(LIB_DIR)/vt100.c \
-$(LIB_DIR)/ds1305.c \
-$(LIB_DIR)/mpc23s17.c \
-$(LIB_DIR)/mcp3008.c \
-$(LIB_DIR)/mcp4150.c \
-$(LIB_DIR)/enc28j60.c \
 $(LIB_DIR)/queueStream.c \
 $(LIB_NET_DIR)/nic.c \
 $(LIB_NET_DIR)/net.c \
