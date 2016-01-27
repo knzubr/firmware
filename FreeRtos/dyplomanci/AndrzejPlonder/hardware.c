@@ -32,9 +32,9 @@ void hardwareInit(void)
 
 /**
  * Port C
- * 7 - Rs485 kamery
- * 6 - Rs485 kamery
- * 5 - Rs485 włączanie nadajnika
+ * 7 - Rs485 TXD kamery
+ * 6 - Rs485 RXD kamery
+ * 5 - Rs485 DE/RE włączanie nadajnika
  */
   PORTC.DIR=0xA0;
 

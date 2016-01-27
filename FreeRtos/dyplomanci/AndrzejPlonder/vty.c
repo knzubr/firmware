@@ -26,6 +26,7 @@ static cliExRes_t saveConfigFunction     (cmdState_t *state);
 static cliExRes_t sendPelcoMessage       (cmdState_t *state);
 static cliExRes_t translateFunction      (cmdState_t *state);
 static cliExRes_t showTableFunction      (cmdState_t *state);
+static cliExRes_t clearTableFunction     (cmdState_t *state);
 
 const char okStr[] PROGMEM = "OK\r\n";
 const char nlStr[] PROGMEM = "\r\n";
@@ -68,10 +69,11 @@ const command_t cmdListEnable[] PROGMEM =
 const command_t cmdListConfigure[] PROGMEM =
 {
   {cmd_help,         cmd_help_help,         helpFunction},
-  {cmd_show_tt,   cmd_help_show_tt,   showTableFunction},
+  {cmd_show_tt,      cmd_help_show_tt,      showTableFunction},
   {cmd_status,       cmd_help_status,       statusFunction},
   {cmd_conf_save,    cmd_help_conf_save,    saveConfigFunction},
   {cmd_translate,    cmd_help_translate,    translateFunction},
+  {cmd_clear_tt,     cmd_help_clear_tt,     clearTableFunction},
   {cmd_enable,       cmd_help_enable,       enableFunction},
   {cmd_disable,      cmd_help_disable,      disableFunction},
   {NULL, NULL, NULL}
@@ -175,52 +177,33 @@ static cliExRes_t translateFunction(cmdState_t *state)
   if (state->argc < 2)
     return SYNTAX_ERROR;
 
-  uint8_t oldAddress = (uint8_t)(cmdlineGetArgInt(1, state));
-  uint8_t newAddress = (uint8_t)(cmdlineGetArgInt(2, state));
+  uint16_t oldAddress = (uint16_t)(cmdlineGetArgInt(1, state));
+  uint16_t newAddress = (uint16_t)(cmdlineGetArgInt(2, state));
+
+  if (oldAddress > 255)
+    return SYNTAX_ERROR;
+
+  if (newAddress > 255)
+    return SYNTAX_ERROR;
+
   translateTable[oldAddress] = newAddress;
   return OK_SILENT;
 }
 
 static void printTable(FILE *stream)
 {
-  fprintf_P(stream, PSTR("\r\nAddressTable:\r\n\r\n"));  //Print system state
+  fprintf_P(stream, PSTR("\r\nAddress Table:\r\n\r\n"));  //Print system state
 
   uint16_t i;
   for(i=0; i<256; i++)
   {
-
-      if (translateTable[i] != i)     /*???*/
-       {
-
-        if (i<101)
-        {
-            fprintf_P(stream, PSTR("%d -> %d\t\t"), i, translateTable[i]);
-            i++ ;
-            fprintf_P(stream, PSTR("%d -> %d\t\t"), i, translateTable[i]);
-            i++ ;
-            fprintf_P(stream, PSTR("%d -> %d\t\t"), i, translateTable[i]);
-            i++ ;
-            fprintf_P(stream, PSTR("%d -> %d\r\n"), i, translateTable[i]);
-            /*i++ ;
-            fprintf_P(stream, PSTR("%d -> %d\r\n"), i, translateTable[i]);
-
-            fprintf_P(stream, PSTR("\r\n"));*/
-        }
-        else
-        {
-            fprintf_P(stream, PSTR("%d -> %d\t"), i, translateTable[i]);
-            i++ ;
-            fprintf_P(stream, PSTR("%d -> %d\t"), i, translateTable[i]);
-            i++ ;
-            fprintf_P(stream, PSTR("%d -> %d\t"), i, translateTable[i]);
-            i++ ;
-            fprintf_P(stream, PSTR("%d -> %d\r\n"), i, translateTable[i]);
-            /* i++ ;
-            fprintf_P(stream, PSTR("%d -> %d\r\n"), i, translateTable[i]);
-
-            fprintf_P(stream, PSTR("\r\n"));  */
-        }
-       }
+    fprintf_P(stream, PSTR("%3d -> %3d\t"), i, translateTable[i]);
+    i++ ;
+    fprintf_P(stream, PSTR("%3d -> %3d\t"), i, translateTable[i]);
+    i++ ;
+    fprintf_P(stream, PSTR("%3d -> %3d\t"), i, translateTable[i]);
+    i++ ;
+    fprintf_P(stream, PSTR("%3d -> %3d\r\n"), i, translateTable[i]);
   }
   fprintf_P(stream, PSTR("\r\n"));
 }
@@ -231,4 +214,19 @@ static cliExRes_t showTableFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
+static void clearTable(FILE *stream)  //???
+{
+  uint16_t i;
+  for(i=0; i<256; i++)
+    {
+      translateTable[i]=i;
+    }
+}
+
+
+static cliExRes_t clearTableFunction(cmdState_t *state)
+{
+  clearTable(state->myStdInOut);
+  return OK_SILENT;
+}
 

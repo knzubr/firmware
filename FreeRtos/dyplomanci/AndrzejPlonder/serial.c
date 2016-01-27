@@ -141,7 +141,7 @@ ISR(USARTD0_DRE_vect) // USART1_UDRE_vect
 
 ISR(USARTC1_TXC_vect)
 {
-  if (!vIsInterruptRs485On_2())
+  if (!vIsInterruptRs485_2_On())
     Rs485TxStop_2();
 }
 

@@ -54,8 +54,10 @@ const char cmd_time[]         PROGMEM = "time";     const char cmd_help_time[]  
 const char cmd_net_dbg[]      PROGMEM = "debug";    const char cmd_help_net_dbg[]      PROGMEM = "[arp|icmp|ip|tcp|udp] [level] write debug info. Level 0 disable debuging";
 
 const char cmd_pelcoSnd[]     PROGMEM = "psend";    const char cmd_help_pelcoSnd[]     PROGMEM = "Pelco send message [adr][cmd1][cmd2][opt1][opt2]";
-const char cmd_translate[]    PROGMEM = "transl";   const char cmd_help_translate[]    PROGMEM = "Translate address [oldAddress][newAddress]";
+const char cmd_translate[]    PROGMEM = "transl";   const char cmd_help_translate[]    PROGMEM = "Translate address [oldAddress][newAddress](0-255)";
 const char cmd_show_tt[]      PROGMEM = "showtt";   const char cmd_help_show_tt[]      PROGMEM = "Show translate table";
+const char cmd_clear_tt[]     PROGMEM = "cleartt";  const char cmd_help_clear_tt[]     PROGMEM = "Clear translate table";
+
 
 const char cmd_rping[]        PROGMEM = "rping";    const char cmd_help_rping[]        PROGMEM = "[Device no] Send ping to Rs485 device";
 const char cmd_ping[]         PROGMEM = "ping";     const char cmd_help_ping[]         PROGMEM = "[A1] [A2] [A3] [A4] Sends ping throught ethernet";

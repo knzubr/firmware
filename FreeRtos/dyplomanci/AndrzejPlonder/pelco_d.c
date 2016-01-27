@@ -59,6 +59,7 @@ ISR(USARTF0_RXC_vect)
   {
     byteNo = 0;
     xQueueSendFromISR(pelcoMessages, &tmpMsg, &xHigherPriorityTaskWoken);
+    // xQueueSendFromISR(xVtyRec, &value, &xHigherPriorityTaskWoken);      //wysylanie znakow do consoli
   }
 
   if( xHigherPriorityTaskWoken )

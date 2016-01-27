@@ -21,36 +21,6 @@
 #define serEIGHT_DATA_BITS      ( ( unsigned portCHAR ) 0x06 )
 
 
-// ******************************* Serial 0 RS485 *********************
-
-/*
- * Włączenie przerwania pusty bufor nadawczy dla magistrali Rs485
- */
-
-
-#define vIsInterruptRs485On()  (USARTF0.CTRLA & USART_DREINTLVL_LO_gc)
-
-/*
- * Wyłączenie przerwania pusty bufor nadawczy dla magistrali Rs485
- */
-#define vInterruptRs485Off()          \
-{                                     \
-  unsigned portCHAR ucInByte;         \
-                                      \
-  ucInByte = USARTF0.CTRLA;           \
-  ucInByte &= ~USART_DREINTLVL_LO_gc; \
-  USARTF0.CTRLA = ucInByte;           \
-}
-
-#define vInterruptRs485On()           \
-{                                     \
-  unsigned portCHAR ucByte;           \
-                                      \
-  ucByte = USARTF0.CTRLA;             \
-  ucByte |= USART_DREINTLVL_LO_gc;    \
-  USARTF0.STATUS = ucByte;            \
-}
-
 // ******************************* Serial 1 USB ***********************
 
 /*
@@ -62,6 +32,7 @@
 /*
  * Wyłączenie przerwania pusty bufor nadawczy dla VTY
  */
+
 #define vInterruptVtyOff()            \
 {                                     \
   unsigned portCHAR ucInByte;         \
@@ -80,13 +51,60 @@
   USARTD0.CTRLA = ucByte;             \
 }
 
+
+
+extern xQueueHandle         xVtyRec;
+extern xQueueHandle         xVtyTx;
+
+
+// ******************************* RS485 *********************
+
+/*
+ * Włączenie przerwania pusty bufor nadawczy dla magistrali Rs485
+ */
+
+
+/**
+ * F0 port, do którego podłączony jest rejestrator
+ */
+
+#define vIsInterruptRs485On()  (USARTF0.CTRLA & USART_DREINTLVL_LO_gc)
+
+#define vInterruptRs485Off()          \
+{                                     \
+  unsigned portCHAR ucInByte;         \
+                                      \
+  ucInByte = USARTF0.CTRLA;           \
+  ucInByte &= ~USART_DREINTLVL_LO_gc; \
+  USARTF0.CTRLA = ucInByte;           \
+}
+
+#define vInterruptRs485On()           \
+{                                     \
+  unsigned portCHAR ucByte;           \
+                                      \
+  ucByte = USARTF0.CTRLA;             \
+  ucByte |= USART_DREINTLVL_LO_gc;    \
+  USARTF0.STATUS = ucByte;            \
+}
+
+extern xQueueHandle xRs485_1_Rec;
+
+
+
+/**
+ * C1 port, do którego podłaczone są kamery
+ */
+
+#define vIsInterruptRs485_2_On()  (USARTC1.CTRLA & USART_DREINTLVL_LO_gc)
+
 #define  vInterruptRs485_2_On()       \
 {                                     \
   unsigned portCHAR ucByte;           \
                                       \
   ucByte = USARTC1.CTRLA;             \
   ucByte |= USART_DREINTLVL_LO_gc;    \
-  USARTC1.CTRLA = ucByte;            \
+  USARTC1.CTRLA = ucByte;             \
 }
 
 #define vInterruptRs485_2_Off()       \
@@ -98,23 +116,9 @@
   USARTC1.CTRLA = ucInByte;           \
 }
 
-extern xQueueHandle         xVtyRec;
-extern xQueueHandle         xVtyTx;
-
-/**
- * F0 port, do którego podłączony jest rejestrator
- */
-
-extern xQueueHandle xRs485_1_Rec;
-
-
-/**
- * C1 port, do którego podłaczone są kamery
- */
-#define vIsInterruptRs485On_2()  (USARTC1.CTRLA & USART_DREINTLVL_LO_gc)
 extern xQueueHandle xRs485_2_Tx;
 
-
+/*********************************************/
 
 void initQueueStreamUSB(FILE *stream);
 
