@@ -70,7 +70,6 @@ $(LIB_NET_DIR)/net.c \
 $(LIB_NET_DIR)/ip.c \
 $(LIB_NET_DIR)/icmp.c \
 $(LIB_NET_DIR)/arp.c \
-$(LIB_NET_DIR)/tcp.c \
 $(LIB_NET_DIR)/udp.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
@@ -335,8 +334,7 @@ flash:  $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
-#$(AVRDUDE_WRITE_EEPROM)
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 restart:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) -n

@@ -1,7 +1,7 @@
 /**
- * @file          net.c 
+ * @file          net.c
  * @author        Pascal Stang, Adam Kaliszan
- * @brief         Network support library. 
+ * @brief         Network support library.
  * @version       0.1
  * Created        30.08.2004
  * Revised        25.11.2010
@@ -10,6 +10,11 @@
 
 #include "net.h"
 
+
+uint16_t ntohs(uint16_t val)
+{
+  return (val<<8) | (val>>8);
+}
 
 uint16_t htons(uint16_t val)
 {
@@ -21,12 +26,17 @@ uint32_t htonl(uint32_t val)
   return (htons(val>>16) | (uint32_t)htons(val&0x0000FFFF)<<16);
 }
 
+uint32_t ntohl(uint32_t val)
+{
+  return (ntohs(val>>16) | (uint32_t)ntohs(val&0x0000FFFF)<<16);
+}
+
 
 uint16_t netChecksum(uint8_t *data, uint16_t len)
 {
   register uint32_t sum = 0;
 
-  for (;;) 
+  for (;;)
   {
     if (len < 2)
       break;

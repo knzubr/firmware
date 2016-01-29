@@ -43,12 +43,11 @@
 
 #define RTOS_TCP_BUF_BASE_ADDR       0x2C00
 
+#define SPI_TX_BUFFER                0x7000
+#define SPI_RX_BUFFER                0x7400
 
 #define RTOS_UDP_TX_BUF_ADDR         0x7800
 #define RTOS_UDP_RX_BUF_ADDR         0x7900
-
-#define SPI_TX_BUFFER                0x7000
-#define SPI_RX_BUFFER                0x7400
 
 #define SPI2SERIAl_TX_BUFFERS        0x8000
 #define NO_OF_SPI2SERIAL_TX_BUF      16

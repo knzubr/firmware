@@ -1,7 +1,7 @@
 /**
- * @file          net.c 
+ * @file          net.c
  * @author        Pascal Stang, Adam Kaliszan
- * @brief         Network support library. 
+ * @brief         Network support library.
  * @version       0.2
  * Created        30.08.2004
  * Revised        25.11.2010
@@ -11,7 +11,7 @@
  * @defgroup net Network support library (net.c)
  * @code #include "net/net.h" \endcode
  * @par Description
- *  This is a general network support library including a multitude of 
+ *  This is a general network support library including a multitude of
  *  structure definitions for various types of network packets, functions
  *  and macros for switching byte order, and an RFC-compliant function
  *  for calculating checksums.
@@ -85,7 +85,7 @@
 #define UDP_CHECKSUM_L_P 0x29
 #define UDP_DATA_P 0x2a
 
-#define GNUC_PACKED 
+#define GNUC_PACKED
 
 //@{
 /**
@@ -108,7 +108,7 @@ struct netEthHeader
 
 #define ETHTYPE_ARP     0x0806
 #define ETHTYPE_IP      0x0800
-#define ETHTYPE_IP6     0x86dd 
+#define ETHTYPE_IP6     0x86dd
 
 /// The ARP header
 struct netArpHeader
@@ -121,7 +121,7 @@ struct netArpHeader
   struct      netEthAddr shwaddr;
   uint32_t    sipaddr;
   struct      netEthAddr dhwaddr;
-  uint32_t    dipaddr; 
+  uint32_t    dipaddr;
 } GNUC_PACKED;
 
 #define ARP_OPCODE_REQUEST     1
@@ -158,17 +158,17 @@ struct netIpHeader
 #define IP_TOTLEN_H_P          0x10
 #define IP_TOTLEN_L_P          0x11
 
-#define IP_PROTO_P 0x17  
+#define IP_PROTO_P 0x17
 
 #ifdef IPV6_SUPPORT
   /**The IPv6 */
-  
+
   typedef union uip_ip6addr_t {
     uint8_t  u8[16];			/* Initializer, must come first!!! */
     uint16_t u16[8];
   } uip_ip6addr_t;
   typedef uip_ip6addr_t uip_ipaddr_t;
-  
+
   /**
    * In IPv6 the length of the L3 headers before the transport header is
    * not fixed, due to the possibility to include extension option headers
@@ -184,19 +184,19 @@ struct netIpHeader
     uip_ip6addr_t srcipaddr, destipaddr;
   };
   #define UIP_IPv6H_LEN    40
-  #define UIP_IPH_LEN    UIP_IPv6H_LEN 
+  #define UIP_IPH_LEN    UIP_IPv6H_LEN
   #define UIP_FRAGH_LEN  8
-  
+
   /** The ICMPv6 header. */
   struct uip_icmp6_hdr {
     uint8_t type, icode;
     uint16_t icmpchksum;
   };
   #define IPV6_ICMPH_LEN  4 /* Size of ICMPv6 header */
-  #define UIP_ICMPH_LEN   IPV6_ICMPH_LEN    
- 
+  #define UIP_ICMPH_LEN   IPV6_ICMPH_LEN
+
 #endif /*IPV6_SUPPORT*/
-  
+
 
 /// The ICMP header
 struct netIcmpHeader
@@ -268,7 +268,7 @@ struct netTcpHeader
 
 
 // The UDP and IP headers
-typedef struct 
+typedef struct
 {
   struct netIpHeader  ip;
   struct netUdpHeader udp;
@@ -290,10 +290,18 @@ typedef struct
  */
 uint16_t htons(uint16_t val);
 
+
+uint16_t ntohs(uint16_t val);
+
+
 /**
  * Host-to-Network LONG (32-bit) byte-order swap (function).
  */
 uint32_t htonl(uint32_t val);
+
+
+uint32_t ntohl(uint32_t val);
+
 
 /**
  * Calculate IP-style checksum from data.

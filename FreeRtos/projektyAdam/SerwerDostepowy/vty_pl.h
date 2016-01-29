@@ -49,7 +49,7 @@ prog_char cmd_help[]        = "pomoc";            prog_char cmd_help_help[]     
 prog_char cmd_status[]      = "status";           prog_char cmd_help_status[]      = "{nazwa pliku} Wypisuje status urzadzenia na ekranie lub zapisuje do pliku";
 prog_char cmd_enc_stat[]    = "encstat";          prog_char cmd_help_enc_stat[]    = "Wypisz rejestry Enc 28j60";
 prog_char cmd_time[]        = "czas";             prog_char cmd_help_time[]        = "Wypisuje czas";
-prog_char cmd_net_dbg[]     = "debug";            prog_char cmd_help_net_dbg[]     = "[arp|icmp|ip|tcp|udp] [poziom] wypisywanie komunikatow. Poziom 0 wylacza komunikaty";
+prog_char cmd_net_dbg[]     = "debug";            prog_char cmd_help_net_dbg[]     = "[net|arp|icmp|ip|tcp|udp] [poziom] wypisywanie komunikatow. Poziom 0 wylacza komunikaty";
 
 prog_char cmd_rping[]       = "rping";            prog_char cmd_help_rping[]       = "[numer sterownika] Wysyla ping do sterownika podpietego do magistrali Rs485";
 prog_char cmd_ping[]        = "ping";             prog_char cmd_help_ping[]        = "[A1] [A2] [A3] [A4] Wysyla ping przez ethernet";

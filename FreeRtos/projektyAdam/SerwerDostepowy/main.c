@@ -119,7 +119,7 @@ void initExternalMem(void)
 }
 
 cmdState_t *CLIStateSerialRs1;
-cmdState_t *CLIStateSerialUdp;
+//cmdState_t *CLIStateSerialUdp;
 FILE rs1Stream;
 FILE udpStream;
 
@@ -134,28 +134,27 @@ portSHORT main( void )
 // VTY on serial
   xSerialPortInitMinimal();
   CLIStateSerialRs1  = xmalloc(sizeof(cmdState_t));
-  CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
+  //CLIStateSerialUdp  = xmalloc(sizeof(cmdState_t));
 
 
-//  cmdStateClear(newCmdState);
-
-  loadConfiguration();
 
   initQueueRs1Stream(&rs1Stream);
   VtyInit(CLIStateSerialRs1, &rs1Stream);
 
 
   initQeuesSpi2Serial();
-  udpInit();
-  socketInit();
+
+  udpInit_0();
+  loadConfiguration();
+
   //initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
   //VtyInit(CLIStateSerialUdp, &udpStream);
 
-  xTaskCreate(spiTask,           NULL /*"ENC"    */, STACK_SIZE_ENC,       (void *)CLIStateSerialRs1->myStdInOut,  0, &xHandleEnc);
-  xTaskCreate(vTaskVtyRs1,       NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialRs1),            1, &xHandleVTY_Rs1);
-  xTaskCreate(XpNetReceiverTask, NULL /*"ENC"    */, 128,                  (void *)CLIStateSerialRs1->myStdInOut,  0, &xHandleXpReceiver);
-
-  //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
+  xTaskCreate(encTask,              NULL /*"ENC"    */, STACK_SIZE_ENC,       NULL,                                   0, &xHandleEnc);
+  xTaskCreate(vTaskVtyRs1,          NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialRs1),            1, &xHandleVTY_Rs1);
+//xTaskCreate(XpNetReceiverTask,    NULL /*"ENC"    */, 128,                  NULL,                                   0, &xHandleXpReceiver);
+  xTaskCreate(XpNetTransmitterTask, NULL /*"nTX"    */, 128,                  NULL,                                   0, &xHandleXpReceiver);
+//xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
 
   vTaskStartScheduler();
   return 0;

@@ -24,13 +24,18 @@
 
 #include "nic.h"
 
-static uint8_t   mymac_eep[6] __attribute__((section (".eeprom"))) = {0x00,0x11,0x22,0x33,0x44,0x55};
+
+#include "softwareConfig.h"
+static uint8_t   mymac_eep[6] __attribute__((section (".eeprom"))) = {MAC_ADR1, MAC_ADR2, MAC_ADR3, MAC_ADR4, MAC_ADR5, MAC_ADR6};
 
 
 /* Weak functions, that hast to be overriden in hardware specyfic driver implementation i.e. in enc28j60 */
 void         nicMacInit(void)                                    { }
 void         nicSend(uint16_t len)                               { (void) len; }
 unsigned int nicPoll(void)                                       { return 0; }
+
+
+
 
 
 static void nicBufferInit(void)
@@ -45,10 +50,15 @@ static void nicBufferInit(void)
   //nicState.layer4.icmpv6  = (uint8_t *)              (NETWORK_STACK_BUF_ADDR + ETH_HEADER_LEN); //Te wartosci beda ustawiane w czasie analizy pakietu
   #endif /*IPV6_SUPPORT*/
   memset(nicState.layer2.buf, 0, nicState.bufferSize);
+  nicLoadConfig();
+}
+
+void nicLoadConfig(void)
+{
   eeprom_read_block(&nicState.mac.addr, mymac_eep, 6);
 }
 
-void saveNic(void)
+void nicSaveConfig(void)
 {
   eeprom_update_block(&nicState.mac.addr, mymac_eep, 6);
 }

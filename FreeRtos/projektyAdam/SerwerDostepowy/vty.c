@@ -32,16 +32,19 @@ static cliExRes_t enableFunction         (cmdState_t *state);
 static cliExRes_t disableFunction        (cmdState_t *state);
 static cliExRes_t configureModeFunction  (cmdState_t *state);
 
-static cliExRes_t setIpFunction(cmdState_t *state);
-static cliExRes_t setIpMaskFunction(cmdState_t *state);
-static cliExRes_t setIpGwFunction(cmdState_t *state);
-static cliExRes_t setUdpFunction(cmdState_t *state);
+static cliExRes_t setIpFunction          (cmdState_t *state);
+static cliExRes_t setIpMaskFunction      (cmdState_t *state);
+static cliExRes_t setIpGwFunction        (cmdState_t *state);
+static cliExRes_t setUdpFunction         (cmdState_t *state);
 
 static cliExRes_t setMacAddrFunction     (cmdState_t *state);
 
 static cliExRes_t saveConfigFunction     (cmdState_t *state);
 
-struct ramPlikFd    fdVty;  //TODO move it to CLI struct
+
+static cliExRes_t sentToUdpTestFunction  (cmdState_t *state);
+static cliExRes_t sentToSpiRsTestFunction(cmdState_t *state);
+
 
 const char okStr[]                        PROGMEM = "OK\r\n";
 const char nlStr[]                        PROGMEM = "\r\n";
@@ -69,6 +72,8 @@ const command_t cmdListNormal[] PROGMEM =
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_ping,      cmd_help_ping,      pingFunction},
   {cmd_enable,    cmd_help_enable,    enableFunction},
+  {cmd_net_test,  cmd_help_net_test,  sentToUdpTestFunction},
+  {cmd_rs_test,   cmd_help_rs_test,   sentToSpiRsTestFunction},
   {NULL, NULL, NULL}
 };
 
@@ -78,7 +83,8 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_enc_stat,  cmd_help_enc_stat,  statusEncFunction},
   {cmd_net_dbg,   cmd_help_net_dbg,   debugFunction},
-
+  {cmd_net_test,  cmd_help_net_test,  sentToUdpTestFunction},
+  {cmd_rs_test,   cmd_help_rs_test,   sentToSpiRsTestFunction},
   {cmd_ping,      cmd_help_ping,      pingFunction},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {cmd_configure, cmd_help_configure, configureModeFunction},
@@ -214,83 +220,51 @@ static cliExRes_t debugFunction          (cmdState_t *state)
 
   uint8_t level = cmdlineGetArgInt(2, state);
   const char *str = (const char*)cmdlineGetArgStr(1, state);
-  if (level == 0)
+
+
+  if (strncmp_P(str, PSTR("net"), 3) == 0)
   {
-    if (strncmp_P(str, PSTR("arp"), 3) == 0)
-    {
-      setArpDebug(NULL, 0);
-      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-    if (strncmp_P(str, PSTR("ip"), 2) == 0)
-    {
-      setIpDebug(NULL, 0);
-      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-    if (strncmp_P(str, PSTR("icmp"), 2) == 0)
-    {
-      setIcmpDebug(NULL, 0);
-      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-    if (strncmp_P(str, PSTR("tcp"), 2) == 0)
-    {
-      setTcpDebug(NULL, 0);
-      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-    if (strncmp_P(str, PSTR("udp"), 2) == 0)
-    {
-      setUdpDebug(NULL, 0);
-      fprintf_P(state->myStdInOut, debugDisabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-
-  }
-  else                   //level > 0
-  {
-    if (strncmp_P(str, PSTR("arp"), 3) == 0)
-    {
-      setArpDebug(state->myStdInOut, level);
-      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-    if (strncmp_P(str, PSTR("ip"), 2) == 0)
-    {
-      setIpDebug(state->myStdInOut, level);
-      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-    if (strncmp_P(str, PSTR("icmp"), 2) == 0)
-    {
-      setIcmpDebug(state->myStdInOut, level);
-      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-    if (strncmp_P(str, PSTR("tcp"), 2) == 0)
-    {
-      setTcpDebug(state->myStdInOut, level);
-      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;
-    }
-
-    if (strncmp_P(str, PSTR("udp"), 2) == 0)
-    {
-      setUdpDebug(state->myStdInOut, level);
-      fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
-      return OK_SILENT;
-    }
+    setNetDebug(state->myStdInOut, level);
+    fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
+    return OK_SILENT;
   }
 
+  if (strncmp_P(str, PSTR("arp"), 3) == 0)
+  {
+    setArpDebug(state->myStdInOut, level);
+    fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
+    return OK_SILENT;
+  }
+
+  if (strncmp_P(str, PSTR("ip"), 2) == 0)
+  {
+    setIpDebug(state->myStdInOut, level);
+    fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
+    return OK_SILENT;
+  }
+
+  if (strncmp_P(str, PSTR("icmp"), 2) == 0)
+  {
+    setIcmpDebug(state->myStdInOut, level);
+    fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
+    return OK_SILENT;
+  }
+
+#ifdef TCP_H
+  if (strncmp_P(str, PSTR("tcp"), 2) == 0)
+  {
+    setTcpDebug(state->myStdInOut, level);
+    fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
+    return OK_SILENT;
+  }
+#endif
+
+  if (strncmp_P(str, PSTR("udp"), 2) == 0)
+  {
+    setUdpDebug(state->myStdInOut, level);
+    fprintf_P(state->myStdInOut, debugEnabledInfoStr, str);
+    return OK_SILENT;
+  }
   return SYNTAX_ERROR;
 }
 
@@ -400,4 +374,56 @@ static cliExRes_t saveConfigFunction(cmdState_t *state)
 }
 
 
+static cliExRes_t sentToUdpTestFunction(cmdState_t *state)
+{
+  if (state->argc < 1)
+    return SYNTAX_ERROR;
 
+  uint8_t rsNo = (uint8_t)(cmdlineGetArgInt(1, state));
+  if (rsNo >= 16)
+    return SYNTAX_ERROR;
+
+  uint8_t tmp;
+  if (state->argc >= 2)
+  {
+    char *msg=cmdlineGetArgStr(2, state);
+    while(*msg != '\0')
+    {
+      xQueueSend(xSpi2SerialRx[rsNo], msg, 0);
+      msg++;
+    }
+  }
+  tmp = '\r';
+  xQueueSend(xSpi2SerialRx[rsNo], &tmp, 0);
+  tmp = '\n';
+  xQueueSend(xSpi2SerialRx[rsNo], &tmp, 0);
+
+  return OK_SILENT;
+}
+
+static cliExRes_t sentToSpiRsTestFunction(cmdState_t *state)
+{
+  if (state->argc < 1)
+    return SYNTAX_ERROR;
+
+  uint8_t rsNo = (uint8_t)(cmdlineGetArgInt(1, state));
+  if (rsNo >= 16)
+    return SYNTAX_ERROR;
+
+  uint8_t tmp;
+  if (state->argc >= 2)
+  {
+    char *msg=cmdlineGetArgStr(2, state);
+    while(*msg != '\0')
+    {
+      xQueueSend(xSpi2SerialTx[rsNo], msg, 0);
+      msg++;
+    }
+  }
+  tmp = '\r';
+  xQueueSend(xSpi2SerialTx[rsNo], &tmp, 0);
+  tmp = '\n';
+  xQueueSend(xSpi2SerialTx[rsNo], &tmp, 0);
+
+  return OK_SILENT;
+}

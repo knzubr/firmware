@@ -1,12 +1,18 @@
 #include "udp.h"
-#include "net.h"
-#include "ip.h"
 
 static uint32_t udpIpDst_eep   __attribute__((section (".eeprom"))) = ((uint32_t)UDP_DST_IP4   << 24) + ((uint32_t)UDP_DST_IP3   <<16) + ((uint32_t)UDP_DST_IP2   <<8) + UDP_DST_IP1;
 static uint16_t udpPortDstEep  __attribute__((section (".eeprom"))) = HTONS(UDP_DST_PORT);
 static uint16_t udpPortSrcEep  __attribute__((section (".eeprom"))) = HTONS(UDP_SRC_PORT);
 
-void udpInit(void)
+
+void udpLoadConfig()
+{
+  udpSocket->dstIp      = eeprom_read_dword(&udpIpDst_eep);
+  udpSocket->dstPortDef = eeprom_read_word(&udpPortDstEep);
+  udpSocket->srcPort    = eeprom_read_word(&udpPortSrcEep);
+}
+
+void udpInit_0(void)
 {
 #if UDP_DEBUG
   udpDbgStream         = NULL;
@@ -14,10 +20,6 @@ void udpInit(void)
 #endif
   udpSocket = xmalloc(sizeof(UdpSocket_t));
 
-  udpSocket->dstIp      = eeprom_read_dword(&udpIpDst_eep);
-  udpSocket->dstPortDef = eeprom_read_word(&udpPortDstEep);;
-  udpSocket->srcPort    = eeprom_read_word(&udpPortSrcEep);
-  
   udpSocket->Rx         = xQueueCreateExternal(255, 1, (void *)(RTOS_UDP_RX_BUF_ADDR));
   udpSocket->Tx         = xQueueCreateExternal(255, 1, (void *)(RTOS_UDP_TX_BUF_ADDR));
 }
@@ -35,7 +37,7 @@ inline void udpSend(uint16_t len)
 // make pointer to UDP header
   nicState.layer4.udp->srcport  = udpSocket->srcPort;
   nicState.layer4.udp->destport = (udpSocket->dstPortDef == 0)? udpSocket->dstPort : udpSocket->dstPortDef;          //data in udpSocket are stored in network order
-  
+
   nicState.layer4.udp->udplen = htons(len + UDP_HEADER_LEN);
   nicState.layer4.udp->udpchksum = 0;
 
@@ -45,6 +47,9 @@ inline void udpSend(uint16_t len)
       fprintf_P(udpDbgStream, PSTR("Sending UDP packet (data length %d)\r\n"), len);
 #endif
   ipSend(udpSocket->dstIp, IP_PROTO_UDP, len + UDP_HEADER_LEN);
+
+  if(udpDbgStream != NULL)
+    fprintf_P(udpDbgStream, PSTR("UDP tx %d bytes\r\n"), len);
 }
 
 inline void netstackUDPIPProcess(void)
@@ -54,32 +59,40 @@ inline void netstackUDPIPProcess(void)
 
   #if UDP_DEBUG
   if(udpDbgStream != NULL)
-    if (udpDbgLevel > 3)
-      fprintf_P(udpDbgStream, PSTR("Proc. UDP packet (data length %d)\r\n"), len-UDP_HEADER_LEN);
+    if (udpDbgLevel > 5)
+      fprintf_P(udpDbgStream, PSTR("Proc. UDP packet (data length %d)"), len-UDP_HEADER_LEN);
 #endif
 
-  if ((nicState.layer4.udp->destport == udpSocket->srcPort) && ((udpSocket->dstPortDef == HTONS(0))
-    || (udpSocket->dstPort == nicState.layer4.udp->srcport)))
+  if ((udpSocket->srcPort != nicState.layer4.udp->destport) ||
+     ((udpSocket->dstPortDef != HTONS(0)) && (udpSocket->dstPort == nicState.layer4.udp->srcport)))
   {
-    if (udpSocket->dstPortDef == HTONS(0))
-      udpSocket->dstPort = nicState.layer4.udp->srcport;
-    uint8_t *tmp = (uint8_t *)(nicState.layer4.udp) + UDP_HEADER_LEN;
+#if UDP_DEBUG
+      if(udpDbgStream != NULL)
+        if (udpDbgLevel > 5)
+          fprintf_P(udpDbgStream, PSTR("Skipping, wrong ports %d %d\r\n"), nicState.layer4.udp->destport, nicState.layer4.udp->srcport );
+#endif
+     return;
+  }
+
+  if (udpSocket->dstPortDef == HTONS(0))
+    udpSocket->dstPort = nicState.layer4.udp->srcport;
+  uint8_t *tmp = (uint8_t *)(nicState.layer4.udp) + UDP_HEADER_LEN;
 #if UDP_DEBUG
       if(udpDbgStream != NULL)
         if (udpDbgLevel > 4)
-          fprintf_P(udpDbgStream, PSTR("Received data: "));
+          fprintf_P(udpDbgStream, PSTR("Received UDP data:"));
 #endif
 
-    for (i=UDP_HEADER_LEN; i<len; i++)
-    {
+  for (i=UDP_HEADER_LEN; i<len; i++)
+  {
 #if UDP_DEBUG
-      if(udpDbgStream != NULL)
-        if (udpDbgLevel > 4)
-          fprintf_P(udpDbgStream, PSTR("0x%2x\r\n"), *tmp);
-#endif
-#if UDB_DEBUG
-      xQueueSend(udpSocket->Rx, tmp, 10) == 0);
+    if(udpDbgStream != NULL)
+      if (udpDbgLevel > 4)
+        fprintf_P(udpDbgStream, PSTR(" 0x%2x"), *tmp);
 #else
+    xQueueSend(udpSocket->Rx, tmp, 0);
+#endif
+#if UDP_DEBUG
       if (xQueueSend(udpSocket->Rx, tmp, 10) == 0)
         if(udpDbgStream != NULL)
           if (udpDbgLevel > 0)
@@ -89,11 +102,14 @@ inline void netstackUDPIPProcess(void)
     }
 #if UDP_DEBUG
     if(udpDbgStream != NULL)
-      if (udpDbgLevel > 4)
+    {
+       if (udpDbgLevel > 4)
         fprintf_P(udpDbgStream, PSTR("\r\n"));
-#endif
+       else if (udpDbgLevel > 0)
+        fprintf_P(udpDbgStream, PSTR("Received UDP packet (len %d)\r\n"), len);
 
-  }
+    }
+#endif
 }
 
 inline void flushUdpQueues(void)
@@ -126,5 +142,5 @@ void udpPrintStatus(FILE *stream)
   if (udpSocket->dstPortDef == HTONS(0))
     fprintf_P(stream, PSTR("ANY\r\n"));
   else
-    fprintf_P(stream, PSTR("%d\r\n"), htons(udpSocket->dstPortDef));    
+    fprintf_P(stream, PSTR("%d\r\n"), htons(udpSocket->dstPortDef));
 }

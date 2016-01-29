@@ -1,5 +1,5 @@
 /**
- * @file     arp.h 
+ * @file     arp.h
  * @version  0.2
  * @brief    ARP Protocol Library.
  * @ingroup  network
@@ -17,7 +17,7 @@
  *           called a MAC/hardware/ethernet address.  This MAC address identifies
  *           a specific interface (like the ethernet card in your computer) on the
  *           network.
- *           ARP (Address Resolution Protocol) assists in mapping IP addresses to 
+ *           ARP (Address Resolution Protocol) assists in mapping IP addresses to
  *           the MAC addresses required to actually get data to its destination.
  *           In other words, an IP address is not enough to send information over
  *           ethernet.  You need the MAC address of the network interface/card that
@@ -64,13 +64,15 @@ extern nicState_t        nicState;
 #if ARP_DEBUG
 FILE   *arpDebug;
 uint8_t arpDebugLevel;
-#endif
+void setArpDebug(FILE *stream, uint8_t level);
+#endif /*ARP_DEBUG*/
+
 
 //@{
 /**
  * Initialize ARP system.
  * Clears ARP table and prepares it for use. This is typically done
- * once at program initialization. 
+ * once at program initialization.
  */
 void arpInit(void);
 
@@ -78,7 +80,7 @@ void arpInit(void);
  * Processes incoming ARP packets.
  * This function is to be called when an ARP type packet has arrived
  * over the network.  If the packet type is an ARP request for us,
- * an ARP reply will be generated and sent. 
+ * an ARP reply will be generated and sent.
  */
 void arpArpIn(void);
 
@@ -99,7 +101,7 @@ void arpIpIn(void);
 
 /**
  * Process outgoing IP packet to fill in ethernet header information.
- * 
+ *
  * To be sent on a network, an IP packet must have the correct ethernet
  * header information appended to the front.  This function will fill
  * in this information.
@@ -122,8 +124,8 @@ void arpIpOut(uint32_t phyDstIp);
 
 /**
  * Periodic ARP cache maintenance.
- * This function is to be called once per second and will slowly 
- * expire old ARP cache entries. 
+ * This function is to be called once per second and will slowly
+ * expire old ARP cache entries.
  */
 void arpTimer(void);
 
@@ -152,7 +154,7 @@ void arpPrintHeader(FILE *stream, struct netArpHeader* packet);
 
 /**
  * Print diagnotic information about ARP cache.
- * @param *stream - output stream 
+ * @param *stream - output stream
  */
 void arpPrintTable(FILE *stream);
 

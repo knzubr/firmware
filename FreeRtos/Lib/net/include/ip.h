@@ -32,19 +32,18 @@
 #include "nic.h"
 #include "arp.h"
 #include "udp.h"
-#include "tcp.h"
 
 
 //@{
 /**
  * IP addressing/configuration structure
  */
-struct ipConfig                 
+struct ipConfig
 {
   uint32_t ip;                  ///< IP address
   uint32_t netmask;             ///< netmask
   uint32_t gateway;             ///< gateway IP address
-  
+
 #if IP_DEBUG
   FILE*    dbgStream;           ///debug stream
   uint8_t  dbgLevel;
@@ -60,7 +59,7 @@ extern nicState_t nicState;
 #if IP_DEBUG
 /**
  * Enable or disable debug stream
- * @param *stream - output stream. Do not use network stream. NULL value disable debug stream 
+ * @param *stream - output stream. Do not use network stream. NULL value disable debug stream
  * @param level   - level of sending details (0-3)
  */
 void setIpDebug(FILE *stream, uint8_t level);
@@ -70,7 +69,7 @@ void setIpDebug(FILE *stream, uint8_t level);
  * Read Ip config
  * Initializes ARP
  */
-void ipInit(void);
+void ipLoadConfig(void);
 
 /**
  * Save Ip config

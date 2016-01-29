@@ -24,8 +24,8 @@ typedef struct
   uint16_t dstPortDef;           //stored in network order
   uint16_t dstPort;              //stored in network order
   uint16_t srcPort;
-  uint32_t dstIp;  
-  
+  uint32_t dstIp;
+
   xQueueHandle Rx;
   xQueueHandle Tx;
 } UdpSocket_t;
@@ -38,19 +38,21 @@ uint8_t udpDbgLevel;
 
 /**
  * Enable or disable debug stream
- * @param *stream - output stream. Do not use network stream. NULL value disable debug stream 
+ * @param *stream - output stream. Do not use network stream. NULL value disable debug stream
  * @param level   - debug detail's level
  */
 void setUdpDebug(FILE *stream, uint8_t level);
 #endif
 
 
+void udpLoadConfig(void);
+
 /**
  * Initialize UDP protocol.
  * Creates UDP socket
  * Invoke this function on the very begining
  */
-void udpInit(void);
+void udpInit_0(void);
 
 
 /**
