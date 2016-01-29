@@ -13,13 +13,24 @@
 #include "ip.h"
 #include "arp.h"
 #include "udp.h"
-#include "tcp.h"
 #include "icmp.h"
 #include "hardware.h"
 #include "hardwareConfig.h"
 #include "softwareConfig.h"
 
 #include <util/crc16.h>
+
+
+#if NET_DEBUG
+
+
+FILE   *netDebug;
+uint8_t netDebugLevel;
+void setNetDebug(FILE *stream, uint8_t level);
+
+#endif /*NET_DEBUG*/
+
+
 
 extern xQueueHandle xSpi2SerialTx[];
 extern xQueueHandle xSpi2SerialRx[];
@@ -35,8 +46,9 @@ enum REC_STATE
     ST_CRC_HI
 } ;
 
-void spiTask ( void *pvParameters );
+void encTask ( void *pvParameters );
 void XpNetReceiverTask ( void *pvParameters );
+void XpNetTransmitterTask ( void *pvParameters );
 
 void handleSpiDev(uint8_t spiDevNo);
 void initQeuesSpi2Serial(void);

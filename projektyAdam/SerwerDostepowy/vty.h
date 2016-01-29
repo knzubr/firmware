@@ -6,17 +6,17 @@
 #include <avr/pgmspace.h>
 #include <util/crc16.h>
 
-#include "ds1305.h"
 #include "enc28j60.h"
 #include "memory_x.h"
 #include "configuration.h"
-#include "Rs485_prot.h"
 #include "nic.h"
 #include "ip.h"
 #include "net.h"
 #include "arp.h"
 #include "cmdline.h"
 #include "udp.h"
+
+#include "spi_task.h"
 
 
 // Znaki kontrolne w protokole Xmodem
@@ -54,7 +54,6 @@ extern volatile uint8_t voltage;
 extern xQueueHandle           xRs485Rec;
 extern xQueueHandle           xRs485Tx;
 
-extern volatile timeDecoded_t czasRtc;
 extern struct Enc28j60_config Enc28j60_global;
 
 extern struct sterRolet       *rollers;

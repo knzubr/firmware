@@ -26,7 +26,6 @@
 #include "spi.h"
 
 #include "enc28j60.h"
-#include "netstack_task.h"
 #include "spi_task.h"
 
 #include "cmdline.h"
@@ -36,8 +35,6 @@
 #include "ip.h"
 #include "arp.h"
 #include "udp.h"
-#include "tcp.h"
-
 
 
 #define mainCHECK_TASK_PRIORITY 1
@@ -46,10 +43,6 @@
 #define SYSTEM_NAME "FreeRtos+"
 #define S_VERSION "0.01"
 
-
-
-
-volatile timeDecoded_t czasRtc;
 
 void initExternalMem(void) __attribute__ ((naked)) __attribute__ ((section (".init4")));
 

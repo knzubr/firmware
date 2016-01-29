@@ -43,7 +43,7 @@ void icmpIpIn(void)
         if (icmpDebugLevel > 0)
           fprintf_P(icmpDebug, PSTR("Unknown ICMP typeReceived ICMP request: "));
       }
-#endif      
+#endif
       break;
   }
 }
@@ -103,20 +103,20 @@ void icmpPrintHeader(FILE *stream, struct netIpHeader *ipPacket, struct netIcmpH
 // print dest IP address
   fprintf_P(stream, PSTR("DstIpAddr: "));  netPrintIPAddr(stream, ipPacket->destipaddr); fprintf_P(stream, PSTR("\r\n"));
 // print type
-  fprintf_P(stream, PSTR("Type   : "));
-  switch(icmpPacket->type)
-  {
-    case ICMP_TYPE_ECHOREQUEST:
-      fprintf_P(stream, PSTR("ECHO REQUEST"));
-      break;
-    case ICMP_TYPE_ECHOREPLY:
-      fprintf_P(stream, PSTR("ECHO REPLY"));
-      break;
-    default:
-      fprintf_P(stream, ("UNKNOWN"));
-      break;
-  }
-  fprintf_P(stream, PSTR("\r\n"));
+  fprintf_P(stream, PSTR("Type: 0x%x    "), icmpPacket->type);
+//switch(icmpPacket->type)
+//{
+//  case ICMP_TYPE_ECHOREQUEST:
+//    fprintf_P(stream, PSTR("E REQ"));
+//    break;
+//  case ICMP_TYPE_ECHOREPLY:
+//    fprintf_P(stream, PSTR("E REP"));
+//    break;
+//  default:
+//    fprintf_P(stream, ("???"));
+//    break;
+//}
+//  fprintf_P(stream, PSTR("\r\n"));
 // print code
   fprintf_P(stream, PSTR("Code   : 0x%x\r\n"), icmpPacket->icode);
 }

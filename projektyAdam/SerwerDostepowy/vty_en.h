@@ -56,7 +56,10 @@ const char cmd_help[]         PROGMEM = "help";             const char cmd_help_
 const char cmd_status[]       PROGMEM = "status";           const char cmd_help_status[]       PROGMEM = "{filename} Print device status on VTY or write to file";
 const char cmd_enc_stat[]     PROGMEM = "encstat";          const char cmd_help_enc_stat[]     PROGMEM = "Print Enc 28j60 registers";
 const char cmd_time[]         PROGMEM = "time";             const char cmd_help_time[]         PROGMEM = "Print time";
-const char cmd_net_dbg[]      PROGMEM = "debug";            const char cmd_help_net_dbg[]      PROGMEM = "[arp|icmp|ip|tcp|udp] [level] write debug info. Level 0 disable debuging";
+const char cmd_net_dbg[]      PROGMEM = "debug";            const char cmd_help_net_dbg[]      PROGMEM = "[net|arp|icmp|ip|tcp|udp] [level] write debug info. Level 0 disable debugging";
+
+const char cmd_net_test[]     PROGMEM = "ntest";            const char cmd_help_net_test[]     PROGMEM = "[serialNo] {msg} forward fake message from serial to net";
+const char cmd_rs_test[]      PROGMEM = "rtest";            const char cmd_help_rs_test[]      PROGMEM = "[serialNo] {msg} forward fake message from net to serial";
 
 const char cmd_rping[]        PROGMEM = "rping";            const char cmd_help_rping[]        PROGMEM = "[Device no] Send ping to Rs485 device";
 const char cmd_ping[]         PROGMEM = "ping";             const char cmd_help_ping[]         PROGMEM = "[A1] [A2] [A3] [A4] Sends ping throught ethernet";

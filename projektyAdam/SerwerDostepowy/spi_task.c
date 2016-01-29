@@ -1,4 +1,6 @@
 #include "spi_task.h"
+#include "softwareConfig.h"
+
 
 uint8_t * const spiTxbuffer0 = (uint8_t *) SPI_TX_BUFFER;
 uint8_t * const spiTxbuffer1 = (uint8_t *) (SPI_TX_BUFFER + 512);
@@ -6,21 +8,31 @@ uint8_t * const spiRxbuffer0 = (uint8_t *) SPI_RX_BUFFER;
 uint8_t * const spiRxbuffer1 = (uint8_t *) (SPI_RX_BUFFER + 512);
 
 
+#if NET_DEBUG
+
+void setNetDebug(FILE *stream, uint8_t level)
+{
+  netDebug = stream;
+  netDebugLevel = level;
+  if (level == 0)
+    netDebug = NULL;
+}
+#endif /* NET_DEBUG */
+
 void XpNetReceiverTask ( void *pvParameters )
 {
-  FILE *debugStr = (FILE *) pvParameters;
-
+  (void) pvParameters;
   enum REC_STATE recState = ST_SYNC;
-  uint8_t bufNo = 0;
+  uint8_t bufNo  = 0;
   uint8_t dtaLen = 0;
-  uint8_t crcLo;
-  uint8_t crcHi;
-
+  uint8_t crcLo  = 0;
+  uint8_t crcHi  = 0;
+  uint16_t crc   = 0;
 
   for( ; ; )
   {
     uint8_t dta;
-    uint16_t crc;
+
     if (!xQueueReceive(udpSocket->Rx, &dta, 100))
       continue;
 
@@ -52,8 +64,8 @@ void XpNetReceiverTask ( void *pvParameters )
       } //dopisać obsługę resetowania
       else
       {
-        if (debugStr != NULL)
-          fprintf_P(debugStr, PSTR("Reset is not implemented yet"));
+        if (netDebug != NULL)
+          fprintf_P(netDebug, PSTR("Reset is not implemented yet"));
       }
       dtaLen--;
       if (dtaLen == 0)
@@ -70,9 +82,9 @@ void XpNetReceiverTask ( void *pvParameters )
       crcLo = dta;
       recState = ST_SYNC;
 
-      if ((crcLo + crcHi<<8) != crc)
-        if (debugStr != NULL)
-          fprintf_P(debugStr, PSTR("CRC error"));
+      if ((uint8_t)(crcLo + (crcHi<<8)) != crc)
+        if (netDebug != NULL)
+          fprintf_P(netDebug, PSTR("CRC error"));
       break;
     }
   }
@@ -80,19 +92,26 @@ void XpNetReceiverTask ( void *pvParameters )
 
 void XpNetTransmitterTask ( void *pvParameters )
 {
-  FILE *debugStr = (FILE *) pvParameters;
+  (void) pvParameters;
   uint8_t bufIdx;
 
-  for(bufIdx=0; bufIdx<NO_OF_SPI2SERIAL_RX_BUF; bufIdx++)
+  for(bufIdx=0; ; bufIdx++)
   {
     if (bufIdx == NO_OF_SPI2SERIAL_RX_BUF)
-        bufIdx = 0;
+    {
+      bufIdx = 0;
+      vTaskDelay ( 0 );
+    }
 
     uint16_t crc = 0;
     uint8_t dta = 0xA5;;
     uint8_t dtaLen = uxQueueMessagesWaiting(xSpi2SerialRx[bufIdx]);
+
     if (dtaLen == 0)
       continue;
+
+    if (netDebug != NULL)
+      fprintf_P(netDebug, PSTR("%d of bytes in waiting on qeue %d\r\n"), dtaLen, bufIdx);
 
     crc = _crc16_update(crc, dtaLen);
     xQueueSend(udpSocket->Tx, &dta, 0);    //SYNC - 1bajt ma zawsze wartość 0xA5
@@ -116,15 +135,17 @@ void XpNetTransmitterTask ( void *pvParameters )
   }
 }
 
-void spiTask ( void *pvParameters )
+void encTask ( void *pvParameters )
 {
-  FILE *netstackDebug = (FILE *) pvParameters;
-  uint16_t plen;
+  (void) pvParameters;
+
 
   nicInit();
-  ipInit();
   arpInit();
   icmpInit();
+
+
+  uint16_t plen;
 
 
   //TODO    init_ip_arp_udp_tcp (mymac, ipGetConfig()->ip, MYWWWPORT);
@@ -142,12 +163,12 @@ void spiTask ( void *pvParameters )
     {
 
 
-      handleSpiDev(spiDevIdx);
+      //handleSpiDev(spiDevIdx);
 
-      flushSpi2SerialRxBuffers();
+      //lushSpi2SerialRxBuffers();
 
       flushUdpQueues();
-      flushTcpQueues();
+      //flushTcpQueues();
       //flush HTTP long file queue
 
 
@@ -165,13 +186,13 @@ void spiTask ( void *pvParameters )
     {
       arpArpIn();
     }
-    else
-    {
-      if (netstackDebug != NULL)
-      {
-        fprintf_P(netstackDebug, PSTR("Unknown packet\r\n"));
-      }
-    }
+  //else
+  //{
+  //  if (netDebug != NULL)
+  //  {
+  //    fprintf_P(netDebug, PSTR("Unknown packet type %d, length %d\r\n"), ntohs(nicState.layer2.ethHeader->type), plen);
+  //  }
+  //}
   }
 }
 

@@ -130,7 +130,9 @@ void nicRegDump(FILE *stream)            __attribute__ ((weak));
 /**
  * Save nic parameters like MAC
  */
-void saveNic(void);
+void nicSaveConfig(void);
+
+void nicLoadConfig(void);
 
 #endif
 //@}

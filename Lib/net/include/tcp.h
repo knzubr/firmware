@@ -21,8 +21,8 @@
  */
 //@{
 
-#ifndef SOCKET_H
-#define SOCKET_H
+#ifndef TCP_H
+#define TCP_H
 
 #include <stdio.h>
 #include <avr/pgmspace.h>
@@ -56,6 +56,8 @@ extern nicState_t nicState;
  */
 void setTcpDebug(FILE *stream, uint8_t level);
 #endif
+
+#error
 
 typedef enum
 {
@@ -152,5 +154,5 @@ void flushTcpQueues(void);
 
 void httpProcess(void);
 
-#endif /*SOCKET_H*/
+#endif /*TCP_H*/
 //@}

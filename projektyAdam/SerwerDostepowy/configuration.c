@@ -9,12 +9,14 @@
 
 void loadConfiguration(void)
 {
-  //eeprom_read_block(lockSensors, lockerSensorsEEP, 4*sizeof(struct lockerSensor));
+  nicLoadConfig();
+  ipLoadConfig();
+  udpLoadConfig();
 }
 
 void saveConfiguration(void)
 {
-  saveNic();
+  nicSaveConfig();
   ipSaveConfig();
   udpSaveConfig();
 }

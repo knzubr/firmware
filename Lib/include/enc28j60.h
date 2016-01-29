@@ -2,7 +2,7 @@
  * vim:sw=2:ts=2:si:et
  * @file      enc28j60.h
  * Title      : Microchip ENC28J60 Ethernet Interface Driver
- * @author    Pascal Stang, Adam Kaliszan 
+ * @author    Pascal Stang, Adam Kaliszan
  * @version   0.2
  * Copyright: GPL V2
  *
@@ -28,7 +28,6 @@
 #include "nic.h"
 #include "spiXmega.h"
 #include "hardwareConfig.h"
-#include "tcp.h"
 #include "memory_x.h"
 
 // ENC28J60 Control Registers

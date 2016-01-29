@@ -9,6 +9,7 @@
 #define ARP_DEBUG  1
 #define ICMP_DEBUG 1
 #define TCP_DEBUG  1
+#define NET_DEBUG  1
 
 /* Only one language can be available */
 #define LANG_EN 1
@@ -45,12 +46,12 @@
 
 #define MY_IP1 192
 #define MY_IP2 168
-#define MY_IP3 0
-#define MY_IP4 2
+#define MY_IP3 2
+#define MY_IP4 251
 
 #define MY_GW1 192
 #define MY_GW2 168
-#define MY_GW3 0
+#define MY_GW3 2
 #define MY_GW4 1
 
 #define MY_MASK1 255
@@ -63,8 +64,17 @@
 
 #define UDP_DST_IP1 192
 #define UDP_DST_IP2 168
-#define UDP_DST_IP3 0
-#define UDP_DST_IP4 1
+#define UDP_DST_IP3 2
+#define UDP_DST_IP4 10
+
+
+#define MAC_ADR1 0x12
+#define MAC_ADR2 0x13
+#define MAC_ADR3 0x32
+#define MAC_ADR4 0x12
+#define MAC_ADR5 0x13
+#define MAC_ADR6 0x32
+
 
 //#define NUMBER_OF_UDP_SOCK
 

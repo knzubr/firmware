@@ -1,6 +1,6 @@
 /**
- * @file ip.c 
- * @brief IP (Internet Protocol) Library. 
+ * @file ip.c
+ * @brief IP (Internet Protocol) Library.
  */
 //*****************************************************************************
 //
@@ -21,7 +21,7 @@ static uint32_t myip_eep    __attribute__((section (".eeprom"))) = ((uint32_t)MY
 static uint32_t mask_eep    __attribute__((section (".eeprom"))) = ((uint32_t)MY_MASK4 << 24) + ((uint32_t)MY_MASK3 <<16) + ((uint32_t)MY_MASK2 <<8) + MY_MASK1;
 static uint32_t defGw_eep   __attribute__((section (".eeprom"))) = ((uint32_t)MY_GW4   << 24) + ((uint32_t)MY_GW3   <<16) + ((uint32_t)MY_GW2   <<8) + MY_GW1;
 
-void ipInit(void)
+void ipLoadConfig(void)
 {
   IpMyConfig.ip      = eeprom_read_dword(&myip_eep);
   IpMyConfig.netmask = eeprom_read_dword(&mask_eep);
@@ -42,9 +42,9 @@ void ipSaveConfig(void)
 inline void netstackIPv4Process(void)
 {
 // check IP addressing, stop processing if not for me and not a broadcast
-  if( (nicState.layer3.ip->destipaddr != ipGetConfig()->ip) &&
-      (nicState.layer3.ip->destipaddr != (ipGetConfig()->ip|ipGetConfig()->netmask)) &&
-      (nicState.layer3.ip->destipaddr != 0xFFFFFFFF)) 
+  if( (nicState.layer3.ip->destipaddr != ipGetConfig()->ip) &&                                   //Różne adresy IP
+      (nicState.layer3.ip->destipaddr != (ipGetConfig()->ip | (~ipGetConfig()->netmask))) &&     //Nie jest to adres rozgłoszeniowy sieci
+      (nicState.layer3.ip->destipaddr != 0xFFFFFFFF))                                            //Nie jest to brodcast
     return;
 
 // handle ICMP packet
@@ -74,6 +74,7 @@ inline void netstackIPv4Process(void)
     netstackUDPIPProcess();
     return;
   }
+#ifdef TCP_H
   if( nicState.layer3.ip->proto == IP_PROTO_TCP )
   {
 #if IP_DEBUG
@@ -86,6 +87,7 @@ inline void netstackIPv4Process(void)
     netstackTCPIPProcess();
     return;
   }
+#endif
 #if IP_DEBUG
   if (IpMyConfig.dbgStream != NULL)
   {
@@ -116,7 +118,7 @@ void ipSetConfig(uint32_t myIp, uint32_t netmask, uint32_t gatewayIp)
 void ipSetConfigIp(uint32_t myIp)
 {
   // set local addressing
-  IpMyConfig.ip = myIp; 
+  IpMyConfig.ip = myIp;
 }
 
 void ipSetConfigMask(uint32_t netmask)
@@ -140,7 +142,7 @@ void ipSend(uint32_t dstIp, uint8_t protocol, uint16_t len)
 // make pointer to ethernet/IP header
 #if IP_DEBUG
   if (IpMyConfig.dbgStream != NULL)
-  {  
+  {
     if (IpMyConfig.dbgLevel > 2)
       fprintf_P(IpMyConfig.dbgStream, "Sending Ip packet\r\n");
   }
