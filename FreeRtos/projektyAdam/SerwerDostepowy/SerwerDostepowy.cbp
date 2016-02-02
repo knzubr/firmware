@@ -107,6 +107,28 @@
 		<Unit filename="../../Lib/spi.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../freeRtos/Source/croutine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../freeRtos/Source/include/FreeRTOS.h" />
+		<Unit filename="../../freeRtos/Source/include/StackMacros.h" />
+		<Unit filename="../../freeRtos/Source/include/croutine.h" />
+		<Unit filename="../../freeRtos/Source/include/list.h" />
+		<Unit filename="../../freeRtos/Source/include/mpu_wrappers.h" />
+		<Unit filename="../../freeRtos/Source/include/portable.h" />
+		<Unit filename="../../freeRtos/Source/include/projdefs.h" />
+		<Unit filename="../../freeRtos/Source/include/queue.h" />
+		<Unit filename="../../freeRtos/Source/include/semphr.h" />
+		<Unit filename="../../freeRtos/Source/include/task.h" />
+		<Unit filename="../../freeRtos/Source/list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../freeRtos/Source/queue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../freeRtos/Source/tasks.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="FreeRTOSConfig.h" />
 		<Unit filename="Makefile" />
 		<Unit filename="avr_compiler.h" />

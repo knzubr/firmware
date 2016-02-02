@@ -69,6 +69,7 @@ xTaskHandle xHandleVTY_Rs1;
 xTaskHandle xHandleEnc;
 
 xTaskHandle xHandleXpReceiver;
+xTaskHandle xHandleXpTransmitter;
 
 
 void initExternalMem(void)
@@ -150,10 +151,10 @@ portSHORT main( void )
   //initQueueStream(&udpStream, &udpBuffers, udpSocket->Rx, udpSocket->Tx);
   //VtyInit(CLIStateSerialUdp, &udpStream);
 
-  xTaskCreate(encTask,              NULL /*"ENC"    */, STACK_SIZE_ENC,       NULL,                                   0, &xHandleEnc);
+  xTaskCreate(spiTask,              NULL /*"ENC"    */, STACK_SIZE_ENC,       NULL,                                   0, &xHandleEnc);
   xTaskCreate(vTaskVtyRs1,          NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialRs1),            1, &xHandleVTY_Rs1);
-//xTaskCreate(XpNetReceiverTask,    NULL /*"ENC"    */, 128,                  NULL,                                   0, &xHandleXpReceiver);
-  xTaskCreate(XpNetTransmitterTask, NULL /*"nTX"    */, 128,                  NULL,                                   0, &xHandleXpReceiver);
+  xTaskCreate(XpNetReceiverTask,    NULL /*"ENC"    */, 128,                  NULL,                                   0, &xHandleXpReceiver);
+  xTaskCreate(XpNetTransmitterTask, NULL /*"nTX"    */, 128,                  NULL,                                   0, &xHandleXpTransmitter);
 //xTaskCreate(vTaskVTYsocket, NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUdp),            1, &xHandleVTY_UDP);
 
   vTaskStartScheduler();
