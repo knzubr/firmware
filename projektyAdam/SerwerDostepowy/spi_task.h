@@ -46,15 +46,12 @@ enum REC_STATE
     ST_CRC_HI
 } ;
 
-void encTask ( void *pvParameters );
+void spiTask ( void *pvParameters );
 void XpNetReceiverTask ( void *pvParameters );
 void XpNetTransmitterTask ( void *pvParameters );
 
 void handleSpiDev(uint8_t spiDevNo);
 void initQeuesSpi2Serial(void);
-
-void flushSpi2SerialRxBuffers(void);
-
 
 /** Format wiadomosci spi
 Bajt danych odebrany przez porty szeregowych wsyłany jest jako 2 bajty przez SPI. Pierwszy bajt zawiera bity tanych 3-0, natomiast drugi bajt bity danych 7-4. Istotna jest kolejność
@@ -74,10 +71,19 @@ Format rozkazu
  * 4    | portNo
  * 3-0  | data bits
 
-Pusta ramka
- 0xCF
+Pusta ramka gdy:
+ - slave wysyła 0xCF
+ - master wysyłą 0x8F
 
  */
 
+#define POWER_OFF 0xFE
+#define POWER_ON  0xFF
+
+
+/** Format wiadomości UDP
+ * 1 bajt Sync - wartość 0xA5
+ *
+ */
 
 #endif // SPI_TASK_H
