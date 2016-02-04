@@ -35,6 +35,10 @@ void setNetDebug(FILE *stream, uint8_t level);
 extern xQueueHandle xSpi2SerialTx[];
 extern xQueueHandle xSpi2SerialRx[];
 
+extern uint8_t NoOfSerialPorts;
+extern uint8_t NoOfSpiSlaves;
+
+
 
 enum REC_STATE
 {

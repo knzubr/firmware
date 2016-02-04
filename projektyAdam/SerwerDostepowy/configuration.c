@@ -9,16 +9,32 @@ uint32_t udpIpDst_eep   __attribute__((section (".eeprom"))) = ((uint32_t)UDP_DS
 uint16_t udpPortDstEep  __attribute__((section (".eeprom"))) = HTONS(UDP_DST_PORT);
 uint16_t udpPortSrcEep  __attribute__((section (".eeprom"))) = HTONS(UDP_SRC_PORT);
 
-void loadConfiguration(void)
+static uint8_t  NoOfSerialPortsEep __attribute__((section (".eeprom"))) = 8;//HTONS(UDP_SRC_PORT);
+
+
+void loadConfiguration()
 {
   nicLoadConfig();
   ipLoadConfig();
   udpLoadConfig();
+  spiLoadConfig();
 }
 
-void saveConfiguration(void)
+void saveConfiguration()
 {
   nicSaveConfig();
   ipSaveConfig();
   udpSaveConfig();
+  spiSaveConfig();
+}
+
+void spiLoadConfig()
+{
+  NoOfSerialPorts       = eeprom_read_byte(&NoOfSerialPortsEep);
+  NoOfSpiSlaves         = (NoOfSerialPorts+1)>>1;
+}
+
+void spiSaveConfig()
+{
+  eeprom_update_byte(&NoOfSerialPortsEep,  NoOfSerialPorts);
 }

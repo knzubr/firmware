@@ -181,12 +181,11 @@ void spiTask ( void *pvParameters )
     {
       handleSpiDev(spiDevIdx);
 
-      //flushSpi2SerialRxBuffers();
+      spiDevIdx++;
+      if (spiDevIdx == NoOfSpiSlaves)
+        spiDevIdx = 0; //spiDevIdx &= 0x07;
 
       flushUdpQueues();
-
-      //spiDevIdx++;
-      //spiDevIdx &= 0x07;
       continue;
     }
 
@@ -279,7 +278,7 @@ void handleSpiDev(uint8_t spiDevNo)
 #define SPI_TRANSMISSION(BUFNO)              \
   {                                          \
     tmpDta = spiSend(spiTxbuffer##BUFNO[i]); \
-    if ((tmpDta & 0xCF) == 0xCF)                      \
+    if ((tmpDta & 0xC0) == 0xC0)             \
     {                                        \
         isDataOnSlave = 0;                   \
         continue;                            \
@@ -299,26 +298,26 @@ void handleSpiDev(uint8_t spiDevNo)
   for (i=0; i<bufTx1_len; i++)
     SPI_TRANSMISSION(1)
 
-//  spiTxbuffer0[i] = 0x8F;
-//  while(isDataOnSlave)
-//    SPI_TRANSMISSION(0)
+  spiTxbuffer0[i] = 0x8F;
+  while(isDataOnSlave)
+    SPI_TRANSMISSION(0)
 #undef SPI_TRANSMISSION
   spiDisableDev(spiDevNo);
 
 
   ///Przetwarzanie danych odebranych z SPI i umieszczanie ich w odpowiednim buforze
-//  qeueNo = 2*spiDevNo;
-//  for (i=0; i<bufRx0_len; i+=2)
-//  {
-//      uint8_t tmpValue = ((spiRxbuffer0[i] & 0x0F) | ((spiRxbuffer0[i+1]<<4) & 0xF0));
-//      xQueueSend(xSpi2SerialRx[qeueNo], &tmpValue, 0);
-//  }
-//  qeueNo++;
-//  for (i=0; i<bufRx1_len; i+=2)
-//  {
-//      uint8_t tmpValue = ((spiRxbuffer1[i] & 0x0F) | ((spiRxbuffer1[i+1]<<4) & 0xF0));
-//      xQueueSend(xSpi2SerialRx[qeueNo], &tmpValue, 0);
-//  }
+  qeueNo = 2*spiDevNo;
+  for (i=0; i<bufRx0_len; i+=2)
+  {
+      uint8_t tmpValue = ((spiRxbuffer0[i] & 0x0F) | ((spiRxbuffer0[i+1]<<4) & 0xF0));
+      xQueueSend(xSpi2SerialRx[qeueNo], &tmpValue, 0);
+  }
+  qeueNo++;
+  for (i=0; i<bufRx1_len; i+=2)
+  {
+      uint8_t tmpValue = ((spiRxbuffer1[i] & 0x0F) | ((spiRxbuffer1[i+1]<<4) & 0xF0));
+      xQueueSend(xSpi2SerialRx[qeueNo], &tmpValue, 0);
+  }
 }
 
 void initQeuesSpi2Serial()
