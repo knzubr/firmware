@@ -60,7 +60,6 @@ Bajt danych odebrany przez porty szeregowych wsyłany jest jako 2 bajty przez SP
  * 7, 6 | 0x dane, 10 pusta ramka 11 rozkaz,
 
 Format danych
- * 6    |
  * 5    | portNo
  * 4    | 1 in data are stored bits 7-4, 0 in data are stored bits 3-0
  * 3-0  | data bits

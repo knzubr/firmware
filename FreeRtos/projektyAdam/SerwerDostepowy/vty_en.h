@@ -5,17 +5,6 @@
 // *************************** Error Strings *******************************************************
 
 const char errorOK[]                                   PROGMEM = "All OK\r\n";
-const char errorNoFile[]                               PROGMEM = "No File\r\n";
-const char errorxModemFrameStartTimeout[]              PROGMEM = "\r\n";
-const char errorxModemByteSendTimeout[]                PROGMEM = "\r\n";
-const char errorxModemWrongFrameNo[]                   PROGMEM = "\r\n";
-const char errorxModemFrameFrameNoCorrectionNotMatch[] PROGMEM = "\r\n";
-const char errorxModemFrameCrc[]                       PROGMEM = "xModem CRC error\r\n";
-const char errorxModemRemoteSideCan[]                  PROGMEM = "Remote side cancelled at frame no %d\r\n";
-const char errorxModemUnknownResponse[]                PROGMEM = "xModem unknown response 0x%x\r\n";
-const char errorNoRemoteDevice[]                       PROGMEM = "Device %d is not responding (%d)\r\n";
-const char errorBootloaderNotResponding[]              PROGMEM = "Bootloader is not responding\r\n";
-const char errorOpenFile[]                             PROGMEM = "Can't open file %s\r\n";
 
 // *************************** Message Strings *****************************************************
 
@@ -32,21 +21,6 @@ const char statusIpStr[]               PROGMEM = "  IP address      : ";
 const char statusIpMaskStr[]           PROGMEM = "  mask            : ";
 const char statusIpGwStr[]             PROGMEM = "  gateway         : ";
 
-const char statusRs485listStr[]        PROGMEM = "Detected RS 485 devices:\r\n";
-const char statusNoRs485Dev[]          PROGMEM = "  Can't find any device\r\n";
-
-const char statusLockerSensorsStr[]    PROGMEM = "Locker sensors states:\r\n";
-const char statusLockerSensorsDisStr[] PROGMEM = "  Locker sensors disabled\r\n";
-
-const char editRamFileIntroStr[]       PROGMEM = "Writing to file. Press CTRL+C to quit\r\n";
-const char readRamFIleLenStr[]         PROGMEM = "File length: %d\r\n";
-
-const char xwyslijStartStr[]           PROGMEM = "Xmodem: Transmission start\r\n";
-
-const char movingCurtainUpStr[]        PROGMEM = "Podnoszenie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
-const char movingCurtainDownStr[]      PROGMEM = "Opuszczanie rolety\r\n\tsterownik %d\r\n\troleta    %d\r\n";
-const char movingCurtainPosStr[]       PROGMEM = "\tpozycja   %d\r\n";
-
 const char debugEnabledInfoStr[]       PROGMEM = "Enabled %s debug\r\n";
 const char debugDisabledInfoStr[]      PROGMEM = "Disabled %s debug\r\n";
 
@@ -61,7 +35,9 @@ const char cmd_net_dbg[]      PROGMEM = "debug";            const char cmd_help_
 const char cmd_net_test[]     PROGMEM = "ntest";            const char cmd_help_net_test[]     PROGMEM = "[serialNo] {msg} forward fake message from serial to net";
 const char cmd_rs_test[]      PROGMEM = "rtest";            const char cmd_help_rs_test[]      PROGMEM = "[serialNo] {msg} forward fake message from net to serial";
 
-const char cmd_rping[]        PROGMEM = "rping";            const char cmd_help_rping[]        PROGMEM = "[Device no] Send ping to Rs485 device";
+
+const char cmd_res_sl[]       PROGMEM = "reset";            const char cmd_help_res_sl[]       PROGMEM = "Restart slave devices";
+
 const char cmd_ping[]         PROGMEM = "ping";             const char cmd_help_ping[]         PROGMEM = "[A1] [A2] [A3] [A4] Sends ping throught ethernet";
 const char cmd_xRec[]         PROGMEM = "xrec";             const char cmd_help_xRec[]         PROGMEM = "[file name] receive file using xModem";
 const char cmd_xSend[]        PROGMEM = "xsend";            const char cmd_help_xSend[]        PROGMEM = "[file name] send file using xModem";

@@ -16,6 +16,10 @@
 #if UDP_DEBUG
 #endif
 
+extern uint32_t udpIpDst_eep   __attribute__((section (".eeprom")));
+extern uint16_t udpPortDstEep  __attribute__((section (".eeprom")));
+extern uint16_t udpPortSrcEep  __attribute__((section (".eeprom")));
+
 extern struct ipConfig  IpMyConfig;
 extern nicState_t       nicState;
 

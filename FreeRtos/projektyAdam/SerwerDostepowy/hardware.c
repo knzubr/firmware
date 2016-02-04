@@ -18,21 +18,21 @@ void hardwareInit(void)
   portEXIT_CRITICAL();
 
   DDRB = 0xF7;
-  PORTB = 0xD1;
+  PORTB = 0xF1;
   /*
    0 - Sl_RST
    1 - SCK
    2 - MOSI
    3 - MISO
    4 - External SPI ASR 4
-   5 - External SPI ASR 5 (DS1305)     0 - off; 1 - on
-   6 - External SPI ASR 6 (MCP3008)    0 - on;  1 - off
-   7 - External SPI ASR 7 (MPC23S17)   0 - on;  1 - off
+   5 - External SPI ASR 5
+   6 - External SPI ASR 6
+   7 - External SPI ASR 7
   */
 
   //DDRC = 0x00;  //External Memory
 
-  DDRD = 0x00;
+  DDRD = 0xF0;
   /*
    0 - SCL
    1 - SDA
@@ -166,6 +166,7 @@ void disableAllSpiDevices(void)
 void spiEnableEnc28j60(void)
 {
   spiTake();
+//SPSR |= (1<<SPI2X);
 #if ENC_SPI_CS_EN_MASK_OR != 0
   ENC_SPI_CS_PORT |= ENC_SPI_CS_EN_MASK_OR;
 #endif
@@ -182,6 +183,7 @@ void spiDisableEnc28j60(void)
 #if ENC_SPI_CS_EN_MASK_AND != 0xFF
   ENC_SPI_CS_PORT |= (~ENC_SPI_CS_EN_MASK_AND);
 #endif
+//SPSR = 0;
   spiGive();
 }
 

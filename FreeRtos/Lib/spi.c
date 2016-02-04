@@ -14,8 +14,8 @@ void spiInit(void (*disableAllSpiDevicesFun)(void))
   portENTER_CRITICAL();
   vSemaphoreCreateBinary(xSemaphoreSpiSS);
 
-  SPCR  = (1<<SPE)|(1<<MSTR)|(1<<SPIE);  //TODO Adam: użyć odpowiednich nazw rejestrów
-  SPSR |= (1<<SPI2X);
+  SPCR  = (1<<SPE)|(1<<MSTR)|(1<<SPIE)|(1<<SPR0) ;  //TODO Adam: użyć odpowiednich nazw rejestrów
+  //SPSR |= (1<<SPI2X);
 
   portEXIT_CRITICAL();
 
