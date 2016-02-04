@@ -46,12 +46,12 @@
 
 #define MY_IP1 192
 #define MY_IP2 168
-#define MY_IP3 2
+#define MY_IP3 0
 #define MY_IP4 251
 
 #define MY_GW1 192
 #define MY_GW2 168
-#define MY_GW3 2
+#define MY_GW3 0
 #define MY_GW4 1
 
 #define MY_MASK1 255
@@ -64,8 +64,8 @@
 
 #define UDP_DST_IP1 192
 #define UDP_DST_IP2 168
-#define UDP_DST_IP3 2
-#define UDP_DST_IP4 10
+#define UDP_DST_IP3 0
+#define UDP_DST_IP4 20
 
 
 #define MAC_ADR1 0x12

@@ -141,20 +141,24 @@
 #define disableSpiPORTA_OR           0x00
 #define disableSpiPORTA_AND          0xFF
 
-//PORT B: SPICS na PB4-PB7
-// PB4 - brak
-// PB5 - DS1305     0 - off, 1 - on
-// PB6 - MCP3008    0 - on.  1 - off
-// PB7 - MCP23S17   0 - on,  1 - off
-#define disableSpiPORTB_OR           0xC0
-#define disableSpiPORTB_AND          0xDF
+//PORT B:
+// PB4 - Sl 3, CPU 1
+// PB5 - SL 3, CPU 2
+// PB6 - SL 4, CPU 1
+// PB7 - SL 4, CPU 2
+#define disableSpiPORTB_OR           0xF0
+#define disableSpiPORTB_AND          0xFF
 
 //PORT C: Zewnętrzna pamięć
 #define disableSpiPORTC_OR           0x00
 #define disableSpiPORTC_AND          0xFF
 
-//PORD D: brak SPI SS
-#define disableSpiPORTD_OR           0x00
+//PORD D:
+// PD4 - Sl 1, CPU 1
+// PD5 - SL 1, CPU 2
+// PD6 - SL 2, CPU 1
+// PD7 - SL 2, CPU 2
+#define disableSpiPORTD_OR           0xF0
 #define disableSpiPORTD_AND          0xFF
 
 //PORT E
