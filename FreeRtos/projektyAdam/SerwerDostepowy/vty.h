@@ -51,12 +51,13 @@ void printStatus(FILE *stream);
 extern volatile uint8_t temperature;
 extern volatile uint8_t voltage;
 
-extern xQueueHandle           xRs485Rec;
-extern xQueueHandle           xRs485Tx;
+
+
 
 extern struct Enc28j60_config Enc28j60_global;
 
-extern struct sterRolet       *rollers;
+extern uint8_t NoOfSerialPorts;
+extern uint8_t NoOfSpiSlaves;
 
 enum errorType
 {

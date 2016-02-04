@@ -8,10 +8,15 @@
 #include "nic.h"
 #include "udp.h"
 
+uint8_t NoOfSerialPorts;
+uint8_t NoOfSpiSlaves;
+
 extern struct lockerSensor *lockSensors;
 
 void loadConfiguration(void);
 void saveConfiguration(void);
 
+void spiLoadConfig(void);
+void spiSaveConfig(void);
 
 #endif

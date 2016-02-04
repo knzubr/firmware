@@ -25,7 +25,6 @@ static cliExRes_t helpFunction           (cmdState_t *state);
 static cliExRes_t resetSlaves            (cmdState_t *state);
 static cliExRes_t statusFunction         (cmdState_t *state);
 static cliExRes_t statusEncFunction      (cmdState_t *state);
-static cliExRes_t pingFunction           (cmdState_t *state);
 
 static cliExRes_t debugFunction          (cmdState_t *state);
 
@@ -39,6 +38,7 @@ static cliExRes_t setIpGwFunction        (cmdState_t *state);
 static cliExRes_t setUdpFunction         (cmdState_t *state);
 
 static cliExRes_t setMacAddrFunction     (cmdState_t *state);
+static cliExRes_t setNoOfSerialPorts     (cmdState_t *state);
 
 static cliExRes_t saveConfigFunction     (cmdState_t *state);
 
@@ -60,7 +60,6 @@ const command_t cmdListNormal[] PROGMEM =
 {
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
-  {cmd_ping,      cmd_help_ping,      pingFunction},
   {cmd_enable,    cmd_help_enable,    enableFunction},
   {cmd_net_test,  cmd_help_net_test,  sentToUdpTestFunction},
   {cmd_rs_test,   cmd_help_rs_test,   sentToSpiRsTestFunction},
@@ -76,7 +75,6 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_net_dbg,   cmd_help_net_dbg,   debugFunction},
   {cmd_net_test,  cmd_help_net_test,  sentToUdpTestFunction},
   {cmd_rs_test,   cmd_help_rs_test,   sentToSpiRsTestFunction},
-  {cmd_ping,      cmd_help_ping,      pingFunction},
   {cmd_res_sl,    cmd_help_res_sl,    resetSlaves},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {cmd_configure, cmd_help_configure, configureModeFunction},
@@ -89,6 +87,7 @@ const command_t cmdListConfigure[] PROGMEM =
   {cmd_status,       cmd_help_status,       statusFunction},
   {cmd_conf_ip,      cmd_help_conf_ip,      setIpFunction},
   {cmd_conf_ip_mask, cmd_conf_ip_mask_help, setIpMaskFunction},
+  {cmd_conf_NoOfRs,  cmd_help_conf_NoOfRs,  setNoOfSerialPorts},
   {cmd_conf_ip_gw,   cmd_conf_ip_gw_help,   setIpGwFunction},
   {cmd_conf_udp,     cmd_help_conf_udp,     setUdpFunction},
   {cmd_conf_mac,     cmd_help_conf_mac,     setMacAddrFunction},
@@ -176,6 +175,8 @@ void printStatus(FILE *stream)
   fprintf_P(stream, PSTR("\r\n"));
 
   udpPrintStatus(stream);
+
+  fprintf_P(stream, PSTR("\r\nNumber of serial ports %d\r\n"), NoOfSerialPorts);
 //  arpPrintTable(stream);
 }
 
@@ -326,24 +327,20 @@ static cliExRes_t setMacAddrFunction(cmdState_t *state)
   return OK_SILENT;
 }
 
-static cliExRes_t helpFunction(cmdState_t *state)
+static cliExRes_t setNoOfSerialPorts(cmdState_t *state)
 {
-  cmdPrintHelp(state);
+  if (state->argc < 2)
+    return SYNTAX_ERROR;
+
+  NoOfSerialPorts = cmdlineGetArgInt(1, state);
+  NoOfSpiSlaves = (NoOfSerialPorts+1)>>1;
+
   return OK_SILENT;
 }
 
-static cliExRes_t pingFunction(cmdState_t *state)
+static cliExRes_t helpFunction(cmdState_t *state)
 {
-  if (state->argc < 4)
-    return SYNTAX_ERROR;
-
-  //uint8_t ip[4];
-  //ip[0] = (uint8_t)(cmdlineGetArgInt(1, state));
-  //ip[1] = (uint8_t)(cmdlineGetArgInt(2, state));
-  //ip[2] = (uint8_t)(cmdlineGetArgInt(3, state));
-  //ip[3] = (uint8_t)(cmdlineGetArgInt(4, state));
-  //Ipv4Ping(*((uint32_t *)(ip)));
-
+  cmdPrintHelp(state);
   return OK_SILENT;
 }
 
@@ -391,14 +388,6 @@ static cliExRes_t sentToSpiRsTestFunction(cmdState_t *state)
   if (rsNo >= 16)
     return SYNTAX_ERROR;
 
-
-  uint8_t devNo = rsNo>>1;
-
-  uint8_t spiDtaLo;
-  uint8_t spiDtaHi;
-
-  //spiEnableDev(devNo);
-
   uint8_t tmp;
 
   if (state->argc >= 2)
@@ -407,15 +396,6 @@ static cliExRes_t sentToSpiRsTestFunction(cmdState_t *state)
     while(*msg != '\0')
     {
       xQueueSend(xSpi2SerialTx[rsNo], msg, 0);
-      //spiDtaLo = ( (*msg)     & 0x0F);
-      //spiDtaHi = (((*msg)>>4) & 0x0F) | 0x10;
-      //if (rsNo & 0x01)
-      //{
-      //    spiDtaLo |= 0x20;
-      //    spiDtaHi |= 0x20;
-      //}
-      //spiSend(spiDtaLo);
-      //spiSend(spiDtaHi);
       msg++;
     }
   }
@@ -423,26 +403,6 @@ static cliExRes_t sentToSpiRsTestFunction(cmdState_t *state)
   xQueueSend(xSpi2SerialTx[rsNo], &tmp, 0);
   tmp = '\n';
   xQueueSend(xSpi2SerialTx[rsNo], &tmp, 0);
-  //spiDtaLo = ('\r' & 0x0F);
-  //spiDtaHi = (('\r' >> 4) & 0x0F) | 0x10;
-  //if (rsNo & 0x01)
-  //{
-  //  spiDtaLo |= 0x20;
-  //  spiDtaHi |= 0x20;
-  //}
-  //spiSend(spiDtaLo);
-  //spiSend(spiDtaHi);
-  //spiDtaLo = ('\n' & 0x0F);
-  //spiDtaHi = (('\n' >> 4) & 0x0F) | 0x10;
-  //if (rsNo & 0x01)
-  //{
-  //  spiDtaLo |= 0x20;
-  //  spiDtaHi |= 0x20;
-  //}
-  //spiSend(spiDtaLo);
-  //spiSend(spiDtaHi);
-
-  //spiDisableDev(devNo);
 
   return OK_SILENT;
 }

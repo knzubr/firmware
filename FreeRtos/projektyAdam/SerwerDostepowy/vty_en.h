@@ -63,6 +63,7 @@ const char cmd_conf_udp[]     PROGMEM = "udp";              const char cmd_help_
 const char cmd_conf_ip_mask[] PROGMEM = "mask";             const char cmd_conf_ip_mask_help[] PROGMEM = "[mask] set mask";
 const char cmd_conf_ip_gw[]   PROGMEM = "gw";               const char cmd_conf_ip_gw_help[]   PROGMEM = "[A1] [A2] [A3] [A4] set default gateway";
 const char cmd_conf_mac[]     PROGMEM = "mac";              const char cmd_help_conf_mac[]     PROGMEM = "[A1] [A2] [A3] [A4] [A5] [A6] set MAC address";
+const char cmd_conf_NoOfRs[]  PROGMEM = "maxser";           const char cmd_help_conf_NoOfRs[]  PROGMEM = "Maximum number of serial port [0-15]";
 const char cmd_conf_save[]    PROGMEM = "save";             const char cmd_help_conf_save[]    PROGMEM = "Save configuration";
 const char cmd_ustawR[]       PROGMEM = "setr";             const char cmd_help_ustawR[]       PROGMEM = "[value] set resistance value";
 
