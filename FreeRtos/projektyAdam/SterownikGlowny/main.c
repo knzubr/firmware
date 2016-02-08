@@ -102,7 +102,7 @@ void initExternalMem(void)
     uint16_t stopAddr = startAddr + 0xFF;
 
     for (addr = startAddr; addr <= stopAddr; addr++)
-        *((uint8_t *)) = (uint8_t)((addr>>1) & 0xFF);
+        *((uint8_t *) addr) = (uint8_t)((addr>>1) & 0xFF);
 
     uint8_t isOK=1;
     for (addr = startAddr; addr <= stopAddr; addr++)

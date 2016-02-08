@@ -57,8 +57,6 @@ extern nicState_t nicState;
 void setTcpDebug(FILE *stream, uint8_t level);
 #endif
 
-#error
-
 typedef enum
 {
   CLOSED,
