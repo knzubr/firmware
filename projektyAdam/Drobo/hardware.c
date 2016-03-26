@@ -15,82 +15,45 @@ xQueueHandle      xSpiRxEnc;
 //#include<avr/iox128a1.h>
 void hardwareInit(void)
 {
-  //DDRA = 0x00;  //External Memory
-
- //DDRA = 0x00;  //External Memory
-  PORTA.DIR=0x03;
+  /// PORT A MOSTKI H
+  //0 - AIN2_A (18) 4 - AIN2_B (+AIN2_A)
+  //1 - AIN1_A (17) 5 - AIN1_B (+AIN1_A)
+  //2 - BIN1_A (20) 6 - BIN1_B (+BIN1_A)
+  //3 - BIN2_A (19) 7 - BIN2_B (+BIN2_A)
+  PORTA.DIR=0xFF;
   PORTA.OUT=0x00;
-/** Port B
- * 7   - JTAG TD0
- * 6   - JTAG TCK
- * 5   - JTAG TDI
- * 4   - JTAG TMS
- * 5:2 - LCD D4:D7
- * 0 - ENC28J60 CS
- */
-  PORTB.DIR=0x01;
 
-/**
- * Port C
- * 7 - Rs485 TXD kamery
- * 6 - Rs485 RXD kamery
- * 5 - Rs485 DE/RE włączanie nadajnika
- */
-  PORTC.DIR=0xA0;
+  ///PORT B - Złącze 20 pin
+  //0 - 13          2 - 14
+  //1 - 14          3 - 15
+  PORTB.DIR=0x00;
+  PORTB.OUT=0x00;
 
-/* PORTD
-7- SD SCK
-6- SD S0
-5- SD SI
-4- ZL SPI SLRST
-3- FT232 TXT-WY
-2- FT232 RXT-WE
-1- ENC28J60 RST
-0- ENC28J60 INT
-*/
-  PORTD.DIR=0xBA;
-/* PORTE
-7:0- ZL SPI A7:A0
-*/
-  PORTE.DIR=0xFF;
+  ///PORT C
+  // 0 I2C      // 4 UART X8 RxD
+  // 1 I2C      // 5 UART X8 TxD
+  // 2 PWMA     // 6 UART radio RxD
+  // 3 PWMB     // 7 UART radio TxD
+  PORTC.DIR=0x0C;
+  PORTC.OUT=0x00;
 
-/* PORTF
-7- INT
-6- INT
-5- RS485 DE/RE
-4- INT
-3- RS485 TXD
-2- RS485 RXD
-*/
-  PORTF.DIR=0x28;
+  ///PORT D
+  // 0 Radio set/reset  4 Sim900 PWR key
+  // 1 Sim900 reset     5 SPI 1
+  // 2 Sim900 RxD       6 SPI 2
+  // 3 Sim900 TxD       7 SPI 3
+  PORTD.DIR=0x31;
+  PORTD.OUT=0x00;
 
-/* PORTH
-6:4- EBI A18:A16
-2-   EBI ALE
-1-   EBI RE
-0-   EBI WE
-*/
-  PORTH.DIR=0xFF;
+  /// PORT E
+  // 0 RPI 3v3          2 RPI RxD
+  // 1 RPI 5V           3 RPI TxD
+  PORTE.DIR=0x0B;
+  PORTD.OUT=0x00;
 
-/**
- * PORTJ
- * 7:0- EBI D7:D0/A0:A7
- */
-  PORTJ.DIR=0xFF;
-
-/**
- * PORTK
- * 7:0- EBI A8:A15
- */
-  PORTK.DIR=0xFF;
-}
-
-void Rs485TxStop_2(void)
-{
-  PORTC.OUT &= 0xDF;
-}
-
-void Rs485TxStart_2(void)
-{
-  PORTC.OUT |= 0x20;
+  /// PORT R
+  // 0 SIM900 PWR HW
+  // 1 MOSTEK H Stand by
+  PORTR.DIR=0x03;
+  PORTR.OUT=0x00;
 }
