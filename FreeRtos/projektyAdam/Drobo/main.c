@@ -50,26 +50,14 @@ uint8_t timer100Hz = 0;
 
 uint8_t translateTable[256];
 
-
 xQueueHandle xVtyTx;
 xQueueHandle xVtyRec;
 
-xQueueHandle xRs485_1_Rec;
-//xQueueHandle xRs485_2_Rec;   //To nie jest potrzebne
+xQueueHandle xSim900Rec;
+xQueueHandle xSim900Tx;
 
-//xQueueHandle xRs485_1_Tx;    //To nie jest potrzebne
-xQueueHandle xRs485_2_Tx;
-
-
-xQueueHandle pelcoMessages;
-
-
-
-xQueueHandle xLCDrec;
-
-
-volatile uint8_t temperature;
-volatile uint8_t voltage;
+xQueueHandle xRadioTx;
+xQueueHandle xRadioRec;
 
 
 void vApplicationIdleHook( void );
@@ -80,9 +68,8 @@ void vApplicationIdleHook( void );
 void vApplicationTickHook( void );
 
 xTaskHandle xHandleVTY_USB;
-xTaskHandle xHandleTranslator;
-xTaskHandle xHandleUSB;
-xTaskHandle xHandleLCD;
+
+//xTaskHandle xHandleTranslator;
 
 /**
   * konfiguracja zegara. Zegar wewnętrzny 32 MHz
@@ -109,7 +96,7 @@ void my_init_clock(void)
   CLK.PSCTRL=(CLK.PSCTRL & (~(CLK_PSADIV_gm | CLK_PSBCDIV1_bm | CLK_PSBCDIV0_bm))) | CLK_PSADIV_1_gc | CLK_PSBCDIV_1_1_gc;
 
   // Internal 32 MHz RC osc. calibration reference clock source: 32.768 kHz Internal Osc.
-  OSC.DFLLCTRL&= ~(OSC_RC32MCREF_bm | OSC_RC2MCREF_bm);
+  //OSC.DFLLCTRL&= ~(OSC_RC32MCREF_bm | OSC_RC2MCREF_bm);
   // Enable the autocalibration of the internal 32 MHz RC oscillator
   DFLLRC32M.CTRL|=DFLL_ENABLE_bm;
 
@@ -126,20 +113,6 @@ void my_init_clock(void)
 
   // Peripheral Clock output: Disabled
   PORTCFG.CLKEVOUT=(PORTCFG.CLKEVOUT & (~PORTCFG_CLKOUT_gm)) | PORTCFG_CLKOUT_OFF_gc;
-}
-
-void initExternalMem(void)
-{
-  //MCUCR |= _BV(SRE);          //Włączenie pamięci zewnętrznej
-  //MCUCR |= 0x0E;
-  PORTH.DIR = 0xFF;
-  PORTK.DIR = 0xFF;
-  PORTJ.DIR = 0x00;
-
-  EBI.CTRL=0x01;
-  EBI.CS3.CTRLB=EBI_CS_SRWS_7CLK_gc;
-  EBI.CS3.BASEADDR= (((uint32_t) 0x20000UL)>>8) & (0xFFFF<<(EBI_CS_SRWS_7CLK_gc>>2));//0x20000UL;
-  EBI.CS3.CTRLA=EBI_CS_ASIZE_512B_gc|EBI_CS_MODE_LPC_gc;
 }
 
 cmdState_t *CLIStateSerialUsb;
@@ -167,7 +140,6 @@ streamBuffers_t udpBuffers;
 portSHORT main( void )
 {
   hardwareInit();
-  pelcoInit();
 
   xSerialPortInitMinimal(); //Przerobić dodać drigi Rs485
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
@@ -182,8 +154,6 @@ portSHORT main( void )
   sei();
 
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"            */, STACK_SIZE_VTY,         (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
-  xTaskCreate(vTaskPelco,     NULL /*"VTY"            */, STACK_SIZE_VTY,         NULL,                                   1, &xHandleVTY_USB);
-  //xTaskCreate(translatorTask, NULL /*"konwerter Rs485"*/, STACK_SIZE_TRANSLATOR,   NULL,                                  1, &xHandleTranslator);
 
   vTaskStartScheduler();
 

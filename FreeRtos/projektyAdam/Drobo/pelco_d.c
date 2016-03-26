@@ -40,7 +40,7 @@ ISR(USARTF0_RXC_vect)
 
   uint8_t value;
 
-  value = USARTF0.DATA;
+  value = USARTD0.DATA;
 
   xHigherPriorityTaskWoken = pdFALSE;
 

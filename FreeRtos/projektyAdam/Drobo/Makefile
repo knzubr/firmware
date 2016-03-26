@@ -31,7 +31,7 @@
 
 
 # MCU name
-MCU = atxmega128a1
+MCU = atxmega128a4u
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -59,8 +59,6 @@ hardware.c \
 vty.c \
 cli_task.c \
 lcd_task.c\
-pelco_d.c\
-$(LIB_DIR)/lcd.c \
 $(LIB_DIR)/spiXmega.c \
 $(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/ramdysk.c \
