@@ -30,8 +30,8 @@ void hardwareInit(void)
   PORTB.OUT=0x00;
 
   ///PORT C
-  // 0 I2C      // 4 UART X8 RxD
-  // 1 I2C      // 5 UART X8 TxD
+  // 0 I2C      // 4 UART VTY RxD
+  // 1 I2C      // 5 UART VTY TxD
   // 2 PWMA     // 6 UART radio RxD
   // 3 PWMB     // 7 UART radio TxD
   PORTC.DIR=0x0C;

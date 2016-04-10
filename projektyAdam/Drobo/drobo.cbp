@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="cctv" />
+		<Option title="Drobo" />
 		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="avr-gcc" />
@@ -58,8 +58,6 @@
 		</ExtraCommands>
 		<Unit filename="FreeRTOSConfig.h" />
 		<Unit filename="Makefile" />
-		<Unit filename="Rs485_prot_en.h" />
-		<Unit filename="Rs485_prot_pl.h" />
 		<Unit filename="avr_compiler.h" />
 		<Unit filename="cli_task.c">
 			<Option compilerVar="CC" />
@@ -70,9 +68,6 @@
 		</Unit>
 		<Unit filename="configuration.h" />
 		<Unit filename="ffconf.h" />
-		<Unit filename="fuse.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="hardware.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -80,27 +75,14 @@
 		<Unit filename="hardwareConfig.h" />
 		<Unit filename="hardware_en.h" />
 		<Unit filename="hardware_pl.h" />
-		<Unit filename="lcd_task.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="lcd_task.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.h" />
-		<Unit filename="netstack_task.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="netstack_task.h" />
-		<Unit filename="pelco_d.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="pelco_d.h" />
 		<Unit filename="rtc.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="rtc.h" />
-		<Unit filename="sensors_task.h" />
 		<Unit filename="serial.c">
 			<Option compilerVar="CC" />
 		</Unit>

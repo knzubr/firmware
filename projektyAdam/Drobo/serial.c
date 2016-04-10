@@ -41,12 +41,13 @@ void xSerialPortInitMinimal(void)
   //PORTD.DIRCLR = PIN2_bm; //ok
   //PORTD.OUTSET = PIN3_bm; //ok
 
-  USARTD0.CTRLA = USART_RXCINTLVL_LO_gc | USART_DREINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
-  USARTD0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
-  USARTD0.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów
+  ///VTY - USART C1
+  USARTC0.CTRLA = USART_RXCINTLVL_LO_gc | USART_DREINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
+  USARTC0.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów
   // 115200 @ 32MHz
-  USARTD0.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
-  USARTD0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
+  USARTC1.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
+  USARTC1.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
 
 
   portENTER_CRITICAL();
