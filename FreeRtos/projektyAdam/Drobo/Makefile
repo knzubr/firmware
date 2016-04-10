@@ -59,6 +59,8 @@ hardware.c \
 vty.c \
 cli_task.c \
 lcd_task.c\
+hc12.c\
+sim900.c\
 $(LIB_DIR)/spiXmega.c \
 $(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/ramdysk.c \

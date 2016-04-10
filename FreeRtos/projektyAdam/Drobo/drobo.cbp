@@ -75,6 +75,10 @@
 		<Unit filename="hardwareConfig.h" />
 		<Unit filename="hardware_en.h" />
 		<Unit filename="hardware_pl.h" />
+		<Unit filename="hc12.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hc12.h" />
 		<Unit filename="lcd_task.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
@@ -87,6 +91,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="serial.h" />
+		<Unit filename="sim900.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sim900.h" />
 		<Unit filename="softwareConfig.h" />
 		<Unit filename="vty.c">
 			<Option compilerVar="CC" />
