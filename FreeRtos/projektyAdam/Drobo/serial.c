@@ -36,18 +36,14 @@ int VtyPutChar(char c, FILE *stream)
 //#include<avr/iox128a1.h>
 void xSerialPortInitMinimal(void)
 {
-  /// Konfiguracja portu D dla USARTD0 USB
-  //PORTD.DIRSET = PIN3_bm; //ok
-  //PORTD.DIRCLR = PIN2_bm; //ok
-  //PORTD.OUTSET = PIN3_bm; //ok
+  ///VTY - USART C0
 
-  ///VTY - USART C1
-  USARTC0.CTRLA = USART_RXCINTLVL_LO_gc | USART_DREINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTC0.CTRLA = USART_RXCINTLVL_LO_gc;// | USART_DREINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
   USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
   USARTC0.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów
   // 115200 @ 32MHz
-  USARTC1.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
-  USARTC1.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
+  USARTC0.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
+  USARTC0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
 
 
   portENTER_CRITICAL();
@@ -61,13 +57,15 @@ void xSerialPortInitMinimal(void)
 
 
 /** VTY ---------------------------------------------------*/
-ISR(USARTD0_RXC_vect)
+ISR(USARTC0_RXC_vect)
 {
-  /*
+
   static signed portBASE_TYPE xHigherPriorityTaskWoken;
   signed portCHAR cChar;
 
-  cChar = USARTD0.DATA;
+  cChar = USARTC0.DATA;
+  //return;
+  //USARTC0.DATA = cChar+1;
 
   xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(xVtyRec, &cChar, &xHigherPriorityTaskWoken);
@@ -75,7 +73,6 @@ ISR(USARTD0_RXC_vect)
   {
     taskYIELD();
   }
-  */
 }
 
 void uartVtySendByte(uint8_t data)
@@ -84,13 +81,13 @@ void uartVtySendByte(uint8_t data)
   vInterruptVtyOn();
 }
 
-ISR(USARTD0_DRE_vect) // USART1_UDRE_vect
+ISR(USARTC0_DRE_vect) // USART1_UDRE_vect
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken;
   static char data;
   if(xQueueReceiveFromISR(xVtyTx, &data, &xHigherPriorityTaskWoken) == pdTRUE)
   {
-    USARTD0.DATA = data;
+    USARTC0.DATA = data;
   }
   else
   {
@@ -106,14 +103,14 @@ ISR(USARTD0_DRE_vect) // USART1_UDRE_vect
 
 /** Obsługa porty do którego podłączone są kamery */
 
-ISR(USARTC1_TXC_vect)
-{
+//ISR(USARTC1_TXC_vect)
+//{
   //if (!vIsInterruptRs485_2_On())
   //  Rs485TxStop_2();
-}
+//}
 
-ISR(USARTC1_DRE_vect)
-{
+//ISR(USARTC1_DRE_vect)
+//{
 /*  static signed portBASE_TYPE xHigherPriorityTaskWoken;
   static char data;
   if(xQueueReceiveFromISR(xRs485_2_Tx, (void *)(&data), &xHigherPriorityTaskWoken) == pdTRUE)
@@ -131,6 +128,6 @@ ISR(USARTC1_DRE_vect)
     taskYIELD();
   }
   */
-}
+//}
 
 

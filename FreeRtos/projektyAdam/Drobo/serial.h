@@ -27,7 +27,7 @@
  * Włączenie przerwania pusty bufor nadawczy dla VTY
  */
 
-#define vIsInterruptVtyOn()  (USARTD0.CTRLA & USART_DREINTLVL_LO_gc)
+#define vIsInterruptVtyOn()  (USARTC0.CTRLA & USART_DREINTLVL_LO_gc)
 
 /*
  * Wyłączenie przerwania pusty bufor nadawczy dla VTY
@@ -37,18 +37,18 @@
 {                                     \
   unsigned portCHAR ucInByte;         \
                                       \
-  ucInByte = USARTD0.CTRLA;           \
+  ucInByte = USARTC0.CTRLA;           \
   ucInByte &= ~USART_DREINTLVL_LO_gc; \
-  USARTD0.CTRLA = ucInByte;           \
+  USARTC0.CTRLA = ucInByte;           \
 }
 
 #define vInterruptVtyOn()             \
 {                                     \
   unsigned portCHAR ucByte;           \
                                       \
-  ucByte = USARTD0.CTRLA;             \
+  ucByte = USARTC0.CTRLA;             \
   ucByte |= USART_DREINTLVL_LO_gc;    \
-  USARTD0.CTRLA = ucByte;             \
+  USARTC0.CTRLA = ucByte;             \
 }
 
 
@@ -59,76 +59,14 @@ extern xQueueHandle         xVtyTx;
 
 // ******************************* RS485 *********************
 
-/*
- * Włączenie przerwania pusty bufor nadawczy dla magistrali Rs485
- */
-
-
-/**
- * F0 port, do którego podłączony jest rejestrator
- */
-
-#define vIsInterruptRs485On()  (USARTF0.CTRLA & USART_DREINTLVL_LO_gc)
-
-#define vInterruptRs485Off()          \
-{                                     \
-  unsigned portCHAR ucInByte;         \
-                                      \
-  ucInByte = USARTF0.CTRLA;           \
-  ucInByte &= ~USART_DREINTLVL_LO_gc; \
-  USARTF0.CTRLA = ucInByte;           \
-}
-
-#define vInterruptRs485On()           \
-{                                     \
-  unsigned portCHAR ucByte;           \
-                                      \
-  ucByte = USARTF0.CTRLA;             \
-  ucByte |= USART_DREINTLVL_LO_gc;    \
-  USARTF0.STATUS = ucByte;            \
-}
-
-extern xQueueHandle xRs485_1_Rec;
-
-
-
-/**
- * C1 port, do którego podłaczone są kamery
- */
-
-#define vIsInterruptRs485_2_On()  (USARTC1.CTRLA & USART_DREINTLVL_LO_gc)
-
-#define  vInterruptRs485_2_On()       \
-{                                     \
-  unsigned portCHAR ucByte;           \
-                                      \
-  ucByte = USARTC1.CTRLA;             \
-  ucByte |= USART_DREINTLVL_LO_gc;    \
-  USARTC1.CTRLA = ucByte;             \
-}
-
-#define vInterruptRs485_2_Off()       \
-{                                     \
-  unsigned portCHAR ucInByte;         \
-                                      \
-  ucInByte = USARTC1.CTRLA;           \
-  ucInByte &= ~USART_DREINTLVL_LO_gc; \
-  USARTC1.CTRLA = ucInByte;           \
-}
-
-extern xQueueHandle xRs485_2_Tx;
-
 /*********************************************/
 
-void initQueueStreamUSB(FILE *stream);
+void         initQueueStreamUSB(FILE *stream);
 
-int     VtyPutChar(char c, FILE *stream);
-int     VtyGetChar(FILE *stream);
+int          VtyPutChar(char c, FILE *stream);
+int          VtyGetChar(FILE *stream);
 
-void    xSerialPortInitMinimal(void);
-void    uartVtySendByte(uint8_t data);
-
-void uartRs485_2_SendByte(uint8_t data);
-
+void         xSerialPortInitMinimal(void);
+void  uartVtySendByte(uint8_t data);
 
 #endif

@@ -30,11 +30,14 @@ void hardwareInit(void)
   PORTB.OUT=0x00;
 
   ///PORT C
-  // 0 I2C      // 4 UART VTY RxD
-  // 1 I2C      // 5 UART VTY TxD
-  // 2 PWMA     // 6 UART radio RxD
-  // 3 PWMB     // 7 UART radio TxD
-  PORTC.DIR=0x0C;
+  // 0 I2C              // 4 PWMA
+  // 1 I2C              // 5 PWMB
+  // 2 UART VTY RxD     // 6 UART radio RxD
+  // 3 UART VTY TxD     // 7 UART radio TxD
+
+  //PORTC.REMAP=(1<<PORT_PWM_bp);
+
+  PORTC.DIR=0xB8;
   PORTC.OUT=0x00;
 
   ///PORT D
