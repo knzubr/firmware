@@ -140,7 +140,6 @@ to exclude the API function. */
 
 
 #define STACK_SIZE_VTY           700
-#define STACK_SIZE_TRANSLATOR    500
 
 
 #endif /* FREERTOS_CONFIG_H */

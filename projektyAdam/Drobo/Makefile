@@ -171,7 +171,7 @@ ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 # 64 KB of external RAM, starting after internal RAM (ATmega128!),
 # only used for heap (malloc()).
 # heap_start=0x804000 heap_end=0x8056FF
-EXTMEMOPTS = -Wl,--defsym=__heap_start=0x804000,--defsym=__heap_end=0x8027ff
+#EXTMEMOPTS = -Wl,--defsym=__heap_start=0x804000,--defsym=__heap_end=0x8027ff
 EXTMEMOPTS = -Wl
 
 # Optional linker flags.

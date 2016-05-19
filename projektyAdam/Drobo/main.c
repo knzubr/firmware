@@ -75,44 +75,14 @@ xTaskHandle xHandleVTY_USB;
   * konfiguracja zegara. Zegar wewnętrzny 32 MHz
   */
 void my_init_clock(void)
-{
-  // Internal 32 kHz RC oscillator initialization
-  // Enable the internal 32 kHz RC oscillator
-  OSC.CTRL|=OSC_RC32KEN_bm;
-  // Wait for the internal 32 kHz RC oscillator to stabilize
-  while ((OSC.STATUS & OSC_RC32KRDY_bm)==0);
-
-  // Internal 32 MHz RC oscillator initialization
-  // Enable the internal 32 MHz RC oscillator
-  OSC.CTRL|=OSC_RC32MEN_bm;
-
-  // System clock prescaler A division factor: 1
-  // System clock prescalers B & C division factors: B:1, C:1
-  // ClkPer4: 32000.000 kHz
-  // ClkPer2: 32000.000 kHz
-  // ClkPer:  32000.000 kHz
-  // ClkCPU:  32000.000 kHz
-  CCP=CCP_IOREG_gc;
-  CLK.PSCTRL=(CLK.PSCTRL & (~(CLK_PSADIV_gm | CLK_PSBCDIV1_bm | CLK_PSBCDIV0_bm))) | CLK_PSADIV_1_gc | CLK_PSBCDIV_1_1_gc;
-
-  // Internal 32 MHz RC osc. calibration reference clock source: 32.768 kHz Internal Osc.
-  //OSC.DFLLCTRL&= ~(OSC_RC32MCREF_bm | OSC_RC2MCREF_bm);
-  // Enable the autocalibration of the internal 32 MHz RC oscillator
-  DFLLRC32M.CTRL|=DFLL_ENABLE_bm;
-
-  // Wait for the internal 32 MHz RC oscillator to stabilize
-  while ((OSC.STATUS & OSC_RC32MRDY_bm)==0);
-
-
-  // Select the system clock source: 32 MHz Internal RC Osc.
-  CCP=CCP_IOREG_gc;
-  CLK.CTRL=(CLK.CTRL & (~CLK_SCLKSEL_gm)) | CLK_SCLKSEL_RC32M_gc;
-
-  // Disable the unused oscillators: 2 MHz, external clock/crystal oscillator, PLL
-  OSC.CTRL&= ~(OSC_RC2MEN_bm | OSC_XOSCEN_bm | OSC_PLLEN_bm);
-
-  // Peripheral Clock output: Disabled
-  PORTCFG.CLKEVOUT=(PORTCFG.CLKEVOUT & (~PORTCFG_CLKOUT_gm)) | PORTCFG_CLKOUT_OFF_gc;
+{// Configure clock to 32MHz
+    OSC.CTRL |= OSC_RC32MEN_bm | OSC_RC32KEN_bm;  /* Enable the internal 32MHz & 32KHz oscillators */
+    while(!(OSC.STATUS & OSC_RC32KRDY_bm));       /* Wait for 32Khz oscillator to stabilize */
+    while(!(OSC.STATUS & OSC_RC32MRDY_bm));       /* Wait for 32MHz oscillator to stabilize */
+    DFLLRC32M.CTRL = DFLL_ENABLE_bm ;             /* Enable DFLL - defaults to calibrate against internal 32Khz clock */
+    CCP = CCP_IOREG_gc;                           /* Disable register security for clock update */
+    CLK.CTRL = CLK_SCLKSEL_RC32M_gc;              /* Switch to 32MHz clock */
+    OSC.CTRL &= ~OSC_RC2MEN_bm;                   /* Disable 2Mhz oscillator */
 }
 
 cmdState_t *CLIStateSerialUsb;
@@ -140,16 +110,13 @@ streamBuffers_t udpBuffers;
 portSHORT main( void )
 {
   hardwareInit();
+  //loadConfiguration();
+  xSerialPortInitMinimal();
+  USARTC0.DATA = 'B';
 
-  xSerialPortInitMinimal(); //Przerobić dodać drigi Rs485
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
-
-
-  loadConfiguration();
-
   initQueueStreamUSB(&usbStream);
   VtyInit(CLIStateSerialUsb, &usbStream);
-
 
   sei();
 
