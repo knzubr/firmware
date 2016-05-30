@@ -48,8 +48,6 @@
 
 uint8_t timer100Hz = 0;
 
-uint8_t translateTable[256];
-
 xQueueHandle xVtyTx;
 xQueueHandle xVtyRec;
 

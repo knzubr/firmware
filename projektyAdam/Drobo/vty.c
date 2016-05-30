@@ -3,6 +3,7 @@
 #include "hardwareConfig.h"
 #include "configuration.h"
 #include "softwareConfig.h"
+#include "hardware.h"
 
 #if LANG_EN
 #include "vty_en.h"
@@ -22,6 +23,12 @@ static cliExRes_t enableFunction         (cmdState_t *state);
 static cliExRes_t disableFunction        (cmdState_t *state);
 static cliExRes_t configureModeFunction  (cmdState_t *state);
 static cliExRes_t saveConfigFunction     (cmdState_t *state);
+
+static cliExRes_t forwardFunction        (cmdState_t *state);
+static cliExRes_t backwordFunction       (cmdState_t *state);
+static cliExRes_t rotateLeftFunction     (cmdState_t *state);
+static cliExRes_t rotateRightFunction    (cmdState_t *state);
+static cliExRes_t stopFunction           (cmdState_t *state);
 
 const char okStr[] PROGMEM = "OK\r\n";
 const char nlStr[] PROGMEM = "\r\n";
@@ -43,18 +50,28 @@ const const char* const errorStrings[] PROGMEM = {
 
 const command_t cmdListNormal[] PROGMEM =
 {
-  {cmd_help,      cmd_help_help,      helpFunction},
-  {cmd_status,    cmd_help_status,    statusFunction},
-  {cmd_enable,    cmd_help_enable,    enableFunction},
+  {cmd_help,        cmd_help_help,        helpFunction},
+  {cmd_status,      cmd_help_status,      statusFunction},
+  {cmd_enable,      cmd_help_enable,      enableFunction},
+  {cmd_forward,     cmd_help_forward,     forwardFunction},
+  {cmd_backward,    cmd_help_backward,    backwordFunction},
+  {cmd_rotateLeft,  cmd_help_rotateLeft,  rotateLeftFunction},
+  {cmd_rotateRight, cmd_help_rotateRight, rotateRightFunction},
+  {cmd_stop,        cmd_help_stop,        stopFunction},
   {NULL, NULL, NULL}
 };
 
 const command_t cmdListEnable[] PROGMEM =
 {
-  {cmd_help,      cmd_help_help,      helpFunction},
-  {cmd_status,    cmd_help_status,    statusFunction},
-  {cmd_disable,   cmd_help_disable,   disableFunction},
-  {cmd_configure, cmd_help_configure, configureModeFunction},
+  {cmd_help,        cmd_help_help,        helpFunction},
+  {cmd_status,      cmd_help_status,      statusFunction},
+  {cmd_disable,     cmd_help_disable,     disableFunction},
+  {cmd_configure,   cmd_help_configure,   configureModeFunction},
+  {cmd_forward,     cmd_help_forward,     forwardFunction},
+  {cmd_backward,    cmd_help_backward,    backwordFunction},
+  {cmd_rotateLeft,  cmd_help_rotateLeft,  rotateLeftFunction},
+  {cmd_rotateRight, cmd_help_rotateRight, rotateRightFunction},
+  {cmd_stop,        cmd_help_stop,        stopFunction},
   {NULL, NULL, NULL}
 };
 
@@ -142,6 +159,85 @@ static cliExRes_t configureModeFunction(cmdState_t *state)
     return OK_SILENT;
   }
   return ERROR_OPERATION_NOT_ALLOWED;
+}
+
+
+static cliExRes_t forwardFunction        (cmdState_t *state)
+{
+  uint8_t left = 50;
+  uint8_t right = 50;
+
+  if (state->argc == 1)
+    left = right = cmdlineGetArgInt(1, state);
+  if (state->argc >=2)
+  {
+    left = cmdlineGetArgInt(1, state);
+    right = cmdlineGetArgInt(2, state);
+  }
+
+  forwardB(left, right);
+
+  return OK_SILENT;
+}
+
+static cliExRes_t backwordFunction       (cmdState_t *state)
+{
+  uint8_t left = 50;
+  uint8_t right = 50;
+
+  if (state->argc == 1)
+    left = right = cmdlineGetArgInt(1, state);
+  if (state->argc >=2)
+  {
+    left = cmdlineGetArgInt(1, state);
+    right = cmdlineGetArgInt(2, state);
+  }
+
+  backwordB(left, right);
+
+  return OK_SILENT;
+}
+static cliExRes_t rotateLeftFunction     (cmdState_t *state)
+{
+  uint8_t left = 50;
+  uint8_t right = 50;
+
+  if (state->argc == 1)
+    left = right = cmdlineGetArgInt(1, state);
+  if (state->argc >=2)
+  {
+    left = cmdlineGetArgInt(1, state);
+    right = cmdlineGetArgInt(2, state);
+  }
+
+  rotateLeftB(left, right);
+
+  return OK_SILENT;
+}
+
+static cliExRes_t rotateRightFunction    (cmdState_t *state)
+{
+  uint8_t left = 50;
+  uint8_t right = 50;
+
+  if (state->argc == 1)
+    left = right = cmdlineGetArgInt(1, state);
+  if (state->argc >=2)
+  {
+    left = cmdlineGetArgInt(1, state);
+    right = cmdlineGetArgInt(2, state);
+  }
+
+  rotateRightB(left, right);
+
+  return OK_SILENT;
+}
+
+static cliExRes_t stopFunction           (cmdState_t *state)
+{
+  (void) state;
+  offHbridge();
+  return OK_SILENT;
 }
 
 /*

@@ -338,13 +338,13 @@ static void prvSetupTimerInterrupt(void) {
     //void TC0_ConfigClockSource( volatile TC0_t * tc, TC_CLKSEL_t clockSelection )
     //  tc->CTRLA = ( tc->CTRLA & ~TC0_CLKSEL_gm ) | clockSelection;
     //TC0_ConfigClockSource(tickTimer, TC_CLKSEL_DIV64_gc);
-    TCC0.CTRLA = (TCC0.CTRLA & ~TC0_CLKSEL_gm ) | TC_CLKSEL_DIV256_gc;
+    TCC1.CTRLA = (TCC1.CTRLA & ~TC0_CLKSEL_gm ) | TC_CLKSEL_DIV256_gc;
     
     //set period of counter
-    TCC0.PER = (configCPU_CLOCK_HZ / configTICK_RATE_HZ / 256) - 1;
+    TCC1.PER = (configCPU_CLOCK_HZ / configTICK_RATE_HZ / 256) - 1;
 
     //enable interrupt and set low level
-    TCC0.INTCTRLA  = (TCC0.INTCTRLA & ~TC0_OVFINTLVL_gm ) | TC_OVFINTLVL_LO_gc;
+    TCC1.INTCTRLA  = (TCC1.INTCTRLA & ~TC1_OVFINTLVL_gm ) | TC_OVFINTLVL_LO_gc;
     //TC0_SetOverflowIntLevel(tickTimer, TC_OVFINTLVL_LO_gc);
     //void TC0_SetOverflowIntLevel( volatile TC0_t * tc, TC_OVFINTLVL_t intLevel )
     //  tc->INTCTRLA = ( tc->INTCTRLA & ~TC0_OVFINTLVL_gm ) | intLevel;
@@ -361,7 +361,7 @@ static void prvSetupTimerInterrupt(void) {
 * count is incremented after the context is saved.
 */
 
-ISR (TCC0_OVF_vect, ISR_NAKED) {
+ISR (TCC1_OVF_vect, ISR_NAKED) {
     /*
 * Context switch function used by the tick. This must be identical to
 * vPortYield() from the call to vTaskSwitchContext() onwards. The only
@@ -382,7 +382,7 @@ ISR (TCC0_OVF_vect, ISR_NAKED) {
 * tick count. We don't need to switch context, this can only be done by
 * manual calls to taskYIELD();
 */
-ISR (TCC0_OVF_vect)
+ISR (TCC1_OVF_vect)
 {
     vTaskIncrementTick();
 }
