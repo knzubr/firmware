@@ -16,6 +16,9 @@
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+				<Environment>
+					<Variable name="LANG_EN" value="1" />
+				</Environment>
 				<MakeCommands>
 					<Build command="$make -f $makefile" />
 					<CompileFile command="$make -f $makefile $file" />
@@ -104,7 +107,10 @@
 		<Unit filename="vty_pl.h" />
 		<Extensions>
 			<envvars />
-			<code_completion />
+			<code_completion>
+				<search_path add="/usr/lib/avr/include/avr" />
+				<search_path add="../../Lib" />
+			</code_completion>
 			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>

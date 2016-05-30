@@ -11,8 +11,6 @@
 #include "udp.h"
 #endif
 
-extern uint8_t translateTable[256];
-
 void loadConfiguration(void);
 void saveConfiguration(void);
 

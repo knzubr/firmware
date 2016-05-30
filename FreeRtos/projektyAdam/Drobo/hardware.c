@@ -1,18 +1,9 @@
 #include "hardware.h"
 
-#if LANG_EN
-#include "hardware_en.h"
-#endif
 
-#if LANG_PL
-#include "hardware_pl.h"
-#endif
+//xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
+//xQueueHandle      xSpiRxEnc;
 
-xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
-xQueueHandle      xSpiRxEnc;
-// napisać funkcje do konfiguracji zew pam s-ram
-
-//#include<avr/iox128a1.h>
 void hardwareInit(void)
 {
   /// PORT A MOSTKI H
@@ -35,8 +26,7 @@ void hardwareInit(void)
   // 2 UART VTY RxD     // 6 UART radio RxD
   // 3 UART VTY TxD     // 7 UART radio TxD
 
-  //PORTC.REMAP=(1<<PORT_PWM_bp);
-
+  PORTC.REMAP=((1<<PORT_TC0A_bp)|(1<<PORT_TC0B_bp)) ;
   PORTC.DIR=0xB8;
   PORTC.OUT=0x00;
 
@@ -59,4 +49,110 @@ void hardwareInit(void)
   // 1 MOSTEK H Stand by
   PORTR.DIR=0x03;
   PORTR.OUT=0x00;
+
+
+  //Timer 0 H bridge PWM
+  TCC0.PER   = 100;   //Zakres
+  TCC0.CTRLA = 0x07;  //Presklaler 512
+  TCC0.CTRLB = 0x33;  //A and B channels enabled, single slope
+  TCC0.CTRLC = 0x00;
+
+
+
+  TCC0.CCAH = 0x00;
+  TCC0.CCBH = 0x00;
+  //PORTC.OUTSET = 0x30;
+}
+
+void offHbridge()
+{
+    PORTR.OUTCLR = 0x02;
+
+    PORTA.OUTCLR = 0xF0;
+}
+
+void forwardA(uint8_t left, uint8_t right)
+{
+    PORTR.OUTSET = 0x02;
+    PORTA.OUTCLR = 0x60;
+    PORTA.OUTSET = 0x90;
+
+    TCC0.CCA = left;
+    TCC0.CCB = right;
+}
+
+
+void backwordA(uint8_t left, uint8_t right)
+{
+    PORTR.OUTSET = 0x02;
+    PORTA.OUTCLR = 0x90;
+    PORTA.OUTSET = 0x60;
+
+    TCC0.CCA = left;
+    TCC0.CCB = right;
+}
+
+void rotateLeftA(uint8_t left, uint8_t right)
+{
+    PORTR.OUTSET = 0x02;
+    PORTA.OUTCLR = 0xA0;
+    PORTA.OUTSET = 0x50;
+
+    TCC0.CCA = left;
+    TCC0.CCB = right;
+}
+
+void rotateRightA(uint8_t left, uint8_t right)
+{
+    PORTR.OUTSET = 0x02;
+
+    PORTA.OUTCLR = 0x50;
+    PORTA.OUTSET = 0xA0;
+
+    TCC0.CCA = left;
+    TCC0.CCB = right;
+}
+
+void forwardB(uint8_t left, uint8_t right)
+{
+    PORTR.OUTSET = 0x02;
+
+    PORTA.OUTCLR = 0x90;
+    PORTA.OUTSET = 0x60;
+
+    TCC0.CCA = left;
+    TCC0.CCB = right;
+}
+
+
+void backwordB(uint8_t left, uint8_t right)
+{
+    PORTR.OUTSET = 0x02;
+
+    PORTA.OUTCLR = 0x60;
+    PORTA.OUTSET = 0x90;
+
+    TCC0.CCA = left;
+    TCC0.CCB = right;
+}
+
+void rotateLeftB(uint8_t left, uint8_t right)
+{
+    PORTR.OUTSET = 0x02;
+    PORTA.OUTCLR = 0xA0;
+    PORTA.OUTSET = 0x50;
+
+    TCC0.CCA = left;
+    TCC0.CCB = right;
+}
+
+void rotateRightB(uint8_t left, uint8_t right)
+{
+    PORTR.OUTSET = 0x02;
+
+    PORTA.OUTCLR = 0x50;
+    PORTA.OUTSET = 0xA0;
+
+    TCC0.CCA = left;
+    TCC0.CCB = right;
 }

@@ -5,19 +5,14 @@
 #include "softwareConfig.h"
 
 
-static uint8_t trAddressEeprom[256] __attribute__((section (".eeprom"))) = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
-    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F
-};
-//{{LOCK_SENS_1_ENA, LOCK_SENS_1_THR, 0, 0}, {LOCK_SENS_2_ENA, LOCK_SENS_2_THR, 0, 0}, {LOCK_SENS_3_ENA, LOCK_SENS_3_THR, 0, 0}, {LOCK_SENS_4_ENA, LOCK_SENS_4_THR, 0, 0}};
+//static uint8_t trAddressEeprom[256] __attribute__((section (".eeprom"))) = {0x00, 0x01};
 
 void loadConfiguration(void)
 {
-  eeprom_read_block(translateTable, trAddressEeprom, 256);
+  //eeprom_read_block(translateTable, trAddressEeprom, 256);
 }
 
 void saveConfiguration(void)
 {
-  eeprom_write_block(translateTable, trAddressEeprom, 256);
+  //eeprom_write_block(translateTable, trAddressEeprom, 256);
 }
