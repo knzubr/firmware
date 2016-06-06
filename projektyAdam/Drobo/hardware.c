@@ -53,7 +53,7 @@ void hardwareInit(void)
 
   //Timer 0 H bridge PWM
   TCC0.PER   = 100;   //Zakres
-  TCC0.CTRLA = 0x07;  //Presklaler 512
+  TCC0.CTRLA = 0x07;  //Preskaler 1024
   TCC0.CTRLB = 0x33;  //A and B channels enabled, single slope
   TCC0.CTRLC = 0x00;
 
