@@ -15,6 +15,8 @@
 #include "../../freeRtos/Source/include/croutine.h"
 #include "../../freeRtos/Source/include/queue.h"
 #include "../../freeRtos/Source/include/task.h"
+#include "../../freeRtos/Source/include/semphr.h"
+
 #include "queueStream.h"
 #include "cli_task.h"
 #include "serial.h"

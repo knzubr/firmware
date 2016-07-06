@@ -30,6 +30,11 @@ static cliExRes_t rotateLeftFunction     (cmdState_t *state);
 static cliExRes_t rotateRightFunction    (cmdState_t *state);
 static cliExRes_t stopFunction           (cmdState_t *state);
 
+static cliExRes_t hc12modeFunction       (cmdState_t *state);
+static cliExRes_t hc12channelFunction    (cmdState_t *state);
+static cliExRes_t hc12baudrateFunction   (cmdState_t *state);
+static cliExRes_t hc12powerFunction      (cmdState_t *state);
+
 const char okStr[] PROGMEM = "OK\r\n";
 const char nlStr[] PROGMEM = "\r\n";
 
@@ -79,6 +84,11 @@ const command_t cmdListConfigure[] PROGMEM =
 {
   {cmd_help,         cmd_help_help,         helpFunction},
   {cmd_status,       cmd_help_status,       statusFunction},
+  {cmd_HC12mode,     cmd_help_HC12mode,     hc12modeFunction},
+  {cmd_HC12channel,  cmd_help_HC12channel,  hc12channelFunction},
+  {cmd_HC12baudrate, cmd_help_HC12baudrate, hc12baudrateFunction},
+  {cmd_HC12power,    cmd_help_HC12power,    hc12powerFunction},
+
   {cmd_conf_save,    cmd_help_conf_save,    saveConfigFunction},
   {cmd_enable,       cmd_help_enable,       enableFunction},
   {cmd_disable,      cmd_help_disable,      disableFunction},
@@ -239,6 +249,54 @@ static cliExRes_t stopFunction           (cmdState_t *state)
   offHbridge();
   return OK_SILENT;
 }
+
+static cliExRes_t sendAtCmd(cmdState_t *state, const char cmd[])
+{
+  if (xSemaphoreTake(Hc12semaphore, 10) == pdTRUE)
+  {
+    vTaskDelay(2);
+    HC12setAtMode();
+
+    fprintf_P(state->myStdInOut, cmd, cmdlineGetArgStr(1, state));
+    fprintf_P(&hc12Stream,       cmd, cmdlineGetArgStr(1, state));
+
+    uint8_t val;
+    while (xQueueReceive(xHC12Rec, &val, 100) == pdTRUE)
+    {
+        fputc(val, state->myStdInOut);
+    }
+
+    HC12setTransparentMode();
+    xSemaphoreGive(Hc12semaphore );
+    return OK_INFORM;
+  }
+  else
+  {
+    return ERROR_INFORM;
+  }
+
+}
+
+static cliExRes_t hc12modeFunction       (cmdState_t *state)
+{
+    return sendAtCmd(state, PSTR("AT+FU%s\r\n"));
+}
+
+static cliExRes_t hc12channelFunction    (cmdState_t *state)
+{
+    return sendAtCmd(state, PSTR("AT+C%s\r\n"));
+}
+
+static cliExRes_t hc12baudrateFunction   (cmdState_t *state)
+{
+    return sendAtCmd(state, PSTR("AT+B%s\r\n"));
+}
+
+static cliExRes_t hc12powerFunction      (cmdState_t *state)
+{
+    return sendAtCmd(state, PSTR("AT+P%s\r\n"));
+}
+
 
 /*
 static void printTable(FILE *stream)

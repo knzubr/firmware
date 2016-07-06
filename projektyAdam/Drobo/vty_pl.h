@@ -57,6 +57,11 @@ prog_char cmd_enc_stat[]    = "encstat";          prog_char cmd_help_enc_stat[] 
 prog_char cmd_time[]        = "czas";             prog_char cmd_help_time[]        = "Wypisuje czas";
 prog_char cmd_net_dbg[]     = "debug";            prog_char cmd_help_net_dbg[]     = "[arp|icmp|ip|tcp|udp] [poziom] wypisywanie komunikatow. Poziom 0 wylacza komunikaty";
 
+prog_char cmd_HC12mode[]    = "hc12mode";         prog_char cmd_help_HC12mode[]    = "[1-3] Ustawianie trybu pracy HC12";
+prog_char cmd_HC12channel[] = "hc12chan";         prog_char cmd_help_HC12channel[] = "[1-100] Ustawianie kanału dla HC12";
+prog_char cmd_HC12baudrate[]= "hc12baud";         prog_char cmd_help_HC12baudrate[]= "[] Ustawienie szybkości transmisji HC12";
+prog_char cmd_HC12power[]   = "hc12pwr";          prog_char cmd_help_HC12power[]   = "[] Ustawienie mocy nadajnika HC12";
+
 prog_char cmd_rping[]       = "rping";            prog_char cmd_help_rping[]       = "[numer sterownika] Wysyla ping do sterownika podpietego do magistrali Rs485";
 prog_char cmd_ping[]        = "ping";             prog_char cmd_help_ping[]        = "[A1] [A2] [A3] [A4] Wysyla ping przez ethernet";
 prog_char cmd_xRec[]        = "xodb";             prog_char cmd_help_xRec[]        = "[nazwa pliku] odbiera plik za pomoca protokolu xModem";
