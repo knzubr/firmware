@@ -73,8 +73,8 @@ void xSerialPortInitMinimal(void)
   USARTC1.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
   USARTC1.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów
   // 115200 @ 32MHz
-  USARTC1.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
-  USARTC1.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
+  USARTC1.BAUDCTRLA= 12 & 0xFF;                          //12; BSEL = 12  BSCALE = 4 //USARTD0.BAUDCTRLA= 131;
+  USARTC1.BAUDCTRLB= (4 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0x40;// ((4) << USART_BSCALE0_bp)|(131 >> 8);
 
 
   portENTER_CRITICAL();

@@ -33,20 +33,24 @@ const char systemRamConfigStr[]        PROGMEM = "System settings:\r\n";
 
 // *************************** Command Strings *****************************************************
 
-const char cmd_help[]         PROGMEM = "help";     const char cmd_help_help[]         PROGMEM = "Print help string";
-const char cmd_status[]       PROGMEM = "status";   const char cmd_help_status[]       PROGMEM = "{filename} Print device status on VTY or write to file";
+const char cmd_help[]         PROGMEM = "help";     const char cmd_help_help[]          PROGMEM = "Print help string";
+const char cmd_status[]       PROGMEM = "status";   const char cmd_help_status[]        PROGMEM = "{filename} Print device status on VTY or write to file";
 
-const char cmd_enable[]       PROGMEM = "enable";   const char cmd_help_enable[]       PROGMEM = "Admin mode";
-const char cmd_disable[]      PROGMEM = "disable";  const char cmd_help_disable[]      PROGMEM = "Normal mode";
-const char cmd_configure[]    PROGMEM = "config";   const char cmd_help_configure[]    PROGMEM = "Configuration mode";
+const char cmd_enable[]       PROGMEM = "enable";   const char cmd_help_enable[]        PROGMEM = "Admin mode";
+const char cmd_disable[]      PROGMEM = "disable";  const char cmd_help_disable[]       PROGMEM = "Normal mode";
+const char cmd_configure[]    PROGMEM = "config";   const char cmd_help_configure[]     PROGMEM = "Configuration mode";
 
+const char cmd_HC12mode[]     PROGMEM = "hc12mode"; const char  cmd_help_HC12mode[]     PROGMEM = "[1-3] Ustawianie trybu pracy HC12";
+const char cmd_HC12channel[]  PROGMEM = "hc12chan"; const char  cmd_help_HC12channel[]  PROGMEM = "[1-100] Ustawianie kanału dla HC12";
+const char cmd_HC12baudrate[] PROGMEM = "hc12baud"; const char  cmd_help_HC12baudrate[] PROGMEM = "[] Ustawienie szybkości transmisji HC12";
+const char cmd_HC12power[]    PROGMEM = "hc12pwr";  const char  cmd_help_HC12power[]    PROGMEM = "[] Ustawienie mocy nadajnika HC12";
 
-const char cmd_forward[]      PROGMEM = "fw";       const char cmd_help_forward[]      PROGMEM = "{left PW} {right PW} move forward";
-const char cmd_backward[]     PROGMEM = "bw";       const char cmd_help_backward[]     PROGMEM = "{left PW} {right PW} move backward";
-const char cmd_rotateLeft[]   PROGMEM = "rl";       const char cmd_help_rotateLeft[]   PROGMEM = "{left PW} {right PW} rotate left";
-const char cmd_rotateRight[]  PROGMEM = "rr";       const char cmd_help_rotateRight[]  PROGMEM = "{left PW} {right PW} rotate right";
-const char cmd_stop[]         PROGMEM = "stop";     const char cmd_help_stop[]         PROGMEM = "Disable H-bridges";
+const char cmd_forward[]      PROGMEM = "fw";       const char cmd_help_forward[]       PROGMEM = "{left PW} {right PW} move forward";
+const char cmd_backward[]     PROGMEM = "bw";       const char cmd_help_backward[]      PROGMEM = "{left PW} {right PW} move backward";
+const char cmd_rotateLeft[]   PROGMEM = "rl";       const char cmd_help_rotateLeft[]    PROGMEM = "{left PW} {right PW} rotate left";
+const char cmd_rotateRight[]  PROGMEM = "rr";       const char cmd_help_rotateRight[]   PROGMEM = "{left PW} {right PW} rotate right";
+const char cmd_stop[]         PROGMEM = "stop";     const char cmd_help_stop[]          PROGMEM = "Disable H-bridges";
 
-const char cmd_conf_save[]    PROGMEM = "save";     const char cmd_help_conf_save[]    PROGMEM = "Save configuration";
+const char cmd_conf_save[]    PROGMEM = "save";     const char cmd_help_conf_save[]     PROGMEM = "Save configuration";
 
 #endif

@@ -62,7 +62,7 @@ cmdState_t *CLIStateSerialUsb;
 FILE usbStream;
 FILE hc12Stream;
 
-
+xSemaphoreHandle Hc12semaphore;
 
 void vApplicationIdleHook( void );
 
