@@ -53,16 +53,23 @@ xQueueHandle xVtyRec;
 
 xQueueHandle xHC12Tx;
 xQueueHandle xHC12Rec;
+xQueueHandle xMainRec;
 
 xQueueHandle xSim900Rec;
 xQueueHandle xSim900Tx;
 
 cmdState_t *CLIStateSerialUsb;
+tlvInterpreter_t *TLVstate;
 
 FILE usbStream;
 FILE hc12Stream;
 
 xSemaphoreHandle Hc12semaphore;
+
+xTaskHandle xHandleVTY_USB;
+xTaskHandle xHandleTLV;
+xTaskHandle xHandleMain;
+
 
 void vApplicationIdleHook( void );
 
@@ -71,7 +78,7 @@ void vApplicationIdleHook( void );
  */
 void vApplicationTickHook( void );
 
-xTaskHandle xHandleVTY_USB;
+
 
 //xTaskHandle xHandleTranslator;
 
@@ -115,16 +122,25 @@ portSHORT main( void )
   //loadConfiguration();
   xSerialPortInitMinimal();
 
+  xMainRec = xQueueCreate(16, 1);
+
+
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
+  TLVstate = xmalloc(sizeof(tlvInterpreter_t));
+
+  Hc12semaphore = xSemaphoreCreateMutex();
 
   initQueueStreamUSB(&usbStream);
   initQueueStreamHC12(&hc12Stream);
 
   VtyInit(CLIStateSerialUsb, &usbStream);
+  tlvIinitializeInterpreter(TLVstate, &hc12Stream, &usbStream, tlvCmdList);
 
   sei();
 
   xTaskCreate(vTaskVTYusb,    NULL /*"VTY"            */, STACK_SIZE_VTY,         (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+  xTaskCreate(vTaskTLV,       NULL /*"TLV"            */, STACK_SIZE_VTY,         (void *)(TLVstate),                     1, &xHandleTLV);
+  xTaskCreate(vTaskMain,      NULL /*"TLV"            */, STACK_SIZE_VTY,         NULL,                                   1, &xHandleMain);
 
   vTaskStartScheduler();
 

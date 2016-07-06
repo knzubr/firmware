@@ -85,6 +85,10 @@
 
 #define configTOTAL_HEAP_SIZE		( (size_t ) ( 7000 ) )//1500// całkowita iloæ pamięci RAM dostępna dla jądra RTOS
 
+#define configSUPPORT_DYNAMIC_ALLOCATION 1
+
+#define configUSE_MUTEXES           1
+
 /*
 
 Ta wartoæ bêdzie wykorzystywany jedynie, jeli aplikacja korzysta z jednego z systemów pamiêci próbek alokacji przewidzianych w FreeRTOS pobrania kodu ród³owego
