@@ -59,6 +59,7 @@ hardware.c \
 vty.c \
 cli_task.c \
 tlv_task.c\
+main_task.c\
 hc12.c\
 sim900.c\
 tlv.c\

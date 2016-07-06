@@ -19,6 +19,8 @@
 
 #include "queueStream.h"
 #include "cli_task.h"
+#include "tlv_task.h"
+#include "main_task.h"
 #include "serial.h"
 
 #include "hardwareConfig.h"
@@ -26,10 +28,10 @@
 
 #include "hardware.h"
 
-#include "lcd.h"
 
 #include "cmdline.h"
 #include "vty.h"
+#include "tlv.h"
 
 
 
@@ -40,6 +42,7 @@
 #define SYSTEM_NAME "FreeRtos+"
 #define S_VERSION "0.31"
 
+extern const tlvCommand_t tlvCmdList[];
 
 void my_init_clock (void) __attribute__ ((naked))  __attribute__ ((section (".init0")));
 
