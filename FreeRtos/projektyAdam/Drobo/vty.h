@@ -10,8 +10,6 @@
 #include "configuration.h"
 #include "cmdline.h"
 
-#include "pelco_d.h"
-
 #include "../../freeRtos/Source/include/FreeRTOS.h"
 #include "../../freeRtos/Source/include/croutine.h"
 #include "../../freeRtos/Source/include/queue.h"

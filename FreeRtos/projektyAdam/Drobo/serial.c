@@ -17,6 +17,13 @@ void initQueueStreamUSB(FILE *stream)
   return;
 }
 
+void initQueueStreamHC12(FILE *stream)
+{
+  fdev_setup_stream(stream, HC12PutChar, HC12GetChar, _FDEV_SETUP_RW);
+  fdev_set_udata(stream, NULL);
+  return;
+}
+
 int VtyGetChar(FILE *stream)
 {
   (void) stream;
@@ -33,6 +40,22 @@ int VtyPutChar(char c, FILE *stream)
   return 0;
 }
 
+int HC12GetChar(FILE *stream)
+{
+  (void) stream;
+  uint8_t c;
+  if (xQueueReceive(xHC12Rec, &c, portMAX_DELAY) == 0)
+    return EOF;
+  return c;
+}
+
+int HC12PutChar(char c, FILE *stream)
+{
+  (void) stream;
+  uartHC12SendByte(c);
+  return 0;
+}
+
 //#include<avr/iox128a1.h>
 void xSerialPortInitMinimal(void)
 {
@@ -46,10 +69,21 @@ void xSerialPortInitMinimal(void)
   USARTC0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
 
 
+  USARTC1.CTRLA = USART_RXCINTLVL_LO_gc;// | USART_DREINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTC1.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
+  USARTC1.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów
+  // 115200 @ 32MHz
+  USARTC1.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
+  USARTC1.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
+
+
   portENTER_CRITICAL();
   {
     xVtyRec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
     xVtyTx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+
+    xHC12Rec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xHC12Tx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
   }
   portEXIT_CRITICAL();
   return;
@@ -101,33 +135,47 @@ ISR(USARTC0_DRE_vect) // USART1_UDRE_vect
 }
 
 
-/** Obsługa porty do którego podłączone są kamery */
+/** HC12 ************************************/
 
-//ISR(USARTC1_TXC_vect)
-//{
-  //if (!vIsInterruptRs485_2_On())
-  //  Rs485TxStop_2();
-//}
+ISR(USARTC1_RXC_vect)
+{
 
-//ISR(USARTC1_DRE_vect)
-//{
-/*  static signed portBASE_TYPE xHigherPriorityTaskWoken;
-  static char data;
-  if(xQueueReceiveFromISR(xRs485_2_Tx, (void *)(&data), &xHigherPriorityTaskWoken) == pdTRUE)
+  static signed portBASE_TYPE xHigherPriorityTaskWoken;
+  signed portCHAR cChar;
+
+  cChar = USARTC1.DATA;
+  //return;
+  //USARTC0.DATA = cChar+1;
+
+  xHigherPriorityTaskWoken = pdFALSE;
+  xQueueSendFromISR(xHC12Rec, &cChar, &xHigherPriorityTaskWoken);
+  if( xHigherPriorityTaskWoken )
   {
-    Rs485TxStart_2();
+    taskYIELD();
+  }
+}
+
+void uartHC12SendByte(uint8_t data)
+{
+  xQueueSend(xHC12Tx, &data, portMAX_DELAY);
+  vInterruptHC12On();
+}
+
+ISR(USARTC1_DRE_vect) // USART1_UDRE_vect
+{
+  static signed portBASE_TYPE xHigherPriorityTaskWoken;
+  static char data;
+  if(xQueueReceiveFromISR(xHC12Tx, &data, &xHigherPriorityTaskWoken) == pdTRUE)
+  {
     USARTC1.DATA = data;
   }
   else
   {
     xHigherPriorityTaskWoken = pdFALSE;
-    vInterruptRs485_2_Off();
+    vInterruptHC12Off();
   }
   if( xHigherPriorityTaskWoken )
   {
     taskYIELD();
   }
-  */
-//}
-
-
+}

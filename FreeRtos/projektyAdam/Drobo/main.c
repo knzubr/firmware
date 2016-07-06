@@ -51,11 +51,17 @@ uint8_t timer100Hz = 0;
 xQueueHandle xVtyTx;
 xQueueHandle xVtyRec;
 
+xQueueHandle xHC12Tx;
+xQueueHandle xHC12Rec;
+
 xQueueHandle xSim900Rec;
 xQueueHandle xSim900Tx;
 
-xQueueHandle xRadioTx;
-xQueueHandle xRadioRec;
+cmdState_t *CLIStateSerialUsb;
+
+FILE usbStream;
+FILE hc12Stream;
+
 
 
 void vApplicationIdleHook( void );
@@ -83,8 +89,6 @@ void my_init_clock(void)
     OSC.CTRL &= ~OSC_RC2MEN_bm;                   /* Disable 2Mhz oscillator */
 }
 
-cmdState_t *CLIStateSerialUsb;
-FILE usbStream;
 
 #ifdef USENET
 cmdState_t *CLIStateSerialUdp;
@@ -110,10 +114,12 @@ portSHORT main( void )
   hardwareInit();
   //loadConfiguration();
   xSerialPortInitMinimal();
-  USARTC0.DATA = 'B';
 
   CLIStateSerialUsb  = xmalloc(sizeof(cmdState_t));
+
   initQueueStreamUSB(&usbStream);
+  initQueueStreamHC12(&hc12Stream);
+
   VtyInit(CLIStateSerialUsb, &usbStream);
 
   sei();

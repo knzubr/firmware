@@ -21,7 +21,7 @@
 #define serEIGHT_DATA_BITS      ( ( unsigned portCHAR ) 0x06 )
 
 
-// ******************************* Serial 1 USB ***********************
+// ******************************* Serial USB ***********************
 
 /*
  * Włączenie przerwania pusty bufor nadawczy dla VTY
@@ -51,10 +51,41 @@
   USARTC0.CTRLA = ucByte;             \
 }
 
+// ******************************* Serial HC12
+
+/*
+ * Włączenie przerwania pusty bufor nadawczy dla HC12
+ */
+
+#define vIsInterruptHC12On()  (USARTC1.CTRLA & USART_DREINTLVL_LO_gc)
+
+/*
+ * Wyłączenie przerwania pusty bufor nadawczy dla HC12
+ */
+
+#define vInterruptHC12Off()            \
+{                                     \
+  unsigned portCHAR ucInByte;         \
+                                      \
+  ucInByte = USARTC1.CTRLA;           \
+  ucInByte &= ~USART_DREINTLVL_LO_gc; \
+  USARTC1.CTRLA = ucInByte;           \
+}
+
+#define vInterruptHC12On()             \
+{                                     \
+  unsigned portCHAR ucByte;           \
+                                      \
+  ucByte = USARTC1.CTRLA;             \
+  ucByte |= USART_DREINTLVL_LO_gc;    \
+  USARTC1.CTRLA = ucByte;             \
+}
 
 
 extern xQueueHandle         xVtyRec;
 extern xQueueHandle         xVtyTx;
+extern xQueueHandle         xHC12Rec;
+extern xQueueHandle         xHC12Tx;
 
 
 // ******************************* RS485 *********************
@@ -62,11 +93,17 @@ extern xQueueHandle         xVtyTx;
 /*********************************************/
 
 void         initQueueStreamUSB(FILE *stream);
+void         initQueueStreamHC12(FILE *stream);
 
 int          VtyPutChar(char c, FILE *stream);
 int          VtyGetChar(FILE *stream);
 
+int          HC12PutChar(char c, FILE *stream);
+int          HC12GetChar(FILE *stream);
+
+void         uartVtySendByte(uint8_t data);
+void         uartHC12SendByte(uint8_t data);
+
 void         xSerialPortInitMinimal(void);
-void  uartVtySendByte(uint8_t data);
 
 #endif
