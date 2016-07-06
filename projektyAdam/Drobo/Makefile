@@ -61,13 +61,13 @@ cli_task.c \
 lcd_task.c\
 hc12.c\
 sim900.c\
-$(LIB_DIR)/spiXmega.c \
+tlv.c\
 $(LIB_DIR)/memory_x.c \
 $(LIB_DIR)/ramdysk.c \
 $(LIB_DIR)/cmdline.c \
-$(LIB_DIR)/xmodem.c \
 $(LIB_DIR)/vt100.c \
 $(LIB_DIR)/queueStream.c \
+$(LIB_DIR)/tlvProt.c \
 $(SOURCE_DIR)/tasks.c \
 $(SOURCE_DIR)/queue.c \
 $(SOURCE_DIR)/list.c \

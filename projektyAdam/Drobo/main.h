@@ -23,7 +23,6 @@
 #include "softwareConfig.h"
 
 #include "hardware.h"
-#include "spiXmega.h"
 
 #include "lcd.h"
 
