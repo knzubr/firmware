@@ -8,14 +8,13 @@ static void stopFunction(tlvInterpreter_t *tlvInt, tlvMsg_t *myTlvMsg);
 
 const tlvCommand_t tlvCmdList[] PROGMEM =
 {
-  {1,        forwardFunction},
-  {2,        backwordFunction},
-  {3,        rotateLeftFunction},
-  {4,        rotateRightFunction},
-  {5,        stopFunction},
-  {0,        NULL}
+  {FORWARD,       forwardFunction},
+  {BACKWORD,      backwordFunction},
+  {ROTATE_LEFT,   rotateLeftFunction},
+  {ROTATE_RIGHT,  rotateRightFunction},
+  {STOP,          stopFunction},
+  {0,             NULL}
 };
-
 
 static void forwardFunction(tlvInterpreter_t *tlvInt, tlvMsg_t *myTlvMsg)
 {
