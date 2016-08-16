@@ -29,6 +29,21 @@ void tlvCalculateCrc(tlvMsg_t *message)
   message->crcHi = (uint8_t) crc>>8;
 }
 
+void tlvCalculateCrcSepDta(tlvMsg_t *message, const uint8_t dta[])
+{
+  uint16_t crc;
+  crc = _crc16_update(0, message->address);
+  crc = _crc16_update(0, message->type);
+  crc = _crc16_update(0, message->dtaLen);
+
+  uint8_t i;
+  for (i=0; i<message->dtaLen; i++)
+    crc = _crc16_update(0, dta[i]);
+
+  message->crcLo = (uint8_t) crc;
+  message->crcHi = (uint8_t) crc>>8;
+}
+
 uint8_t tlvCheckCrc(tlvMsg_t *message)
 {
   uint16_t crc;
@@ -111,6 +126,27 @@ void sendTlvMsg(tlvMsg_t *message, FILE *ostream)
   len = sizeof(struct tlvMsg) + message->dtaLen;
   uint8_t *ptr = (uint8_t *) message;
 
+  for (i=0; i<len; i++)
+  {
+    fputc(*ptr, ostream);
+    ptr++;
+  }
+}
+
+void sendTlvMsgDta(tlvMsg_t *message, const uint8_t *msgDta, FILE *ostream)
+{
+  int i, len;
+  len = sizeof(struct tlvMsg);
+  uint8_t *ptr = (uint8_t *) message;
+
+  for (i=0; i<len; i++)
+  {
+    fputc(*ptr, ostream);
+    ptr++;
+  }
+
+  ptr = msgDta;
+  len = message->dtaLen;
   for (i=0; i<len; i++)
   {
     fputc(*ptr, ostream);

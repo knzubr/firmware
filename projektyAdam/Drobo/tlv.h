@@ -7,12 +7,13 @@
 
 typedef enum
 {
-  STOP         = 0,
   FORWARD      = 1,
   BACKWORD     = 2,
   ROTATE_LEFT  = 3,
-  ROTATE_RIGHT = 4
+  ROTATE_RIGHT = 4,
+  STOP         = 6,
 } moveDirection_t;
+
 
 
 //MSG type = 1

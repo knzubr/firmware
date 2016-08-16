@@ -57,11 +57,15 @@ struct tlvInterpreter
 };
 
 void tlvIinitializeInterpreter(tlvInterpreter_t *tlvInt, FILE *ioStr, FILE *errStr, const tlvCommand_t *commands);
+
 void tlvCalculateCrc(tlvMsg_t *message);
+void tlvCalculateCrcSepDta(tlvMsg_t *message, const uint8_t dta[]);
+
 uint8_t tlvCheckCrc(tlvMsg_t *message);
 
 void tlvProcessDta(tlvInterpreter_t *tlvInt, uint8_t dta);
 void sendTlvMsg(tlvMsg_t *message, FILE *ostream);
+void sendTlvMsgDta(tlvMsg_t *message, const uint8_t *msgDta, FILE *ostream);
 
 
 #endif
