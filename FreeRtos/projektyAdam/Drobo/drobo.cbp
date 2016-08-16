@@ -59,6 +59,22 @@
 			<Add after="avr-objcopy --no-change-warnings -j .signature --change-section-lma .signature=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).sig" />
 			<Add after="avr-objcopy --no-change-warnings -j .fuse --change-section-lma .fuse=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).fuse" />
 		</ExtraCommands>
+		<Unit filename="../../Lib/cmdline.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/include/cmdline.h" />
+		<Unit filename="../../Lib/include/queueStream.h" />
+		<Unit filename="../../Lib/include/tlvProt.h" />
+		<Unit filename="../../Lib/include/vt100.h" />
+		<Unit filename="../../Lib/queueStream.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/tlvProt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/vt100.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="FreeRTOSConfig.h" />
 		<Unit filename="Makefile" />
 		<Unit filename="avr_compiler.h" />
@@ -70,7 +86,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="configuration.h" />
-		<Unit filename="ffconf.h" />
 		<Unit filename="hardware.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -87,9 +102,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.h" />
-		<Unit filename="rtc.c">
+		<Unit filename="main_task.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="main_task.h" />
 		<Unit filename="serial.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -99,6 +115,14 @@
 		</Unit>
 		<Unit filename="sim900.h" />
 		<Unit filename="softwareConfig.h" />
+		<Unit filename="tlv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tlv.h" />
+		<Unit filename="tlv_task.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="tlv_task.h" />
 		<Unit filename="vty.c">
 			<Option compilerVar="CC" />
 		</Unit>
