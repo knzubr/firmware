@@ -443,6 +443,7 @@ static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_
 
 static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t cmdDta[])
 {
+  (void) state;
   tlvMsg_t msg;
   msg.sync = TLV_SYNC;
   msg.address = addr;
@@ -453,29 +454,7 @@ static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type
 
   sendTlvMsgDta(&msg, cmdDta, &hc12FakeStream);
 
-  if (xSemaphoreTake(Hc12semaphore, 10) == pdTRUE)
-  {
-    vTaskDelay(2);
-    HC12setTransparentMode();
-
-
-    //fprintf_P(state->myStdInOut, cmd, cmdlineGetArgStr(1, state));
-    //fprintf_P(&hc12Stream, (const char *) cmdDta, cmdlineGetArgStr(1, state));
-
-    uint8_t val;
-    while (xQueueReceive(xHC12Rec, &val, 100) == pdTRUE)
-    {
-        fputc(val, state->myStdInOut);
-    }
-
-    xSemaphoreGive(Hc12semaphore );
-    return OK_INFORM;
-  }
-  else
-  {
-    return ERROR_INFORM;
-  }
-
+  return OK_INFORM;
 }
 
 static cliExRes_t hc12modeFunction       (cmdState_t *state)
