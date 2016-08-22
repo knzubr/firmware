@@ -87,7 +87,7 @@ void tlvProcessDta(tlvInterpreter_t *tlvInt, uint8_t dta)
   if (tlvInt->bufIdx < sizeof(struct tlvMsg))
     return;
 
-  if (tlvInt->bufIdx < myRecMsg->dtaLen)
+  if (tlvInt->bufIdx < myRecMsg->dtaLen + sizeof(struct tlvMsg))
     return;
 
   if (tlvCheckCrc(myRecMsg) == 0)
