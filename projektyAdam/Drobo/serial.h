@@ -94,15 +94,18 @@ extern xQueueHandle         xHC12Tx;
 
 void         initQueueStreamUSB(FILE *stream);
 void         initQueueStreamHC12(FILE *stream);
+void         initQueueStreamHC12fake(FILE *stream);
 
 int          VtyPutChar(char c, FILE *stream);
 int          VtyGetChar(FILE *stream);
 
 int          HC12PutChar(char c, FILE *stream);
+int          HC12PutCharFake(char c, FILE *stream);
 int          HC12GetChar(FILE *stream);
 
 void         uartVtySendByte(uint8_t data);
 void         uartHC12SendByte(uint8_t data);
+void         uartHC12SendByteFake(uint8_t data);
 
 void         xSerialPortInitMinimal(void);
 

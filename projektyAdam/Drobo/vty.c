@@ -45,6 +45,9 @@ static cliExRes_t hc12sendStopFunction       (cmdState_t *state);
 static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t cmdDta[]);
 static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[] );
 
+static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t cmdDta[]);
+
+
 const char okStr[] PROGMEM = "OK\r\n";
 const char nlStr[] PROGMEM = "\r\n";
 
@@ -194,6 +197,7 @@ static cliExRes_t configureModeFunction(cmdState_t *state)
 
 static cliExRes_t forwardFunction        (cmdState_t *state)
 {
+    /*
   uint8_t left = 50;
   uint8_t right = 50;
 
@@ -206,7 +210,23 @@ static cliExRes_t forwardFunction        (cmdState_t *state)
   }
 
   forwardB(left, right);
+*/
 
+
+  uint8_t dta[3];
+  dta[0]=0;
+  dta[1] = 50;
+  dta[2] = 50;
+
+  if (state->argc == 1)
+    dta[1] = dta[2] = cmdlineGetArgInt(1, state);
+  if (state->argc >=2)
+  {
+    dta[1] = cmdlineGetArgInt(1, state);
+    dta[2] = cmdlineGetArgInt(2, state);
+  }
+
+  sendHC12loopback(state, 0, FORWARD, 3, dta);
   return OK_SILENT;
 }
 
@@ -404,6 +424,43 @@ static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_
 
     //fprintf_P(state->myStdInOut, cmd, cmdlineGetArgStr(1, state));
     fprintf_P(&hc12Stream, (const char *) cmdDta, cmdlineGetArgStr(1, state));
+
+    uint8_t val;
+    while (xQueueReceive(xHC12Rec, &val, 100) == pdTRUE)
+    {
+        fputc(val, state->myStdInOut);
+    }
+
+    xSemaphoreGive(Hc12semaphore );
+    return OK_INFORM;
+  }
+  else
+  {
+    return ERROR_INFORM;
+  }
+
+}
+
+static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t cmdDta[])
+{
+  tlvMsg_t msg;
+  msg.sync = TLV_SYNC;
+  msg.address = addr;
+  msg.type = type;
+  msg.dtaLen = len;
+
+  tlvCalculateCrcSepDta(&msg, cmdDta);
+
+  sendTlvMsgDta(&msg, cmdDta, &hc12FakeStream);
+
+  if (xSemaphoreTake(Hc12semaphore, 10) == pdTRUE)
+  {
+    vTaskDelay(2);
+    HC12setTransparentMode();
+
+
+    //fprintf_P(state->myStdInOut, cmd, cmdlineGetArgStr(1, state));
+    //fprintf_P(&hc12Stream, (const char *) cmdDta, cmdlineGetArgStr(1, state));
 
     uint8_t val;
     while (xQueueReceive(xHC12Rec, &val, 100) == pdTRUE)

@@ -65,7 +65,7 @@ uint8_t tlvCheckCrc(tlvMsg_t *message);
 
 void tlvProcessDta(tlvInterpreter_t *tlvInt, uint8_t dta);
 void sendTlvMsg(tlvMsg_t *message, FILE *ostream);
-void sendTlvMsgDta(tlvMsg_t *message, const uint8_t *msgDta, FILE *ostream);
+void sendTlvMsgDta(tlvMsg_t *message, uint8_t *msgDta, FILE *ostream);
 
 
 #endif

@@ -40,10 +40,10 @@ const char cmd_enable[]       PROGMEM = "enable";   const char cmd_help_enable[]
 const char cmd_disable[]      PROGMEM = "disable";  const char cmd_help_disable[]       PROGMEM = "Normal mode";
 const char cmd_configure[]    PROGMEM = "config";   const char cmd_help_configure[]     PROGMEM = "Configuration mode";
 
-const char cmd_HC12mode[]     PROGMEM = "hc12mode"; const char  cmd_help_HC12mode[]     PROGMEM = "[1-3] Ustawianie trybu pracy HC12";
-const char cmd_HC12channel[]  PROGMEM = "hc12chan"; const char  cmd_help_HC12channel[]  PROGMEM = "[1-100] Ustawianie kanału dla HC12";
-const char cmd_HC12baudrate[] PROGMEM = "hc12baud"; const char  cmd_help_HC12baudrate[] PROGMEM = "[] Ustawienie szybkości transmisji HC12";
-const char cmd_HC12power[]    PROGMEM = "hc12pwr";  const char  cmd_help_HC12power[]    PROGMEM = "[] Ustawienie mocy nadajnika HC12";
+const char cmd_HC12mode[]     PROGMEM = "hc12mode"; const char  cmd_help_HC12mode[]     PROGMEM = "[1-3] Set HC12 operation mode";
+const char cmd_HC12channel[]  PROGMEM = "hc12chan"; const char  cmd_help_HC12channel[]  PROGMEM = "[1-100] Set transmission channel for HC12";
+const char cmd_HC12baudrate[] PROGMEM = "hc12baud"; const char  cmd_help_HC12baudrate[] PROGMEM = "[] Set HC12 bandwidth";
+const char cmd_HC12power[]    PROGMEM = "hc12pwr";  const char  cmd_help_HC12power[]    PROGMEM = "[] Set HC12 power";
 
 const char cmd_forward[]      PROGMEM = "fw";       const char cmd_help_forward[]       PROGMEM = "{left PW} {right PW} move forward";
 const char cmd_backward[]     PROGMEM = "bw";       const char cmd_help_backward[]      PROGMEM = "{left PW} {right PW} move backward";
