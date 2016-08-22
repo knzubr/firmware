@@ -63,6 +63,8 @@ tlvInterpreter_t *TLVstate;
 
 FILE usbStream;
 FILE hc12Stream;
+FILE hc12FakeStream;
+
 
 xSemaphoreHandle Hc12semaphore;
 
@@ -132,6 +134,7 @@ portSHORT main( void )
 
   initQueueStreamUSB(&usbStream);
   initQueueStreamHC12(&hc12Stream);
+  initQueueStreamHC12fake(&hc12FakeStream);
 
   VtyInit(CLIStateSerialUsb, &usbStream);
   tlvIinitializeInterpreter(TLVstate, &hc12Stream, &usbStream, tlvCmdList);

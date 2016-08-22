@@ -25,7 +25,7 @@ void printErrorInfo(cmdState_t *state);
 void printStatus(FILE *stream);
 
 extern FILE hc12Stream;
-
+extern FILE hc12FakeStream;
 
 enum errorType
 {

@@ -73,7 +73,10 @@ void tlvProcessDta(tlvInterpreter_t *tlvInt, uint8_t dta)
   struct tlvMsg *myRecMsg = (struct tlvMsg *)tlvInt->buffer;
 
   if (tlvInt->bufIdx >= TLV_BUF_LEN)
+  {
+    fprintf_P(tlvInt->errStr, PSTR("# TLV buffer overflow"));
     tlvInt->bufIdx = 0;
+  }
 
   if (tlvInt->bufIdx == 0 && dta != TLV_SYNC)
     return;
@@ -89,7 +92,18 @@ void tlvProcessDta(tlvInterpreter_t *tlvInt, uint8_t dta)
 
   if (tlvCheckCrc(myRecMsg) == 0)
   {
-    fprintf_P(tlvInt->errStr, PSTR("# CRC mismatch\r\n"));
+    fprintf_P(tlvInt->errStr, PSTR("# CRC mismatch: buffer idx %d\r\n"), tlvInt->bufIdx);
+    fprintf_P(tlvInt->errStr, PSTR("\taddress  : %x\r\n"), myRecMsg->address);
+    fprintf_P(tlvInt->errStr, PSTR("\tmsg type : %x\r\n"), myRecMsg->type);
+    fprintf_P(tlvInt->errStr, PSTR("\tcrc lo   : %x\r\n"), myRecMsg->crcLo);
+    fprintf_P(tlvInt->errStr, PSTR("\tcrc hi   : %x\r\n"), myRecMsg->crcHi);
+    fprintf_P(tlvInt->errStr, PSTR("\tdta len  : %x\r\n"), myRecMsg->dtaLen);
+
+    fprintf_P(tlvInt->errStr, PSTR("\tdata:"));
+    for(i=sizeof(struct tlvMsg); i<tlvInt->bufIdx; i++)
+      fprintf_P(tlvInt->errStr, PSTR(" %2x"), tlvInt->buffer[i]);
+    fprintf_P(tlvInt->errStr, PSTR("\r\n"));
+
     for (i=1; i<tlvInt->bufIdx; i++)
     {
       if (tlvInt->buffer[i] == TLV_SYNC)
@@ -104,6 +118,8 @@ void tlvProcessDta(tlvInterpreter_t *tlvInt, uint8_t dta)
     tlvInt->bufIdx = 0;
     return;
   }
+
+  fprintf_P(tlvInt->errStr, PSTR("executing TLV command %x\r\n"), myRecMsg->type);
 
   tlvCommand_t tmp;                                                     // We need to create this object. We can't directly
   for (i=0; i<tlvInt->noOfCmds; i++)
@@ -133,7 +149,7 @@ void sendTlvMsg(tlvMsg_t *message, FILE *ostream)
   }
 }
 
-void sendTlvMsgDta(tlvMsg_t *message, const uint8_t *msgDta, FILE *ostream)
+void sendTlvMsgDta(tlvMsg_t *message, uint8_t *msgDta, FILE *ostream)
 {
   int i, len;
   len = sizeof(struct tlvMsg);
@@ -153,3 +169,4 @@ void sendTlvMsgDta(tlvMsg_t *message, const uint8_t *msgDta, FILE *ostream)
     ptr++;
   }
 }
+

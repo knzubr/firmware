@@ -24,6 +24,13 @@ void initQueueStreamHC12(FILE *stream)
   return;
 }
 
+void initQueueStreamHC12fake(FILE *stream)
+{
+  fdev_setup_stream(stream, HC12PutCharFake, HC12GetChar, _FDEV_SETUP_RW);
+  fdev_set_udata(stream, NULL);
+  return;
+}
+
 int VtyGetChar(FILE *stream)
 {
   (void) stream;
@@ -53,6 +60,13 @@ int HC12PutChar(char c, FILE *stream)
 {
   (void) stream;
   uartHC12SendByte(c);
+  return 0;
+}
+
+int HC12PutCharFake(char c, FILE *stream)
+{
+  (void) stream;
+  uartHC12SendByteFake(c);
   return 0;
 }
 
@@ -157,11 +171,16 @@ ISR(USARTC1_RXC_vect)
 
 void uartHC12SendByte(uint8_t data)
 {
-  xQueueSend(xHC12Tx, &data, portMAX_DELAY);
+  xQueueSend(xHC12Tx, &data, 10);
   vInterruptHC12On();
 }
 
-ISR(USARTC1_DRE_vect) // USART1_UDRE_vect
+void uartHC12SendByteFake(uint8_t data)
+{
+  xQueueSend(xHC12Rec, &data, 10);
+}
+
+ISR(USARTC1_DRE_vect)
 {
   static signed portBASE_TYPE xHigherPriorityTaskWoken;
   static char data;
