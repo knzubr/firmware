@@ -4,6 +4,7 @@
 #include "configuration.h"
 #include "softwareConfig.h"
 #include "hardware.h"
+#include "sim900.h"
 
 #if LANG_EN
 #include "vty_en.h"
@@ -34,6 +35,7 @@ static cliExRes_t hc12modeFunction       (cmdState_t *state);
 static cliExRes_t hc12channelFunction    (cmdState_t *state);
 static cliExRes_t hc12baudrateFunction   (cmdState_t *state);
 static cliExRes_t hc12powerFunction      (cmdState_t *state);
+static cliExRes_t hc12statusFunction     (cmdState_t *state);
 
 static cliExRes_t hc12sendForwardFunction    (cmdState_t *state);
 static cliExRes_t hc12sendBackwordFunction   (cmdState_t *state);
@@ -41,11 +43,14 @@ static cliExRes_t hc12sendRotateLeftFunction (cmdState_t *state);
 static cliExRes_t hc12sendRotateRightFunction(cmdState_t *state);
 static cliExRes_t hc12sendStopFunction       (cmdState_t *state);
 
+static cliExRes_t sim900OnFunction           (cmdState_t *state);
+static cliExRes_t sim900OffFunction          (cmdState_t *state);
+static cliExRes_t sim900atMode               (cmdState_t *state);
 
-static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t cmdDta[]);
-static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[] );
+static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t const cmdDta[]);
+static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[] PROGMEM);
 
-static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t cmdDta[]);
+static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t const cmdDta[]);
 
 
 const char okStr[] PROGMEM = "OK\r\n";
@@ -95,13 +100,22 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_rotateLeft,  cmd_help_rotateLeft,  rotateLeftFunction},
   {cmd_rotateRight, cmd_help_rotateRight, rotateRightFunction},
   {cmd_stop,        cmd_help_stop,        stopFunction},
+
+  {cmd_HC12status,      cmd_help_HC12status,      hc12statusFunction},
+
   {cmd_hc12forward,     cmd_help_hc12forward,     hc12sendForwardFunction},
   {cmd_hc12backward,    cmd_help_hc12backward,    hc12sendBackwordFunction},
   {cmd_hc12rotateLeft,  cmd_help_hc12rotateLeft,  hc12sendRotateLeftFunction},
   {cmd_hc12rotateRight, cmd_help_hc12rotateRight, hc12sendRotateRightFunction},
   {cmd_hc12stop,        cmd_help_hc12stop,        hc12sendStopFunction},
+
+  {cmd_sim900on,        cmd_help_sim900on,        sim900OnFunction},
+  {cmd_sim900off,       cmd_help_sim900off,       sim900OffFunction},
+  {cmd_sim900at,        cmd_help_sim900at,        sim900atMode},
+
   {NULL, NULL, NULL}
 };
+
 
 const command_t cmdListConfigure[] PROGMEM =
 {
@@ -111,7 +125,7 @@ const command_t cmdListConfigure[] PROGMEM =
   {cmd_HC12channel,  cmd_help_HC12channel,  hc12channelFunction},
   {cmd_HC12baudrate, cmd_help_HC12baudrate, hc12baudrateFunction},
   {cmd_HC12power,    cmd_help_HC12power,    hc12powerFunction},
-
+  {cmd_HC12status,   cmd_help_HC12status,   hc12statusFunction},
   {cmd_conf_save,    cmd_help_conf_save,    saveConfigFunction},
   {cmd_enable,       cmd_help_enable,       enableFunction},
   {cmd_disable,      cmd_help_disable,      disableFunction},
@@ -196,8 +210,7 @@ static cliExRes_t configureModeFunction(cmdState_t *state)
 
 
 static cliExRes_t forwardFunction        (cmdState_t *state)
-{
-    /*
+{/*
   uint8_t left = 50;
   uint8_t right = 50;
 
@@ -211,162 +224,162 @@ static cliExRes_t forwardFunction        (cmdState_t *state)
 
   forwardB(left, right);
 */
-
-
-  uint8_t dta[3];
-  dta[0]=0;
-  dta[1] = 50;
-  dta[2] = 50;
+  tlvMsgMoveDta_t dta;
+  dta.duration = 0;
+  dta.pwmLeft  = 50;
+  dta.pwmRight = 50;
 
   if (state->argc == 1)
-    dta[1] = dta[2] = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = dta.pwmRight = cmdlineGetArgInt(1, state);
   if (state->argc >=2)
   {
-    dta[1] = cmdlineGetArgInt(1, state);
-    dta[2] = cmdlineGetArgInt(2, state);
+    dta.pwmLeft = cmdlineGetArgInt(1, state);
+    dta.pwmRight = cmdlineGetArgInt(2, state);
   }
+  sendHC12loopback(state, 0, FORWARD, sizeof(tlvMsgMoveDta_t), (uint8_t *) &dta);
 
-  sendHC12loopback(state, 0, FORWARD, 3, dta);
   return OK_SILENT;
 }
 
 static cliExRes_t backwordFunction       (cmdState_t *state)
 {
-  uint8_t left = 50;
-  uint8_t right = 50;
+  tlvMsgMoveDta_t dta;
+  dta.duration = 0;
+  dta.pwmLeft  = 50;
+  dta.pwmRight = 50;
 
   if (state->argc == 1)
-    left = right = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = dta.pwmRight = cmdlineGetArgInt(1, state);
   if (state->argc >=2)
   {
-    left = cmdlineGetArgInt(1, state);
-    right = cmdlineGetArgInt(2, state);
+    dta.pwmLeft = cmdlineGetArgInt(1, state);
+    dta.pwmRight = cmdlineGetArgInt(2, state);
   }
-
-  backwordB(left, right);
+  sendHC12loopback(state, 0, BACKWORD, sizeof(tlvMsgMoveDta_t), (uint8_t *) &dta);
 
   return OK_SILENT;
 }
 static cliExRes_t rotateLeftFunction     (cmdState_t *state)
 {
-  uint8_t left = 50;
-  uint8_t right = 50;
+  tlvMsgMoveDta_t dta;
+  dta.duration = 0;
+  dta.pwmLeft  = 50;
+  dta.pwmRight = 50;
 
   if (state->argc == 1)
-    left = right = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = dta.pwmRight = cmdlineGetArgInt(1, state);
   if (state->argc >=2)
   {
-    left = cmdlineGetArgInt(1, state);
-    right = cmdlineGetArgInt(2, state);
+    dta.pwmLeft = cmdlineGetArgInt(1, state);
+    dta.pwmRight = cmdlineGetArgInt(2, state);
   }
-
-  rotateLeftB(left, right);
+  sendHC12loopback(state, 0, ROTATE_LEFT, sizeof(tlvMsgMoveDta_t), (uint8_t *) &dta);
 
   return OK_SILENT;
 }
 
 static cliExRes_t rotateRightFunction    (cmdState_t *state)
 {
-  uint8_t left = 50;
-  uint8_t right = 50;
+  tlvMsgMoveDta_t dta;
+  dta.duration = 0;
+  dta.pwmLeft  = 50;
+  dta.pwmRight = 50;
 
   if (state->argc == 1)
-    left = right = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = dta.pwmRight = cmdlineGetArgInt(1, state);
   if (state->argc >=2)
   {
-    right = cmdlineGetArgInt(1, state);
-    left = cmdlineGetArgInt(2, state);
+    dta.pwmLeft = cmdlineGetArgInt(1, state);
+    dta.pwmRight = cmdlineGetArgInt(2, state);
   }
-
-  rotateRightB(left, right);
+  sendHC12loopback(state, 0, ROTATE_RIGHT, sizeof(tlvMsgMoveDta_t), (uint8_t *) &dta);
 
   return OK_SILENT;
 }
 
 static cliExRes_t stopFunction           (cmdState_t *state)
-{
+{/*
   (void) state;
   offHbridge();
+*/
+  uint8_t dta[1];
+  dta[0] = 0;
+  sendHC12loopback(state, 0, STOP, 1, dta);
+
   return OK_SILENT;
 }
 
 static cliExRes_t hc12sendForwardFunction    (cmdState_t *state)
 {
-  uint8_t dta[3];
-  dta[0]=0;
-  dta[1] = 50;
-  dta[2] = 50;
+  tlvMsgMoveDta_t dta;
+  dta.duration = 0;
+  dta.pwmLeft  = 50;
+  dta.pwmRight = 50;
 
   if (state->argc == 1)
-    dta[1] = dta[2] = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = dta.pwmRight = cmdlineGetArgInt(1, state);
   if (state->argc >=2)
   {
-    dta[1] = cmdlineGetArgInt(1, state);
-    dta[2] = cmdlineGetArgInt(2, state);
+    dta.pwmLeft = cmdlineGetArgInt(1, state);
+    dta.pwmRight = cmdlineGetArgInt(2, state);
   }
-
-  sendHC12(state, 0, FORWARD, 3, dta);
+  sendHC12(state, 0, FORWARD, sizeof(tlvMsgMoveDta_t), (uint8_t *) &dta);
   return OK_SILENT;
 }
 
 static cliExRes_t hc12sendBackwordFunction   (cmdState_t *state)
 {
-  uint8_t dta[3];
-  dta[0]=0;
-  dta[1] = 50;
-  dta[2] = 50;
+  tlvMsgMoveDta_t dta;
+  dta.duration = 0;
+  dta.pwmLeft  = 50;
+  dta.pwmRight = 50;
 
   if (state->argc == 1)
-    dta[1] = dta[2] = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = dta.pwmRight = cmdlineGetArgInt(1, state);
   if (state->argc >=2)
   {
-    dta[1] = cmdlineGetArgInt(1, state);
-    dta[2] = cmdlineGetArgInt(2, state);
+    dta.pwmLeft = cmdlineGetArgInt(1, state);
+    dta.pwmRight = cmdlineGetArgInt(2, state);
   }
-
-  sendHC12(state, 0, BACKWORD, 3, dta);
+  sendHC12(state, 0, BACKWORD, sizeof(tlvMsgMoveDta_t), (uint8_t *) &dta);
   return OK_SILENT;
 }
 
 
 static cliExRes_t hc12sendRotateLeftFunction    (cmdState_t *state)
 {
-  uint8_t msgDta[3];
-
-  msgDta[0] = 0;     //duration
-  msgDta[1] = 50;    //PWM left
-  msgDta[2] = 50;    //PWM right
+  tlvMsgMoveDta_t dta;
+  dta.duration = 0;
+  dta.pwmLeft  = 50;
+  dta.pwmRight = 50;
 
   if (state->argc == 1)
-    msgDta[1] = msgDta[2] = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = dta.pwmRight = cmdlineGetArgInt(1, state);
   if (state->argc >=2)
   {
-    msgDta[1] = cmdlineGetArgInt(1, state);
-    msgDta[2] = cmdlineGetArgInt(2, state);
+    dta.pwmLeft = cmdlineGetArgInt(1, state);
+    dta.pwmRight = cmdlineGetArgInt(2, state);
   }
-
-  sendHC12(state, 0, ROTATE_LEFT, 3, msgDta);
+  sendHC12(state, 0, ROTATE_LEFT, sizeof(tlvMsgMoveDta_t), (uint8_t *) &dta);
 
   return OK_SILENT;
 }
 
 static cliExRes_t hc12sendRotateRightFunction    (cmdState_t *state)
 {
-  uint8_t msgDta[3];
-
-  msgDta[0] = 0;     //duration
-  msgDta[1] = 50;    //PWM left
-  msgDta[2] = 50;    //PWM right
+  tlvMsgMoveDta_t dta;
+  dta.duration = 0;
+  dta.pwmLeft  = 50;
+  dta.pwmRight = 50;
 
   if (state->argc == 1)
-    msgDta[1] = msgDta[2] = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = dta.pwmRight = cmdlineGetArgInt(1, state);
   if (state->argc >=2)
   {
-    msgDta[1] = cmdlineGetArgInt(2, state);
-    msgDta[2] = cmdlineGetArgInt(1, state);
+    dta.pwmLeft = cmdlineGetArgInt(1, state);
+    dta.pwmRight = cmdlineGetArgInt(2, state);
   }
-
-  sendHC12(state, 0, ROTATE_RIGHT, 3, msgDta);
+  sendHC12(state, 0, ROTATE_RIGHT, sizeof(tlvMsgMoveDta_t), (uint8_t *) &dta);
 
   return OK_SILENT;
 }
@@ -377,7 +390,7 @@ static cliExRes_t hc12sendStopFunction       (cmdState_t *state)
   return OK_SILENT;
 }
 
-static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[])
+static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[] PROGMEM)
 {
   if (xSemaphoreTake(Hc12semaphore, 10) == pdTRUE)
   {
@@ -395,17 +408,17 @@ static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[])
 
     HC12setTransparentMode();
     xSemaphoreGive(Hc12semaphore );
-    return OK_INFORM;
+    return OK_SILENT;
   }
   else
   {
     return ERROR_INFORM;
   }
-
 }
 
-static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t cmdDta[])
+static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t const cmdDta[])
 {
+  (void) state;
   tlvMsg_t msg;
   msg.sync = TLV_SYNC;
   msg.address = addr;
@@ -416,32 +429,10 @@ static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_
 
   sendTlvMsgDta(&msg, cmdDta, &hc12Stream);
 
-  if (xSemaphoreTake(Hc12semaphore, 10) == pdTRUE)
-  {
-    vTaskDelay(2);
-    HC12setTransparentMode();
-
-
-    //fprintf_P(state->myStdInOut, cmd, cmdlineGetArgStr(1, state));
-    fprintf_P(&hc12Stream, (const char *) cmdDta, cmdlineGetArgStr(1, state));
-
-    uint8_t val;
-    while (xQueueReceive(xHC12Rec, &val, 100) == pdTRUE)
-    {
-        fputc(val, state->myStdInOut);
-    }
-
-    xSemaphoreGive(Hc12semaphore );
-    return OK_INFORM;
-  }
-  else
-  {
-    return ERROR_INFORM;
-  }
-
+  return OK_INFORM;
 }
 
-static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t cmdDta[])
+static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t const cmdDta[])
 {
   (void) state;
   tlvMsg_t msg;
@@ -477,6 +468,42 @@ static cliExRes_t hc12powerFunction      (cmdState_t *state)
     return sendHC12AtCmd(state, PSTR("AT+P%s\r\n"));
 }
 
+static cliExRes_t hc12statusFunction     (cmdState_t *state)
+{
+    return sendHC12AtCmd(state, PSTR("AT+RX\r\n"));
+}
+
+static cliExRes_t sim900OnFunction           (cmdState_t *state)
+{
+    (void) state;
+    sim900pwrOn();
+    return OK_INFORM;
+}
+
+static cliExRes_t sim900OffFunction          (cmdState_t *state)
+{
+    (void) state;
+    sim900pwrOffHw();
+    return OK_INFORM;
+}
+
+static cliExRes_t sim900atMode               (cmdState_t *state)
+{
+    uint8_t znak;
+    fprintf_P(state->myStdInOut, PSTR("Press ^z to exit at mode\r\n"));
+    for ( ; ;)
+    {
+        if (xQueueReceive(xVtyRec, &znak, 0) == pdTRUE)
+        {
+            if (znak == 0x1A)
+                break;
+            xQueueSend(xSIM900Tx, &znak, 0);
+        }
+        if (xQueueReceive(xSIM900Rec, &znak, 0) == pdTRUE)
+            fputc(znak, state->myStdInOut);
+    }
+    return OK_INFORM;
+}
 
 /*
 static void printTable(FILE *stream)

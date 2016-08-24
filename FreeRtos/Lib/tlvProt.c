@@ -2,16 +2,21 @@
 
 void tlvIinitializeInterpreter(tlvInterpreter_t *tlvInt, FILE *ioStr, FILE *errStr, const tlvCommand_t *commands)
 {
+  tlvCommand_t tmpCmd;
   memset(tlvInt, 0, sizeof(struct tlvInterpreter));
+
   tlvInt->ioStr  = ioStr;
   tlvInt->errStr = errStr;
   tlvInt->commands = commands;
 
-  while(commands->type != 0)
+  tlvInt->noOfCmds = -1;
+  do
   {
+    memcpy_P(&tmpCmd, commands, sizeof(tlvCommand_t));
     tlvInt->noOfCmds++;
     commands++;
   }
+  while(tmpCmd.type != 0);
 }
 
 void tlvCalculateCrc(tlvMsg_t *message)
@@ -149,11 +154,11 @@ void sendTlvMsg(tlvMsg_t *message, FILE *ostream)
   }
 }
 
-void sendTlvMsgDta(tlvMsg_t *message, uint8_t *msgDta, FILE *ostream)
+void sendTlvMsgDta(tlvMsg_t *message, const uint8_t const *msgDta, FILE *ostream)
 {
   int i, len;
   len = sizeof(struct tlvMsg);
-  uint8_t *ptr = (uint8_t *) message;
+  uint8_t const *ptr = (uint8_t *) message;
 
   for (i=0; i<len; i++)
   {

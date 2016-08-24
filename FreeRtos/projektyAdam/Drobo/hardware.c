@@ -35,7 +35,7 @@ void hardwareInit(void)
   // 1 Sim900 reset     5 SPI 1
   // 2 Sim900 RxD       6 SPI 2
   // 3 Sim900 TxD       7 SPI 3
-  PORTD.DIR=0x31;
+  PORTD.DIR=0x35;
   PORTD.OUT=0x00;
 
   /// PORT E
@@ -48,7 +48,7 @@ void hardwareInit(void)
   // 0 SIM900 PWR HW
   // 1 MOSTEK H Stand by
   PORTR.DIR=0x03;
-  PORTR.OUT=0x00;
+  PORTR.OUT=0x01;
 
 
   //Timer 0 H bridge PWM
