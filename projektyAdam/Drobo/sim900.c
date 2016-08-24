@@ -1,5 +1,9 @@
 #include "sim900.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
+
 tcpConDesc_t definedTcpConnectrions[]  __attribute__((section (".eeprom"))) =
 {
     { "makgywer.vipserv.org", 2002},
@@ -8,36 +12,43 @@ tcpConDesc_t definedTcpConnectrions[]  __attribute__((section (".eeprom"))) =
     { "makgywer.vipserv.org", 2002}
 };
 
-void pwrOnHw(void)
+void sim900pwrOn(void)
 {
-
+  PORTR.OUTSET = 0x00;
+  vTaskDelay(100);
+  PORTD.DIRSET = 0x10;
+  PORTD.OUTCLR = 0x10;
+  vTaskDelay(150);
+  PORTD.DIRCLR = 0x10;
 }
 
-void pwrOnSoft(void)
+void sim900pwrOffHw(void)
 {
-
+  PORTD.DIRSET = 0x10;
+  PORTD.OUTCLR = 0x10;
+  vTaskDelay(150);
+  PORTD.DIRCLR = 0x10;
+vTaskDelay(200);
 }
 
-void pwrOffHw(void)
-{
 
+void sim900pwrOffSoft(void)
+{
+  //fprintf_P(&sim900Str, PSRT("AT+CPOWD=1"));
 }
 
-
-void pwrOffSoft(void)
+void sim900reset(void)
 {
-
-}
-
-void resetSim900(void)
-{
-
+  PORTD.DIRSET = 0x02;
+  PORTD.OUTCLR = 0x10;
+  vTaskDelay(15);
+  PORTD.DIRCLR = 0x10;
 }
 
 void openTcpCon(uint8_t bufNo, uint8_t defConNo)
 {
     uint16_t portNo = eeprom_read_word(&definedTcpConnectrions[defConNo].dstPortNo);
-    uint8_t *eepromPtr = definedTcpConnectrions[defConNo].srcAddress;
+    uint8_t *eepromPtr = (uint8_t *) definedTcpConnectrions[defConNo].srcAddress;
 //  eeprom_read_block()
 }
 

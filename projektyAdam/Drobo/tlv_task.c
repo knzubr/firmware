@@ -17,8 +17,10 @@ void vTaskTLV(void *tlvIntPtr)
       continue;
     }
 
+    HC12setTransparentMode();
     do
     {
+      fprintf_P(state->errStr, PSTR("0x%02x "), znak);
       tlvProcessDta(state, znak);
     }
     while( xQueueReceive(xHC12Rec, &znak, 1) == pdTRUE);

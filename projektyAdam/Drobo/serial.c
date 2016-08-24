@@ -63,6 +63,23 @@ int HC12PutChar(char c, FILE *stream)
   return 0;
 }
 
+int SIM900GetChar(FILE *stream)
+{
+  (void) stream;
+  uint8_t c;
+  if (xQueueReceive(xSIM900Rec, &c, portMAX_DELAY) == 0)
+    return EOF;
+  return c;
+}
+
+int SIM900PutChar(char c, FILE *stream)
+{
+  (void) stream;
+  uartSIM900SendByte(c);
+  return 0;
+}
+
+
 int HC12PutCharFake(char c, FILE *stream)
 {
   (void) stream;
@@ -73,31 +90,42 @@ int HC12PutCharFake(char c, FILE *stream)
 //#include<avr/iox128a1.h>
 void xSerialPortInitMinimal(void)
 {
-  ///VTY - USART C0
-
+  ///VTY             - USART C0
   USARTC0.CTRLA = USART_RXCINTLVL_LO_gc;// | USART_DREINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
   USARTC0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
   USARTC0.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów
   // 115200 @ 32MHz
-  USARTC0.BAUDCTRLA= 2094 & 0xFF;                          //12; BSEL = 131  BSCALE = -3 //USARTD0.BAUDCTRLA= 131;
-  USARTC0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0xD0;// ((-3) << USART_BSCALE0_bp)|(131 >> 8);
+  USARTC0.BAUDCTRLA= 2094 & 0xFF;                          //BSEL = 2094  BSCALE = -7
+  USARTC0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8);
 
 
+  /// HC-12 / ZigBee - USART C1
   USARTC1.CTRLA = USART_RXCINTLVL_LO_gc;// | USART_DREINTLVL_LO_gc;                   // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
   USARTC1.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
   USARTC1.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów
+  // 9600 @ 32MHz
+  USARTC1.BAUDCTRLA= 3317 & 0xFF;                          //BSEL = 3317  BSCALE = -4
+  USARTC1.BAUDCTRLB= (-4 << USART_BSCALE0_bp)|(3317 >> 8);
+
+  ///SIM900          - USART D0
+  USARTD0.CTRLA = USART_RXCINTLVL_LO_gc;// | USART_DREINTLVL_LO_gc;      // Włączenie przerwań Odebrano. By włączyć przerwanie pusty bufor nadawczy dodać: USART_DREINTLVL_LO_gc
+  USARTD0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;           // Włączenie nadajnika i odbiornika
+  USARTD0.CTRLC = USART_CHSIZE_8BIT_gc;                    // Tryb 8 bitów
   // 115200 @ 32MHz
-  USARTC1.BAUDCTRLA= 12 & 0xFF;                          //12; BSEL = 12  BSCALE = 4 //USARTD0.BAUDCTRLA= 131;
-  USARTC1.BAUDCTRLB= (4 << USART_BSCALE0_bp)|(2094 >> 8); //USARTD0.BAUDCTRLB= 0x40;// ((4) << USART_BSCALE0_bp)|(131 >> 8);
+  USARTD0.BAUDCTRLA= 2094 & 0xFF;                          //BSEL = 2094  BSCALE = -7
+  USARTD0.BAUDCTRLB= (-7 << USART_BSCALE0_bp)|(2094 >> 8);
 
 
   portENTER_CRITICAL();
   {
-    xVtyRec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
-    xVtyTx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xVtyRec    = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xVtyTx     = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
 
-    xHC12Rec = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
-    xHC12Tx = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xHC12Rec   = xQueueCreate(64, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xHC12Tx    = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+
+    xSIM900Rec = xQueueCreate(128,( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
+    xSIM900Tx  = xQueueCreate(32, ( unsigned portBASE_TYPE ) sizeof( signed portCHAR ));
   }
   portEXIT_CRITICAL();
   return;
@@ -192,6 +220,51 @@ ISR(USARTC1_DRE_vect)
   {
     xHigherPriorityTaskWoken = pdFALSE;
     vInterruptHC12Off();
+  }
+  if( xHigherPriorityTaskWoken )
+  {
+    taskYIELD();
+  }
+}
+
+/** SIM900 ************************************/
+
+ISR(USARTD0_RXC_vect)
+{
+
+  static signed portBASE_TYPE xHigherPriorityTaskWoken;
+  signed portCHAR cChar;
+
+  cChar = USARTD0.DATA;
+  //return;
+  //USARTC0.DATA = cChar+1;
+
+  xHigherPriorityTaskWoken = pdFALSE;
+  xQueueSendFromISR(xSIM900Rec, &cChar, &xHigherPriorityTaskWoken);
+  if( xHigherPriorityTaskWoken )
+  {
+    taskYIELD();
+  }
+}
+
+void uartSIM900SendByte(uint8_t data)
+{
+  xQueueSend(xSIM900Tx, &data, 10);
+  vInterruptSIM900On();
+}
+
+ISR(USARTD0_DRE_vect)
+{
+  static signed portBASE_TYPE xHigherPriorityTaskWoken;
+  static char data;
+  if(xQueueReceiveFromISR(xSIM900Tx, &data, &xHigherPriorityTaskWoken) == pdTRUE)
+  {
+    USARTD0.DATA = data;
+  }
+  else
+  {
+    xHigherPriorityTaskWoken = pdFALSE;
+    vInterruptSIM900Off();
   }
   if( xHigherPriorityTaskWoken )
   {

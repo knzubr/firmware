@@ -13,29 +13,24 @@ struct tcpConDesc
 typedef struct tcpConDesc tcpConDesc_t;
 
 /**
- * Dołączenie zasilania do modułu sim900
+ * Włączenie modułu sim900
  */
-void pwrOnHw(void);
-
-/**
- * Programowe włączenie modułu sim900
- */
-void pwrOnSoft(void);
+void sim900pwrOn(void);
 
 /**
  * Odłączenie zasilania od modułu sim900
  */
-void pwrOffHw(void);
+void sim900pwrOffHw(void);
 
 /**
  * Programowe wyłączenie modułu sim900
  */
-void pwrOffSoft(void);
+void sim900pwrOffSoft(void);
 
 /**
  * Rsetart modułu
  */
-void resetSim900(void);
+void sim900reset(void);
 
 
 /**

@@ -55,8 +55,8 @@ xQueueHandle xHC12Tx;
 xQueueHandle xHC12Rec;
 xQueueHandle xMainRec;
 
-xQueueHandle xSim900Rec;
-xQueueHandle xSim900Tx;
+xQueueHandle xSIM900Rec;
+xQueueHandle xSIM900Tx;
 
 cmdState_t *CLIStateSerialUsb;
 tlvInterpreter_t *TLVstate;

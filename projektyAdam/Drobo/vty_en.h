@@ -43,7 +43,8 @@ const char cmd_configure[]    PROGMEM = "config";   const char cmd_help_configur
 const char cmd_HC12mode[]     PROGMEM = "hc12mode"; const char  cmd_help_HC12mode[]     PROGMEM = "[1-3] Set HC12 operation mode";
 const char cmd_HC12channel[]  PROGMEM = "hc12chan"; const char  cmd_help_HC12channel[]  PROGMEM = "[1-100] Set transmission channel for HC12";
 const char cmd_HC12baudrate[] PROGMEM = "hc12baud"; const char  cmd_help_HC12baudrate[] PROGMEM = "[] Set HC12 bandwidth";
-const char cmd_HC12power[]    PROGMEM = "hc12pwr";  const char  cmd_help_HC12power[]    PROGMEM = "[] Set HC12 power";
+const char cmd_HC12power[]    PROGMEM = "hc12pwr";  const char  cmd_help_HC12power[]    PROGMEM = "[1-8] Set HC12 power";
+const char cmd_HC12status[]   PROGMEM = "hc12stat"; const char  cmd_help_HC12status[]    PROGMEM = "Get HC-12 status";
 
 const char cmd_forward[]      PROGMEM = "fw";       const char cmd_help_forward[]       PROGMEM = "{left PW} {right PW} move forward";
 const char cmd_backward[]     PROGMEM = "bw";       const char cmd_help_backward[]      PROGMEM = "{left PW} {right PW} move backward";
@@ -56,6 +57,10 @@ const char cmd_hc12backward[]     PROGMEM = "hbw";       const char cmd_help_hc1
 const char cmd_hc12rotateLeft[]   PROGMEM = "hrl";       const char cmd_help_hc12rotateLeft[]    PROGMEM = "{left PW} {right PW} rotate left";
 const char cmd_hc12rotateRight[]  PROGMEM = "hrr";       const char cmd_help_hc12rotateRight[]   PROGMEM = "{left PW} {right PW} rotate right";
 const char cmd_hc12stop[]         PROGMEM = "hstop";     const char cmd_help_hc12stop[]          PROGMEM = "Disable H-bridges";
+
+const char cmd_sim900on[]         PROGMEM = "son";       const char cmd_help_sim900on[]          PROGMEM = "Sim 900 power on";
+const char cmd_sim900off[]        PROGMEM = "soff";      const char cmd_help_sim900off[]         PROGMEM = "Sim 900 power off";
+const char cmd_sim900at[]         PROGMEM = "sat";       const char cmd_help_sim900at[]          PROGMEM = "Foreword Sim 900 port";
 
 const char cmd_conf_save[]    PROGMEM = "save";     const char cmd_help_conf_save[]     PROGMEM = "Save configuration";
 

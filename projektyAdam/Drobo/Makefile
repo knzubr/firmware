@@ -133,7 +133,7 @@ EXTRAINCDIRS =
 
 DEBUG_LEVEL=-g
 WARNINGS=-Wall -Wextra -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wsign-compare \
-		-Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wunused
+		-Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wunused -Wattributes
 
 CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../Lib/include -I../../Lib/net/include \
 $(DEBUG_LEVEL) -O$(OPT) \

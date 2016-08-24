@@ -81,12 +81,30 @@
   USARTC1.CTRLA = ucByte;             \
 }
 
+#define vInterruptSIM900Off()            \
+{                                     \
+  unsigned portCHAR ucInByte;         \
+                                      \
+  ucInByte = USARTD0.CTRLA;           \
+  ucInByte &= ~USART_DREINTLVL_LO_gc; \
+  USARTD0.CTRLA = ucInByte;           \
+}
+
+#define vInterruptSIM900On()             \
+{                                     \
+  unsigned portCHAR ucByte;           \
+                                      \
+  ucByte = USARTD0.CTRLA;             \
+  ucByte |= USART_DREINTLVL_LO_gc;    \
+  USARTD0.CTRLA = ucByte;             \
+}
 
 extern xQueueHandle         xVtyRec;
 extern xQueueHandle         xVtyTx;
 extern xQueueHandle         xHC12Rec;
 extern xQueueHandle         xHC12Tx;
-
+extern xQueueHandle         xSIM900Rec;
+extern xQueueHandle         xSIM900Tx;
 
 // ******************************* RS485 *********************
 
@@ -103,9 +121,13 @@ int          HC12PutChar(char c, FILE *stream);
 int          HC12PutCharFake(char c, FILE *stream);
 int          HC12GetChar(FILE *stream);
 
+int          SIM900PutChar(char c, FILE *stream);
+int          SIM900GetChar(FILE *stream);
+
 void         uartVtySendByte(uint8_t data);
 void         uartHC12SendByte(uint8_t data);
 void         uartHC12SendByteFake(uint8_t data);
+void         uartSIM900SendByte(uint8_t data);
 
 void         xSerialPortInitMinimal(void);
 
