@@ -7,10 +7,10 @@
 void hardwareInit(void)
 {
   /// PORT A MOSTKI H
-  //0 - AIN2_A (18) 4 - AIN2_B (+AIN2_A)
-  //1 - AIN1_A (17) 5 - AIN1_B (+AIN1_A)
-  //2 - BIN1_A (20) 6 - BIN1_B (+BIN1_A)
-  //3 - BIN2_A (19) 7 - BIN2_B (+BIN2_A)
+  //0 - (18)        4 - AIN2
+  //1 - (17)        5 - AIN1
+  //2 - (20)        6 - BIN1
+  //3 - (19)        7 - BIN2
   PORTA.DIR=0xFF;
   PORTA.OUT=0x00;
 
@@ -39,16 +39,16 @@ void hardwareInit(void)
   PORTD.OUT=0x00;
 
   /// PORT E
-  // 0 RPI 3v3          2 RPI RxD
-  // 1 RPI 5V           3 RPI TxD
+  // 0 DC/DC 4v3        2 RPI RxD
+  // 1 RPI 3v3          3 RPI TxD
   PORTE.DIR=0x0B;
-  PORTD.OUT=0x00;
+  PORTE.OUT=0x03;
 
   /// PORT R
-  // 0 SIM900 PWR HW
+  // 0 RPI 4v3
   // 1 MOSTEK H Stand by
   PORTR.DIR=0x03;
-  PORTR.OUT=0x01;
+  PORTR.OUT=0x00;
 
 
   //Timer 0 H bridge PWM
@@ -155,4 +155,52 @@ void rotateRightB(uint8_t left, uint8_t right)
 
     TCC0.CCA = left;
     TCC0.CCB = right;
+}
+
+void pwrOn4v3()
+{
+    PORTE.OUTCLR = 0x01;
+}
+
+void pwrOn3v3rpi(void)
+{
+    PORTE.OUTCLR = 0x02;
+}
+
+void pwrOn4v3rpi(void)
+{
+    PORTE.OUTCLR = 0x01;
+    PORTR.OUTSET = 0x01;
+}
+
+void pwrOff4v3()
+{
+    PORTE.OUTSET = 0x01;
+}
+
+
+void pwrOff3v3rpi(void)
+{
+    PORTE.OUTSET = 0x02;
+}
+
+void pwrOff4v3rpi(void)
+{
+    PORTR.OUTCLR = 0x01;
+}
+
+uint8_t isPwr4v3(void)
+{
+    return ((PORTE.OUT & 0x01) == 0x00);
+}
+
+uint8_t isPwr3v3rpi(void)
+{
+    return ((PORTE.OUT & 0x02) == 0x00);
+}
+
+uint8_t isPwr4v3rpi(void)
+{
+//    return ((PORTE.OUT & 0x01 == 0x00) && ((PORTR.OUT & 0x01) == 0x01));
+    return (PORTR.OUT & 0x01);
 }

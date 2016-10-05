@@ -44,11 +44,11 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-mmcu=atxmega128a1u" />
-			<Add option="-DF_CPU=16000000UL" />
+			<Add option="-mmcu=atxmega128a4u" />
+			<Add option="-DF_CPU=32000000UL" />
 		</Compiler>
 		<Linker>
-			<Add option="-mmcu=atxmega128a1u" />
+			<Add option="-mmcu=atxmega128a4u" />
 			<Add option="-Wl,-Map=$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).map,--cref" />
 		</Linker>
 		<ExtraCommands>

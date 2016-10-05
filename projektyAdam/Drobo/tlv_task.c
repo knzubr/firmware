@@ -4,7 +4,7 @@ void vTaskTLV(void *tlvIntPtr)
 {
   tlvInterpreter_t *state = (tlvInterpreter_t *)(tlvIntPtr);
 
-  char znak;
+  uint8_t znak;
   for( ;; )
   {
     vTaskDelay(0);
