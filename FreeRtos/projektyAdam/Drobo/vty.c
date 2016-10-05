@@ -31,6 +31,8 @@ static cliExRes_t rotateLeftFunction     (cmdState_t *state);
 static cliExRes_t rotateRightFunction    (cmdState_t *state);
 static cliExRes_t stopFunction           (cmdState_t *state);
 
+static cliExRes_t pwrFunction            (cmdState_t *state);
+
 static cliExRes_t hc12modeFunction       (cmdState_t *state);
 static cliExRes_t hc12channelFunction    (cmdState_t *state);
 static cliExRes_t hc12baudrateFunction   (cmdState_t *state);
@@ -48,7 +50,7 @@ static cliExRes_t sim900OffFunction          (cmdState_t *state);
 static cliExRes_t sim900atMode               (cmdState_t *state);
 
 static cliExRes_t sendHC12(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t const cmdDta[]);
-static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[] PROGMEM);
+static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[]);
 
 static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type, uint8_t len, const uint8_t const cmdDta[]);
 
@@ -100,6 +102,8 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_rotateLeft,  cmd_help_rotateLeft,  rotateLeftFunction},
   {cmd_rotateRight, cmd_help_rotateRight, rotateRightFunction},
   {cmd_stop,        cmd_help_stop,        stopFunction},
+
+  {cmd_pwr,         cmd_help_pwr,         pwrFunction},
 
   {cmd_HC12status,      cmd_help_HC12status,      hc12statusFunction},
 
@@ -172,6 +176,8 @@ static cliExRes_t disableFunction(cmdState_t *state)
 void printStatus(FILE *stream)
 {
   fprintf_P(stream, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n"));
+  fprintf_P(stream, PSTR("PWR status: 4v3 %s, RPI 3v3 %s, RPI 4v3 %s\r\n"), isPwr4v3() ? "On": "Off", isPwr3v3rpi() ? "On": "Off", isPwr4v3rpi() ? "On": "Off");
+
   //Print system state
 }
 
@@ -309,6 +315,38 @@ static cliExRes_t stopFunction           (cmdState_t *state)
   return OK_SILENT;
 }
 
+
+static cliExRes_t pwrFunction           (cmdState_t *state)
+{
+  if (state->argc <2)
+    return ERROR_INFORM;
+
+  uint8_t devNo = cmdlineGetArgInt(1, state);
+  uint8_t devState = cmdlineGetArgInt(2, state);
+
+  if (devState == 0)
+  {
+      switch (devNo)
+      {
+          case 1: pwrOff4v3();     break;
+          case 2: pwrOff3v3rpi();  break;
+          case 3: pwrOff4v3rpi();  break;
+          default:                 break;
+      }
+  }
+  else
+  {
+      switch (devNo)
+      {
+          case 1: pwrOn4v3();      break;
+          case 2: pwrOn3v3rpi();   break;
+          case 3: pwrOn4v3rpi();   break;
+          default:                 break;
+      }
+  }
+  return OK_SILENT;
+}
+
 static cliExRes_t hc12sendForwardFunction    (cmdState_t *state)
 {
   tlvMsgMoveDta_t dta;
@@ -390,7 +428,7 @@ static cliExRes_t hc12sendStopFunction       (cmdState_t *state)
   return OK_SILENT;
 }
 
-static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[] PROGMEM)
+static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[])
 {
   if (xSemaphoreTake(Hc12semaphore, 10) == pdTRUE)
   {

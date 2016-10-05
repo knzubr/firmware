@@ -25,6 +25,7 @@ void vTaskVTYsocket(void *cliStatePtr)
   char znak;
   for( ;; )
   {
+    vTaskDelay(0);
     znak = 0;
     znak = fgetc(state->myStdInOut);
     cmdlineInputFunc((char)znak, state);

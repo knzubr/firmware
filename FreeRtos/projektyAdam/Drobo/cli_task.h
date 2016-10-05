@@ -24,10 +24,10 @@ void vTaskVTYusb(void *cliStatePtr);
 
 /**
  * Proces odpowiedzialny za obsługę VTY
- * Kod uniwersalny dla dowolnego strumienai FILE
+ * Kod uniwersalny dla dowolnego strumienia FILE
  * @param *cliStatePtr wskaźnik do struktury przechowującej stan interpretera poleceń
  */
-void vTaskVTYsocket(void *cliStatePtr);
+//void vTaskVTYsocket(void *cliStatePtr);
 
 
 #endif /* CLI_TASK_H */

@@ -170,10 +170,10 @@ ISR(USARTC0_DRE_vect) // USART1_UDRE_vect
     xHigherPriorityTaskWoken = pdFALSE;
     vInterruptVtyOff();
   }
-  if( xHigherPriorityTaskWoken )
-  {
-    taskYIELD();
-  }
+  //if( xHigherPriorityTaskWoken )
+  //{
+  //  taskYIELD();
+  //}
 }
 
 
@@ -205,7 +205,7 @@ void uartHC12SendByte(uint8_t data)
 
 void uartHC12SendByteFake(uint8_t data)
 {
-  xQueueSend(xHC12Rec, &data, 10);
+  xQueueSend(xHC12Rec, &data, 0);
 }
 
 ISR(USARTC1_DRE_vect)

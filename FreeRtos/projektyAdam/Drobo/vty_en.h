@@ -52,6 +52,9 @@ const char cmd_rotateLeft[]   PROGMEM = "rl";       const char cmd_help_rotateLe
 const char cmd_rotateRight[]  PROGMEM = "rr";       const char cmd_help_rotateRight[]   PROGMEM = "{left PW} {right PW} rotate right";
 const char cmd_stop[]         PROGMEM = "stop";     const char cmd_help_stop[]          PROGMEM = "Disable H-bridges";
 
+const char cmd_pwr[]          PROGMEM = "pwr";      const char cmd_help_pwr[]           PROGMEM = "Power [src no] [0, 1]";
+
+
 const char cmd_hc12forward[]      PROGMEM = "hfw";       const char cmd_help_hc12forward[]       PROGMEM = "{left PW} {right PW} move forward";
 const char cmd_hc12backward[]     PROGMEM = "hbw";       const char cmd_help_hc12backward[]      PROGMEM = "{left PW} {right PW} move backward";
 const char cmd_hc12rotateLeft[]   PROGMEM = "hrl";       const char cmd_help_hc12rotateLeft[]    PROGMEM = "{left PW} {right PW} rotate left";
