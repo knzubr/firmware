@@ -7,4 +7,4 @@ wget https://www.sparkfun.com/datasheets/Robotics/TB6612FNG.pdf
 wget http://www.st.com/content/ccc/resource/technical/document/datasheet/4e/55/f1/3b/07/ef/4e/02/CD00002851.pdf/files/CD00002851.pdf/jcr:content/translations/en.CD00002851.pdf
 wget http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232D.pdf
 wget http://www.seeedstudio.com/wiki/images/b/b0/HC-12_User_Manual.pdf
-
+wget http://www.allegromicro.com/~/media/Files/Datasheets/ACS711-Datasheet.ashx?la=en
