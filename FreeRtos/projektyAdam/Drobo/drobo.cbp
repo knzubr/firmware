@@ -134,9 +134,12 @@
 			<code_completion>
 				<search_path add="/usr/lib/avr/include/avr" />
 				<search_path add="../../Lib" />
+				<search_path add="/usr/lib/avr/include/avr/iox128a4u.h" />
 			</code_completion>
 			<debugger />
-			<lib_finder disable_auto="1" />
+			<lib_finder disable_auto="1">
+				<lib name="/usr/lib/avr/include/avr/iox128a4u.h" />
+			</lib_finder>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

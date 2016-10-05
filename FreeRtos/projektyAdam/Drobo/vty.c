@@ -178,6 +178,29 @@ void printStatus(FILE *stream)
   fprintf_P(stream, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n"));
   fprintf_P(stream, PSTR("PWR status: 4v3 %s, RPI 3v3 %s, RPI 4v3 %s\r\n"), isPwr4v3() ? "On": "Off", isPwr3v3rpi() ? "On": "Off", isPwr4v3rpi() ? "On": "Off");
 
+//  uint16_t res = ADCA.CH0RES;
+  ADCA.CH0.CTRL    = ADC_CH_INPUTMODE_SINGLEENDED_gc;        //Pojedyncze wejście
+  ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN8_gc;                  //PB0
+
+  ADCA.PRESCALER = ADC_PRESCALER_DIV256_gc;                  //prescaler 256, f=125kHz
+
+
+  ADCA.CTRLA = ADC_ENABLE_bm;                               // 0x01
+
+  ADCA.CTRLA = ADC_CH0START_bm | ADC_CH0START_bm;//
+
+  //ADCA.CH0.MUXCTRL=0;
+  while (ADCA.CH0.INTFLAGS==0)
+    ;
+  ADCA.CH0.INTFLAGS=1;
+
+
+// ADC_START_CH0_bm;//| 0x40;//ADC_CH0_ENABLE_bm;
+
+ uint16_t res = ADCA.CH0RES;
+
+  ADCA.CTRLA = 0;
+
   //Print system state
 }
 
