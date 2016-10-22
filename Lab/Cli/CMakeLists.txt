@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
-project("CLI tutorial")
-SET(CMAKE_SYSTEM_NAME "CLI tutorial")
+PROJECT("Główny Sterownik")
+PROJECT("Main Controller Template")
+SET(CMAKE_SYSTEM_NAME "Główny Sterownik")
 
 SET(MCU               atmega128)
 SET(PROGRAMMER_DEV    /dev/avrMultiTool)
@@ -136,7 +137,9 @@ ADD_CUSTOM_COMMAND(
 )
 
 add_custom_target(install
+    COMMAND avr-objcopy -O ${FORMAT} -R .eeprom ${IMAGENAME} ${IMAGENAME}.hex
+    COMMAND avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ${FORMAT} ${IMAGENAME} ${IMAGENAME}.eep
     COMMAND avrdude -p ${MCU} -P ${PROGRAMMER_DEV} -c jtag1 -U flash:w:${IMAGENAME}.hex -U eeprom:w:${IMAGENAME}.eep
-    DEPENDS ${IMAGENAME}.hex ${IMAGENAME}.eep
+    DEPENDS ${IMAGENAME}
     COMMENT "Upload firmware to microcontroller"
 )

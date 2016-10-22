@@ -68,6 +68,15 @@ uint8_t wwwport; // 80 is just a default value. Gets overwritten during init
 #define UDP_DST_IP3 0
 #define UDP_DST_IP4 1
 
+#define MAC_ADR1 0x12
+#define MAC_ADR2 0x34
+#define MAC_ADR3 0x56
+#define MAC_ADR4 0x78
+#define MAC_ADR5 0x9A
+#define MAC_ADR6 0xBC
+
+
+
 //#define NUMBER_OF_UDP_SOCK
 
 #endif

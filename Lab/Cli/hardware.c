@@ -25,11 +25,11 @@ void hardwareInit(void)
    2 - MOSI
    3 - MISO
    4 - External SPI ASR 4
-   5 - External SPI ASR 5 (DS1305)     0 - off; 1 - on 
+   5 - External SPI ASR 5 (DS1305)     0 - off; 1 - on
    6 - External SPI ASR 6 (MCP3008)    0 - on;  1 - off
    7 - External SPI ASR 7 (MPC23S17)   0 - on;  1 - off
   */
-  
+
   //DDRC = 0x00;  //External Memory
 
   DDRD = 0x00;
@@ -64,9 +64,9 @@ void hardwareInit(void)
    2 - ALE
    3 - SD CS
    4 - RS485 TxEn
-   5 - 
-   6 - 
-   7 - 
+   5 -
+   6 -
+   7 -
    */
 }
 
@@ -108,7 +108,7 @@ void checkLockerSensors(void)
     lockSensors[0].locked = (lockSensors[0].acVal > lockSensors[0].threshold) ? 1 : 0;
     vTaskDelay(10);
   }
-  
+
   if (lockSensors[1].enabled)
   {
     MPC23s17SetBitsOnPortA(LOCK_SENS_2_LIGHT, 0);
@@ -118,7 +118,7 @@ void checkLockerSensors(void)
     lockSensors[1].locked = (lockSensors[1].acVal > lockSensors[1].threshold) ? 1 : 0;
     vTaskDelay(10);
   }
-  
+
   if (lockSensors[2].enabled)
   {
     MPC23s17SetBitsOnPortA(LOCK_SENS_3_LIGHT, 0);
@@ -128,7 +128,7 @@ void checkLockerSensors(void)
     lockSensors[2].locked = (lockSensors[2].acVal > lockSensors[2].threshold) ? 1 : 0;
     vTaskDelay(10);
   }
-  
+
   if (lockSensors[3].enabled)
   {
     MPC23s17SetBitsOnPortA(LOCK_SENS_4_LIGHT, 0);
@@ -145,7 +145,7 @@ uint8_t spiSend(uint8_t data)
 {
   uint8_t result;
   SPDR = data;
-  xQueueReceive(xSpiRx, &result, 10); 
+  xQueueReceive(xSpiRx, &result, 10);
   return result;
 }
 
@@ -153,7 +153,7 @@ uint8_t spiSendENC(uint8_t data)
 {
   uint8_t result;
   SPDR = data;
-  xQueueReceive(xSpiRx, &result, 10); 
+  xQueueReceive(xSpiRx, &result, 10);
   return result;
 }
 
@@ -165,11 +165,22 @@ uint8_t spiSendSpinBlock(uint8_t data)
   data = SPSR;                       //Clearing interrupt flag
   data = SPDR;                       //Resfing DPI buffer register
   SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
-  return data;                     
+  return data;
+}
+
+uint8_t spiSendENCSpinBlock(uint8_t data)
+{
+  SPDR = data;
+  SPCR &= ~(1<<SPIE);                //Disable SPI interrupt
+  while(!(SPSR&(1<<SPIF)));
+  data = SPSR;                       //Clearing interrupt flag
+  data = SPDR;                       //Resfing DPI buffer register
+  SPCR |= (1<<SPIE);                 //Enable SPI Interrupt
+  return data;
 }
 
 void disableAllSpiDevices(void)
-{ 
+{
 #if disableSpiPORTA_OR != 0
 #error Port A is memory bus
   PORTA |= disableSpiPORTA_OR;
@@ -250,7 +261,7 @@ void enableSpiSd(void)
 #endif
 #if SD_SPI_CS_EN_MASK_AND != 0xFF
   SD_SPI_CS_PORT &= SD_SPI_CS_EN_MASK_AND;
-#endif   
+#endif
 }
 
 void disableSpiSd(void)
@@ -260,7 +271,7 @@ void disableSpiSd(void)
 #endif
 #if SD_SPI_CS_EN_MASK_AND != 0xFF
   SD_SPI_CS_PORT |= (~SD_SPI_CS_EN_MASK_AND);
-#endif  
+#endif
 }
 
 void enableSpiMPC23S17(void)
@@ -292,7 +303,7 @@ void enableSpiMCP3008(void)
 #endif
 #if MCP3008_SPI_CS_EN_MASK_AND != 0xFF
   MCP3008_SPI_CS_PORT &= MCP3008_SPI_CS_EN_MASK_AND;
-#endif  
+#endif
 
 }
 
@@ -317,9 +328,9 @@ void enableSpiMCP4150(void)
 #endif
 #if MCP4150_SPI_CS_EN_MASK_AND != 0xFF
   MCP4150_SPI_CS_PORT &= MCP4150_SPI_CS_EN_MASK_AND;
-#endif  
+#endif
 }
-void disableSpiMCP4150(void) 
+void disableSpiMCP4150(void)
 {
   SPCR &= ~MCP4150_SPCR_OR_MASK;
   #if MCP4150_SPI_CS_EN_MASK_OR != 0
@@ -327,7 +338,7 @@ void disableSpiMCP4150(void)
 #endif
 #if MCP4150_SPI_CS_EN_MASK_AND != 0xFF
   MCP4150_SPI_CS_PORT |= (~MCP4150_SPI_CS_EN_MASK_AND);
-#endif  
+#endif
 }
 
 #define DS_SPCR_OR_MASK ((1<<CPHA)|(1<<SPR0))
@@ -351,22 +362,22 @@ void spiDisableDS1305(void)
 #endif
 #if DS1305_SPI_CS_EN_MASK_AND != 0xFF
   DS1305_SPI_CS_PORT |= (~(DS1305_SPI_CS_EN_MASK_AND));
-#endif  
+#endif
 }
 
 ISR(SPI_STC_vect)
 {
-  static signed portBASE_TYPE xHigherPriorityTaskWoken; 
+  static signed portBASE_TYPE xHigherPriorityTaskWoken;
 
   static uint8_t data;
   data = SPDR;
-  
+
   xQueueSendFromISR(xSpiRx, &data, &xHigherPriorityTaskWoken);
 
   if( xHigherPriorityTaskWoken )
   {
     taskYIELD();
   }
-  
+
   //clear SPI interrupt SPI |= 1;
 }
