@@ -65,6 +65,8 @@ extern nicState_t nicState;
 void setIpDebug(FILE *stream, uint8_t level);
 #endif
 
+
+void ipInit(void);
 /**
  * Read Ip config
  * Initializes ARP

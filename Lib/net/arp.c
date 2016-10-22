@@ -2,7 +2,7 @@
  * @file      arp.c
  * @version   0.2
  * @author    Pascal Stang, Adam Kaliszan
- * \brief     ARP Protocol Library. 
+ * \brief     ARP Protocol Library.
  *
  * Created       :  7.09.2004
  * Revised       : 29.11.2010
@@ -51,7 +51,7 @@ void arpArpIn(void)
     if (arpDebugLevel > 1)
       fprintf_P(arpDebug, PSTR("Received ARP Request\r\n"));
     if (arpDebugLevel > 2)
-      arpPrintHeader(arpDebug, nicState.layer3.arp);   
+      arpPrintHeader(arpDebug, nicState.layer3.arp);
   }
 #endif
 

@@ -21,6 +21,11 @@ static uint32_t myip_eep    __attribute__((section (".eeprom"))) = ((uint32_t)MY
 static uint32_t mask_eep    __attribute__((section (".eeprom"))) = ((uint32_t)MY_MASK4 << 24) + ((uint32_t)MY_MASK3 <<16) + ((uint32_t)MY_MASK2 <<8) + MY_MASK1;
 static uint32_t defGw_eep   __attribute__((section (".eeprom"))) = ((uint32_t)MY_GW4   << 24) + ((uint32_t)MY_GW3   <<16) + ((uint32_t)MY_GW2   <<8) + MY_GW1;
 
+void ipInit()
+{
+
+}
+
 void ipLoadConfig(void)
 {
   IpMyConfig.ip      = eeprom_read_dword(&myip_eep);

@@ -61,6 +61,12 @@
 		<Unit filename="../../Lib/memory_x.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../Lib/net/arp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../Lib/net/include/arp.h" />
+		<Unit filename="../../Lib/net/include/ip.h" />
+		<Unit filename="../../Lib/net/include/udp.h" />
 		<Unit filename="../../Lib/net/ip.c">
 			<Option compilerVar="CC" />
 		</Unit>

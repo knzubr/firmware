@@ -129,7 +129,6 @@ void arpIpOut(uint32_t phyDstIp);
  */
 void arpTimer(void);
 
-
 /**
  * Check if this IP address is present in the ARP cache. Internal function.
  * If IP address is found, function returns index of entry.  If not found,
