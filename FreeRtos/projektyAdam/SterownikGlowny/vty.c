@@ -244,9 +244,9 @@ void printStatus(FILE *stream)
 
   //Print Rs485 Execitive modules
   fprintf_P(stream, statusRs485listStr);
-  tmp = printRs485devices(stream);
-  if (tmp == 0)
-    fprintf_P(stream, statusNoRs485Dev);
+//  tmp = printRs485devices(stream);
+//  if (tmp == 0)
+//    fprintf_P(stream, statusNoRs485Dev);
 
   //Print locker sensors
   fprintf_P(stream, statusLockerSensorsStr);

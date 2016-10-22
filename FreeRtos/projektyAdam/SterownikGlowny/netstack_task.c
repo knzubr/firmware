@@ -23,7 +23,7 @@
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ( "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>"));
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ( "<h3>Status</h3>"));
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p>"SYSTEM_NAME" ver <b>"S_VERSION"</b> build: "__DATE__", "__TIME__"</p>"));
-  
+
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p><table border=1>"));
 
   tmpPtr = getBufPosToWrite(buf, pos);
@@ -38,7 +38,7 @@
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("</table></p>"));
 
   tmpPtr = getBufPosToWrite(buf, pos);
-  
+
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR("<h3>Czujniki rygli</h3>"));
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<p><table border=1>"));
   pos=fill_tcp_data_p(Enc28j60_global.buf, pos, PSTR ("<tr><td>Czujnik nr</td><td>Położenie rygla</td><td>Odczyt z przetwornika AC</td><td>Wart graniczna</td></tr>"));
@@ -78,12 +78,12 @@ void encTask ( void *pvParameters )
 
 
   //TODO    init_ip_arp_udp_tcp (mymac, ipGetConfig()->ip, MYWWWPORT);
-  
-  
+
+
   for ( ; ; )
   {
     vTaskDelay ( 0 );         //Zastąpić oczekiwaniem na zwolnienie semafora. Semafor zostaje zwolniony po odebrzeniu przerwania od ENC
-    
+
     // get the next new packet:
     plen = nicPoll();
     /*plen will ne unequal to zero if there is a valid
@@ -92,10 +92,10 @@ void encTask ( void *pvParameters )
     {
       flushUdpQueues();
       flushTcpQueues();
-      //flush HTTP long file queue 
+      //flush HTTP long file queue
       continue;
     }
-    
+
     if(nicState.layer2.ethHeader->type == htons(ETHTYPE_IP))             // process an IP packet
     {
       arpIpIn();
@@ -112,7 +112,7 @@ void encTask ( void *pvParameters )
         fprintf_P(netstackDebug, PSTR("Unknown packet\r\n"));
       }
     }
-    
+
     continue;
   }
 }
@@ -128,7 +128,7 @@ void encTask ( void *pvParameters )
 
     // arp is broadcast if unknown but a host may also
     // verify the mac address by sending it to
-    // a unicast address.  
+    // a unicast address.
     if ( eth_type_is_arp_and_my_ip(Enc28j60_global.buf, plen))
     {
       make_arp_answer_from_request(Enc28j60_global.buf);
@@ -148,7 +148,7 @@ void encTask ( void *pvParameters )
     }
 
     }
-    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_H_P]==MYTELNETPOERT_H 
+    if ( Enc28j60_global.buf[IP_PROTO_P]==IP_PROTO_TCP && Enc28j60_global.buf[TCP_DST_PORT_H_P]==0 && Enc28j60_global.buf[TCP_DST_PORT_H_P]==MYTELNETPOERT_H
       && (Enc28j60_global.buf[TCP_DST_PORT_L_P]>=MYTELNETPOERT_L || Enc28j60_global.buf[TCP_DST_PORT_L_P]<=MYTELNETPOERT_L + 20))
     {
       processIpPacket(Enc28j60_global.buf);
