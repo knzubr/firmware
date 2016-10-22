@@ -1,6 +1,7 @@
 #ifndef LANG_VTY
 #define LANG_VTY EN
 
+#include<avr/pgmspace.h>
 // *************************** Error Strings *******************************************************
 
 const char errorOK[]                                   PROGMEM = "All OK\r\n";
@@ -52,7 +53,6 @@ const char debugDisabledInfoStr[]      PROGMEM = "Disabled %s debug\r\n";
 // *************************** Command Strings *****************************************************
 
 const char cmd_help[]         PROGMEM = "help";             const char cmd_help_help[]         PROGMEM = "Print help string";
-const char cmd_reset[]        PROGMEM = "reset";            const char cmd_help_reset[]        PROGMEM = "Resets FreeRtos";
 const char cmd_status[]       PROGMEM = "status";           const char cmd_help_status[]       PROGMEM = "{filename} Print device status on VTY or write to file";
 const char cmd_enc_stat[]     PROGMEM = "encstat";          const char cmd_help_enc_stat[]     PROGMEM = "Print Enc 28j60 registers";
 const char cmd_time[]         PROGMEM = "time";             const char cmd_help_time[]         PROGMEM = "Print time";
@@ -90,5 +90,7 @@ const char cmd_conf_mac[]     PROGMEM = "mac";              const char cmd_help_
 const char cmd_conf_save[]    PROGMEM = "save";             const char cmd_help_conf_save[]    PROGMEM = "Save configuration";
 const char cmd_ustawR[]       PROGMEM = "setr";             const char cmd_help_ustawR[]       PROGMEM = "[value] set resistance value";
 
+const char cmd_ustawMW[]      PROGMEM = "rset";             const char cmd_help_ustawMW[]      PROGMEM = "[A] [C] set execution module";
+const char cmd_zapiszMW[]     PROGMEM = "rsave";            const char cmd_help_zapiszMW[]     PROGMEM = "[A] save execution module settings"; 
 
 #endif

@@ -2,7 +2,6 @@
 #define LANG_HARDWARE EN
 
 #include<avr/pgmspace.h>
-
 const char statusLockerSensDescStr[]           PROGMEM = " locker %d";
 const char statusLockerOpenStr[]               PROGMEM = " open   ";
 const char statusLockerCloseStr[]              PROGMEM = " locked ";

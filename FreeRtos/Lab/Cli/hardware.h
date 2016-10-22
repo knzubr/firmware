@@ -19,7 +19,7 @@
 #define Rs485TxStop()  (PORTG &=  0xEF)
 
 #define ENC_RST_ON  PORTE &= ~0x04;
-#define ENC_RST_OFF PORTE |= 0x04; 
+#define ENC_RST_OFF PORTE |= 0x04;
 
 struct lockerSensor
 {
@@ -68,7 +68,7 @@ uint8_t rs485Receive(uint8_t *c, uint8_t timeout);
 uint8_t spiSend(uint8_t data);
 uint8_t spiSendENC(uint8_t data);
 uint8_t spiSendSpinBlock(uint8_t data);
-
+uint8_t spiSendENCSpinBlock(uint8_t data);
 
 void disableAllSpiDevices(void);
 

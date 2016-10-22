@@ -29,10 +29,6 @@
 # To rebuild project do "make clean" then "make all".
 #
 
-#for tftp bootloader
-#address
-include eth-bootloader/atmega128/makefile.in.IP
-#
 
 # MCU name
 MCU = atmega128
@@ -50,8 +46,8 @@ OPT = s
 
 # List C source files here. (C dependencies are automatically generated.)
 SOURCE_DIR  = ../../freeRtos/Source
-LIB_DIR     = ../../freeRtos/Lib
-LIB_NET_DIR = ../../freeRtos/Lib/net
+LIB_DIR     = ../../Lib
+LIB_NET_DIR = ../../Lib/net
 PORT_DIR    = ../../freeRtos/portable/GCC/ATMega64
 PORT_MEM    = ../../freeRtos/portable/MemMang
 
@@ -111,12 +107,12 @@ $(PORT_DIR)/port.c
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = 
+ASRC =
 
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = 
+EXTRAINCDIRS =
 
 
 # Optional compiler flags.
@@ -131,14 +127,14 @@ DEBUG_LEVEL=-g
 WARNINGS=-Wall -Wextra -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-align -Wsign-compare \
 		-Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wunused
 
-CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../freeRtos/Lib/include -I../../freeRtos/Lib/net/include \
+CFLAGS = -D GCC_MEGA_AVR -I. -I../../freeRtos/Source/include -I../../Lib/include -I../../Lib/net/include \
 $(DEBUG_LEVEL) -O$(OPT) \
 -fsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \
 $(WARNINGS) \
 -Wa,-adhlns=$(<:.c=.lst) \
 $(patsubst %,-I%,$(EXTRAINCDIRS))
 
-CFLAGS += -DF_CPU=14745600UL 
+CFLAGS += -DF_CPU=14745600UL
 
 # Set a "language standard" compiler flag.
 #   Unremark just one line below to set the language standard to use.
@@ -157,7 +153,7 @@ CFLAGS += -std=gnu99
 #             for use in COFF files, additional information about filenames
 #             and function names needs to be present in the assembler source
 #             files -- see avr-libc docs [FIXME: not yet described there]
-ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
+ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 
 
 
@@ -195,7 +191,7 @@ LDFLAGS += -lm
 
 # Programming support using avrdude. Settings and variables.
 
-# Programming hardware: alf avr910 avrisp bascom bsd 
+# Programming hardware: alf avr910 avrisp bascom bsd
 # dt006 pavr picoweb pony-stk200 sp12 stk200 stk500
 #
 # Type: avrdude -c ?
@@ -209,14 +205,13 @@ AVRDUDE_PROGRAMMER  = jtag1
 AVRDUDE_PORT        = /dev/avrMultiTool
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
-AVRDUDE_WRITE_FLASH_BOOTLOADER = -U flash:w:$(BOOTLAODER_TARGET_IMAGE).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 AVRDUDE_READ_EEPROM  = -U eeprom:r:$(TARGET)_readed.eep
 AVRDUDE_WRITE_FUSES_H = -U hfuse:w:0x90:m
 AVRDUDE_READ_FUSES_H  = -U hfuse:r:$(TARGET).hfuse:i
 AVRDUDE_WRITE_FUSES_L = -U lfuse:w:0xff:m
 AVRDUDE_READ_FUSES_L  = -U lfuse:r:$(TARGET).lfuse:i
-AVRDUDE_WRITE_FUSES_E = -U efuse:w:0xef:m
+AVRDUDE_WRITE_FUSES_E = -U efuse:w:0xff:m
 AVRDUDE_READ_FUSES_E  = -U efuse:r:$(TARGET).efuse:i
 
 
@@ -227,10 +222,10 @@ AVRDUDE_READ_FUSES_E  = -U efuse:r:$(TARGET).efuse:i
 
 # Uncomment the following if you do /not/ wish a verification to be
 # performed after programming the device.
-AVRDUDE_FLAGS += -V
+#AVRDUDE_FLAGS += -V
 
 # Increase verbosity level.  Please use this when submitting bug
-# reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude> 
+# reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude>
 # to submit bug reports.
 #AVRDUDE_FLAGS += -v -v
 
@@ -256,7 +251,7 @@ ELFSIZE = $(SIZE) -A $(TARGET).elf
 MSG_ERRORS_NONE = Errors: none
 MSG_BEGIN = -------- begin --------
 MSG_END = --------  end  --------
-MSG_SIZE_BEFORE = Size before: 
+MSG_SIZE_BEFORE = Size before:
 MSG_SIZE_AFTER = Size after:
 MSG_COFF = Converting to AVR COFF:
 MSG_EXTENDED_COFF = Converting to AVR Extended COFF:
@@ -271,7 +266,7 @@ MSG_CLEANING = Cleaning project:
 
 
 # Define all object files.
-OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) 
+OBJ = $(SRC:.c=.o) $(ASRC:.S=.o)
 
 # Define all listing files.
 LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
@@ -312,8 +307,9 @@ sizeafter:
 
 
 # Display compiler version information.
-gccversion : 
+gccversion :
 	@$(CC) --version
+
 
 
 
@@ -323,7 +319,7 @@ COFFCONVERT=$(OBJCOPY) --debugging \
 	--change-section-address .data-0x800000 \
 	--change-section-address .bss-0x800000 \
 	--change-section-address .noinit-0x800000 \
-	--change-section-address .eeprom-0x810000 
+	--change-section-address .eeprom-0x810000
 
 
 coff: $(TARGET).elf
@@ -337,40 +333,15 @@ extcoff: $(TARGET).elf
 	@echo $(MSG_EXTENDED_COFF) $(TARGET).cof
 	$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
 
-#bootloader combining
-DO_hex_with_bootloader = ./combine.sh
-BOOTLAODER_IMAGE= bootloader
-BOOTLAODER_TARGET_IMAGE=firmware+bootloader
-BOOTLAODER_IMAGE_PATH= eth-bootloader/atmega128/
-bootloader: $(TARGET).hex $(TARGET).eep
-	$(DO_hex_with_bootloader) $(TARGET).hex $(BOOTLAODER_IMAGE_PATH)$(BOOTLAODER_IMAGE).hex $(BOOTLAODER_TARGET_IMAGE).hex
-programbootloader: bootloader
-	$(AVRDUDE) $(AVRDUDE_FLAGS)  $(AVRDUDE_WRITE_FLASH_BOOTLOADER) $(AVRDUDE_WRITE_EEPROM)
-
-DO_TFTP_BOOTLOAD= ./send_firmware.sh
-tftp: $(TARGET).hex $(TARGET).eep 
-	$(DO_TFTP_BOOTLOAD) $(EMB_IPADDRESSa).$(EMB_IPADDRESSb).$(EMB_IPADDRESSc).$(EMB_IPADDRESSd) $(TARGET).hex $(TARGET).eep
-DO_TFTP_BOOTLOAD= ./send_firmware.sh
-tftp-flash: $(TARGET).hex $(TARGET).eep 
-	$(DO_TFTP_BOOTLOAD) $(EMB_IPADDRESSa).$(EMB_IPADDRESSb).$(EMB_IPADDRESSc).$(EMB_IPADDRESSd) $(TARGET).hex
-DO_TFTP_BOOTLOAD= ./send_firmware.sh
-tftp-eeprom: $(TARGET).hex $(TARGET).eep 
-	$(DO_TFTP_BOOTLOAD) $(EMB_IPADDRESSa).$(EMB_IPADDRESSb).$(EMB_IPADDRESSc).$(EMB_IPADDRESSd) $(TARGET).eep
-
-eth-bootloader/atmega128/makefile.in.IP:
-	@echo "*** Please set IP for Bootloader !! ***"
 
 
-# Program the device.  
+
+# Program the device.
 flash:  $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 
 program: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS)  $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
-
-eeprom: $(TARGET).hex $(TARGET).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS)  $(AVRDUDE_WRITE_EEPROM)
-
+	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 #$(AVRDUDE_WRITE_EEPROM)
 
 readfuses:
@@ -458,14 +429,10 @@ clean_list :
 	$(REMOVE) $(LST)
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
-	$(REMOVE) $(BOOTLAODER_TARGET_IMAGE).hex
-clean_list1 :
-	@echo
-	@echo $(MSG_CLEANING)
-	$(REMOVE) $(TARGET).hex
-	$(REMOVE) $(TARGET).eep
-# Automatically generate C source code dependencies. 
-# (Code originally taken from the GNU make user manual and modified 
+
+
+# Automatically generate C source code dependencies.
+# (Code originally taken from the GNU make user manual and modified
 # (See README.txt Credits).)
 #
 # Note that this will work with sh (bash) and sed that is shipped with WinAVR
@@ -486,5 +453,4 @@ clean_list1 :
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion coff extcoff \
 	clean clean_list program
-
 
