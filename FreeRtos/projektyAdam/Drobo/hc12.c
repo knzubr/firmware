@@ -2,11 +2,11 @@
 
 void HC12setAtMode()
 {
-  PORTD.OUTCLR = 0x01;
+  PORTD.OUTCLR = PIN0_bm;
 }
 
 void HC12setTransparentMode()
 {
-  PORTD.OUTSET = 0x01;
+  PORTD.OUTSET =  PIN0_bm;
 }
 

@@ -13,6 +13,8 @@
 /**
  * Hardware initialize
  */
+
+uint8_t ReadCalibrationByte(uint8_t index);
 void hardwareInit(void);
 
 void offHbridge(void);

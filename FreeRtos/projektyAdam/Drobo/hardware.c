@@ -1,8 +1,23 @@
 #include "hardware.h"
-
+#include <avr/pgmspace.h>
+#include <stddef.h>
 
 //xQueueHandle      xSpiRx;             /// Kolejka z odebranymi bajtami z SPI. Blokuje transmisję do czasu zakończenia wysyłania poprzedniego bajtu
 //xQueueHandle      xSpiRxEnc;
+
+uint8_t ReadCalibrationByte( uint8_t index )
+{
+    uint8_t result;
+
+    /* Load the NVM Command register to read the calibration row. */
+    NVM_CMD = NVM_CMD_READ_CALIB_ROW_gc;
+    result = pgm_read_byte(index);
+
+    /* Clean up NVM Command register. */
+    NVM_CMD = NVM_CMD_NO_OPERATION_gc;
+
+    return( result );
+}
 
 void hardwareInit(void)
 {
@@ -36,7 +51,7 @@ void hardwareInit(void)
   // 2 Sim900 RxD       6 SPI 2
   // 3 Sim900 TxD       7 SPI 3
   PORTD.DIR=0x35;
-  PORTD.OUT=0x00;
+  PORTD.OUT=0x01;
 
   /// PORT E
   // 0 DC/DC 4v3        2 RPI RxD
@@ -62,6 +77,17 @@ void hardwareInit(void)
   TCC0.CCAH = 0x00;
   TCC0.CCBH = 0x00;
   //PORTC.OUTSET = 0x30;
+
+  /// A/C init
+  //ADCA.CTRLA     = ADC_ENABLE_bm | ADC_CH0START_bm;        //Włączenie przetwornika AC oraz uruchomienie pomiaru na kanale 0
+  //ADCA.CTRLB     = 0x80;//ADC_LOWIMP_bm;                            //Sprawdzam, czy poprawi się jakość pomiaru
+  ADCA.REFCTRL   = ADC_BANDGAP_bm | ADC_TEMPREF_bm | ADC_REFSEL_INTVCC_gc;          //BANDGAP enable, TempRef enable, Vref = VCC/1.6 V
+  ADCA.EVCTRL    = 0;
+  ADCA.PRESCALER = ADC_PRESCALER_DIV256_gc;                  //prescaler 256, f=125kHz
+  ADCA.INTFLAGS  = 0x0F;
+
+  ADCA.CALL = ReadCalibrationByte( offsetof(NVM_PROD_SIGNATURES_t, ADCACAL0) );
+  ADCA.CALH = ReadCalibrationByte( offsetof(NVM_PROD_SIGNATURES_t, ADCACAL1) );
 }
 
 void offHbridge()

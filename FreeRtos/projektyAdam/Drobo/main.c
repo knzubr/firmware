@@ -121,7 +121,7 @@ streamBuffers_t udpBuffers;
 portSHORT main( void )
 {
   hardwareInit();
-  //loadConfiguration();
+  loadConfiguration();
   xSerialPortInitMinimal();
 
   xMainRec = xQueueCreate(16, 1);

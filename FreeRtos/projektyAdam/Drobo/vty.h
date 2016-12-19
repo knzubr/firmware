@@ -27,6 +27,12 @@ void printStatus(FILE *stream);
 extern FILE hc12Stream;
 extern FILE hc12FakeStream;
 
+
+extern uint8_t  confHC12mode;  //1 - 3
+extern uint16_t confHC12baud; //
+extern uint8_t  confHC12channel;
+extern uint8_t  confHC12power; //1-8
+
 enum errorType
 {
   AllOK  = 0,
