@@ -178,28 +178,36 @@ void printStatus(FILE *stream)
   fprintf_P(stream, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n"));
   fprintf_P(stream, PSTR("PWR status: 4v3 %s, RPI 3v3 %s, RPI 4v3 %s\r\n"), isPwr4v3() ? "On": "Off", isPwr3v3rpi() ? "On": "Off", isPwr4v3rpi() ? "On": "Off");
 
+  fprintf_P(stream, PSTR("Hc12 config:\r\n"));
+  fprintf_P(stream, PSTR("\tmode    %d\r\n"), confHC12mode);
+  fprintf_P(stream, PSTR("\tbaud    %d\r\n"), confHC12baud);
+  fprintf_P(stream, PSTR("\tchannel %d\r\n"), confHC12channel);
+  fprintf_P(stream, PSTR("\tpower   %d\r\n"), confHC12power);
+
+
 //  uint16_t res = ADCA.CH0RES;
   ADCA.CH0.CTRL    = ADC_CH_INPUTMODE_SINGLEENDED_gc;        //Pojedyncze wejście
   ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN8_gc;                  //PB0
 
-  ADCA.PRESCALER = ADC_PRESCALER_DIV256_gc;                  //prescaler 256, f=125kHz
+  ADCA.CH1.CTRL    = ADC_CH_INPUTMODE_SINGLEENDED_gc;        //Pojedyncze wejście
+  ADCA.CH1.MUXCTRL = ADC_CH_MUXPOS_PIN9_gc;                  //PB0
 
 
-  ADCA.CTRLA = ADC_ENABLE_bm;                               // 0x01
+  ADCA.CTRLA     = ADC_ENABLE_bm | ADC_CH0START_bm | ADC_CH1START_bm;          //Włączenie przetwornika AC oraz uruchomienie pomiaru na kanale 0
 
-  ADCA.CTRLA = ADC_CH0START_bm | ADC_CH0START_bm;//
-
-  //ADCA.CH0.MUXCTRL=0;
-  while (ADCA.CH0.INTFLAGS==0)
-    ;
+  while (ADCA.CH0.INTFLAGS==0);
+  uint16_t res = ADCA.CH0RES;
   ADCA.CH0.INTFLAGS=1;
 
+  while (ADCA.CH1.INTFLAGS==0);
+  uint16_t res2 = ADCA.CH1RES;
+  ADCA.CH1.INTFLAGS=1;
 
-// ADC_START_CH0_bm;//| 0x40;//ADC_CH0_ENABLE_bm;
 
- uint16_t res = ADCA.CH0RES;
+  ADCA.CTRLA = ADC_ENABLE_bm;
 
-  ADCA.CTRLA = 0;
+  fprintf_P(stream, PSTR("Pwr: %d + %d/128 V\r\n"), res>>7, res&0x7F);
+  fprintf_P(stream, PSTR("     %d + %d/32 A\r\n"),  res2>>5, res2&0x1F);
 
   //Print system state
 }
@@ -457,7 +465,7 @@ static cliExRes_t sendHC12AtCmd(cmdState_t *state, const char cmd[])
   {
     vTaskDelay(2);
     HC12setAtMode();
-
+    vTaskDelay(25);
     fprintf_P(state->myStdInOut, cmd, cmdlineGetArgStr(1, state));
     fprintf_P(&hc12Stream,       cmd, cmdlineGetArgStr(1, state));
 
@@ -511,21 +519,25 @@ static cliExRes_t sendHC12loopback(cmdState_t *state, uint8_t addr, uint8_t type
 
 static cliExRes_t hc12modeFunction       (cmdState_t *state)
 {
+    confHC12mode = cmdlineGetArgInt(1, state);
     return sendHC12AtCmd(state, PSTR("AT+FU%s\r\n"));
 }
 
 static cliExRes_t hc12channelFunction    (cmdState_t *state)
 {
+    confHC12channel = cmdlineGetArgInt(1, state);
     return sendHC12AtCmd(state, PSTR("AT+C%s\r\n"));
 }
 
 static cliExRes_t hc12baudrateFunction   (cmdState_t *state)
 {
+    confHC12baud = cmdlineGetArgInt(1, state);
     return sendHC12AtCmd(state, PSTR("AT+B%s\r\n"));
 }
 
 static cliExRes_t hc12powerFunction      (cmdState_t *state)
 {
+    confHC12power = cmdlineGetArgInt(1, state);
     return sendHC12AtCmd(state, PSTR("AT+P%s\r\n"));
 }
 
