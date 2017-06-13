@@ -124,8 +124,6 @@ void tlvProcessDta(tlvInterpreter_t *tlvInt, uint8_t dta)
     return;
   }
 
-  fprintf_P(tlvInt->errStr, PSTR("executing TLV command %x\r\n"), myRecMsg->type);
-
   tlvCommand_t tmp;                                                     // We need to create this object. We can't directly
   for (i=0; i<tlvInt->noOfCmds; i++)
   {
@@ -138,6 +136,9 @@ void tlvProcessDta(tlvInterpreter_t *tlvInt, uint8_t dta)
   }
   if (i == tlvInt->noOfCmds)
     fprintf_P(tlvInt->errStr, PSTR("! Unknown command: %d\r\n"), myRecMsg->type);
+  else
+    fprintf_P(tlvInt->errStr, PSTR("TLV command %x was executed\r\n"), myRecMsg->type);
+
   tlvInt->bufIdx = 0;
 }
 

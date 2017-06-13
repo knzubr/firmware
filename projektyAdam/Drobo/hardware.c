@@ -22,10 +22,10 @@ uint8_t ReadCalibrationByte( uint8_t index )
 void hardwareInit(void)
 {
   /// PORT A MOSTKI H
-  //0 - (18)        4 - AIN2
-  //1 - (17)        5 - AIN1
-  //2 - (20)        6 - BIN1
-  //3 - (19)        7 - BIN2
+  //0 - (18)        4 - B1 in
+  //1 - (17)        5 - A1 in
+  //2 - (20)        6 - B2 in
+  //3 - (19)        7 - A2 in
   PORTA.DIR=0xFF;
   PORTA.OUT=0x00;
 
@@ -139,12 +139,14 @@ void rotateRightA(uint8_t left, uint8_t right)
     TCC0.CCB = right;
 }
 
+  //0 - (18)        4 - B1 in
+  //1 - (17)        5 - A1 in
+  //2 - (20)        6 - B2 in
+  //3 - (19)        7 - A2 in
 void forwardB(uint8_t left, uint8_t right)
-{
-    PORTR.OUTSET = 0x02;
-
-    PORTA.OUTCLR = 0x90;
-    PORTA.OUTSET = 0x60;
+{ //PORTR.OUTSET = 0x02;
+    PORTA.OUTSET = 0xC0;
+    PORTA.OUTCLR = 0x30;
 
     TCC0.CCA = left;
     TCC0.CCB = right;
@@ -152,32 +154,27 @@ void forwardB(uint8_t left, uint8_t right)
 
 
 void backwordB(uint8_t left, uint8_t right)
-{
-    PORTR.OUTSET = 0x02;
-
-    PORTA.OUTCLR = 0x60;
-    PORTA.OUTSET = 0x90;
+{ //PORTR.OUTSET = 0x02;
+    PORTA.OUTCLR = 0xC0;
+    PORTA.OUTSET = 0x30;
 
     TCC0.CCA = left;
     TCC0.CCB = right;
 }
 
 void rotateLeftB(uint8_t left, uint8_t right)
-{
-    PORTR.OUTSET = 0x02;
-    PORTA.OUTCLR = 0xA0;
-    PORTA.OUTSET = 0x50;
+{// PORTR.OUTSET = 0x02;
+    PORTA.OUTCLR = 0x90;
+    PORTA.OUTSET = 0x60;
 
     TCC0.CCA = left;
     TCC0.CCB = right;
 }
 
 void rotateRightB(uint8_t left, uint8_t right)
-{
-    PORTR.OUTSET = 0x02;
-
-    PORTA.OUTCLR = 0x50;
-    PORTA.OUTSET = 0xA0;
+{// PORTR.OUTSET = 0x02;
+    PORTA.OUTSET = 0x90;
+    PORTA.OUTCLR = 0x60;
 
     TCC0.CCA = left;
     TCC0.CCB = right;
