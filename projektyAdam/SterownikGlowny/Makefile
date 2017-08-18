@@ -201,9 +201,12 @@ LDFLAGS += -lm
 # Programming support using avrdude.
 AVRDUDE             = avrdude
 AVRDUDE_PROGRAMMER  = jtag1
+AVRDUDE_PROGRAMMER_2= usbMultiToolV2jtag
 #AVRDUDE_PORT        = /dev/jtag
 AVRDUDE_PORT        = /dev/avrMultiTool
 AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_FLAGS_2     = -p $(MCU) -C avrdude.conf -c $(AVRDUDE_PROGRAMMER_2)
+
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 AVRDUDE_READ_EEPROM  = -U eeprom:r:$(TARGET)_readed.eep
@@ -352,6 +355,21 @@ programfuses:
 
 reset:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_READ_FUSES_L)
+
+program2: $(TARGET).hex $(TARGET).eep
+	$(AVRDUDE) $(AVRDUDE_FLAGS_2) $(AVRDUDE_WRITE_FLASH)
+#$(AVRDUDE_WRITE_EEPROM)
+
+readfuses2:
+	$(AVRDUDE) $(AVRDUDE_FLAGS_2) $(AVRDUDE_READ_FUSES_L) $(AVRDUDE_READ_FUSES_H) $(AVRDUDE_READ_FUSES_E)
+
+
+programfuses2:
+	$(AVRDUDE) $(AVRDUDE_FLAGS_2) $(AVRDUDE_WRITE_FUSES_L) $(AVRDUDE_WRITE_FUSES_H) $(AVRDUDE_WRITE_FUSES_E)
+
+reset2:
+	$(AVRDUDE) $(AVRDUDE_FLAGS_2) $(AVRDUDE_READ_FUSES_L)
+
 
 
 # Create final output files (.hex, .eep) from ELF output file.

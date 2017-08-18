@@ -153,6 +153,11 @@ LDFLAGS += -lm
 AVRDUDE = avrdude
 #AVRDUDE_PROGRAMMER = avrispmkII
 AVRDUDE_PROGRAMMER = stk500v2
+
+#AVRDUDE_PROGRAMMER_2 = 4232h
+AVRDUDE_PROGRAMMER_2 = usbMultiToolV2spi
+
+
 #AVRDUDE_PORT = /dev/avrStk500v2prog	   # Stk500v2 on dedicated PCB
 AVRDUDE_PORT = /dev/avrMultiTool          # Stk500v2 on multi PCB
 #AVRDUDE_PORT = usb          # Stk500v2 on multi PCB
@@ -160,7 +165,9 @@ AVRDUDE_PORT = /dev/avrMultiTool          # Stk500v2 on multi PCB
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_FLAGS   = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_FLAGS_2 = -p $(MCU) -C avrdude.conf -c $(AVRDUDE_PROGRAMMER_2)
+
 
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,
@@ -302,6 +309,10 @@ extcoff: $(TARGET).elf
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVR_DUDE_WRITE_FUSES)
+
+
+program2: $(TARGET).hex $(TARGET).eep
+	$(AVRDUDE) $(AVRDUDE_FLAGS_2) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM) $(AVR_DUDE_WRITE_FUSES)
 
 bin:	$(TARGET).hex
 	hex2bin $(TARGET).hex
