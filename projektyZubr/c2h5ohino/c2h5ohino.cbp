@@ -86,7 +86,6 @@
 		<Unit filename="../../freeRtos/portable/MemMang/heap_avr.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../../freeRtos/portable/MemMang/heap_avr.d" />
 		<Unit filename="FreeRTOSConfig.h" />
 		<Unit filename="Makefile" />
 		<Unit filename="cli_task.c">
