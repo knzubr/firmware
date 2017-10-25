@@ -3,7 +3,6 @@
 #include "hardware.h"
 #include "hardwareConfig.h"
 #include "softwareConfig.h"
-#include "nic.h"
 
 
 void loadConfiguration(void)

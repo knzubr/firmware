@@ -11,9 +11,6 @@
 #include "hardwareConfig.h"
 #include "softwareConfig.h"
 
-#include "mpc23s17.h"
-#include "mcp3008.h"
-#include "spi.h"
 
 
 /**
