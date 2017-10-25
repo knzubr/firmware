@@ -22,6 +22,7 @@
 #include "hardware.h"
 
 #include "cmdline.h"
+#include "memory_x.h"
 #include "vty.h"
 
 

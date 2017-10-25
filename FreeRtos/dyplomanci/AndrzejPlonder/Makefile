@@ -32,7 +32,6 @@
 
 # MCU name
 MCU = atxmega128a1
-
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
@@ -74,7 +73,9 @@ $(SOURCE_DIR)/list.c \
 $(SOURCE_DIR)/croutine.c \
 $(PORT_MEM)/heap_avr.c \
 $(PORT_DIR)/port.c
-
+#$(LIB_DIR)/enc28j60.c \
+#sensors_task.c \
+#netstack_task.c \
 
 #$(LIB_DIR)/ebi.c\ To zostało usunięte. Gdzie jest ten plik ???
 #netstack_task.c \
@@ -206,7 +207,7 @@ LDFLAGS += -lm
 #
 
 # Programming support using avrdude.
-AVRDUDE             = avrdude
+AVRDUDE             = /usr/local/bin/avrdude
 AVRDUDE_PROGRAMMER  = avrispmkII
 # jtag1
 #AVRDUDE_PORT        = /dev/jtag
