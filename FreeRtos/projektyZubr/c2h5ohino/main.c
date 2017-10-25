@@ -46,38 +46,29 @@
 #include "main.h"
 
 
-xTaskHandle xHandleVTY_USB;
-
-xQueueHandle xVtyTx;
-xQueueHandle xVtyRec;
-
-uint8_t timer100Hz = 0;
+xTaskHandle   xHandleVTY;
+xQueueHandle  xVtyTx;
+xQueueHandle  xVtyRec;
+cmdState_t    cliStateUSB;
+FILE          usbStream;
+uint8_t       timer100Hz = 0;
 
 
 void vApplicationIdleHook( void );
 void vApplicationTickHook( void );
 
 
-cmdState_t *CLIStateSerialUsb;
-
-FILE usbStream;
-
 portSHORT main( void )
 {
   hardwareInit();
 
-// VTY on serial
   xSerialPortInitMinimal();
-  CLIStateSerialUsb  = malloc(sizeof(cmdState_t));
-
-
-//  cmdStateClear(newCmdState);
   loadConfiguration();
 
   initQueueStreamUSB(&usbStream);
-  VtyInit(CLIStateSerialUsb, &usbStream);
+  VtyInit(&cliStateUSB, &usbStream);
 
-  xTaskCreate(vTaskVTYusb,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(CLIStateSerialUsb),            1, &xHandleVTY_USB);
+  xTaskCreate(vTaskVTY,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(&cliStateUSB),            1, &xHandleVTY);
   vTaskStartScheduler();
   return 0;
 }

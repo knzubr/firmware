@@ -1,6 +1,6 @@
 #include "cli_task.h"
 
-void vTaskVTYusb(void *cliStatePtr)
+void vTaskVTY(void *cliStatePtr)
 {
   cmdState_t *state = (cmdState_t *)(cliStatePtr);
   fprintf_P(state->myStdInOut, PSTR("Restart\r\n"));

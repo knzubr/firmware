@@ -31,7 +31,7 @@
 
 
 # MCU name
-MCU = atmega328
+MCU = atmega328p
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -176,22 +176,23 @@ LDFLAGS += -lm
 #
 
 # Programming support using avrdude.
+
 AVRDUDE             = avrdude
-AVRDUDE_PROGRAMMER  = jtag1
-AVRDUDE_PROGRAMMER_2= usbMultiToolV2jtag
-#AVRDUDE_PORT        = /dev/jtag
-AVRDUDE_PORT        = /dev/avrMultiTool
-AVRDUDE_FLAGS       = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
-AVRDUDE_FLAGS_2     = -p $(MCU) -C avrdude.conf -c $(AVRDUDE_PROGRAMMER_2)
+AVRDUDE_PROGRAMMER  = arduino
+AVRDUDE_MCU         = m328p
+AVRDUDE_PORT        = /dev/ttyACM0
+AVRDUDE_BITRATE     = 115200
+
+AVRDUDE_FLAGS       = -p $(AVRDUDE_MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b $(AVRDUDE_BITRATE)
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 AVRDUDE_READ_EEPROM  = -U eeprom:r:$(TARGET)_readed.eep
-AVRDUDE_WRITE_FUSES_H = -U hfuse:w:0x90:m
+#AVRDUDE_WRITE_FUSES_H = -U hfuse:w:0x90:m
 AVRDUDE_READ_FUSES_H  = -U hfuse:r:$(TARGET).hfuse:i
-AVRDUDE_WRITE_FUSES_L = -U lfuse:w:0xff:m
+#AVRDUDE_WRITE_FUSES_L = -U lfuse:w:0xff:m
 AVRDUDE_READ_FUSES_L  = -U lfuse:r:$(TARGET).lfuse:i
-AVRDUDE_WRITE_FUSES_E = -U efuse:w:0xff:m
+#AVRDUDE_WRITE_FUSES_E = -U efuse:w:0xff:m
 AVRDUDE_READ_FUSES_E  = -U efuse:r:$(TARGET).efuse:i
 
 
