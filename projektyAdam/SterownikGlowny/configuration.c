@@ -27,3 +27,8 @@ void saveConfiguration(void)
   ipSaveConfig();
   udpSaveConfig();
 }
+
+void saveNic()
+{
+
+}

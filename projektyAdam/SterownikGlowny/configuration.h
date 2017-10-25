@@ -14,5 +14,6 @@ extern struct lockerSensor *lockSensors;
 void loadConfiguration(void);
 void saveConfiguration(void);
 
+void saveNic(void);
 
 #endif

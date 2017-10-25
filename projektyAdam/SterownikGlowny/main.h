@@ -40,7 +40,7 @@
 #include "cmdline.h"
 #include "vty.h"
 
-#include "net.h"
+#include "../../Lib/net/include/arp.h"
 #include "ip.h"
 #include "arp.h"
 #include "udp.h"
