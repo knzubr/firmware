@@ -1,18 +1,8 @@
 #include "main.h"
 #include "vty.h"
-#include "ramdysk.h"
-#include "protocol1.h"
-#include "mpc23s17.h"
-#include "mcp3008.h"
-#include "ds1305.h"
 #include "hardwareConfig.h"
 #include "configuration.h"
-#include "Rs485_prot.h"
-#include "net.h"
-#include "ip.h"
-#include "arp.h"
 #include "softwareConfig.h"
-#include "mcp4150.h"
 
 #if LANG_EN
 #include "vty_en.h"
