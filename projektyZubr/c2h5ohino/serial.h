@@ -24,59 +24,22 @@
 // ******************************* Serial 0 RS485 *********************
 
 /*
- * Włączenie przerwania pusty bufor nadawczy dla magistrali Rs485
- */
-#define vInterruptRs485On()        \
-{                                  \
-  unsigned portCHAR ucByte;        \
-                                   \
-  ucByte = UCSR0B;                 \
-  ucByte |= serDATA_INT_ENABLE;    \
-  UCSR0B = ucByte;                 \
-}
-
-#define vIsInterruptRs485On()  (UCSR0B & serDATA_INT_ENABLE)
-
-/*
- * Wyłączenie przerwania pusty bufor nadawczy dla magistrali Rs485
- */
-#define vInterruptRs485Off()       \
-{                                  \
-  unsigned portCHAR ucInByte;      \
-                                   \
-  ucInByte = UCSR0B;               \
-  ucInByte &= ~serDATA_INT_ENABLE; \
-  UCSR0B = ucInByte;               \
-}
-
-
-// ******************************* Serial 1 USB ***********************
-
-/*
  * Włączenie przerwania pusty bufor nadawczy dla VTY
  */
 
-#define vIsInterruptVtyOn()  (UCSR1B & serDATA_INT_ENABLE)
+#define vIsInterruptVtyOn()  (UCSR0B & serDATA_INT_ENABLE)
 
 /*
  * Wyłączenie przerwania pusty bufor nadawczy dla VTY
  */
-#define vInterruptVtyOff()            \
-{                                  \
-  unsigned portCHAR ucInByte;      \
-                                   \
-  ucInByte = UCSR1B;               \
-  ucInByte &= ~serDATA_INT_ENABLE; \
-  UCSR1B = ucInByte;               \
+#define vInterruptVtyOff()           \
+{                                    \
+  UCSR0B &= ~serDATA_INT_ENABLE;     \
 }
 
-#define vInterruptVtyOn()             \
-{                                  \
-  unsigned portCHAR ucByte;        \
-                                   \
-  ucByte = UCSR0B;                 \
-  ucByte |= serDATA_INT_ENABLE;    \
-  UCSR0B = ucByte;                 \
+#define vInterruptVtyOn()            \
+{                                    \
+  UCSR0B |= serDATA_INT_ENABLE;      \
 }
 
 /**

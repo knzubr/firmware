@@ -14,6 +14,7 @@
 #include "task.h"
 #include "queueStream.h"
 #include "cli_task.h"
+#include "loop_task.h"
 #include "serial.h"
 
 #include "hardwareConfig.h"

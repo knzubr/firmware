@@ -43,10 +43,14 @@
 	licensing and training services.
 */
 
+#include <util/delay.h>
+
 #include "main.h"
 
 
 xTaskHandle   xHandleVTY;
+xTaskHandle   xHandleLoop;
+
 xQueueHandle  xVtyTx;
 xQueueHandle  xVtyRec;
 cmdState_t    cliStateUSB;
@@ -56,7 +60,6 @@ uint8_t       timer100Hz = 0;
 
 void vApplicationIdleHook( void );
 void vApplicationTickHook( void );
-
 
 portSHORT main( void )
 {
@@ -68,7 +71,9 @@ portSHORT main( void )
   initQueueStreamUSB(&usbStream);
   VtyInit(&cliStateUSB, &usbStream);
 
-  xTaskCreate(vTaskVTY,    NULL /*"VTY"    */, STACK_SIZE_VTY,       (void *)(&cliStateUSB),            1, &xHandleVTY);
+  xTaskCreate(vTaskVTY,    NULL /*""    */, STACK_SIZE_VTY,       (void *)(&cliStateUSB),            1, &xHandleVTY);
+  xTaskCreate(vTaskLoop,   NULL /*""    */, 100,                  NULL,                              1, &xHandleLoop);
+
   vTaskStartScheduler();
   return 0;
 }

@@ -58,6 +58,7 @@ serial.c \
 hardware.c \
 vty.c \
 cli_task.c \
+loop_task.c \
 $(LIB_DIR)/cmdline.c \
 $(LIB_DIR)/vt100.c \
 $(LIB_DIR)/queueStream.c \
@@ -322,6 +323,7 @@ flash:  $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 
 program: $(TARGET).hex $(TARGET).eep
+	if killall minicom; then sleep 10; fi
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH)
 #$(AVRDUDE_WRITE_EEPROM)
 
