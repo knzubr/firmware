@@ -25,10 +25,11 @@ prog_char statusDynamicHeapStateStr[] = "  Sterta dla malloc   : %d wolnych z %d
 prog_char systemRamConfigStr[]        = "Ustawienia systemu:\r\n";
 
 prog_char cmd_help[]        = "pomoc";            prog_char cmd_help_help[]        = "Wypisuje wszystkie komendy";
-prog_char cmd_status[]      = "status";           prog_char cmd_help_status[]      = "{nazwa pliku} Wypisuje status urzadzenia na ekranie lub zapisuje do pliku";
+prog_char cmd_status[]      = "status";           prog_char cmd_help_status[]      = "Wypisuje status urzadzenia na ekranie";
 prog_char cmd_enable[]      = "admin";            prog_char cmd_help_enable[]      = "Wejscie w tryb uprzywilejowany";
 prog_char cmd_disable[]     = "normalny";         prog_char cmd_help_disable[]     = "Wyjscie z trybu uprzywilejowanego";
 prog_char cmd_configure[]   = "konfig";           prog_char cmd_help_configure[]   = "Wejscie w tryb konfiguracji";
 prog_char cmd_conf_save[]   = "zapisz";           prog_char cmd_help_conf_save[]   = "Zapisz konfiguracje";
+prog_char cmd_check[]       = "pomiar";           prog_char cmd_help_check[]       = "Rozpoczyna pomiar alkoholu";
 
 #endif

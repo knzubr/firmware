@@ -15,8 +15,6 @@ void VtyInit(cmdState_t *state, FILE *stream);
 
 void printErrorInfo(cmdState_t *state);
 
-void printStatus(FILE *stream);
-
 enum errorType
 {
   AllOK  = 0,

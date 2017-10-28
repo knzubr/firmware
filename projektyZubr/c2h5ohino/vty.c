@@ -24,6 +24,7 @@ static cliExRes_t saveConfigFunction         (cmdState_t *state);
 static cliExRes_t disableFunction            (cmdState_t *state);
 static cliExRes_t enableFunction             (cmdState_t *state);
 static cliExRes_t configureModeFunction      (cmdState_t *state);
+static cliExRes_t checkFunction              (cmdState_t *state);
 
 const char okStr[]                        PROGMEM = "OK\r\n";
 const char nlStr[]                        PROGMEM = "\r\n";
@@ -49,6 +50,7 @@ const command_t cmdListNormal[] PROGMEM =
   {cmd_help,      cmd_help_help,      helpFunction},
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_enable,    cmd_help_enable,    enableFunction},
+  {cmd_check,     cmd_help_check,     checkFunction},
   {NULL, NULL, NULL}
 };
 
@@ -58,6 +60,7 @@ const command_t cmdListEnable[] PROGMEM =
   {cmd_status,    cmd_help_status,    statusFunction},
   {cmd_disable,   cmd_help_disable,   disableFunction},
   {cmd_configure, cmd_help_configure, configureModeFunction},
+  {cmd_check,     cmd_help_check,     checkFunction},
   {NULL, NULL, NULL}
 };
 
@@ -118,18 +121,6 @@ static cliExRes_t configureModeFunction(cmdState_t *state)
   return ERROR_OPERATION_NOT_ALLOWED;
 }
 
-// ************************** VTY API ***************************************************************************************
-void printStatus(FILE *stream)
-{
-  fprintf_P(stream, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n"));
-  //Print system state
-  fprintf_P(stream, systemStateStr);
-  fprintf_P(stream, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
-  fprintf_P(stream, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
-//  printErrorInfo(state); //TODO fix and uncomment
-}
-
-
 // ************************** CLI Functions *********************************************************************************
 
 static cliExRes_t helpFunction(cmdState_t *state)
@@ -140,10 +131,19 @@ static cliExRes_t helpFunction(cmdState_t *state)
 
 static cliExRes_t statusFunction(cmdState_t *state)
 {
-  printStatus(state->myStdInOut);
+  fprintf_P(state->myStdInOut, PSTR(SYSTEM_NAME" ver "S_VERSION" build: "__DATE__", "__TIME__"\r\n"));
+  //Print system state
+  fprintf_P(state->myStdInOut, systemStateStr);
+  fprintf_P(state->myStdInOut, statusNumberOfTasksStr,    uxTaskGetNumberOfTasks());
+  fprintf_P(state->myStdInOut, statusStaticHeapStateStr,  xPortGetFreeHeapSize(), configTOTAL_HEAP_SIZE);
   return OK_SILENT;
 }
 
+static cliExRes_t checkFunction(cmdState_t *state)
+{
+  fprintf_P(state->myStdInOut, PSTR("Rozpoczynanie pomiaru\r\n"));
+  return OK_SILENT;
+}
 static cliExRes_t saveConfigFunction(cmdState_t *state)
 {
   (void) state;

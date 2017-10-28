@@ -31,10 +31,12 @@ const char debugDisabledInfoStr[]      PROGMEM = "Disabled %s debug\r\n";
 // *************************** Command Strings *****************************************************
 
 const char cmd_help[]         PROGMEM = "help";             const char cmd_help_help[]         PROGMEM = "Print help string";
-const char cmd_status[]       PROGMEM = "status";           const char cmd_help_status[]       PROGMEM = "{filename} Print device status on VTY or write to file";
+const char cmd_status[]       PROGMEM = "status";           const char cmd_help_status[]       PROGMEM = "Print device status on VTY";
 const char cmd_enable[]       PROGMEM = "enable";           const char cmd_help_enable[]       PROGMEM = "Enable mode";
 const char cmd_disable[]      PROGMEM = "disable";          const char cmd_help_disable[]      PROGMEM = "View mode";
 const char cmd_configure[]    PROGMEM = "config";           const char cmd_help_configure[]    PROGMEM = "Configure mode";
 const char cmd_conf_save[]    PROGMEM = "save";             const char cmd_help_conf_save[]    PROGMEM = "Save configuration";
+const char cmd_check[]        PROGMEM = "check";            const char cmd_help_check[]        PROGMEM = "Check the C2H5-OH";
+
 #endif
 
