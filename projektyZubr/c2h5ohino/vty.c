@@ -141,7 +141,16 @@ static cliExRes_t statusFunction(cmdState_t *state)
 
 static cliExRes_t checkFunction(cmdState_t *state)
 {
-  fprintf_P(state->myStdInOut, PSTR("Rozpoczynanie pomiaru\r\n"));
+  uint8_t chanNo = 0;
+  if (state->argc > 1)
+    chanNo =cmdlineGetArgInt(1, state);
+
+  adcSignle(chanNo);
+  fprintf_P(state->myStdInOut, PSTR("Rozpoczynanie pomiaru na kanale %d"), chanNo);
+
+  uint16_t wynik = adcRead();
+
+  fprintf_P(state->myStdInOut, PSTR(" -> %d"), wynik);
   return OK_SILENT;
 }
 static cliExRes_t saveConfigFunction(cmdState_t *state)

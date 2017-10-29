@@ -101,6 +101,9 @@
 		</Unit>
 		<Unit filename="hardware.h" />
 		<Unit filename="hardwareConfig.h" />
+		<Unit filename="loop_task.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

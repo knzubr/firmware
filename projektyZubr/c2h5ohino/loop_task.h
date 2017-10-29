@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "hardware.h"
 
 void vTaskLoop(void *arg);
 
