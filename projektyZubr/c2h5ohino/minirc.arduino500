@@ -1,0 +1,7 @@
+# Wygenerowano przez Minicoma - użyj "minicom -s" do zmiany ustawień.
+pu port             /dev/ttyACM0
+pu baudrate         500000
+pu bits             8
+pu parity           N
+pu stopbits         1
+pu rtscts           No
